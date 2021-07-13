@@ -76,9 +76,7 @@ process kraken {
     set val(sampleName), file(readsFile) from RawReads
 
     output:
-    tuple sampleName, file("${sampleName}.kraken"), file("${sampleName}.krpt") into KrakenFile
-    tuple sampleName, file("${sampleName}.krpt") into KrakenVisuals
-    file(readsFile) into UnclassifiedReads
+    tuple sampleName, file("${sampleName}.kraken"), file("${sampleName}.krpt"), file(readsFile) into KrakenFile
 
     script:
     quickflag = params.dev ? '--quick' : ''
@@ -90,72 +88,16 @@ process kraken {
     """
 }
 
-// Convert the kraken reports to krona input files using KrakenTools then
-// prettify them using unix tools
-process kraken2krona {
-    cpus 1
-
-    input:
-    set val(sampleName), file(krakenReport) from KrakenVisuals
-
-    output:
-    file("${sampleName}.krona") into KronaText
-
-    shell:
-    '''
-    #!/bin/bash
-    # Using bash-specific loop syntax here, so shebang is required
-
-    # Convert the report using KrakenTools
-    kreport2krona.py -r !{krakenReport} -o !{sampleName}.krona
-
-    # KrakenTools creates ugly x__ prefixes for each of the taxonomic levels:
-    # let's remove each of those
-    LEVELS=(d k p c o f g s)
-    for L in "${LEVELS[@]}"; do
-        sed -i "s/${L}__//g" !{sampleName}.krona
-    done
-
-    # Also remove underscores that are standing in place of spaces
-    sed -i "s/_/ /g" !{sampleName}.krona
-    '''
-}
-
-// Collect all of the krona input files and convert them to a single graphical
-// webpage to ship to the user
-process krona {
-    cpus 1
-
-    // This is a final step: publish it
-    publishDir OutFolder, mode: 'copy'
-
-    input:
-    file '*' from KronaText.collect()
-
-    output:
-    file("krona.html")
-
-    // Name the file using the run name, and name the top level taxa as 'root'
-    // consistent with kraken
-    script:
-    """
-    ktImportText * -o krona.html -n root
-    """
-}
-
 // Pull the viral reads and any unclassified reads from the original reads
 // files for futher downstream processing using KrakenTools
 process filterreads {
     cpus 1
 
     input:
-    file(readsFile) from UnclassifiedReads
-    set val(sampleName), file(krakenFile), file(krakenReport) from KrakenFile
+    set val(sampleName), file(krakenFile), file(krakenReport), file(readsFile) from KrakenFile
 
     output:
-    tuple sampleName, file("${sampleName}_filtered.fastq.gz") into ReadsForRay
     tuple sampleName, file("${sampleName}_filtered.fastq.gz") into ReadsForMetaVelvet
-    tuple sampleName, file("${sampleName}_filtered.fastq.gz") into ReadsForAbyss
     file("${sampleName}_filtered.fastq.gz") into CompressedReadsForRemapping
 
     // Although I haven't seen it documented anywhere, 0 is unclassified reads
@@ -173,26 +115,6 @@ process filterreads {
 
 }
 
-// Assemble into contigs using Ray
-process ray {
-    cpus params.threads
-
-    input:
-    set val(sampleName), file(readsFile) from ReadsForRay
-
-    output:
-    tuple val(sampleName), val(assembler), 'Contigs.fasta' into RayContigsForBlast
-    tuple val(sampleName), val(assembler), file('Contigs.fasta'), file(readsFile) into RayContigsForRemapping
-
-    script:
-    // Export the assembler for future combined steps
-    assembler = 'ray'
-    """
-    mpiexec -n ${params.threads} Ray -k ${params.kmerLength} -s ${readsFile}
-    mv RayOutput/Contigs.fasta .
-    """
-}
-
 // Assemble using MetaVelvet
 process metavelvet {
     cpus params.threads
@@ -201,7 +123,6 @@ process metavelvet {
     set val(sampleName), file(readsFile) from ReadsForMetaVelvet
 
     output:
-    tuple val(sampleName), val(assembler), 'meta-velvetg.contigs.fa' into MetaVelvetContigsForBlast
     tuple val(sampleName), val(assembler), file('meta-velvetg.contigs.fa'), file(readsFile) into MetaVelvetContigsForRemapping
 
     script:
@@ -216,31 +137,12 @@ process metavelvet {
     """
 }
 
-// Assemble using Abyss
-process abyss {
-    cpus params.threads
-
-    input:
-    set val(sampleName), file(readsFile) from ReadsForAbyss
-
-    output:
-    tuple val(sampleName), val(assembler), 'contigs.fa' into AbyssContigsForBlast
-    tuple val(sampleName), val(assembler), file('contigs.fa'), file(readsFile) into AbyssContigsForRemapping
-
-    script:
-    assembler = 'abyss'
-    """
-    abyss-pe np=${params.threads} name=${sampleName} k=21 se="${readsFile}"
-    cp ${sampleName}-contigs.fa contigs.fa
-    """
-}
-
 // Remap contigs using BWA
 process bwa {
     cpus params.threads
 
     input:
-    set val(sampleName), val(assembler), file(contigs), file(readsFile) from RayContigsForRemapping.concat(MetaVelvetContigsForRemapping, AbyssContigsForRemapping)
+    set val(sampleName), val(assembler), file(contigs), file(readsFile) from MetaVelvetContigsForRemapping
 
     output:
     tuple val(sampleName), val(assembler), file(contigs), file("${sampleName}_${assembler}.sam") into RemappedReads
@@ -304,49 +206,5 @@ process assemblyview {
     mv *.contigs.fasta *.contigs.fasta.fai *.bam *.bam.bai data
     git clone https://github.com/MillironX/igv-bundler.git igv-bundler
     mv igv-bundler/{index.html,index.js,package.json} .
-    """
-}
-
-// Blast contigs
-process blast {
-    cpus params.threads
-
-    // This is a final step: publish it
-    publishDir OutFolder, mode: 'copy'
-
-    // Blast needs to happen on all contigs from all assemblers, and both
-    // blastn and blastx needs to be applied to all contigs
-    input:
-    set val(sampleName), val(assembler), file(readsFiles) from RayContigsForBlast.concat(MetaVelvetContigsForBlast, AbyssContigsForBlast)
-
-    output:
-    file("${RunName}_${sampleName}_${assembler}.blast.tsv")
-
-    script:
-    // Separate parameters from script
-    max_hsps       = 10
-    num_alignments = 5
-    outfmt         = '"6 qseqid stitle sgi staxid ssciname scomname score bitscore qcovs evalue pident length slen saccver mismatch gapopen qstart qend sstart send"'
-    evalue         = 1e-5
-
-    // Pick the faster algorithm if this is a development cycle, otherwise
-    // the titular program is also the name of the algorithm
-    if ( params.dev ) {
-        max_hsps = 1
-        num_alignments = 1
-        evalue = 1e-50
-    }
-
-    // Squash the filename into a single variable
-    outFile = "${RunName}_${sampleName}_${assembler}.blast.tsv"
-    """
-    echo "Sequence ID\tDescription\tGI\tTaxonomy ID\tScientific Name\tCommon Name\tRaw score\tBit score\tQuery Coverage\tE value\tPercent identical\tSubject length\tAlignment length\tAccession\tMismatches\tGap openings\tStart of alignment in query\tEnd of alignment in query\tStart of alignment in subject\tEnd of alignment in subject" > ${outFile}
-    blastn -query ${readsFiles} \
-        -db ${params.blastDb}/nt \
-        -max_hsps ${max_hsps} \
-        -num_alignments ${num_alignments} \
-        -outfmt ${outfmt} \
-        -evalue ${evalue} \
-        -num_threads ${params.threads} >> ${outFile}
     """
 }
