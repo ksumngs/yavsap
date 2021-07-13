@@ -97,8 +97,7 @@ process filterreads {
     set val(sampleName), file(krakenFile), file(krakenReport), file(readsFile) from KrakenFile
 
     output:
-    tuple sampleName, file("${sampleName}_filtered.fastq.gz") into ReadsForMetaVelvet
-    file("${sampleName}_filtered.fastq.gz") into CompressedReadsForRemapping
+    tuple sampleName, file("${sampleName}_filtered.fastq.gz") into FilteredReads
 
     // Although I haven't seen it documented anywhere, 0 is unclassified reads
     // and 10239 is viral reads
@@ -115,25 +114,22 @@ process filterreads {
 
 }
 
-// Assemble using MetaVelvet
-process metavelvet {
+// Assemble using Canu
+process assembly {
     cpus params.threads
 
     input:
-    set val(sampleName), file(readsFile) from ReadsForMetaVelvet
+    set val(sampleName), file(readsFile) from FilteredReads
 
     output:
-    tuple val(sampleName), val(assembler), file('meta-velvetg.contigs.fa'), file(readsFile) into MetaVelvetContigsForRemapping
+    tuple val(sampleName), val(assembler), file("${sampleName}.contigs.fasta"), file(readsFile) into ContigsForRemapping
 
     script:
     assembler = 'metavelvet'
     """
-    export OMP_NUM_THREADS=${params.threads}
-    export OMP_THREAD_LIMIT=${params.threads}
-    velveth out ${params.kmerLength} -fastq.gz -long ${readsFile}
-    velvetg out -exp_cov auto
-    meta-velvetg out
-    mv out/meta-velvetg.contigs.fa .
+    canu -p ${sampleName} -d out \
+        genomeSize=10976 -nanopore ${readsFile}
+    cp out/${sampleName}.contigs.fasta .
     """
 }
 
@@ -142,7 +138,7 @@ process bwa {
     cpus params.threads
 
     input:
-    set val(sampleName), val(assembler), file(contigs), file(readsFile) from MetaVelvetContigsForRemapping
+    set val(sampleName), val(assembler), file(contigs), file(readsFile) from ContigsForRemapping
 
     output:
     tuple val(sampleName), val(assembler), file(contigs), file("${sampleName}_${assembler}.sam") into RemappedReads
