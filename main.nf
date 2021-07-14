@@ -44,6 +44,7 @@ exit 0
 
 // Make params persist that need to
 RunName = params.runname
+ReferenceName = 'JEV'
 
 // Create an outfolder name if one wasn't provided
 if(params.outfolder == "") {
@@ -98,12 +99,11 @@ process filterreads {
     extract_kraken_reads.py -k ${krakenFile} \
         -s ${readsFile} \
         -r ${krakenReport} \
-        -t 0 10239 --include-children \
+        -t 10239 --include-children \
         --fastq-output \
         -o ${sampleName}_filtered.fastq
     gzip ${sampleName}_filtered.fastq
     """
-
 }
 
 // Assemble using Canu
@@ -114,10 +114,10 @@ process assembly {
     set val(sampleName), file(readsFile) from FilteredReads
 
     output:
-    tuple val(sampleName), val(assembler), file("${sampleName}.contigs.fasta"), file(readsFile) into ContigsForRemapping
+    tuple val(sampleName), file("${sampleName}.contigs.fasta") into FastaContigs
+    file(readsFile) into BypassReads
 
     script:
-    assembler = 'metavelvet'
     """
     canu -p ${sampleName} -d out \
         genomeSize=10976 -nanopore ${readsFile}
@@ -128,10 +128,10 @@ process assembly {
 // Get the reference genome
 process reference {
     cpus 1
-    publishDir OutFolder, mode: 'symlink'
 
     output:
     file '*' into ReferenceGenome
+    file '*' into ReferenceGenomeIndex
 
     script:
     """
@@ -139,24 +139,55 @@ process reference {
     """
 }
 
-// Remap contigs using BWA
-process bwa {
+// Index the reference genome
+process indexreference {
     cpus params.threads
 
     input:
-    set val(sampleName), val(assembler), file(contigs), file(readsFile) from ContigsForRemapping
+    file(genome) from ReferenceGenome
 
     output:
-    tuple val(sampleName), val(assembler), file(contigs), file("${sampleName}_${assembler}.sam") into RemappedReads
+    file("*.bt2") into IndexedReferenceGenome
 
     script:
     """
-    cp ${readsFile} read.fastq.gz
-    gunzip read.fastq.gz
-    bwa index ${contigs}
-    bwa aln -t ${params.threads} ${contigs} read.fastq > ${sampleName}.sai
-    bwa samse ${contigs} \
-        ${sampleName}.sai ${readsFile} > ${sampleName}_${assembler}.sam
+    bowtie2-build --threads ${params.threads} ${genome} ${ReferenceName}
+    """
+}
+
+// Convert the contigs to fastq with dummy read scores for realignment
+process convertcontigs {
+    cpus 1
+
+    input:
+    set val(sampleName), file(contigs) from FastaContigs
+
+    output:
+    tuple val(sampleName), file("${sampleName}.contigs.fastq.gz") into FastqContigs
+
+    script:
+    """
+    fastx-converter -i ${contigs} -o ${sampleName}.contigs.fastq.gz
+    """
+}
+
+// Remap contigs using bowtie2
+process realign {
+    cpus params.threads
+
+    input:
+    set val(sampleName), file(contigs) from FastqContigs
+    file(readsFile) from BypassReads
+    file(reference) from IndexedReferenceGenome
+
+
+    output:
+    tuple val(sampleName), file("${sampleName}.contigs.sam"), file("${sampleName}.sam") into RemappedReads
+
+    script:
+    """
+    bowtie2 --threads ${params.threads} -x ${ReferenceName} -U ${contigs} > ${sampleName}.contigs.sam
+    bowtie2 --threads ${params.threads} -x ${ReferenceName} -U ${readsFile} > ${sampleName}.sam
     """
 }
 
@@ -165,25 +196,42 @@ process sortsam {
     cpus 1
 
     input:
-    set val(sampleName), val(assembler), file(contigs), file(samfile) from RemappedReads
+    set val(sampleName), file(contigs), file(samfile) from RemappedReads
 
     output:
-    tuple file("${sampleName}_${assembler}.contigs.fasta"), file("${sampleName}_${assembler}.contigs.fasta.fai"), file("${sampleName}_${assembler}.bam"), file("${sampleName}_${assembler}.bam.bai") into Assemblies
+    file("*.{bam,bai}") into Assemblies
 
     script:
     """
-    # Rename the contigs file to a consistent format
-    mv ${contigs} ${sampleName}_${assembler}.contigs.fasta
-
-    # Create a contigs indes
-    samtools faidx ${sampleName}_${assembler}.contigs.fasta
-
-    # Convert and sort the sam file
+    # Convert, sort and index the reads file
     samtools view -S -b ${samfile} > sample.bam
-    samtools sort sample.bam -o ${sampleName}_${assembler}.bam
+    samtools sort sample.bam -o ${sampleName}.bam
+    samtools index ${sampleName}.bam
 
-    # Index the sorted bam file
-    samtools index ${sampleName}_${assembler}.bam
+    # Convert, sort, and index the contigs file
+    samtools view -S -b ${contigs} > contigs.bam
+    samtools sort contigs.bam -o ${sampleName}.contigs.bam
+    samtools index ${sampleName}.contigs.bam
+
+    # Remove intermediate files
+    rm sample.bam contigs.bam
+    """
+}
+
+process sortreference {
+    cpus 1
+
+    input:
+    file(reference) from ReferenceGenomeIndex
+
+    output:
+    tuple file("${ReferenceName}.fasta"), file("*.fai") into SortedReferenceGenome
+
+    script:
+    """
+    # Create a reference genome index
+    cp ${reference} ${ReferenceName}.fasta
+    samtools faidx ${ReferenceName}.fasta
     """
 }
 
@@ -195,6 +243,7 @@ process assemblyview {
 
     input:
     file '*' from Assemblies.collect()
+    file '*' from SortedReferenceGenome
 
     output:
     file 'index.html'
@@ -205,7 +254,7 @@ process assemblyview {
     script:
     """
     mkdir data
-    mv *.contigs.fasta *.contigs.fasta.fai *.bam *.bam.bai data
+    mv *.fasta *.fasta.fai *.bam *.bam.bai data
     git clone https://github.com/MillironX/igv-bundler.git igv-bundler
     mv igv-bundler/{index.html,index.js,package.json} .
     """
