@@ -99,7 +99,7 @@ process filterreads {
     extract_kraken_reads.py -k ${krakenFile} \
         -s ${readsFile} \
         -r ${krakenReport} \
-        -t 10239 --include-children \
+        -t 0 10239 --include-children \
         --fastq-output \
         -o ${sampleName}_filtered.fastq
     gzip ${sampleName}_filtered.fastq
