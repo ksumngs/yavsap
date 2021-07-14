@@ -128,7 +128,7 @@ process assembly {
     assembler = 'metavelvet'
     """
     canu -p ${sampleName} -d out \
-        genomeSize=10976 -nanopore ${readsFile}
+        genomeSize=10976 -nanopore-raw ${readsFile}
     cp out/${sampleName}.contigs.fasta .
     """
 }
