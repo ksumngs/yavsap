@@ -120,7 +120,10 @@ process assembly {
     script:
     """
     canu -p ${sampleName} -d out \
-        genomeSize=10976 -nanopore ${readsFile}
+        genomeSize=10976\
+        maxThreads=${params.threads} \
+        stopOnLowCoverage=3 \
+        -nanopore ${readsFile}
     cp out/${sampleName}.contigs.fasta .
     """
 }
