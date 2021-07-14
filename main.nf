@@ -4,11 +4,11 @@ if (params.help) {
     log.info \
     """
 NAME
-    viral-metagenomics-pipeline - Automated analysis of viral reads in metagenomics samples
+    jev-analysis-pipeline - Automated analysis of Japanese Encephalitis Virus next-generation sequencing data
 
 SYNOPSIS
-    nextflow run millironx/viral-metagenomics-pipeline
-        --kraken.db <kraken2 database location>
+    nextflow run millironx/jev-analysis-pipeline
+        --kraken-db <kraken2 database location>
 
 OPTIONS
     --readsfolder
@@ -21,7 +21,7 @@ OPTIONS
 
     --runname
         A friendly identifier to describe the samples being analyzed. Defaults to
-        'viral-metagenomics'
+        'jev-analysis'
 
     --outfolder
         The place where the final anlysis products will be stored. Defaults to runname_out
@@ -32,20 +32,12 @@ OPTIONS
     --devinputs
         The number of inputs to take in when using --dev
 
-    --kmer-length
-        The length of kmers when assembling. Defaults to 35
-
 PROCESS-SPECIFIC OPTIONS
 Kraken:
     See https://github.com/DerrickWood/kraken2/wiki/Manual for full documentation of
     Kraken 2's available options
     --kraken-db
         Path to Kraken 2 database. REQUIRED
-
-BLAST:
-    --blast-db
-        Path to blast databases. REQUIRED. It is also recommended to place this value in the
-        BLASTDB environment variable.
 """
 exit 0
 }
