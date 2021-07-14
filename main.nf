@@ -133,6 +133,20 @@ process assembly {
     """
 }
 
+// Get the reference genome
+process reference {
+    cpus 1
+    publishDir OutFolder, mode: 'symlink'
+
+    output:
+    file '*' into ReferenceGenome
+
+    script:
+    """
+    efetch -db nucleotide -id NC_001437 -format fasta > jev.fasta
+    """
+}
+
 // Remap contigs using BWA
 process bwa {
     cpus params.threads
