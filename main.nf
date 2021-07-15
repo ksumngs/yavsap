@@ -77,8 +77,8 @@ workflow {
     contigs_realign_reference(raw_reads, contigs_convert_fastq.out, reference_genome_index_bowtie.out) | \
         contigs_sort_and_index
 
-    contigs_sort_and_index.out.view()
-
+    // Put a pretty bow on everything
+    presentation_generator(reference_genome_index_samtools.out, contigs_sort_and_index.out.collect())
 }
 
 // Get the reference genome
@@ -254,18 +254,15 @@ process contigs_sort_and_index {
     """
 }
 
-/*
-
-
 // Create a viewer of all the assembly files
-process assemblyview {
+process presentation_generator {
     cpus 1
 
     publishDir OutFolder, mode: 'copy'
 
     input:
-    file '*' from Assemblies.collect()
-    file '*' from SortedReferenceGenome
+    file '*'
+    file '*'
 
     output:
     file 'index.html'
@@ -281,4 +278,3 @@ process assemblyview {
     mv igv-bundler/{index.html,index.js,package.json} .
     """
 }
-*/
