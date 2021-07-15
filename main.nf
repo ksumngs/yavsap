@@ -70,7 +70,10 @@ workflow {
 
     // Filter out the non-viral reads
     read_filtering_ont(raw_reads, read_classification_ont.out) | \
-        assembly_ont
+        assembly_ont | \
+        contigs_convert_fastq
+
+        contigs_convert_fastq.out.view()
 }
 
 // Get the reference genome
@@ -167,23 +170,23 @@ process assembly_ont {
     """
 }
 
-/*
 // Convert the contigs to fastq with dummy read scores for realignment
-process convertcontigs {
+process contigs_convert_fastq {
     cpus 1
 
     input:
-    set val(sampleName), file(contigs) from FastaContigs
+    file(contigs)
 
     output:
-    tuple val(sampleName), file("${sampleName}.contigs.fastq.gz") into FastqContigs
+    file("*.fastq.gz")
 
     script:
     """
-    fastx-converter -i ${contigs} -o ${sampleName}.contigs.fastq.gz
+    fastx-converter -i ${contigs} -o ${contigs.simpleName}.contigs.fastq.gz
     """
 }
 
+/*
 // Remap contigs using bowtie2
 process realign {
     cpus params.threads
