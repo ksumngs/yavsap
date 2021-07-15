@@ -57,7 +57,7 @@ else {
 // Main workflow: will be promoted to ont workflow someday
 workflow {
     // Pull and index the reference genome of choice
-    reference_genome_pull | reference_genome_index
+    reference_genome_pull | (reference_genome_index_bowtie & reference_genome_index_samtools)
 
     // Bring in the reads files
     raw_reads = Channel
@@ -74,7 +74,7 @@ workflow {
         contigs_convert_fastq
 
     // Realign contigs to the reference genome
-    contigs_realign_reference(raw_reads, contigs_convert_fastq.out, reference_genome_index.out) | \
+    contigs_realign_reference(raw_reads, contigs_convert_fastq.out, reference_genome_index_bowtie.out) | \
         contigs_sort_and_index
 
     contigs_sort_and_index.out.view()
@@ -95,7 +95,7 @@ process reference_genome_pull {
 }
 
 // Index the reference genome
-process reference_genome_index {
+process reference_genome_index_bowtie {
     cpus params.threads
 
     input:
@@ -107,6 +107,23 @@ process reference_genome_index {
     script:
     """
     bowtie2-build --threads ${params.threads} ${genome} ${ReferenceName}
+    """
+}
+
+process reference_genome_index_samtools {
+    cpus 1
+
+    input:
+    file(reference)
+
+    output:
+    tuple file("${ReferenceName}.fasta"), file("*.fai")
+
+    script:
+    """
+    # Create a reference genome index
+    cp ${reference} ${ReferenceName}.fasta
+    samtools faidx ${ReferenceName}.fasta
     """
 }
 
@@ -238,22 +255,7 @@ process contigs_sort_and_index {
 }
 
 /*
-process sortreference {
-    cpus 1
 
-    input:
-    file(reference) from ReferenceGenomeIndex
-
-    output:
-    tuple file("${ReferenceName}.fasta"), file("*.fai") into SortedReferenceGenome
-
-    script:
-    """
-    # Create a reference genome index
-    cp ${reference} ${ReferenceName}.fasta
-    samtools faidx ${ReferenceName}.fasta
-    """
-}
 
 // Create a viewer of all the assembly files
 process assemblyview {
