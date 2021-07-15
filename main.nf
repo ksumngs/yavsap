@@ -69,7 +69,8 @@ workflow {
     raw_reads | read_classification_ont
 
     // Filter out the non-viral reads
-    read_filtering_ont(raw_reads, read_classification_ont.out)
+    read_filtering_ont(raw_reads, read_classification_ont.out) | \
+        assembly_ont
 }
 
 // Get the reference genome
@@ -131,7 +132,7 @@ process read_filtering_ont {
     tuple file(krakenFile), file(krakenReport)
 
     output:
-    file("${sampleName}_filtered.fastq.gz")
+    tuple val(sampleName), file("${sampleName}_filtered.fastq.gz")
 
     script:
     """
@@ -145,17 +146,15 @@ process read_filtering_ont {
     """
 }
 
-/*
 // Assemble using Canu
-process assembly {
+process assembly_ont {
     cpus params.threads
 
     input:
-    set val(sampleName), file(readsFile) from FilteredReads
+    tuple val(sampleName), file(readsFile)
 
     output:
-    tuple val(sampleName), file("${sampleName}.contigs.fasta") into FastaContigs
-    file(readsFile) into BypassReads
+    file("${sampleName}.contigs.fasta")
 
     script:
     """
@@ -168,7 +167,7 @@ process assembly {
     """
 }
 
-
+/*
 // Convert the contigs to fastq with dummy read scores for realignment
 process convertcontigs {
     cpus 1
