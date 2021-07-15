@@ -74,9 +74,10 @@ workflow {
         contigs_convert_fastq
 
     // Realign contigs to the reference genome
-    contigs_realign_reference(raw_reads, contigs_convert_fastq.out, reference_genome_index.out)
+    contigs_realign_reference(raw_reads, contigs_convert_fastq.out, reference_genome_index.out) | \
+        contigs_sort_and_index
 
-    contigs_realign_reference.out.view()
+    contigs_sort_and_index.out.view()
 
 }
 
@@ -200,7 +201,7 @@ process contigs_realign_reference {
     file(reference)
 
     output:
-    tuple file("${sampleName}.contigs.sam"), file("${sampleName}.sam")
+    tuple val(sampleName), file("${sampleName}.contigs.sam"), file("${sampleName}.sam")
 
     script:
     """
@@ -209,16 +210,15 @@ process contigs_realign_reference {
     """
 }
 
-/*
 // Sort and compress the sam files for visualization
-process sortsam {
+process contigs_sort_and_index {
     cpus 1
 
     input:
-    set val(sampleName), file(contigs), file(samfile) from RemappedReads
+    tuple val(sampleName), file(contigs), file(samfile)
 
     output:
-    file("*.{bam,bai}") into Assemblies
+    file("*.{bam,bai}")
 
     script:
     """
@@ -237,6 +237,7 @@ process sortsam {
     """
 }
 
+/*
 process sortreference {
     cpus 1
 
