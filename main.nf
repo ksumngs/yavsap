@@ -67,6 +67,9 @@ workflow {
 
     // Classify the reads
     raw_reads | read_classification_ont
+
+    // Filter out the non-viral reads
+    read_filtering_ont(raw_reads, read_classification_ont.out)
 }
 
 // Get the reference genome
@@ -118,20 +121,18 @@ process read_classification_ont {
     """
 }
 
-/*
 // Pull the viral reads and any unclassified reads from the original reads
 // files for futher downstream processing using KrakenTools
-process filterreads {
+process read_filtering_ont {
     cpus 1
 
     input:
-    set val(sampleName), file(krakenFile), file(krakenReport), file(readsFile) from KrakenFile
+    tuple val(sampleName),  file(readsFile)
+    tuple file(krakenFile), file(krakenReport)
 
     output:
-    tuple sampleName, file("${sampleName}_filtered.fastq.gz") into FilteredReads
+    file("${sampleName}_filtered.fastq.gz")
 
-    // Although I haven't seen it documented anywhere, 0 is unclassified reads
-    // and 10239 is viral reads
     script:
     """
     extract_kraken_reads.py -k ${krakenFile} \
@@ -144,6 +145,7 @@ process filterreads {
     """
 }
 
+/*
 // Assemble using Canu
 process assembly {
     cpus params.threads
