@@ -64,6 +64,9 @@ workflow {
         .fromPath("${params.readsfolder}/*.{fastq,fq}.gz")
         .take( params.dev ? params.devinputs : -1 )
         .map{ file -> tuple(file.simpleName, file) }
+
+    // Classify the reads
+    raw_reads | read_classification_ont
 }
 
 // Get the reference genome
@@ -96,25 +99,26 @@ process reference_genome_index {
 }
 
 // Classify reads using Kraken
-process kraken {
+process read_classification_ont {
     cpus params.threads
 
     input:
-    set val(sampleName), file(readsFile) from RawReads
+    tuple val(sampleName), file(readsFile)
 
     output:
-    tuple sampleName, file("${sampleName}.kraken"), file("${sampleName}.krpt"), file(readsFile) into KrakenFile
+    tuple file("${sampleName}.kraken"), file("${sampleName}.kreport")
 
     script:
     quickflag = params.dev ? '--quick' : ''
     """
     kraken2 --db ${params.krakenDb} --threads ${params.threads} ${quickflag} \
-        --report "${sampleName}.krpt" \
+        --report "${sampleName}.kreport" \
         --output "${sampleName}.kraken" \
         ${readsFile}
     """
 }
 
+/*
 // Pull the viral reads and any unclassified reads from the original reads
 // files for futher downstream processing using KrakenTools
 process filterreads {
