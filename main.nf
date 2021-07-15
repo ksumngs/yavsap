@@ -43,40 +43,53 @@ Kraken:
 exit 0
 }
 
+// Declare what we're going to call our reference genome
+ReferenceName = 'JEV'
+
+// Create an output folder name if one wasn't provided
+if(params.outfolder == "") {
+    OutFolder = params.runname + "_out"
+}
+else {
+    OutFolder = params.outfolder
+}
+
+// Main workflow: will be promoted to ont workflow someday
 workflow {
-    pull_reference_genome(params.genomeId)
-
-
+    // Pull and index the reference genome of choice
+    reference_genome_pull | reference_genome_index
 }
 
 // Get the reference genome
-process pull_reference_genome {
+process reference_genome_pull {
     cpus 1
-
-    input:
-    val genomeId
 
     output:
     file '*'
 
     script:
     """
-    efetch -db nucleotide -id ${genomeId} -format fasta > reference.fasta
+    efetch -db nucleotide -id ${params.genomeId} -format fasta > reference.fasta
     """
 }
 
-// Make params persist that need to
-RunName = params.runname
-ReferenceName = 'JEV'
+// Index the reference genome
+process reference_genome_index {
+    cpus params.threads
 
-// Create an outfolder name if one wasn't provided
-if(params.outfolder == "") {
-    OutFolder = RunName + "_out"
-}
-else {
-    OutFolder = params.outfolder
+    input:
+    file genome
+
+    output:
+    file("*.bt2")
+
+    script:
+    """
+    bowtie2-build --threads ${params.threads} ${genome} ${ReferenceName}
+    """
 }
 
+/*
 // Bring in the reads files
 Channel
     .fromPath("${params.readsfolder}/*.{fastq,fq}.gz")
@@ -151,21 +164,6 @@ process assembly {
     """
 }
 
-// Index the reference genome
-process indexreference {
-    cpus params.threads
-
-    input:
-    file(genome) from ReferenceGenome
-
-    output:
-    file("*.bt2") into IndexedReferenceGenome
-
-    script:
-    """
-    bowtie2-build --threads ${params.threads} ${genome} ${ReferenceName}
-    """
-}
 
 // Convert the contigs to fastq with dummy read scores for realignment
 process convertcontigs {
@@ -271,3 +269,4 @@ process assemblyview {
     mv igv-bundler/{index.html,index.js,package.json} .
     """
 }
+*/
