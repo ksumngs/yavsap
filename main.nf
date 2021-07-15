@@ -1,4 +1,5 @@
 #!/usr/bin/env nextflow
+nextflow.enable.dsl = 2
 
 if (params.help) {
     log.info \
@@ -40,6 +41,28 @@ Kraken:
         Path to Kraken 2 database. REQUIRED
 """
 exit 0
+}
+
+workflow {
+    pull_reference_genome(params.genomeId)
+
+
+}
+
+// Get the reference genome
+process pull_reference_genome {
+    cpus 1
+
+    input:
+    val genomeId
+
+    output:
+    file '*'
+
+    script:
+    """
+    efetch -db nucleotide -id ${genomeId} -format fasta > reference.fasta
+    """
 }
 
 // Make params persist that need to
@@ -125,20 +148,6 @@ process assembly {
         stopOnLowCoverage=3 \
         -nanopore ${readsFile}
     cp out/${sampleName}.contigs.fasta .
-    """
-}
-
-// Get the reference genome
-process reference {
-    cpus 1
-
-    output:
-    file '*' into ReferenceGenome
-    file '*' into ReferenceGenomeIndex
-
-    script:
-    """
-    efetch -db nucleotide -id NC_001437 -format fasta > jev.fasta
     """
 }
 
