@@ -71,10 +71,10 @@ workflow {
     // Filter out the non-viral reads
     read_filtering_ont(raw_reads, read_classification_ont.out) | \
         assembly_ont | \
-        contigs_convert_fastq
+        contigs_convert_to_fastq
 
     // Realign contigs to the reference genome
-    contigs_realign_reference(raw_reads, contigs_convert_fastq.out, reference_genome_index_bowtie.out) | \
+    to_(raw_reads, contigs_convert_to_fastq.out, reference_genome_index_bowtie.out) | \
         contigs_sort_and_index
 
     // Put a pretty bow on everything
@@ -193,7 +193,7 @@ process assembly_ont {
 }
 
 // Convert the contigs to fastq with dummy read scores for realignment
-process contigs_convert_fastq {
+process contigs_convert_to_fastq {
     cpus 1
 
     input:
@@ -209,7 +209,7 @@ process contigs_convert_fastq {
 }
 
 // Remap contigs using bowtie2
-process contigs_realign_reference {
+process contigs_realign_to_reference {
     cpus params.threads
 
     input:
