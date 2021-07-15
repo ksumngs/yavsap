@@ -73,7 +73,11 @@ workflow {
         assembly_ont | \
         contigs_convert_fastq
 
-        contigs_convert_fastq.out.view()
+    // Realign contigs to the reference genome
+    contigs_realign_reference(raw_reads, contigs_convert_fastq.out, reference_genome_index.out)
+
+    contigs_realign_reference.out.view()
+
 }
 
 // Get the reference genome
@@ -186,19 +190,17 @@ process contigs_convert_fastq {
     """
 }
 
-/*
 // Remap contigs using bowtie2
-process realign {
+process contigs_realign_reference {
     cpus params.threads
 
     input:
-    set val(sampleName), file(contigs) from FastqContigs
-    file(readsFile) from BypassReads
-    file(reference) from IndexedReferenceGenome
-
+    tuple val(sampleName), file(readsFile)
+    file(contigs)
+    file(reference)
 
     output:
-    tuple val(sampleName), file("${sampleName}.contigs.sam"), file("${sampleName}.sam") into RemappedReads
+    tuple file("${sampleName}.contigs.sam"), file("${sampleName}.sam")
 
     script:
     """
@@ -207,6 +209,7 @@ process realign {
     """
 }
 
+/*
 // Sort and compress the sam files for visualization
 process sortsam {
     cpus 1
