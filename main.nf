@@ -58,6 +58,12 @@ else {
 workflow {
     // Pull and index the reference genome of choice
     reference_genome_pull | reference_genome_index
+
+    // Bring in the reads files
+    raw_reads = Channel
+        .fromPath("${params.readsfolder}/*.{fastq,fq}.gz")
+        .take( params.dev ? params.devinputs : -1 )
+        .map{ file -> tuple(file.simpleName, file) }
 }
 
 // Get the reference genome
@@ -88,14 +94,6 @@ process reference_genome_index {
     bowtie2-build --threads ${params.threads} ${genome} ${ReferenceName}
     """
 }
-
-/*
-// Bring in the reads files
-Channel
-    .fromPath("${params.readsfolder}/*.{fastq,fq}.gz")
-    .take( params.dev ? params.devinputs : -1 )
-    .map{ file -> tuple(file.simpleName, file) }
-    .set{ RawReads }
 
 // Classify reads using Kraken
 process kraken {
