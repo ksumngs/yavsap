@@ -59,20 +59,29 @@ else {
     OutFolder = params.outfolder
 }
 
-// Main workflow: will be promoted to ont workflow someday
 workflow {
     // Pull and index the reference genome of choice
     reference_genome_pull | (reference_genome_index_bowtie & reference_genome_index_samtools)
 
     // Bring in the reads files
-    raw_reads = Channel
-        .fromPath("${params.readsfolder}/*.{fastq,fq}.gz")
-        .take( params.dev ? params.devinputs : -1 )
-        .map{ file -> tuple(file.simpleName, file) }
+    if (params.ont) {
+        raw_reads = Channel
+            .fromPath("${params.readsfolder}/*.{fastq,fq}.gz")
+            .take( params.dev ? params.devinputs : -1 )
+            .map{ file -> tuple(file.simpleName, file) }
+    }
+    else {
+        raw_reads = Channel
+            .fromFilePairs("${params.readsfolder}/*{R1,R2,_1,_2}*.{fastq,fq}.gz")
+            .take( params.dev ? params.devinputs : -1 )
+    }
 
     // Classify the reads
-    raw_reads | read_classification_ont
+    raw_reads | read_classification
+}
 
+// Main workflow: will be promoted to ont workflow someday
+workflow ont {
     // Filter out the non-viral reads
     read_filtering_ont(raw_reads, read_classification_ont.out) | \
         assembly_ont | \
@@ -84,6 +93,10 @@ workflow {
 
     // Put a pretty bow on everything
     presentation_generator(reference_genome_index_samtools.out, contigs_sort_and_index.out.collect())
+}
+
+workflow pe {
+
 }
 
 // Get the reference genome
@@ -156,7 +169,7 @@ process read_classification {
 
 // Pull the viral reads and any unclassified reads from the original reads
 // files for futher downstream processing using KrakenTools
-process read_filtering_ont {
+process read_filtering {
     cpus 1
 
     input:
@@ -164,17 +177,20 @@ process read_filtering_ont {
     tuple file(krakenFile), file(krakenReport)
 
     output:
-    tuple val(sampleName), file("${sampleName}_filtered.fastq.gz")
+    tuple val(sampleName), file("${sampleName}_filtered*.fastq.gz")
 
     script:
+    read2flagin  = (params.pe) ? "-s2 ${readsFile[1]}" : ''
+    read1flagout = (params.pe) ? "-o ${sampleName}_filtered_R1.fastq" : " -o ${sampleName}_filtered.fastq"
+    read2flagout = (params.pe) ? "-o2 ${sampleName}_filtered_R2.fastq" : ''
     """
     extract_kraken_reads.py -k ${krakenFile} \
-        -s ${readsFile} \
+        -s ${readsFile} ${read2flagin} \
         -r ${krakenReport} \
         -t ${params.taxIdsToKeep} --include-children \
         --fastq-output \
-        -o ${sampleName}_filtered.fastq
-    gzip ${sampleName}_filtered.fastq
+        ${read1flagout} ${read2flagout}
+    gzip ${sampleName}_filtered*.fastq
     """
 }
 
