@@ -43,6 +43,11 @@ Kraken:
 exit 0
 }
 
+if (!params.ont && !params.pe) {
+    log.error "ERROR: Either --ont or --pe must be specified"
+    exit 1
+}
+
 // Declare what we're going to call our reference genome
 ReferenceName = 'JEV'
 
