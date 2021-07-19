@@ -78,25 +78,45 @@ workflow {
 
     // Classify the reads
     raw_reads | read_trimming | read_classification
+
+    // Filter out the non-viral reads
+    read_filtering(read_trimming.out, read_classification.out)
+
+    // _de novo_ assemble the viral reads
+    assembly(read_filtering.out, reference_genome_pull.out) | \
+        contigs_convert_to_fastq
+
+    // // Realign contigs to the reference genome
+    // contigs_realign_to_reference(raw_reads, contigs_convert_to_fastq.out, reference_genome_index_bowtie.out) | \
+    //     contigs_sort_and_index
+
+    // // Put a pretty bow on everything
+    // presentation_generator(reference_genome_index_samtools.out, contigs_sort_and_index.out.collect())
+
+    // raw_reads.view()
+    // raw_reads.flatten().view()
+    raw_reads.flatten().filter{ it =~ /fastq/ }.view()
 }
 
 // Main workflow: will be promoted to ont workflow someday
-workflow ont {
-    // Filter out the non-viral reads
-    read_filtering_ont(raw_reads, read_classification_ont.out) | \
-        assembly_ont | \
-        contigs_convert_to_fastq
+workflow assembly {
+    take:
+    reads
+    ref
 
-    // Realign contigs to the reference genome
-    to_(raw_reads, contigs_convert_to_fastq.out, reference_genome_index_bowtie.out) | \
-        contigs_sort_and_index
+    main:
+    if (params.ont) {
+        assembly_ont(reads)
+        results = assembly_ont.out
+    }
+    else {
+        assembly_pe(reads)
+        assembly_pe_improvement(reads, assembly_pe.out, ref)
+        results = assembly_pe_improvement.out
+    }
 
-    // Put a pretty bow on everything
-    presentation_generator(reference_genome_index_samtools.out, contigs_sort_and_index.out.collect())
-}
-
-workflow pe {
-
+    emit:
+    results
 }
 
 // Get the reference genome
@@ -223,7 +243,7 @@ process read_filtering {
     read2flagout = (params.pe) ? "-o2 ${sampleName}_filtered_R2.fastq" : ''
     """
     extract_kraken_reads.py -k ${krakenFile} \
-        -s ${readsFile} ${read2flagin} \
+        -s ${readsFile[0]} ${read2flagin} \
         -r ${krakenReport} \
         -t ${params.taxIdsToKeep} --include-children \
         --fastq-output \
@@ -286,7 +306,11 @@ process assembly_pe_improvement {
 
     script:
     """
-    improve_assembly -a ${contigs} -f ${readsFiles[0]} -r ${readsFiles[1]} -c ${reference}
+    /opt/Bio_AssemblyImprovement-2021.01.04.08.24.00.726/bin/improve_assembly \
+        -d -a ${contigs} -f ${readsFiles[0]} -r ${readsFiles[1]} -c ${reference} \
+        -s /opt/sspace_basic/SSPACE_Basic.pl \
+        -g /usr/local/bin/GapFiller \
+        -b /usr/local/bin/abacas.pl
     """
 }
 
