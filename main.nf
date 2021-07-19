@@ -86,16 +86,17 @@ workflow {
     assembly(read_filtering.out, reference_genome_pull.out) | \
         contigs_convert_to_fastq
 
-    // // Realign contigs to the reference genome
-    // contigs_realign_to_reference(raw_reads, contigs_convert_to_fastq.out, reference_genome_index_bowtie.out) | \
-    //     contigs_sort_and_index
+    // Realign contigs to the reference genome
+    contigs_realign_to_reference(contigs_convert_to_fastq.out, reference_genome_index_bowtie.out)
 
-    // // Put a pretty bow on everything
-    // presentation_generator(reference_genome_index_samtools.out, contigs_sort_and_index.out.collect())
+    // Realign reads to the reference genome
+    reads_realign_to_reference(raw_reads, reference_genome_index_bowtie.out)
 
-    // raw_reads.view()
-    // raw_reads.flatten().view()
-    raw_reads.flatten().filter{ it =~ /fastq/ }.view()
+    // Make alignments suitable for IGV
+    alignment_sort_and_index(contigs_realign_to_reference.out.concat(reads_realign_to_reference.out))
+
+    // Put a pretty bow on everything
+    presentation_generator(reference_genome_index_samtools.out, alignment_sort_and_index.out.collect())
 }
 
 // Main workflow: will be promoted to ont workflow someday
@@ -248,7 +249,7 @@ process read_filtering {
         -t ${params.taxIdsToKeep} --include-children \
         --fastq-output \
         ${read1flagout} ${read2flagout}
-    gzip ${sampleName}_filtered*.fastq
+    gzip -k ${sampleName}_filtered*.fastq
     """
 }
 
@@ -260,7 +261,7 @@ process assembly_ont {
     tuple val(sampleName), file(readsFile)
 
     output:
-    file("${sampleName}.contigs.fasta")
+    tuple val(sampleName), file("${sampleName}.contigs.fasta")
 
     script:
     """
@@ -287,7 +288,7 @@ process assembly_pe {
     velveth out ${params.kmerLength} -fastq.gz -shortPaired -separate ${readsFiles}
     export OMP_NUM_THREADS=${params.threads}
     export OMP_THREAD_LIMIT=${params.threads}
-    velvetg out -exp_cov auto
+    velvetg out -exp_cov auto -ins_length 260 -min_contig_lgth 200
     cp out/contigs.fa .
     """
 
@@ -302,7 +303,7 @@ process assembly_pe_improvement {
     file(reference)
 
     output:
-    file('scaffolds.scaffolded.gapfilled.length_filtered.sorted.fa')
+    tuple val(sampleName), file('scaffolds.scaffolded.gapfilled.length_filtered.sorted.fa')
 
     script:
     """
@@ -319,14 +320,14 @@ process contigs_convert_to_fastq {
     cpus 1
 
     input:
-    file(contigs)
+    tuple val(sampleName), file(contigs)
 
     output:
-    file("*.fastq.gz")
+    tuple val(sampleName), file("*.fastq.gz")
 
     script:
     """
-    fastx-converter -i ${contigs} -o ${contigs.simpleName}.contigs.fastq.gz
+    fastx-converter -i ${contigs} -o ${sampleName}.contigs.fastq.gz
     """
 }
 
@@ -335,44 +336,62 @@ process contigs_realign_to_reference {
     cpus params.threads
 
     input:
-    tuple val(sampleName), file(readsFile)
-    file(contigs)
+    tuple val(sampleName), file(contigs)
     file(reference)
 
     output:
-    tuple val(sampleName), file("${sampleName}.contigs.sam"), file("${sampleName}.sam")
+    file("${sampleName}.contigs.sam")
 
     script:
     """
     bowtie2 --threads ${params.threads} -x ${ReferenceName} -U ${contigs} > ${sampleName}.contigs.sam
-    bowtie2 --threads ${params.threads} -x ${ReferenceName} -U ${readsFile} > ${sampleName}.sam
     """
 }
 
+process reads_realign_to_reference {
+    cpus params.threads
+
+    input:
+    tuple val(sampleName), file(readsFile)
+    file(reference)
+
+    output:
+    file("${sampleName}.sam")
+
+    script:
+    if (params.pe) {
+        """
+        bowtie2 --threads ${params.threads} -x ${ReferenceName} -1 ${readsFile[0]} -2 ${readsFile[1]} > ${sampleName}.sam
+        """
+    }
+    else {
+        """
+        bowtie2 --threads ${params.threads} -x ${ReferenceName} -U ${readsFile} > ${sampleName}.sam
+        """
+    }
+
+}
+
 // Sort and compress the sam files for visualization
-process contigs_sort_and_index {
+process alignment_sort_and_index {
     cpus 1
 
     input:
-    tuple val(sampleName), file(contigs), file(samfile)
+    file(samfile)
 
     output:
     file("*.{bam,bai}")
 
     script:
+    bamfile = samfile.getName().replace('.sam', '.bam')
     """
     # Convert, sort and index the reads file
     samtools view -S -b ${samfile} > sample.bam
-    samtools sort sample.bam -o ${sampleName}.bam
-    samtools index ${sampleName}.bam
-
-    # Convert, sort, and index the contigs file
-    samtools view -S -b ${contigs} > contigs.bam
-    samtools sort contigs.bam -o ${sampleName}.contigs.bam
-    samtools index ${sampleName}.contigs.bam
+    samtools sort sample.bam -o ${bamfile}
+    samtools index ${bamfile}
 
     # Remove intermediate files
-    rm sample.bam contigs.bam
+    rm sample.bam
     """
 }
 
