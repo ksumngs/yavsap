@@ -133,7 +133,7 @@ process reference_genome_index_samtools {
 }
 
 // Classify reads using Kraken
-process read_classification_ont {
+process read_classification {
     cpus params.threads
 
     input:
@@ -144,10 +144,12 @@ process read_classification_ont {
 
     script:
     quickflag = params.dev ? '--quick' : ''
+    pairedflag = params.pe ? '--paired' : ''
     """
     kraken2 --db ${params.krakenDb} --threads ${params.threads} ${quickflag} \
         --report "${sampleName}.kreport" \
         --output "${sampleName}.kraken" \
+        ${pairedflag} \
         ${readsFile}
     """
 }
