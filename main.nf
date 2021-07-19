@@ -253,6 +253,26 @@ process assembly_ont {
     """
 }
 
+process assembly_pe {
+    cpus params.threads
+
+    input:
+    tuple val(sampleName), file(readsFiles)
+
+    output:
+    file "contigs.fa"
+
+    script:
+    """
+    export OMP_NUM_THREADS=${params.threads}
+    export OMP_THREAD_LIMIT=${params.threads}
+    velveth out ${params.kmerLength} -fastq.gz -shortPaired -separate ${readsFiles}
+    velvetg out -exp_cov auto
+    cp out/contigs.fa .
+    """
+
+}
+
 // Convert the contigs to fastq with dummy read scores for realignment
 process contigs_convert_to_fastq {
     cpus 1
