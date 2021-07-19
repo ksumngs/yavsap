@@ -77,7 +77,7 @@ workflow {
     }
 
     // Classify the reads
-    raw_reads | read_classification
+    raw_reads | read_trimming | read_classification
 }
 
 // Main workflow: will be promoted to ont workflow someday
@@ -143,6 +143,44 @@ process reference_genome_index_samtools {
     cp ${reference} ${ReferenceName}.fasta
     samtools faidx ${ReferenceName}.fasta
     """
+}
+
+// Trim Illumina reads
+process read_trimming {
+    cpus params.threads
+    input:
+    tuple val(sampleName), file(readsFiles)
+
+    output:
+    tuple val(sampleName), file("${sampleName}_trimmed*.fastq.gz")
+
+    script:
+    if (params.ont) {
+        // Bypass this step for nanopore reads
+        """
+        cp ${readsFiles} ${sampleName}_trimmed.fastq.gz
+        """
+    }
+    else {
+        // Put together the trimmomatic parameters
+        ILLUMINACLIP = "ILLUMINACLIP:${params.trimAdapters}:${params.trimMismatches}:${params.trimPclip}:${params.trimClip}"
+        SLIDINGWINDOW = ( params.trimWinsize > 0 && params.trimWinqual > 0 ) ? "SLIDINGWINDOW:${params.trimWinsize}:${params.trimWinqual}" : ""
+        LEADING = ( params.trimLeading > 0 ) ? "LEADING:${params.trimLeading}" : ""
+        TRAILING = ( params.trimTrailing > 0 ) ? "TRAILING:${params.trimTrailing}" : ""
+        CROP = ( params.trimCrop > 0 ) ? "CROP:${params.trimCrop}" : ""
+        HEADCROP = ( params.trimHeadcrop > 0 ) ? "HEADCROP:${params.trimHeadcrop}" : ""
+        MINLEN = ( params.trimMinlen > 0 ) ? "MINLEN:${params.trimMinlen}" : ""
+        trimsteps = ILLUMINACLIP + ' ' + SLIDINGWINDOW + ' ' + LEADING + ' ' + TRAILING + ' ' + CROP + ' ' + HEADCROP + ' ' + MINLEN
+        """
+        trimmomatic PE -threads ${params.threads} \
+            ${readsFiles} \
+            ${sampleName}_trimmed_R1.fastq.gz \
+            /dev/null \
+            ${sampleName}_trimmed_R2.fastq.gz \
+            /dev/null \
+            ${trimsteps}
+        """
+    }
 }
 
 // Classify reads using Kraken
