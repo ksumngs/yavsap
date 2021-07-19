@@ -273,6 +273,23 @@ process assembly_pe {
 
 }
 
+process assembly_pe_improvement {
+    cpus 1
+
+    input:
+    tuple val(sampleName), file(readsFiles)
+    file(contigs)
+    file(reference)
+
+    output:
+    file('scaffolds.scaffolded.gapfilled.length_filtered.sorted.fa')
+
+    script:
+    """
+    improve_assembly -a ${contigs} -f ${readsFiles[0]} -r ${readsFiles[1]} -c ${reference}
+    """
+}
+
 // Convert the contigs to fastq with dummy read scores for realignment
 process contigs_convert_to_fastq {
     cpus 1
