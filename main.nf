@@ -286,7 +286,7 @@ process assembly_pe {
     script:
     """
     velveth out ${params.kmerLength} -fastq.gz -shortPaired -separate ${readsFiles}
-    velvetg out -exp_cov auto -ins_length 260 -min_contig_lgth 200
+    velvetg out -exp_cov auto -ins_length ${params.velvetInsLength} -min_contig_lgth ${params.velvetMinContigLen}
     cp out/contigs.fa .
     """
 
