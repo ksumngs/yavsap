@@ -275,7 +275,7 @@ process assembly_ont {
 }
 
 process assembly_pe {
-    cpus params.threads
+    cpus 1
 
     input:
     tuple val(sampleName), file(readsFiles)
@@ -286,8 +286,6 @@ process assembly_pe {
     script:
     """
     velveth out ${params.kmerLength} -fastq.gz -shortPaired -separate ${readsFiles}
-    export OMP_NUM_THREADS=${params.threads}
-    export OMP_THREAD_LIMIT=${params.threads}
     velvetg out -exp_cov auto -ins_length 260 -min_contig_lgth 200
     cp out/contigs.fa .
     """
