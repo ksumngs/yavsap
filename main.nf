@@ -112,8 +112,7 @@ workflow assembly {
     }
     else {
         assembly_pe(reads)
-        assembly_pe_improvement(reads, assembly_pe.out, ref)
-        results = assembly_pe_improvement.out
+        results = assembly_pe.out
     }
 
     emit:
@@ -275,42 +274,20 @@ process assembly_ont {
 }
 
 process assembly_pe {
-    cpus 1
+    cpus params.threads
 
     input:
     tuple val(sampleName), file(readsFiles)
 
     output:
-    file "contigs.fa"
+    tuple val(sampleName), file("contigs.fasta")
 
     script:
     """
-    velveth out ${params.kmerLength} -fastq.gz -shortPaired -separate ${readsFiles}
-    velvetg out -exp_cov auto -ins_length ${params.velvetInsLength} -min_contig_lgth ${params.velvetMinContigLen} -scaffolding yes
-    cp out/contigs.fa .
+    rnaviralspades.py -o out -1 ${readsFiles[0]} -2 ${readsFiles[1]} -t ${params.threads}
+    cp out/contigs.fasta .
     """
 
-}
-
-process assembly_pe_improvement {
-    cpus 1
-
-    input:
-    tuple val(sampleName), file(readsFiles)
-    file(contigs)
-    file(reference)
-
-    output:
-    tuple val(sampleName), file('scaffolds.scaffolded.gapfilled.length_filtered.sorted.fa')
-
-    script:
-    """
-    /opt/Bio_AssemblyImprovement-2021.01.04.08.24.00.726/bin/improve_assembly \
-        -d -a ${contigs} -f ${readsFiles[0]} -r ${readsFiles[1]} -c ${reference} \
-        -s /opt/sspace_basic/SSPACE_Basic.pl \
-        -g /usr/local/bin/GapFiller \
-        -b /usr/local/bin/abacas.pl
-    """
 }
 
 // Convert the contigs to fastq with dummy read scores for realignment
