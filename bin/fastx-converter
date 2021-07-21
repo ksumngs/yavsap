@@ -19,6 +19,10 @@ argsettings = ArgParseSettings()
         required = true
         arg_type = String
         nargs    = 1
+    "--in2","-n"
+        help     = "second file to be interleaved"
+        arg_type = String
+        nargs    = 1
     "--out","-o"
         help     = "file(s) to write to"
         required = true
@@ -35,6 +39,7 @@ args = parse_args(argsettings)
 
 # Split the arguments into individual variables
 inputfile    = join.(strip.(args["in"]))
+inputfile2   = join.(strip.(args["in2"]))
 outputfile   = join.(strip.(args["out"]))
 interleave   = args["interleave"]
 deinterleave = args["deinterleave"]
@@ -46,7 +51,7 @@ if interleave && deinterleave
 end
 
 # Check that we have two input files if interleaving
-if interleave && length(inputfile) != 2
+if interleave && length(inputfile2) < 1
     println("two input files must be provided when using --interleave")
     exit(1)
 end
@@ -55,6 +60,11 @@ end
 if deinterleave && length(outputfile) != 2
     println("two output files must be provided when using --deinterleave")
     exit(1)
+end
+
+# Combine the input file arguments if we are interleaving
+if interleave
+    inputfile = [inputfile[1], inputfile2[1]]
 end
 
 function reader(filename, type, stream)
