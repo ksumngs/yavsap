@@ -92,6 +92,9 @@ workflow {
     // Realign reads to the reference genome
     reads_realign_to_reference(raw_reads, reference_genome_index_bowtie.out)
 
+    // Call variants
+    variants_calling(reads_realign_to_reference.out, reference_genome_index_samtools.out)
+
     // Make alignments suitable for IGV
     alignment_sort_and_index(contigs_realign_to_reference.out.concat(reads_realign_to_reference.out))
 
@@ -367,6 +370,28 @@ process alignment_sort_and_index {
 
     # Remove intermediate files
     rm sample.bam
+    """
+}
+
+process variants_calling {
+    cpus 1
+
+    publishDir OutFolder, mode: 'copy'
+
+    input:
+    file(bamfile)
+    file(reference)
+
+    output:
+    file("*.{bcf,tsv}")
+
+    script:
+    // We have to refer to the first file in each of the inputs b/c they are tuples
+    // containing the required index files as well
+    prefix = bamfile[0].getName().replace('.bam', '')
+    """
+    samtools mpileup -aa -A -B -Q 0 --reference ${reference[0]} ${bamfile[0]} > ${prefix}.bcf
+    ivar variants -p ${prefix} -r ${reference[0]} < ${prefix}.bcf
     """
 }
 
