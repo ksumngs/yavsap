@@ -90,7 +90,7 @@ workflow {
     contigs_realign_to_reference(contigs_convert_to_fastq.out, reference_genome_index_bowtie.out)
 
     // Realign reads to the reference genome
-    reads_realign_to_reference(raw_reads, reference_genome_index_bowtie.out)
+    reads_realign_to_reference(read_filtering.out, reference_genome_index_bowtie.out)
 
     // Make alignments suitable for IGV
     alignment_sort_and_index(reads_realign_to_reference.out.concat(contigs_realign_to_reference.out))
