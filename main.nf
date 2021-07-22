@@ -92,11 +92,11 @@ workflow {
     // Realign reads to the reference genome
     reads_realign_to_reference(raw_reads, reference_genome_index_bowtie.out)
 
-    // Call variants
-    variants_calling(alignment_sort_and_index(contigs_realign_to_reference.out), reference_genome_index_samtools.out)
-
     // Make alignments suitable for IGV
     alignment_sort_and_index(contigs_realign_to_reference.out.concat(reads_realign_to_reference.out))
+
+    // Call variants
+    variants_calling(alignment_sort_and_index.out, reference_genome_index_samtools.out)
 
     // Put a pretty bow on everything
     presentation_generator(reference_genome_index_samtools.out, alignment_sort_and_index.out.collect())
