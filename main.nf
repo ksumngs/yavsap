@@ -93,7 +93,7 @@ workflow {
     reads_realign_to_reference(raw_reads, reference_genome_index_bowtie.out)
 
     // Call variants
-    variants_calling(reads_realign_to_reference.out, reference_genome_index_samtools.out)
+    variants_calling(alignment_sort_and_index(contigs_realign_to_reference.out), reference_genome_index_samtools.out)
 
     // Make alignments suitable for IGV
     alignment_sort_and_index(contigs_realign_to_reference.out.concat(reads_realign_to_reference.out))
