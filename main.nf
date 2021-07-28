@@ -61,7 +61,10 @@ else {
 
 workflow {
     // Pull and index the reference genome of choice
-    reference_genome_pull | (reference_genome_index_bowtie & reference_genome_index_samtools)
+    reference_genome_pull_fasta | (reference_genome_index_bowtie & reference_genome_index_samtools)
+
+    // Pull and annotate the reference genome of choice
+    reference_genome_pull_genbank | reference_genome_annotate
 
     // Bring in the reads files
     if (params.ont) {
@@ -83,7 +86,7 @@ workflow {
     read_filtering(read_trimming.out, read_classification.out)
 
     // _de novo_ assemble the viral reads
-    assembly(read_filtering.out, reference_genome_pull.out) | \
+    assembly(read_filtering.out, reference_genome_pull_fasta.out) | \
         contigs_convert_to_fastq
 
     // Realign contigs to the reference genome
@@ -122,8 +125,8 @@ workflow assembly {
     results
 }
 
-// Get the reference genome
-process reference_genome_pull {
+// Get the reference genome in FASTA format
+process reference_genome_pull_fasta {
     cpus 1
 
     output:
@@ -135,7 +138,20 @@ process reference_genome_pull {
     """
 }
 
-// Index the reference genome
+// Get the reference genome in GenBank format
+process reference_genome_pull_genbank {
+    cpus 1
+
+    output:
+    file '*'
+
+    script:
+    """
+    efetch -db nucleotide -id ${params.genomeId} -format gb > reference.gb
+    """
+}
+
+// Index the reference genome for use with Bowtie2
 process reference_genome_index_bowtie {
     cpus params.threads
 
@@ -151,6 +167,7 @@ process reference_genome_index_bowtie {
     """
 }
 
+// Index the reference genome for use with Samtools
 process reference_genome_index_samtools {
     cpus 1
 
@@ -165,6 +182,22 @@ process reference_genome_index_samtools {
     # Create a reference genome index
     cp ${reference} ${ReferenceName}.fasta
     samtools faidx ${ReferenceName}.fasta
+    """
+}
+
+// Process the reference genome's feature table into GFF format
+process reference_genome_annotate {
+    cpus 1
+
+    input:
+    file(reference)
+
+    output:
+    file "${ReferenceName}.gff"
+
+    script:
+    """
+    seqret -sequence ${reference} -sformat1 genbank -feature -outseq ${ReferenceName}.gff -osformat gff -auto
     """
 }
 
