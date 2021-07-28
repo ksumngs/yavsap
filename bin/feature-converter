@@ -1,0 +1,104 @@
+#!/bin/bash
+#=
+julia --project="$(realpath "$(dirname "${BASH_SOURCE[0]}")")" -e 'using Pkg; Pkg.instantiate()'
+exec julia --project="$(realpath "$(dirname "${BASH_SOURCE[0]}")")" "${BASH_SOURCE[0]}" "$@"
+=#
+
+using BioServices.EUtils
+using EzXML
+using GFF3
+import Unicode:ispunct
+
+ncbi_id = ARGS[1]
+filename = ARGS[2]
+
+record = efetch(db="nucleotide", rettype="gb", id=ncbi_id, retmode="xml")
+doc = parsexml(record.body)
+features = findall("GBSet/GBSeq/GBSeq_feature-table/GBFeature", doc)
+accession = nodecontent(findfirst("GBSet/GBSeq/GBSeq_accession-version", doc))
+
+writer = GFF3.Writer(open(filename, "w"))
+
+for feat in features
+
+    type = nodecontent(findfirst("GBFeature_key", feat))
+    from = nodecontent(findfirst("GBFeature_intervals/GBInterval/GBInterval_from", feat))
+    to   = nodecontent(findfirst("GBFeature_intervals/GBInterval/GBInterval_to", feat))
+    cstart = "."
+    id   = string("id-", accession, ":", from, "..", to)
+    xref = ""
+    name = ""
+    note = ""
+
+    qualifiers = findall("GBFeature_quals/GBQualifier", feat)
+
+    for nd in qualifiers
+        nodename  = nodecontent(findfirst("GBQualifier_name", nd))
+        nodevalue = nodecontent(findfirst("GBQualifier_value", nd))
+
+        if type == "CDS"
+            if nodename == "codon_start"
+                cstart = nodevalue
+            elseif nodename == "protein_id"
+                id = string("cds-", nodevalue)
+                name = nodevalue
+            end
+        elseif type == "gene"
+            if nodename == "locus_tag"
+                id = string("gene-", nodevalue)
+                name = nodevalue
+            end
+        elseif type == "mat_peptide"
+            if nodename == "protein_id"
+                id = string("peptide-", nodevalue)
+                name = nodevalue
+            end
+        end
+
+        if nodename == "db_xref"
+            xref = nodevalue
+        end
+
+        if nodename == "note"
+            note = nodevalue
+        end
+    end
+
+    if occursin("UTR", type)
+        id = type
+        name = type
+    end
+
+    if length(note) > 1
+        note = filter(!ispunct, note)
+    end
+
+    attributes=string(
+        "ID=", id,
+        ";Dbxref=", xref,
+        ";Name=", name,
+        ";Note=", note
+    )
+
+
+    gffrecordstring = string(
+        accession, "\t",
+        "RefSeq", "\t",
+        type, "\t",
+        from, "\t",
+        to, "\t",
+        ".", "\t",
+        "+", "\t",
+        cstart, "\t",
+        attributes)
+
+
+
+    println("🔬: ", gffrecordstring)
+
+    gffrecord = GFF3.Record(gffrecordstring)
+    write(writer, gffrecord)
+
+end
+
+close(writer)
