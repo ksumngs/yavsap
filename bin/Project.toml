@@ -1,8 +1,5 @@
 [deps]
 ArgParse = "c7e460c6-2fb9-53a9-8c5b-16f535851c63"
-BioServices = "a0d4ced5-b29c-5395-b614-ca030a679c4b"
 CodecZlib = "944b1d66-785c-5afd-91f1-9de20f533193"
-EzXML = "8f5d6c58-4d21-5cfd-889c-e3ad7ee6a615"
 FASTX = "c2308a5c-f048-11e8-3e8a-31650f418d12"
-GFF3 = "af1dc308-cb6b-11e8-32f0-31192efa90f6"
 TranscodingStreams = "3bb67fe8-82b1-5028-8e26-92a6c54297fa"
