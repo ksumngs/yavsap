@@ -99,7 +99,7 @@ workflow {
     alignment_sort_and_index(reads_realign_to_reference.out.concat(contigs_realign_to_reference.out))
 
     // Call variants
-    variants_calling(alignment_sort_and_index.out, reference_genome_index_samtools.out)
+    variants_calling(alignment_sort_and_index.out, reference_genome_index_samtools.out, reference_genome_annotate.out)
 
     // Put a pretty bow on everything
     presentation_generator(reference_genome_index_samtools.out, alignment_sort_and_index.out.collect())
@@ -414,6 +414,7 @@ process variants_calling {
     input:
     file(bamfile)
     file(reference)
+    file(annotations)
 
     output:
     file("*.{bcf,tsv}")
@@ -424,7 +425,7 @@ process variants_calling {
     prefix = bamfile[0].getName().replace('.bam', '')
     """
     samtools mpileup -aa -A -B -Q 0 --reference ${reference[0]} ${bamfile[0]} > ${prefix}.bcf
-    ivar variants -p ${prefix} -r ${reference[0]} < ${prefix}.bcf
+    ivar variants -p ${prefix} -r ${reference[0]} -g ${annotations} < ${prefix}.bcf
     """
 }
 
