@@ -101,6 +101,9 @@ workflow {
     // Call variants
     variants_calling(alignment_sort_and_index.out, reference_genome_index_samtools.out, reference_genome_annotate.out)
 
+    // Sanity-check those variants
+    multimutation_search(alignment_sort_and_index.out, variants_calling.out)
+
     // Put a pretty bow on everything
     presentation_generator(reference_genome_index_samtools.out, alignment_sort_and_index.out.collect())
 }
@@ -427,6 +430,28 @@ process variants_calling {
     """
     samtools mpileup -aa -A -B -Q 0 --reference ${reference[0]} ${bamfile[0]} > ${prefix}.mpileup
     ivar variants -p ${prefix} -r ${reference[0]} -g ${annotations} < ${prefix}.mpileup
+    """
+}
+
+// At some point, we will need to use long reads to find if mutations are linked within
+// a single viral genome. To start, we will look to see if there are reads that contain more
+// than one mutation in them as called by ivar
+process multimutation_search {
+    cpus 1
+
+    publishDir OutFolder, mode: 'copy'
+
+    input:
+    file(bamfile)
+    file(variants)
+
+    output:
+    file("*.varreport")
+
+    script:
+    prefix = bamfile[0].getName().replace('.bam', '')
+    """
+    find-variant-reads ${bamfile[0]} ${variants} > ${prefix}.varreport
     """
 }
 

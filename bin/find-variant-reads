@@ -1,0 +1,54 @@
+#!/bin/bash
+#=
+julia --project="$(realpath "$(dirname "${BASH_SOURCE[0]}")")" -e 'using Pkg; Pkg.instantiate()'
+exec julia --project="$(realpath "$(dirname "${BASH_SOURCE[0]}")")" "${BASH_SOURCE[0]}" "$@"
+=#
+# Searches for variant calls that can be verified using long NGS reads
+
+# Import packages
+using CSV
+using DataFrames
+using XAM
+using Combinatorics
+
+# Parse the arguments
+bamfile = ARGS[1]
+varfile = ARGS[2]
+
+# Read in the variant calls
+snps = DataFrame(CSV.File(varfile))
+
+# IVar calls weird things, so we will only consider variants that have a p-value of less
+# than 10^-5 and a frequency greater than 20%
+filter!(:PVAL => p -> p < 1e-5, snps)
+filter!(:ALT_FREQ => f -> f > 0.2, snps)
+
+# Find all possible pairings of these variants
+snpcombos = collect(combinations(snps.POS,2))
+
+# Read in the NGS reads
+reader = open(BAM.Reader, bamfile)
+
+# Check every NGS read
+for record in reader
+    # Ignore if this read isn't even mapped to the reference
+    if BAM.ismapped(record)
+
+        # Find the read's position on the reference
+        pos1 = BAM.position(record)
+        pos2 = BAM.rightposition(record)
+
+        # Check if any variant combo falls within this range
+        for i in snpcombos
+            snp1 = i[1]
+            snp2 = i[2]
+            if snp1 in pos1:pos2 && snp2 in pos1:pos2
+                # Success! Print out a listing of the matching read and variants
+                println("POS", snp1, ",", snp2, " ", BAM.tempname(record), ":", pos1, ":", pos2)
+            end
+        end
+    end
+end
+
+# Clean up after ourselves
+close(reader)
