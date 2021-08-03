@@ -418,15 +418,15 @@ process variants_calling {
     file(annotations)
 
     output:
-    file("*.{bcf,tsv}")
+    file("*.{mpileup,tsv}")
 
     script:
     // We have to refer to the first file in each of the inputs b/c they are tuples
     // containing the required index files as well
     prefix = bamfile[0].getName().replace('.bam', '')
     """
-    samtools mpileup -aa -A -B -Q 0 --reference ${reference[0]} ${bamfile[0]} > ${prefix}.bcf
-    ivar variants -p ${prefix} -r ${reference[0]} -g ${annotations} < ${prefix}.bcf
+    samtools mpileup -aa -A -B -Q 0 --reference ${reference[0]} ${bamfile[0]} > ${prefix}.mpileup
+    ivar variants -p ${prefix} -r ${reference[0]} -g ${annotations} < ${prefix}.mpileup
     """
 }
 
