@@ -451,7 +451,7 @@ process multimutation_search {
     script:
     prefix = bamfile[0].getName().replace('.bam', '')
     """
-    find-variant-reads ${bamfile[0]} ${variants} > ${prefix}.varreport
+    find-variant-reads ${bamfile[0]} ${variants[1]} > ${prefix}.varreport
     """
 }
 
