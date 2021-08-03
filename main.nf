@@ -195,10 +195,11 @@ process reference_genome_annotate {
     output:
     file "${ReferenceName}.gff"
 
-    script:
-    """
-    seqret -sequence ${reference} -sformat1 genbank -feature -outseq ${ReferenceName}.gff -osformat gff -auto
-    """
+    shell:
+    '''
+    seqret -sequence !{reference} -sformat1 genbank -feature -outseq ref.gff -osformat gff -auto
+    head -n $(($(grep -n '##FASTA' ref.gff | cut -d : -f 1) - 1)) ref.gff > !{ReferenceName}.gff
+    '''
 }
 
 // Trim Illumina reads
