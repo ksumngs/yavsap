@@ -10,6 +10,71 @@ using CSV
 using DataFrames
 using XAM
 using Combinatorics
+using BioSymbols
+
+# Declare a Cigar string type
+struct CigarPos
+    operator::Symbol
+    position::Int
+end
+
+function sequencebase(record::BAM.Record, pos::Int)
+    # Pull the cigar string from this record
+    cigar = BAM.cigar(record)
+
+    # Count the bases starting with blank
+    global count = ""
+
+    # Put the cigar records into an array of cigar types
+    cigars = []
+    for i in 1:length(cigar)
+        if isletter(cigar[i])
+            # This contains an instruction:
+            #  1. Combine the current counts and the instruction
+            newcig = CigarPos(Symbol(cigar[i]), parse(Int, count))
+            #  2. Add the new cigar to the array
+            push!(cigars, newcig)
+            #  3. Reset the count to be empty
+            count = ""
+        elseif isnumeric(cigar[i])
+            # Add the numeric character to the count
+            count = string(count, cigar[i])
+        end
+    end
+
+    # Make an array with the sequence indexes of the reference
+    seq = zeros(Int, BAM.reflen(record))
+
+    # Declare a global iterator variable representing the reference position
+    global n = BAM.position(record)
+
+    # Loop progressively through cigars and reference positions
+    for cig in cigars
+        for i in 1:cig.position
+            # Get the position of the last aligned base
+            lastrecord = length(seq[seq .!= 0]) > 0 ? last(seq[seq .!= 0]) : 0
+            if cig.operator in [:M, :X]
+                # Match/mismatch = 1:1 ratio
+                seq[n] = lastrecord + 1
+            elseif cig.operator == :I
+                # Insert = 2:1 sequence:reference ratio
+                seq[n] = lastrecord + 2
+            elseif cig.operator in [:D, :N]
+                # Deletion/gap => 0 indicates no match
+                seq[n] = 0
+            end
+        n = n + 1
+        end
+    end
+
+    # If seq is 0 at the position, that means there was a gap in the alignment
+    if seq[pos] == 0
+        return DNA_Gap
+    end
+
+    # Otherwise, return the base at the position
+    return BAM.sequence(record)[seq[pos]]
+end
 
 # Parse the arguments
 bamfile = ARGS[1]
@@ -26,29 +91,46 @@ filter!(:ALT_FREQ => f -> f > 0.2, snps)
 # Find all possible pairings of these variants
 snpcombos = collect(combinations(snps.POS,2))
 
-# Read in the NGS reads
-reader = open(BAM.Reader, bamfile)
+# Find the reads that match every possible combo
+for (var1loc, var2loc) in snpcombos
+    # Find the reference and variant basecalls
+    var1 = snps[snps.POS .== var1loc, :]
+    var2 = snps[snps.POS .== var2loc, :]
+    loc1ref = convert(DNA, only(var1.REF[1]))
+    loc2ref = convert(DNA, only(var2.REF[1]))
+    loc1alt = convert(DNA, only(var1.ALT[1]))
+    loc2alt = convert(DNA, only(var2.ALT[1]))
 
-# Check every NGS read
-for record in reader
-    # Ignore if this read isn't even mapped to the reference
-    if BAM.ismapped(record)
+    # Set up variant combo counts
+    ref_ref = 0
+    ref_alt = 0
+    alt_ref = 0
+    alt_alt = 0
 
-        # Find the read's position on the reference
-        pos1 = BAM.position(record)
-        pos2 = BAM.rightposition(record)
+    # Import reads from the BAM file
+    reader = open(BAM.Reader, bamfile)
 
-        # Check if any variant combo falls within this range
-        for i in snpcombos
-            snp1 = i[1]
-            snp2 = i[2]
-            if snp1 in pos1:pos2 && snp2 in pos1:pos2
-                # Success! Print out a listing of the matching read and variants
-                println("POS", snp1, ",", snp2, " ", BAM.tempname(record), ":", pos1, ":", pos2)
+    # Check every NGS read
+    for record in reader
+        # Skip the record if it is not aligned
+        if BAM.ismapped(record)
+            # Find the read's position on the reference
+            readspan = BAM.position(record):BAM.rightposition(record)
+
+            # Check if this read flanks the variants
+            if var1loc in readspan && var2loc in readspan
+                # Find this read's basecalls for both locations
+                loc1base = sequencebase(record, var1loc)
+                loc2base = sequencebase(record, var2loc)
+
+                # Print out the intermediate results
+                println(BAM.tempname(record), ":")
+                println("    ", var1loc, ",", var2loc, " REF1:", loc1ref, " REF2:", loc2ref, " ALT1:", loc1alt, " ALT2:", loc2alt, " READ1:", loc1base, " READ2:", loc2base)
             end
         end
-    end
-end
 
-# Clean up after ourselves
-close(reader)
+    end
+
+    close(reader)
+
+end
