@@ -85,6 +85,10 @@ workflow {
     // Filter out the non-viral reads
     read_filtering(read_trimming.out, read_classification.out)
 
+    // Realign reads to the reference genome
+    reads_realign_to_reference(read_filtering.out, reference_genome_index_bowtie.out)
+
+    /*
     // _de novo_ assemble the viral reads
     assembly(read_filtering.out, reference_genome_pull_fasta.out) | \
         contigs_convert_to_fastq
@@ -92,11 +96,12 @@ workflow {
     // Realign contigs to the reference genome
     contigs_realign_to_reference(contigs_convert_to_fastq.out, reference_genome_index_bowtie.out)
 
-    // Realign reads to the reference genome
-    reads_realign_to_reference(read_filtering.out, reference_genome_index_bowtie.out)
-
     // Make alignments suitable for IGV
     alignment_sort_and_index(reads_realign_to_reference.out.concat(contigs_realign_to_reference.out))
+    */
+
+    // Make alignments suitable for IGV
+    alignment_sort_and_index(reads_realign_to_reference.out)
 
     // Call variants
     variants_calling(alignment_sort_and_index.out, reference_genome_index_samtools.out, reference_genome_annotate.out)
