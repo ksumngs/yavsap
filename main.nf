@@ -102,7 +102,7 @@ workflow {
     variants_calling(alignment_sort_and_index.out, reference_genome_index_samtools.out, reference_genome_annotate.out)
 
     // Sanity-check those variants
-    multimutation_search(alignment_sort_and_index.out, variants_calling.out)
+    multimutation_search(alignment_sort_and_index.out, variants_calling.out, reference_genome_pull_fasta.out)
 
     // Put a pretty bow on everything
     presentation_generator(reference_genome_index_samtools.out, alignment_sort_and_index.out.collect())
@@ -444,6 +444,7 @@ process multimutation_search {
     input:
     file(bamfile)
     file(variants)
+    file(reference)
 
     output:
     file("*.varreport")
@@ -451,7 +452,7 @@ process multimutation_search {
     script:
     prefix = bamfile[0].getName().replace('.bam', '')
     """
-    find-variant-reads ${bamfile[0]} ${variants[1]} > ${prefix}.varreport
+    find-variant-reads ${bamfile[0]} ${variants[1]} ${reference} > ${prefix}.varreport
     """
 }
 
