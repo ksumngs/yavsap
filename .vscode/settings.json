@@ -1,6 +1,8 @@
 {
     "cSpell.words": [
-        "FASTX"
+        "FASTX",
+        "baifile"
     ],
-    "julia.environmentPath": "/home/tchristensen/src/jev-analysis-pipeline/bin"
+    "julia.environmentPath": "/home/tchristensen/src/jev-analysis-pipeline/bin",
+    "python.pythonPath": "/home/tchristensen/miniconda3/envs/jev-analysis-pipeline/bin/python"
 }
