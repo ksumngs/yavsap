@@ -342,7 +342,7 @@ process contigs_convert_to_fastq {
 
     script:
     """
-    fastx-converter -i ${contigs} -o ${sampleName}.contigs.fastq.gz
+    seqtk seq -F '~' ${contigs} | gzip > ${sampleName}.contigs.fastq.gz
     """
 }
 
