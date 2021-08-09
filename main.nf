@@ -105,9 +105,12 @@ workflow {
 
     // Call variants
     variants_calling_ivar(alignment_sort_and_index.out, reference_genome_index_samtools.out, reference_genome_annotate.out)
+    variants_calling_varscan(alignment_sort_and_index.out, reference_genome_index_samtools.out)
 
+    /*
     // Sanity-check those variants
     multimutation_search(alignment_sort_and_index.out, variants_calling.out, reference_genome_pull_fasta.out)
+    */
 
     // Put a pretty bow on everything
     presentation_generator(reference_genome_index_samtools.out, alignment_sort_and_index.out.collect())
@@ -435,6 +438,26 @@ process variants_calling_ivar {
     """
     samtools mpileup -aa -A -B -Q 0 --reference ${reference[0]} ${bamfile[0]} > ${prefix}.mpileup
     ivar variants -p ${prefix}.ivar -r ${reference[0]} -g ${annotations} < ${prefix}.mpileup
+    """
+}
+
+variants_calling_varscan {
+    cpus 1
+
+    publishDir OutFolder, mode: 'copy'
+
+    input:
+    file(bamfile)
+    file(reference)
+
+    output:
+    file("*.varscan.tsv")
+
+    script:
+    prefix = bamfile[0].getName().replace('.bam', '')
+    """
+    samtools mpileup -aa -A -B -Q 0 --reference ${reference[0]} ${bamfile[0]} > ${prefix}.mpileup
+    varscan pileup2snp ${prefix}.mpileup --p-value 1e-5 > ${prefix}.varscan.tsv
     """
 }
 
