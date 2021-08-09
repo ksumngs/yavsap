@@ -107,6 +107,7 @@ workflow {
     variants_calling_ivar(alignment_sort_and_index.out, reference_genome_index_samtools.out, reference_genome_annotate.out)
     variants_calling_varscan(alignment_sort_and_index.out, reference_genome_index_samtools.out)
     variants_calling_lofreq(alignment_sort_and_index.out, reference_genome_index_samtools.out)
+    variants_calling_bcftools(alignment_sort_and_index.out, reference_genome_index_samtools.out)
 
     /*
     // Sanity-check those variants
@@ -478,6 +479,25 @@ variants_calling_lofreq {
     prefix = bamfile[0].getName().replace('.bam', '')
     """
     lofreq call-parallel --pp-threads ${params.threads} --f ${reference[0]} -o ${prefix}.lofreq.vcf ${bamfile[0]}
+    """
+}
+
+variants_calling_bcftools {
+    cpus 1
+
+    publishDir OutFolder, mode: 'copy'
+
+    input:
+    file(bamfile)
+    file(reference)
+
+    output:
+    file("*.raw.vcf")
+
+    script:
+    prefix = bamfile[0].getName().replace('.bam', '')
+    """
+    bcftools mpileup -f ${reference[0]} ${bamfile[0]} | bcftools call -mv --ploidy 1 > ${prefix}.raw.vcf
     """
 }
 
