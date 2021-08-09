@@ -501,6 +501,32 @@ variants_calling_bcftools {
     """
 }
 
+variants_calling_snippy {
+    cpus params.threads
+
+    publishDir OutFolder, mode: 'copy'
+
+    input:
+    tuple val(sampleName), file(readsFile)
+    file(annotatedReference)
+
+    output:
+    file("*.snippy.vcf")
+
+    script:
+    if (params.pe) {
+        readsFlag = "--R1 ${readsFile[0]} --R2 ${readsFile[1]}"
+    }
+    else {
+        readsFlag = "--se ${readsFile[0]}"
+    }
+    """
+    snippy --cpus ${params.threads} --outdir out --ref ${annotatedReference} ${readsFlag}
+    cp out/snps.vcf ./${sampleName}.snippy.vcf
+    """
+
+}
+
 // At some point, we will need to use long reads to find if mutations are linked within
 // a single viral genome. To start, we will look to see if there are reads that contain more
 // than one mutation in them as called by ivar
