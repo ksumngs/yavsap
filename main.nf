@@ -479,9 +479,6 @@ process variants_calling_lofreq {
     script:
     prefix = bamfile[0].getName().replace('.bam', '')
     """
-    # lofreq can't follow symlinks for the index, so regenerate it
-    rm *.fai
-    lofreq faidx ${reference[0]}
     lofreq call-parallel --pp-threads ${params.threads} --f ${reference[0]} -o ${prefix}.lofreq.vcf ${bamfile[0]}
     """
 }
