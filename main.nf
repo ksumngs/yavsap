@@ -482,10 +482,7 @@ process variants_calling_lofreq {
     prefix = bamfile[0].getName().replace('.bam', '')
     refname = reference[0].getName().replace('.fasta', '')
     """
-    rm *.fai
-    lofreq faidx ${reference[0]}
-    cp *.fai ${refname}.fai
-    lofreq call-parallel --pp-threads ${params.threads} --f ${reference[0]} -o ${prefix}.lofreq.vcf ${bamfile[0]}
+    lofreq call-parallel --pp-threads ${params.threads} -f ${reference[0]} -o ${prefix}.lofreq.vcf ${bamfile[0]}
     """
 }
 
