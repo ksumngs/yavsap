@@ -426,15 +426,15 @@ process variants_calling_ivar {
     file(annotations)
 
     output:
-    file("*.ivar.{mpileup,tsv}")
+    file("*.ivar.tsv")
 
     script:
     // We have to refer to the first file in each of the inputs b/c they are tuples
     // containing the required index files as well
     prefix = bamfile[0].getName().replace('.bam', '')
     """
-    samtools mpileup -aa -A -B -Q 0 --reference ${reference[0]} ${bamfile[0]} > ${prefix}.ivar.mpileup
-    ivar variants -p ${prefix}.ivar -r ${reference[0]} -g ${annotations} < ${prefix}.ivar.mpileup
+    samtools mpileup -aa -A -B -Q 0 --reference ${reference[0]} ${bamfile[0]} > ${prefix}.mpileup
+    ivar variants -p ${prefix}.ivar -r ${reference[0]} -g ${annotations} < ${prefix}.mpileup
     """
 }
 
