@@ -467,6 +467,8 @@ process variants_calling_varscan {
 process variants_calling_lofreq {
     cpus params.threads
 
+    conda "${workflow.projectDir}/lofreq.yml"
+
     publishDir OutFolder, mode: 'copy'
 
     input:
