@@ -104,7 +104,7 @@ workflow {
     alignment_sort_and_index(reads_realign_to_reference.out)
 
     // Call variants
-    variants_calling(alignment_sort_and_index.out, reference_genome_index_samtools.out, reference_genome_annotate.out)
+    variants_calling_ivar(alignment_sort_and_index.out, reference_genome_index_samtools.out, reference_genome_annotate.out)
 
     // Sanity-check those variants
     multimutation_search(alignment_sort_and_index.out, variants_calling.out, reference_genome_pull_fasta.out)
@@ -415,7 +415,7 @@ process alignment_sort_and_index {
     """
 }
 
-process variants_calling {
+process variants_calling_ivar {
     cpus 1
 
     publishDir OutFolder, mode: 'copy'
@@ -426,15 +426,15 @@ process variants_calling {
     file(annotations)
 
     output:
-    file("*.{mpileup,tsv}")
+    file("*.ivar.{mpileup,tsv}")
 
     script:
     // We have to refer to the first file in each of the inputs b/c they are tuples
     // containing the required index files as well
     prefix = bamfile[0].getName().replace('.bam', '')
     """
-    samtools mpileup -aa -A -B -Q 0 --reference ${reference[0]} ${bamfile[0]} > ${prefix}.mpileup
-    ivar variants -p ${prefix} -r ${reference[0]} -g ${annotations} < ${prefix}.mpileup
+    samtools mpileup -aa -A -B -Q 0 --reference ${reference[0]} ${bamfile[0]} > ${prefix}.ivar.mpileup
+    ivar variants -p ${prefix}.ivar -r ${reference[0]} -g ${annotations} < ${prefix}.ivar.mpileup
     """
 }
 
