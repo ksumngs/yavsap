@@ -444,7 +444,7 @@ process variants_calling_ivar {
     """
 }
 
-variants_calling_varscan {
+process variants_calling_varscan {
     cpus 1
 
     publishDir OutFolder, mode: 'copy'
@@ -464,7 +464,7 @@ variants_calling_varscan {
     """
 }
 
-variants_calling_lofreq {
+process variants_calling_lofreq {
     cpus params.threads
 
     publishDir OutFolder, mode: 'copy'
@@ -483,7 +483,7 @@ variants_calling_lofreq {
     """
 }
 
-variants_calling_bcftools {
+process variants_calling_bcftools {
     cpus 1
 
     publishDir OutFolder, mode: 'copy'
@@ -502,7 +502,7 @@ variants_calling_bcftools {
     """
 }
 
-variants_calling_snippy {
+process variants_calling_snippy {
     cpus params.threads
 
     publishDir OutFolder, mode: 'copy'
