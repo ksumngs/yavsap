@@ -531,6 +531,28 @@ process variants_calling_snippy {
 
 }
 
+process variants_calling_sniffles {
+    cpus 1
+
+    publishDir OutFolder, mode: 'copy'
+
+    // Sniffles can be finicky in how the BAM files are formated, so ignore if it throws an error
+    errorStrategy 'ignore'
+
+    input:
+    file(bamfile)
+
+    output:
+    file("*.sniffles.vcf")
+
+    script:
+    prefix = bamfile[0].getName().replace('.bam', '')
+    """
+    sniffles -m ${bamfile[0]} -v ${prefix}.sniffles.vcf
+    """
+
+}
+
 // At some point, we will need to use long reads to find if mutations are linked within
 // a single viral genome. To start, we will look to see if there are reads that contain more
 // than one mutation in them as called by ivar
