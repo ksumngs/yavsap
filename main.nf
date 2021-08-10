@@ -86,7 +86,7 @@ workflow {
     read_filtering(read_trimming.out, read_classification.out)
 
     // Realign reads to the reference genome
-    reads_realign_to_reference(read_filtering.out, reference_genome_index_bowtie.out)
+    reads_realign_to_reference(read_filtering.out, reference_genome_index_samtools.out)
 
     /*
     // _de novo_ assemble the viral reads
@@ -100,16 +100,13 @@ workflow {
     alignment_sort_and_index(reads_realign_to_reference.out.concat(contigs_realign_to_reference.out))
     */
 
-    // Make alignments suitable for IGV
-    alignment_sort_and_index(reads_realign_to_reference.out)
-
     // Call variants
-    variants_calling_ivar(alignment_sort_and_index.out, reference_genome_index_samtools.out, reference_genome_annotate.out)
-    variants_calling_varscan(alignment_sort_and_index.out, reference_genome_index_samtools.out)
-    variants_calling_lofreq(alignment_sort_and_index.out, reference_genome_index_samtools.out)
-    variants_calling_bcftools(alignment_sort_and_index.out, reference_genome_index_samtools.out)
+    variants_calling_ivar(reads_realign_to_reference.out, reference_genome_index_samtools.out, reference_genome_annotate.out)
+    variants_calling_varscan(reads_realign_to_reference.out, reference_genome_index_samtools.out)
+    variants_calling_lofreq(reads_realign_to_reference.out, reference_genome_index_samtools.out)
+    variants_calling_bcftools(reads_realign_to_reference.out, reference_genome_index_samtools.out)
     variants_calling_snippy(read_filtering.out, reference_genome_pull_genbank.out)
-    variants_calling_sniffles(alignment_sort_and_index.out)
+    variants_calling_sniffles(reads_realign_to_reference.out)
 
     /*
     // Sanity-check those variants
@@ -117,7 +114,7 @@ workflow {
     */
 
     // Put a pretty bow on everything
-    presentation_generator(reference_genome_index_samtools.out, alignment_sort_and_index.out.collect())
+    presentation_generator(reference_genome_index_samtools.out, reads_realign_to_reference.out.collect())
 }
 
 // Main workflow: will be promoted to ont workflow someday
@@ -383,42 +380,15 @@ process reads_realign_to_reference {
     file(reference)
 
     output:
-    file("${sampleName}.sam")
-
-    script:
-    if (params.pe) {
-        """
-        bowtie2 --threads ${params.threads} -x ${ReferenceName} -1 ${readsFile[0]} -2 ${readsFile[1]} > ${sampleName}.sam
-        """
-    }
-    else {
-        """
-        bowtie2 --threads ${params.threads} -x ${ReferenceName} -U ${readsFile} > ${sampleName}.sam
-        """
-    }
-
-}
-
-// Sort and compress the sam files for visualization
-process alignment_sort_and_index {
-    cpus 1
-
-    input:
-    file(samfile)
-
-    output:
     file("*.{bam,bai}")
 
     script:
-    bamfile = samfile.getName().replace('.sam', '.bam')
+    minimapMethod = (params.pe) ? 'sr' : 'map-ont'
     """
-    # Convert, sort and index the reads file
-    samtools view -S -b ${samfile} > sample.bam
-    samtools sort sample.bam -o ${bamfile}
-    samtools index ${bamfile}
-
-    # Remove intermediate files
-    rm sample.bam
+    minimap2 -ax ${minimapMethod} -t ${params.threads} --MD ${reference[0]} ${readsFile} | \
+        samtools view -Sb - | \
+        samtools sort - > ${sampleName}.bam
+    samtools index ${sampleName}.bam
     """
 }
 
