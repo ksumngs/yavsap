@@ -109,6 +109,7 @@ workflow {
     variants_calling_lofreq(alignment_sort_and_index.out, reference_genome_index_samtools.out)
     variants_calling_bcftools(alignment_sort_and_index.out, reference_genome_index_samtools.out)
     variants_calling_snippy(read_filtering.out, reference_genome_pull_genbank.out)
+    variants_calling_sniffles(alignment_sort_and_index.out)
 
     /*
     // Sanity-check those variants
