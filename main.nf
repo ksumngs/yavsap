@@ -409,9 +409,12 @@ process variants_calling_ivar {
     // We have to refer to the first file in each of the inputs b/c they are tuples
     // containing the required index files as well
     prefix = bamfile[0].getName().replace('.bam', '')
+
+    // Crank up the quality metrics (just do it less if we're working with nanopore reads)
+    qualFlags = (params.pe) ? '-q30 -t 0.05 -m 1000' : '-q 21 -t 0.05 -m 1500'
     """
-    samtools mpileup -aa -A -B -Q 0 --reference ${reference[0]} ${bamfile[0]} > ${prefix}.mpileup
-    ivar variants -p ${prefix}.ivar -r ${reference[0]} -g ${annotations} < ${prefix}.mpileup
+    samtools mpileup -aa -A -B -Q 0 --reference ${reference[0]} ${bamfile[0]} | \
+        ivar variants -p ${prefix}.ivar -r ${reference[0]} -g ${annotations} ${qualFlags}
     """
 }
 
