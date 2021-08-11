@@ -103,6 +103,9 @@ workflow {
     // Call variants
     variants_calling_ivar(reads_realign_to_reference.out, reference_genome_index_samtools.out, reference_genome_annotate.out)
 
+    // Get variant stats
+    variants_analysis(variants_calling_ivar.out, reads_realign_to_reference.out, reference_genome_index_samtools.out)
+
     /*
     // Sanity-check those variants
     multimutation_search(alignment_sort_and_index.out, variants_calling.out, reference_genome_pull_fasta.out)
@@ -411,6 +414,38 @@ process variants_calling_ivar {
     samtools mpileup -aa -A -B -Q 0 --reference ${reference[0]} ${bamfile[0]} | \
         ivar variants -p ${prefix}.ivar -r ${reference[0]} -g ${annotations} ${qualFlags}
     """
+}
+
+// Get stats on the called variants
+process variants_analysis {
+    cpus 1
+
+    // Export the stats ... for now
+    publishDir OutFolder, mode: 'copy'
+
+    input:
+    file(variantCalls)
+    file(bamfile)
+    file(reference)
+
+    output:
+    file("*.counts.tsv")
+
+    shell:
+    prefix = bamfile[0].getName().replace('.bam', '')
+    '''
+    touch !{prefix}.counts.tsv
+    while read -r LINE; do
+        echo "$LINE" | while IFS=$'\\t' read -r -a CELLS; do
+            REGION="${CELLS[0]}"
+            POS="${CELLS[1]}"
+            if [[ $POS != "POS" ]]; then
+                bam-readcount -f !{reference[0]} !{bamfile[0]} "${REGION}:${POS}-${POS}" >> \
+                    !{prefix}.counts.tsv
+            fi
+        done
+    done < !{variantCalls}
+    '''
 }
 
 // At some point, we will need to use long reads to find if mutations are linked within
