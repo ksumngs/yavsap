@@ -102,11 +102,6 @@ workflow {
 
     // Call variants
     variants_calling_ivar(reads_realign_to_reference.out, reference_genome_index_samtools.out, reference_genome_annotate.out)
-    variants_calling_varscan(reads_realign_to_reference.out, reference_genome_index_samtools.out)
-    variants_calling_lofreq(reads_realign_to_reference.out, reference_genome_index_samtools.out)
-    variants_calling_bcftools(reads_realign_to_reference.out, reference_genome_index_samtools.out)
-    variants_calling_snippy(read_filtering.out, reference_genome_pull_genbank.out)
-    variants_calling_sniffles(reads_realign_to_reference.out)
 
     /*
     // Sanity-check those variants
