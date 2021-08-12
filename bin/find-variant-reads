@@ -14,11 +14,13 @@ using Combinatorics
 using BioSymbols
 using FASTX
 using BioAlignments
+using BioSequences
 
 # Parse the arguments
 bamfile = ARGS[1]
 varfile = ARGS[2]
 reffile = ARGS[3]
+outfile = ARGS[4]
 
 # Find the index file
 baifile = string(bamfile, ".bai")
@@ -38,16 +40,26 @@ close(refreader)
 # Read in the variant calls
 snps = DataFrame(CSV.File(varfile))
 
-# IVar calls weird things, so we will only consider variants that have a p-value of less
-# than 10^-5 and a frequency greater than 20%
-filter!(:PVAL => p -> p < 1e-5, snps)
-filter!(:ALT_FREQ => f -> f > 0.2, snps)
-
 # Find all possible pairings of these variants
 snpcombos = collect(combinations(snps.POS,2))
 
+# Declare an empty dataframe for the possible combinations
+snpcombodata = DataFrame(
+    Variant1 = Int[],
+    Variant2 = Int[],
+    Reference_Reference = Int[],
+    Reference_Alternate = Int[],
+    Alternate_Reference = Int[],
+    Alternate_Alternate = Int[]
+)
+
 # Find the reads that match every possible combo
 for (var1loc, var2loc) in snpcombos
+    # Skip any variants that occur at the same locations
+    if var1loc == var2loc
+        continue
+    end
+
     # Find the reference and variant basecalls
     var1 = snps[snps.POS .== var1loc, :]
     var2 = snps[snps.POS .== var2loc, :]
@@ -81,20 +93,50 @@ for (var1loc, var2loc) in snpcombos
                 st1 = ref2seq(alnseq, var1loc)
                 st2 = ref2seq(alnseq, var2loc)
 
-                if st1[2] != OP_DELETE && st2[2] != OP_DELETE
+                if st1[2] == OP_MATCH && st2[2] == OP_MATCH
+                    # Workaround for weird super-short reads
+                    if st2[1] >= length(BAM.sequence(record))
+                        continue
+                    end
+
                     # Find this read's basecalls for both locations
                     loc1base = BAM.sequence(record)[st1[1]]
                     loc2base = BAM.sequence(record)[st2[1]]
 
+                    # Find the reference basecall for these locations
+                    ref1base = refseq[var1loc]
+                    ref2base = refseq[var2loc]
+
+                    # Find the alternate basecall for these locations
+                    alt1base = LongDNASeq(loc1alt)[1]
+                    alt2base = LongDNASeq(loc2alt)[1]
+
+                    # Find which combination we're dealing with, if any
+                    if loc1base == ref1base && loc2base == ref2base
+                        ref_ref += 1
+                    elseif loc1base == ref1base && loc2base == alt2base
+                        ref_alt += 1
+                    elseif loc1base == alt2base && loc2base == ref2base
+                        alt_ref += 1
+                    elseif loc1base == alt2base && loc2base == alt2base
+                        alt_alt += 1
+                    end
+
                     # Print out the intermediate results
                     println(BAM.tempname(record), ":")
                     println("    ", var1loc, ",", var2loc, " REF1:", loc1ref, " REF2:", loc2ref, " ALT1:", loc1alt, " ALT2:", loc2alt, " READ1:", loc1base, " READ2:", loc2base)
+
                 end
             end
         end
 
     end
 
+    # Write which combos we have to the overall dataframe
+    push!(snpcombodata, [var1loc, var2loc, ref_ref, ref_alt, alt_ref, alt_alt])
+
     close(reader)
 
 end
+
+CSV.write(outfile, snpcombodata)
