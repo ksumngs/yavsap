@@ -106,10 +106,11 @@ workflow {
     // Get variant stats
     variants_analysis(variants_calling_ivar.out, reads_realign_to_reference.out, reference_genome_index_samtools.out)
 
-    /*
+    // Filter variants
+    variants_filter(variants_calling_ivar.out, variants_analysis.out)
+
     // Sanity-check those variants
-    multimutation_search(alignment_sort_and_index.out, variants_calling.out, reference_genome_pull_fasta.out)
-    */
+    multimutation_search(reads_realign_to_reference.out, variants_filter.out, reference_genome_pull_fasta.out)
 
     // Put a pretty bow on everything
     presentation_generator(reference_genome_index_samtools.out, reads_realign_to_reference.out.collect())
@@ -420,9 +421,6 @@ process variants_calling_ivar {
 process variants_analysis {
     cpus 1
 
-    // Export the stats ... for now
-    publishDir OutFolder, mode: 'copy'
-
     input:
     file(variantCalls)
     file(bamfile)
@@ -448,6 +446,24 @@ process variants_analysis {
     '''
 }
 
+// More strictly filter the variants based on strand bias and read position
+process variants_filter {
+    cpus 1
+
+    input:
+    file(variantCalls)
+    file(variantStats)
+
+    output:
+    file("*.filtered.tsv")
+
+    script:
+    prefix = variantCalls[0].getName().replace('.tsv', '')
+    """
+    variantfilter ${variantCalls[0]} ${variantStats[0]} ${prefix}.filtered.tsv
+    """
+}
+
 // At some point, we will need to use long reads to find if mutations are linked within
 // a single viral genome. To start, we will look to see if there are reads that contain more
 // than one mutation in them as called by ivar
@@ -467,7 +483,7 @@ process multimutation_search {
     script:
     prefix = bamfile[0].getName().replace('.bam', '')
     """
-    find-variant-reads ${bamfile[0]} ${variants[1]} ${reference} > ${prefix}.varreport
+    find-variant-reads ${bamfile[0]} ${variants[0]} ${reference} > ${prefix}.varreport
     """
 }
 
