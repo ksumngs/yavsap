@@ -1,2 +1,2 @@
-bin/fastx-converter linguist-language=Julia
+bin/variantfilter linguist-language=Julia
 bin/find-variant-reads linguist-language=Julia
