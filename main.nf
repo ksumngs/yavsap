@@ -110,7 +110,7 @@ workflow {
     variants_filter(variants_calling_ivar.out, variants_analysis.out)
 
     // Sanity-check those variants
-    multimutation_search(reads_realign_to_reference.out, variants_filter.out, reference_genome_pull_fasta.out)
+    multimutation_search(reads_realign_to_reference.out, variants_filter.out)
 
     // Put a pretty bow on everything
     presentation_generator(reference_genome_index_samtools.out, reads_realign_to_reference.out.collect())
@@ -474,15 +474,15 @@ process multimutation_search {
     input:
     file(bamfile)
     file(variants)
-    file(reference)
 
     output:
     file("*.varreport")
+    file("*.csv")
 
     script:
     prefix = bamfile[0].getName().replace('.bam', '')
     """
-    find-variant-reads ${bamfile[0]} ${variants[0]} ${reference} > ${prefix}.varreport
+    find-variant-reads ${bamfile[0]} ${variants[0]} ${prefix}.matrix.csv > ${prefix}.varreport
     """
 }
 
