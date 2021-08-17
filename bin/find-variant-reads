@@ -7,12 +7,13 @@ exec julia --project="$(realpath "$(dirname "${BASH_SOURCE[0]}")")" "${BASH_SOUR
 # Searches for variant calls that can be verified using long NGS reads
 
 # Import packages
+using BioAlignments
+using BioSymbols
+using Combinatorics
 using CSV
 using DataFrames
+using GenomicFeatures
 using XAM
-using Combinatorics
-using BioSymbols
-using BioAlignments
 
 # Bring in the function definitions
 include("jev-function-lib.jl")
@@ -31,60 +32,54 @@ if !isfile(baifile)
 end
 
 # Read in the variant calls
-snps = DataFrame(CSV.File(varfile))
+variantdata = DataFrame(CSV.File(varfile))
+
+# Parse the variants
+variants = Variant.(eachrow(variantdata))
 
 # Find all possible pairings of these variants
-snpcombos = collect(combinations(snps.POS,2))
+variantcombos = collect(combinations(variants, 2))
+
+# Import reads from the BAM file
+reader = open(BAM.Reader, bamfile, index=baifile)
 
 # Find the reads that match every possible combo
-for (var1loc, var2loc) in snpcombos
-    # Find the reference and variant basecalls
-    var1 = snps[snps.POS .== var1loc, :]
-    var2 = snps[snps.POS .== var2loc, :]
-    loc1ref = var1.REF[1]
-    loc2ref = var2.REF[1]
-    loc1alt = var1.ALT[1]
-    loc2alt = var2.ALT[1]
-
+for variantpair in variantcombos
     # Set up variant combo counts
     ref_ref = 0
     ref_alt = 0
     alt_ref = 0
     alt_alt = 0
 
-    # Import reads from the BAM file
-    reader = open(BAM.Reader, bamfile, index=baifile)
+    # Get the reads that contain the first variant position
+    containingreads = collect(eachoverlap(reader, variantpair[1].region, variantpair[1].position:variantpair[1].position))
 
-    # Check every NGS read
-    for record in reader
-        # Skip the record if it is not aligned
-        if BAM.ismapped(record)
-            # Find the read's position on the reference
-            readspan = BAM.position(record):BAM.rightposition(record)
+    # Get the reads that contain the second variant position
+    containingreads = containingreads[BAM.rightposition.(containingreads) .>= variantpair[2].position]
 
-            # Check if this read flanks the variants
-            if var1loc in readspan && var2loc in readspan
-                # Pull the aligned sequences for this read
-                alnseq = BAM.alignment(record)
+    # Check every NGS read that contains both positions
+    for record in containingreads
+        # Find this read's basecalls for both locations
+        try
+            base1 = baseatreferenceposition(record, variantpair[1].position)
+            base2 = baseatreferenceposition(record, variantpair[2].position)
 
-                # Find the alignment status at this position
-                st1 = ref2seq(alnseq, var1loc)
-                st2 = ref2seq(alnseq, var2loc)
+            # Print out the intermediate results
+            println(BAM.tempname(record), ":")
+            println("    ",
+                variantpair[1].position, ",", variantpair[2].position,
+                " REF1:", variantpair[1].referencebase,
+                " REF2:", variantpair[2].referencebase,
+                " ALT1:", variantpair[1].alternatebase,
+                " ALT2:", variantpair[2].alternatebase,
+                " READ1:", base1,
+                " READ2:", base2)
+        catch e
+            @warn "Base out of bounds" record e
+            base1 = DNA_Gap
+            base2 = DNA_Gap
+        end #try
+    end #for
+end #for
 
-                if st1[2] != OP_DELETE && st2[2] != OP_DELETE
-                    # Find this read's basecalls for both locations
-                    loc1base = BAM.sequence(record)[st1[1]]
-                    loc2base = BAM.sequence(record)[st2[1]]
-
-                    # Print out the intermediate results
-                    println(BAM.tempname(record), ":")
-                    println("    ", var1loc, ",", var2loc, " REF1:", loc1ref, " REF2:", loc2ref, " ALT1:", loc1alt, " ALT2:", loc2alt, " READ1:", loc1base, " READ2:", loc2base)
-                end
-            end
-        end
-
-    end
-
-    close(reader)
-
-end
+close(reader)
