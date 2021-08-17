@@ -394,7 +394,7 @@ process reads_realign_to_reference {
 process variants_calling_ivar {
     cpus 1
 
-    publishDir OutFolder, mode: 'copy'
+    publishDir OutFolder, mode: 'symlink'
 
     input:
     file(bamfile)
@@ -470,7 +470,7 @@ process variants_filter {
 process multimutation_search {
     cpus 1
 
-    publishDir OutFolder, mode: 'copy'
+    publishDir OutFolder, mode: 'symlink'
 
     input:
     file(bamfile)
@@ -491,7 +491,7 @@ process multimutation_search {
 process presentation_generator {
     cpus 1
 
-    publishDir OutFolder, mode: 'copy'
+    publishDir OutFolder, mode: 'symlink'
 
     input:
     file '*'
