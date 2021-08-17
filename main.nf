@@ -385,7 +385,6 @@ process reads_realign_to_reference {
     minimapMethod = (params.pe) ? 'sr' : 'map-ont'
     """
     minimap2 -ax ${minimapMethod} -t ${params.threads} --MD ${reference[0]} ${readsFile} | \
-        samclip --ref ${reference[0]} | \
         samtools sort > ${sampleName}.bam
     samtools index ${sampleName}.bam
     """
