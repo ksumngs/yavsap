@@ -15,6 +15,9 @@ using BioSymbols
 using FASTX
 using BioAlignments
 
+# Bring in the function definitions
+include("jev-function-lib.jl")
+
 # Parse the arguments
 bamfile = ARGS[1]
 varfile = ARGS[2]
