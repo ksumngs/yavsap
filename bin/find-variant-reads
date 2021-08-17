@@ -33,11 +33,6 @@ end
 # Read in the variant calls
 snps = DataFrame(CSV.File(varfile))
 
-# IVar calls weird things, so we will only consider variants that have a p-value of less
-# than 10^-5 and a frequency greater than 20%
-filter!(:PVAL => p -> p < 1e-5, snps)
-filter!(:ALT_FREQ => f -> f > 0.2, snps)
-
 # Find all possible pairings of these variants
 snpcombos = collect(combinations(snps.POS,2))
 
