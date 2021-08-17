@@ -102,3 +102,24 @@ function myref2seq(aln::Alignment, i::Int)
     return ref2seq(workingalignment, i)
 
 end #function
+
+function matchvariant(base::NucleotideSeq, var::Variant)
+    refbase = LongDNASeq(var.referencebase)
+    altbase = LongDNASeq(var.alternatebase)
+
+    if base == refbase
+        return :reference
+    elseif base == altbase
+        return :alternate
+    else
+        return :other
+    end #if
+end #function
+
+function matchvariant(base::DNA, var::Variant)
+    return matchvariant(LongDNASeq([base]), var)
+end
+
+function matchvariant(base::AbstractVector{DNA}, var::Variant)
+    return matchvariant(LongDNASeq(base), var)
+end

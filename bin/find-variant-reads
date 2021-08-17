@@ -45,7 +45,7 @@ variantcombos = collect(combinations(variants, 2))
 reader = open(BAM.Reader, bamfile, index=baifile)
 
 # Declare an empty dataframe for the possible combinations
-snpcombodata = DataFrame(
+variantcombodata = DataFrame(
     Variant1 = Int[],
     Variant2 = Int[],
     Reference_Reference = Int[],
@@ -76,24 +76,20 @@ for variantpair in variantcombos
             base1 = baseatreferenceposition(record, variantpair[1].position)
             base2 = baseatreferenceposition(record, variantpair[2].position)
 
-                    # Find the reference basecall for these locations
-                    ref1base = refseq[var1loc]
-                    ref2base = refseq[var2loc]
+            # Find how the basecalls stack up
+            match1 = matchvariant(base1, variantpair[1])
+            match2 = matchvariant(base2, variantpair[2])
 
-                    # Find the alternate basecall for these locations
-                    alt1base = LongDNASeq(loc1alt)[1]
-                    alt2base = LongDNASeq(loc2alt)[1]
-
-                    # Find which combination we're dealing with, if any
-                    if loc1base == ref1base && loc2base == ref2base
-                        ref_ref += 1
-                    elseif loc1base == ref1base && loc2base == alt2base
-                        ref_alt += 1
-                    elseif loc1base == alt2base && loc2base == ref2base
-                        alt_ref += 1
-                    elseif loc1base == alt2base && loc2base == alt2base
-                        alt_alt += 1
-                    end
+            # Find which combination we're dealing with, if any
+            if     match1 == :reference && match2 == :reference
+                ref_ref += 1
+            elseif match1 == :reference && match2 == :alternate
+                ref_alt += 1
+            elseif match1 == :alternate && match2 == :reference
+                alt_ref += 1
+            elseif match1 == :alternate && match2 == :alternate
+                alt_alt += 1
+            end
 
             # Print out the intermediate results
             println(BAM.tempname(record), ":")
@@ -109,12 +105,12 @@ for variantpair in variantcombos
             @warn "Base out of bounds" record e
         end #try
     end #for
-end #for
 
     # Write which combos we have to the overall dataframe
-    push!(snpcombodata, [var1loc, var2loc, ref_ref, ref_alt, alt_ref, alt_alt])
-
+    if sum([ref_ref, alt_ref, ref_alt, alt_alt]) > 0
+        push!(variantcombodata, [variantpair[1].position, variantpair[2].position, ref_ref, ref_alt, alt_ref, alt_alt])
+    end #if
+end #for
 close(reader)
 
-
-CSV.write(outfile, snpcombodata)
+CSV.write(outfile, variantcombodata)
