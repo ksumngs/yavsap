@@ -138,12 +138,6 @@ version = "0.8.5"
 deps = ["ArgTools", "LibCURL", "NetworkOptions"]
 uuid = "f43a241f-c20a-4ad4-852c-f6b1247861c6"
 
-[[FASTX]]
-deps = ["Automa", "BioGenerics", "BioSequences", "BioSymbols", "TranscodingStreams"]
-git-tree-sha1 = "6582055aa8f890663f63cbf9bc748b0a537b5fd3"
-uuid = "c2308a5c-f048-11e8-3e8a-31650f418d12"
-version = "1.2.0"
-
 [[FillArrays]]
 deps = ["LinearAlgebra", "Random", "SparseArrays", "Statistics"]
 git-tree-sha1 = "8c8eac2af06ce35973c3eadb4ab3243076a408e7"

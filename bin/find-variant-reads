@@ -12,7 +12,6 @@ using DataFrames
 using XAM
 using Combinatorics
 using BioSymbols
-using FASTX
 using BioAlignments
 
 # Bring in the function definitions
@@ -21,7 +20,6 @@ include("jev-function-lib.jl")
 # Parse the arguments
 bamfile = ARGS[1]
 varfile = ARGS[2]
-reffile = ARGS[3]
 
 # Find the index file
 baifile = string(bamfile, ".bai")
@@ -31,12 +29,6 @@ if !isfile(baifile)
         error("Could not find index file for BAM file")
     end
 end
-
-# Read in the reference sequence
-refreader = open(FASTA.Reader, reffile)
-refrecord = read(refreader)
-refseq = sequence(refrecord)
-close(refreader)
 
 # Read in the variant calls
 snps = DataFrame(CSV.File(varfile))
@@ -78,7 +70,7 @@ for (var1loc, var2loc) in snpcombos
             # Check if this read flanks the variants
             if var1loc in readspan && var2loc in readspan
                 # Pull the aligned sequences for this read
-                alnseq = AlignedSequence(refseq, BAM.alignment(record))
+                alnseq = BAM.alignment(record)
 
                 # Find the alignment status at this position
                 st1 = ref2seq(alnseq, var1loc)
