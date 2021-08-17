@@ -107,8 +107,6 @@ for variantpair in variantcombos
                 " READ2:", base2)
         catch e
             @warn "Base out of bounds" record e
-            base1 = DNA_Gap
-            base2 = DNA_Gap
         end #try
     end #for
 end #for
