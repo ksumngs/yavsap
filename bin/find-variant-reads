@@ -17,10 +17,12 @@ using XAM
 
 # Bring in the function definitions
 include("jev-function-lib.jl")
+using BioSequences
 
 # Parse the arguments
 bamfile = ARGS[1]
 varfile = ARGS[2]
+outfile = ARGS[3]
 
 # Find the index file
 baifile = string(bamfile, ".bai")
@@ -36,12 +38,22 @@ variantdata = DataFrame(CSV.File(varfile))
 
 # Parse the variants
 variants = Variant.(eachrow(variantdata))
-
 # Find all possible pairings of these variants
 variantcombos = collect(combinations(variants, 2))
 
 # Import reads from the BAM file
 reader = open(BAM.Reader, bamfile, index=baifile)
+
+# Declare an empty dataframe for the possible combinations
+snpcombodata = DataFrame(
+    Variant1 = Int[],
+    Variant2 = Int[],
+    Reference_Reference = Int[],
+    Reference_Alternate = Int[],
+    Alternate_Reference = Int[],
+    Alternate_Alternate = Int[]
+)
+
 
 # Find the reads that match every possible combo
 for variantpair in variantcombos
@@ -64,6 +76,25 @@ for variantpair in variantcombos
             base1 = baseatreferenceposition(record, variantpair[1].position)
             base2 = baseatreferenceposition(record, variantpair[2].position)
 
+                    # Find the reference basecall for these locations
+                    ref1base = refseq[var1loc]
+                    ref2base = refseq[var2loc]
+
+                    # Find the alternate basecall for these locations
+                    alt1base = LongDNASeq(loc1alt)[1]
+                    alt2base = LongDNASeq(loc2alt)[1]
+
+                    # Find which combination we're dealing with, if any
+                    if loc1base == ref1base && loc2base == ref2base
+                        ref_ref += 1
+                    elseif loc1base == ref1base && loc2base == alt2base
+                        ref_alt += 1
+                    elseif loc1base == alt2base && loc2base == ref2base
+                        alt_ref += 1
+                    elseif loc1base == alt2base && loc2base == alt2base
+                        alt_alt += 1
+                    end
+
             # Print out the intermediate results
             println(BAM.tempname(record), ":")
             println("    ",
@@ -82,4 +113,10 @@ for variantpair in variantcombos
     end #for
 end #for
 
+    # Write which combos we have to the overall dataframe
+    push!(snpcombodata, [var1loc, var2loc, ref_ref, ref_alt, alt_ref, alt_alt])
+
 close(reader)
+
+
+CSV.write(outfile, snpcombodata)
