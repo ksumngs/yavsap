@@ -12,7 +12,7 @@
             "stopOnEntry": false,
             "cwd": "${workspaceFolder}",
             "juliaEnv": "${command:activeJuliaEnvironment}",
-            "args": ["1839.bam", "1839.tsv", "JEV-SA14.fasta"]
+            "args": ["2fab.bam", "2fab.ivar.tsv"]
         }
     ]
 }
