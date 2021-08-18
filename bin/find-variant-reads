@@ -8,6 +8,7 @@ exec julia --project="$(realpath "$(dirname "${BASH_SOURCE[0]}")")" "${BASH_SOUR
 
 # Import packages
 using BioAlignments
+using BioSequences
 using BioSymbols
 using Combinatorics
 using CSV
@@ -17,7 +18,6 @@ using XAM
 
 # Bring in the function definitions
 include("jev-function-lib.jl")
-using BioSequences
 
 # Parse the arguments
 bamfile = ARGS[1]
