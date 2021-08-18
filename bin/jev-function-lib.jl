@@ -190,29 +190,35 @@ end #function
 
 function appendlinkagestatistics!(var_combos::DataFrame)
     filter!(v -> prod([v.Reference_Reference, v.Reference_Alternate, v.Alternate_Reference, v.Alternate_Alternate]) > 0, var_combos)
-    var_combos.Total = var_combos.Reference_Reference .+ var_combos.Reference_Alternate .+ var_combos.Alternate_Reference .+ var_combos.Alternate_Alternate
-    var_combos.Reference_1 = var_combos.Reference_Reference .+ var_combos.Reference_Alternate
-    var_combos.Reference_2 = var_combos.Reference_Reference .+ var_combos.Alternate_Reference
-    var_combos.Alternate_1 = var_combos.Alternate_Reference .+ var_combos.Alternate_Alternate
-    var_combos.Alternate_2 = var_combos.Reference_Alternate .+ var_combos.Alternate_Alternate
-    var_combos.p_Reference_Reference = var_combos.Reference_Reference ./ var_combos.Total
-    var_combos.p_Reference_Alternate = var_combos.Reference_Alternate ./ var_combos.Total
-    var_combos.p_Alternate_Reference = var_combos.Alternate_Reference ./ var_combos.Total
-    var_combos.p_Alternate_Alternate = var_combos.Alternate_Alternate ./ var_combos.Total
-    var_combos.p_Reference_1 = var_combos.Reference_1 ./ var_combos.Total
-    var_combos.p_Reference_2 = var_combos.Reference_2 ./ var_combos.Total
-    var_combos.p_Alternate_1 = var_combos.Alternate_1 ./ var_combos.Total
-    var_combos.p_Alternate_2 = var_combos.Alternate_2 ./ var_combos.Total
-    var_combos.Linkage_Disequilibrium =
-        var_combos.p_Reference_Reference .- (var_combos.p_Reference_1 .* var_combos.p_Reference_2)
-    var_combos.R_Squared = (var_combos.Linkage_Disequilibrium .^ 2) ./
-        (var_combos.p_Reference_1 .* (1 .- var_combos.p_Reference_1) .* var_combos.p_Reference_2 .* (1 .- var_combos.p_Reference_2))
-    var_combos.Linkage_Statistic = (sqrt.(var_combos.Total .* var_combos.Alternate_Alternate) .- sqrt.(var_combos.Alternate_1 .* var_combos.Alternate_2)) ./ var_combos.Total
-    var_combos.Linkage_Statistic_Error = (0.5 ./ var_combos.Total) .* sqrt.(
-        var_combos.Reference_Reference .- (4 .* var_combos.Total .* var_combos.Linkage_Statistic .*
+    # Split out the fields into managable variables
+    ref_ref = var_combos.Reference_Reference
+    ref_alt = var_combos.Reference_Alternate
+    alt_ref = var_combos.Alternate_Reference
+    alt_alt = var_combos.Alternate_Alternate
+
+    # Tabulate allele frequencies
+    total = ref_ref .+ ref_alt .+ alt_ref .+ alt_alt
+    ref_1 = ref_ref .+ ref_alt
+    ref_2 = ref_ref .+ alt_ref
+    alt_1 = alt_ref .+ alt_alt
+    alt_2 = ref_alt .+ alt_alt
+
+    # Calculate allele probabilities (unused figures are not present)
+    p_ref_ref = ref_ref ./ total
+    p_ref_1 = ref_1 ./ total
+    p_ref_2 = ref_2 ./ total
+
+    # Calculate linkage disequilibrium
+    linkage =
+        p_ref_ref .- (p_ref_1 .* p_ref_2)
+
+    # Get the test statstic for linkage disequilibrium
+    Δlinkage = (sqrt.(total .* alt_alt) .- sqrt.(alt_1 .* alt_2)) ./ total
+    linkageerror = (0.5 ./ total) .* sqrt.(
+        ref_ref .- (4 .* total .* Δlinkage .*
             (
-                ((var_combos.Alternate_1 .+ var_combos.Alternate_2)./(2 .* sqrt.(var_combos.Alternate_1 .* var_combos.Alternate_2))) .-
-                (sqrt.(var_combos.Alternate_1 .* var_combos.Alternate_2) ./ var_combos.Total)
+                ((alt_1 .+ alt_2)./(2 .* sqrt.(alt_1 .* alt_2))) .-
+                (sqrt.(alt_1 .* alt_2) ./ total)
             )
         )
     )
