@@ -33,6 +33,12 @@ if !isfile(baifile)
     end
 end
 
+# Check if there are any variants
+if length(readlines(varfile)) < 2
+    touch(outfile)
+    exit(0)
+end
+
 # Read in the variant calls
 variantdata = DataFrame(CSV.File(varfile))
 
