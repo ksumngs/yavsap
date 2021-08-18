@@ -222,7 +222,14 @@ function appendlinkagestatistics!(var_combos::DataFrame)
             )
         )
     )
-    var_combos.Linkage_T = abs.(var_combos.Linkage_Statistic ./ var_combos.Linkage_Statistic_Error)
-    var_combos.Is_Significant = var_combos.Linkage_T .> cquantile(Chisq(1), 0.05)
+    linkagestatistic = abs.(Δlinkage ./ linkageerror)
+
+    # Check for significance
+    sig = 1 .- cdf.(Chisq(1), linkagestatistic)
+
+    # Add linkage and significance to the dataframe
+    var_combos.Linkage_Disequilibrium = linkage
+    var_combos.Linkage_Significance = sig
+
     return var_combos
 end

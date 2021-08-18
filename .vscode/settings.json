@@ -1,7 +1,9 @@
 {
     "cSpell.words": [
         "FASTX",
-        "baifile"
+        "baifile",
+        "linkage",
+        "Δlinkage"
     ],
     "julia.environmentPath": "/home/tchristensen/src/jev-analysis-pipeline/bin",
     "python.pythonPath": "/home/tchristensen/miniconda3/envs/jev-analysis-pipeline/bin/python"
