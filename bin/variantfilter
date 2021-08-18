@@ -15,6 +15,12 @@ variantfile = ARGS[1]
 countsfile  = ARGS[2]
 newvarfile  = ARGS[3]
 
+# Check if variants were called
+if length(readlines(variantfile)) < 2
+    cp(variantfile, newvarfile)
+    exit(0)
+end
+
 # Read in the statistics files
 ivar = DataFrame(CSV.File(variantfile))
 bamcounts = readlines(countsfile)
