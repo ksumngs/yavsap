@@ -123,3 +123,64 @@ end
 function matchvariant(base::AbstractVector{DNA}, var::Variant)
     return matchvariant(LongDNASeq(base), var)
 end
+
+function findvariantlinkages(variantcombos::AbstractVector{Variant}, reader::BAM.Reader)
+    # Declare an empty dataframe for the possible combinations
+    variantcombodata = DataFrame(
+        Variant1 = Int[],
+        Variant2 = Int[],
+        Reference_Reference = Int[],
+        Reference_Alternate = Int[],
+        Alternate_Reference = Int[],
+        Alternate_Alternate = Int[]
+    )
+
+
+    # Find the reads that match every possible combo
+    for variantpair in variantcombos
+        # Set up variant combo counts
+        ref_ref = 0
+        ref_alt = 0
+        alt_ref = 0
+        alt_alt = 0
+
+        # Get the reads that contain the first variant position
+        containingreads = collect(eachoverlap(reader, variantpair[1].region, variantpair[1].position:variantpair[1].position))
+
+        # Get the reads that contain the second variant position
+        containingreads = containingreads[BAM.rightposition.(containingreads) .>= variantpair[2].position]
+
+        # Check every NGS read that contains both positions
+        for record in containingreads
+            # Find this read's basecalls for both locations
+            try
+                base1 = baseatreferenceposition(record, variantpair[1].position)
+                base2 = baseatreferenceposition(record, variantpair[2].position)
+
+                # Find how the basecalls stack up
+                match1 = matchvariant(base1, variantpair[1])
+                match2 = matchvariant(base2, variantpair[2])
+
+                # Find which combination we're dealing with, if any
+                if     match1 == :reference && match2 == :reference
+                    ref_ref += 1
+                elseif match1 == :reference && match2 == :alternate
+                    ref_alt += 1
+                elseif match1 == :alternate && match2 == :reference
+                    alt_ref += 1
+                elseif match1 == :alternate && match2 == :alternate
+                    alt_alt += 1
+                end #if
+            catch e
+                @warn "Base out of bounds" record e
+            end #try
+        end #for
+
+        # Write which combos we have to the overall dataframe
+        if sum([ref_ref, alt_ref, ref_alt, alt_alt]) > 0
+            push!(variantcombodata, [variantpair[1].position, variantpair[2].position, ref_ref, ref_alt, alt_ref, alt_alt])
+        end #if
+    end #for
+
+    return variantcombodata
+end #function
