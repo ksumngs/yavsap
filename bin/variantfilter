@@ -106,19 +106,26 @@ deletedvars = Int[]
 
 # Loop through every iVar variant
 for variant in eachrow(ivar)
+    # If these conditions are not met, then drop this entry from the variant table
+    function dropvariant(reason)
+        @warn string("Dropping variant '", variant.ALT, "' from ", variant.REGION, ":", variant.POS, "-", variant.POS, ". Reason: ", reason)
+        push!(deletedvars, rownumber(variant))
+    end
+
     # Find the matching bam stats for this variant call
-    bammatch = first(countsdata[(countsdata.chr .== variant.REGION) .& (countsdata.position .== variant.POS) .& (countsdata.base .== variant.ALT),:])
+    bammatches = countsdata[(countsdata.chr .== variant.REGION) .& (countsdata.position .== variant.POS) .& (countsdata.base .== variant.ALT),:]
+    if length(eachrow(bammatches)) < 1
+        dropvariant("variant mismatch")
+        continue
+    end
+    bammatch = first(bammatches)
 
     # Sanity-check => ivar.REF == bam.reference_base
     if variant.REF != bammatch.reference_base
         error(string("iVar reports reference base ", variant.REF, ", but bam reports ", bammatch.reference_base, " at ", variant.REGION, ":", variant.POS))
     end
 
-    # If these conditions are not met, then drop this entry from the variant table
-    function dropvariant(reason)
-        @warn string("Dropping variant '", variant.ALT, "' from ", variant.REGION, ":", variant.POS, "-", variant.POS, ". Reason: ", reason)
-        push!(deletedvars, rownumber(variant))
-    end
+
 
     # Check that the following conditions are met:
     # Check that average read position is greater than 0.1 (variants are not called exclusively within 10% of the read edges)

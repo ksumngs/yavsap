@@ -7,6 +7,17 @@
         {
             "type": "julia",
             "request": "launch",
+            "name": "Launch variantfilter",
+            "program": "${workspaceFolder}/bin/variantfilter",
+            "stopOnEntry": false,
+            "cwd": "${workspaceFolder}",
+            "juliaEnv": "${command:activeJuliaEnvironment}",
+            "args": ["f479.ivar.tsv", "f479.counts.tsv", "f479.ivar.filtered.tsv"]
+        },
+
+        {
+            "type": "julia",
+            "request": "launch",
             "name": "Run find-variant-reads",
             "program": "${file}",
             "stopOnEntry": false,
