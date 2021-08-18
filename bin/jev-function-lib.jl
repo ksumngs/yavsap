@@ -7,6 +7,7 @@ using BioAlignments
 using BioSequences
 using BioSymbols
 using DataFrames
+using Distributions
 using XAM
 
 """
@@ -127,8 +128,10 @@ end
 function findvariantlinkages(variantcombos::Vector{Vector{Variant}}, reader::BAM.Reader)
     # Declare an empty dataframe for the possible combinations
     variantcombodata = DataFrame(
-        Variant1 = Int[],
-        Variant2 = Int[],
+        Position_1 = Int[],
+        Position_2 = Int[],
+        Call_1 = String[],
+        Call_2 = String[],
         Reference_Reference = Int[],
         Reference_Alternate = Int[],
         Alternate_Reference = Int[],
@@ -178,9 +181,42 @@ function findvariantlinkages(variantcombos::Vector{Vector{Variant}}, reader::BAM
 
         # Write which combos we have to the overall dataframe
         if sum([ref_ref, alt_ref, ref_alt, alt_alt]) > 0
-            push!(variantcombodata, [variantpair[1].position, variantpair[2].position, ref_ref, ref_alt, alt_ref, alt_alt])
+            push!(variantcombodata, [variantpair[1].position, variantpair[2].position, variantpair[1].alternatebase, variantpair[2].alternatebase, ref_ref, ref_alt, alt_ref, alt_alt])
         end #if
     end #for
 
     return variantcombodata
 end #function
+
+function appendlinkagestatistics!(var_combos::DataFrame)
+    filter!(v -> prod([v.Reference_Reference, v.Reference_Alternate, v.Alternate_Reference, v.Alternate_Alternate]) > 0, var_combos)
+    var_combos.Total = var_combos.Reference_Reference .+ var_combos.Reference_Alternate .+ var_combos.Alternate_Reference .+ var_combos.Alternate_Alternate
+    var_combos.Reference_1 = var_combos.Reference_Reference .+ var_combos.Reference_Alternate
+    var_combos.Reference_2 = var_combos.Reference_Reference .+ var_combos.Alternate_Reference
+    var_combos.Alternate_1 = var_combos.Alternate_Reference .+ var_combos.Alternate_Alternate
+    var_combos.Alternate_2 = var_combos.Reference_Alternate .+ var_combos.Alternate_Alternate
+    var_combos.p_Reference_Reference = var_combos.Reference_Reference ./ var_combos.Total
+    var_combos.p_Reference_Alternate = var_combos.Reference_Alternate ./ var_combos.Total
+    var_combos.p_Alternate_Reference = var_combos.Alternate_Reference ./ var_combos.Total
+    var_combos.p_Alternate_Alternate = var_combos.Alternate_Alternate ./ var_combos.Total
+    var_combos.p_Reference_1 = var_combos.Reference_1 ./ var_combos.Total
+    var_combos.p_Reference_2 = var_combos.Reference_2 ./ var_combos.Total
+    var_combos.p_Alternate_1 = var_combos.Alternate_1 ./ var_combos.Total
+    var_combos.p_Alternate_2 = var_combos.Alternate_2 ./ var_combos.Total
+    var_combos.Linkage_Disequilibrium =
+        var_combos.p_Reference_Reference .- (var_combos.p_Reference_1 .* var_combos.p_Reference_2)
+    var_combos.R_Squared = (var_combos.Linkage_Disequilibrium .^ 2) ./
+        (var_combos.p_Reference_1 .* (1 .- var_combos.p_Reference_1) .* var_combos.p_Reference_2 .* (1 .- var_combos.p_Reference_2))
+    var_combos.Linkage_Statistic = (sqrt.(var_combos.Total .* var_combos.Alternate_Alternate) .- sqrt.(var_combos.Alternate_1 .* var_combos.Alternate_2)) ./ var_combos.Total
+    var_combos.Linkage_Statistic_Error = (0.5 ./ var_combos.Total) .* sqrt.(
+        var_combos.Reference_Reference .- (4 .* var_combos.Total .* var_combos.Linkage_Statistic .*
+            (
+                ((var_combos.Alternate_1 .+ var_combos.Alternate_2)./(2 .* sqrt.(var_combos.Alternate_1 .* var_combos.Alternate_2))) .-
+                (sqrt.(var_combos.Alternate_1 .* var_combos.Alternate_2) ./ var_combos.Total)
+            )
+        )
+    )
+    var_combos.Linkage_T = abs.(var_combos.Linkage_Statistic ./ var_combos.Linkage_Statistic_Error)
+    var_combos.Is_Significant = var_combos.Linkage_T .> cquantile(Chisq(1), 0.05)
+    return var_combos
+end
