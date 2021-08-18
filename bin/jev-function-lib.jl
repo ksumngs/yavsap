@@ -124,7 +124,7 @@ function matchvariant(base::AbstractVector{DNA}, var::Variant)
     return matchvariant(LongDNASeq(base), var)
 end
 
-function findvariantlinkages(variantcombos::AbstractVector{Variant}, reader::BAM.Reader)
+function findvariantlinkages(variantcombos::Vector{Vector{Variant}}, reader::BAM.Reader)
     # Declare an empty dataframe for the possible combinations
     variantcombodata = DataFrame(
         Variant1 = Int[],
