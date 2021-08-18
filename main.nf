@@ -11,34 +11,8 @@ SYNOPSIS
     nextflow run millironx/jev-analysis-pipeline
         --kraken-db <kraken2 database location>
 
-OPTIONS
-    --readsfolder
-        The folder containing parired-end Illumina reads in gzipped fastq format. Defaults
-        to the current directory
-
-    --threads
-        Number of threads to process each sample with. Can't be adjusted on a per-process
-        basis. Defaults to 4
-
-    --runname
-        A friendly identifier to describe the samples being analyzed. Defaults to
-        'jev-analysis'
-
-    --outfolder
-        The place where the final anlysis products will be stored. Defaults to runname_out
-
-    --dev
-        Run using fewer inputs and faster process options
-
-    --devinputs
-        The number of inputs to take in when using --dev
-
-PROCESS-SPECIFIC OPTIONS
-Kraken:
-    See https://github.com/DerrickWood/kraken2/wiki/Manual for full documentation of
-    Kraken 2's available options
-    --kraken-db
-        Path to Kraken 2 database. REQUIRED
+MORE INFO
+    https://github.com/MillironX/jev-analysis-pipeline
 """
 exit 0
 }
