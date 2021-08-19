@@ -2,7 +2,14 @@
     "cSpell.words": [
         "FASTX",
         "baifile",
+        "haplotype",
+        "haplotypecounts",
+        "haplotypedata",
+        "haplotypefrequencies",
+        "haplotypeoccurances",
+        "haplotypes",
         "linkage",
+        "possiblehaplotypes",
         "Δlinkage"
     ],
     "julia.environmentPath": "/home/tchristensen/src/jev-analysis-pipeline/bin",

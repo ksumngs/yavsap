@@ -44,18 +44,19 @@ variantdata = DataFrame(CSV.File(varfile))
 
 # Parse the variants
 variants = Variant.(eachrow(variantdata))
+
 # Find all possible pairings of these variants
-variantcombos = collect(combinations(variants, 2))
+variantpairs = collect(combinations(variants, 2))
 
 # Import reads from the BAM file
 reader = open(BAM.Reader, bamfile, index=baifile)
 
 # Compute frequency stats
-variantcombodata = findvariantlinkages(variantcombos, reader)
+haplotypecounts = haplotypeoccurances(variantpairs, reader)
 
 # Cleanup the BAM stream
 close(reader)
 
-appendlinkagestatistics!(variantcombodata)
+appendlinkagestatistics!(haplotypecounts)
 
-CSV.write(outfile, variantcombodata)
+CSV.write(outfile, haplotypecounts)
