@@ -58,6 +58,35 @@ function Variant(data::DataFrameRow)
 
 end # function
 
+struct Haplotype
+    mutations::AbstractVector{Variant}
+end
+
+function Haplotype(var::Variant)
+    return Haplotype([var])
+end
+
+function Base.position(var::Variant)
+    return var.position
+end
+
+struct HaplotypeCounts
+    haplotype::Haplotype
+    counts::AbstractMatrix{Int}
+end
+
+function HaplotypeCounts(haplotype::Haplotype, counts::Int...)
+    if !isinteger(sqrt(length(counts)))
+        error(ArgumentError("number of count arguments must be reshabable to a square matrix"))
+    end
+    nhaps = Int(sqrt(length(counts)))
+    if length(haplotype.mutations) != nhaps
+        error(ArgumentError("the number of count arguments should be equal to the square of the number of variants in the haplotype"))
+    end
+    countmat = Matrix(reshape(counts, (nhaps, nhaps)))
+    return HaplotypeCounts(haplotype, countmat)
+end
+
 """
     myref2seq(aln::Alignment, i::Int)
 
@@ -132,6 +161,50 @@ end
 
 function matchvariant(base::AbstractVector{DNA}, var::Variant)
     return matchvariant(LongDNASeq(base), var)
+end
+
+function findoccurrences(haplotype::Haplotype, reads::AbstractVector{BAM.Record})
+    # Set up haplotype counts
+    ref_ref = 0
+    ref_alt = 0
+    alt_ref = 0
+    alt_alt = 0
+
+    # Make things easier to call
+    mutations = haplotype.mutations
+
+    # Get only the reads that contain all of the variant positions
+    containingreads = filter(b -> BAM.position(b) < min(position.(mutations)...) && BAM.rightposition(b) > max(position.(mutations)...), reads)
+
+    # Check every NGS read that contains both positions
+    for record in containingreads
+        # Find this read's basecalls for both locations
+        try
+            basecalls = baseatreferenceposition.([record], position.(mutations))
+
+            # Find how the basecalls stack up
+            matches = matchvariant.(basecalls, mutations)
+
+            # Find which haplotype we're dealing with, if any
+            # Theoretically, we could make an n-dimensional array for haplotypes consisting
+            # of n mutations, but for now we'll stick with two
+            if     matches[1] == :reference && matches[2] == :reference
+                ref_ref += 1
+            elseif matches[1] == :reference && matches[2] == :alternate
+                ref_alt += 1
+            elseif matches[1] == :alternate && matches[2] == :reference
+                alt_ref += 1
+            elseif matches[1] == :alternate && matches[2] == :alternate
+                alt_alt += 1
+            end #if
+        catch e
+            @warn "Base out of bounds" record e
+        end #try
+    end #for
+
+    # Write the haplotype counts to the overall dataframe
+    return HaplotypeCounts(haplotype, [ref_ref ref_alt; alt_ref alt_alt])
+
 end
 
 """

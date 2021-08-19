@@ -57,6 +57,16 @@ haplotypecounts = haplotypeoccurances(variantpairs, reader)
 # Cleanup the BAM stream
 close(reader)
 
+# Calculate linkage disequilibrium
 appendlinkagestatistics!(haplotypecounts)
+
+# Keep only linkages above 0.01 (This number should be higher, but this will work for debugging)
+filter!(h -> abs(h.Linkage_Disequilibrium) > 0.01, haplotypecounts)
+
+# Find all variant positions that exhibit linkage
+linkedvariants = unique([haplotypecounts.Position_1; haplotypecounts.Position_2])
+
+# Create haplotype objects for any non-linked variants
+individualhaplotypes = Haplotype.(filter(!(v -> v.position in linkedvariants), variants))
 
 CSV.write(outfile, haplotypecounts)

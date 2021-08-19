@@ -8,6 +8,7 @@
         "haplotypefrequencies",
         "haplotypeoccurances",
         "haplotypes",
+        "individualhaplotypes",
         "linkage",
         "possiblehaplotypes",
         "Δlinkage"
