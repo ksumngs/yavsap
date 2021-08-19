@@ -189,7 +189,14 @@ function findvariantlinkages(variantcombos::Vector{Vector{Variant}}, reader::BAM
 end #function
 
 function appendlinkagestatistics!(var_combos::DataFrame)
+    # Filter out problem cases
+    # 1. Filter out instances where linkage disequilibrium can't be calculated (0 instances of an allele combo)
     filter!(v -> prod([v.Reference_Reference, v.Reference_Alternate, v.Alternate_Reference, v.Alternate_Alternate]) > 0, var_combos)
+    # 2. Filter out low read depth instances (< 100 total reads)
+    filter!(v -> sum([v.Reference_Reference, v.Reference_Alternate, v.Alternate_Reference, v.Alternate_Alternate]) < 100, var_combos)
+    # 3. Filter out low double-mutation instances (< 5 alt_alt reads)
+    filter!(v -> v.Alternate_Alternate < 5, var_combos)
+
     # Split out the fields into managable variables
     ref_ref = var_combos.Reference_Reference
     ref_alt = var_combos.Reference_Alternate
