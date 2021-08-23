@@ -17,7 +17,7 @@ Get the base at reference position `pos` present in the sequence of `record`.
 """
 function baseatreferenceposition(record::BAM.Record, pos::Int)
     seqpos = myref2seq(BAM.alignment(record), pos)[1]
-    if seqpos > 0
+    if seqpos > 0 && seqpos < BAM.seqlength(record)
         return BAM.sequence(record)[seqpos]
     else
         return dna"-"
