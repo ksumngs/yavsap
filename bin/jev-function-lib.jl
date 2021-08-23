@@ -268,7 +268,7 @@ function findoccurrences(haplotype::Haplotype, reads::AbstractVector{BAM.Record}
 
 end
 
-function findoccurrences(haplotype::Haplotype, reads::AbstractVector{BAM.Reader})
+function findoccurrences(haplotype::Haplotype, reads::BAM.Reader)
     return findoccurrences(haplotype, collect(reads))
 end
 
