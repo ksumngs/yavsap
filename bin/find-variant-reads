@@ -63,27 +63,32 @@ filter!(h -> min(h.counts...) > 10, haplotypecounts)
 # Remove any haplotypes that are not significant
 filter!(h -> linkage(h.counts)[2] < 0.05, haplotypecounts)
 
-# Write the significant haplotypes out to a file for later processing
-hapdata = DataFrame(
-    Chromosome1 = region.(mutations.(haplotype.(haplotypecounts))[1]),
-    Position1   = position.(mutations.(haplotype.(haplotypecounts))[1]),
-    Reference1  = referencebase.(mutations.(haplotype.(haplotypecounts))[1]),
-    Alternate1  = alternatebase.(mutations.(haplotype.(haplotypecounts))[1]),
-    Chromosome2 = region.(mutations.(haplotype.(haplotypecounts))[2]),
-    Position2   = position.(mutations.(haplotype.(haplotypecounts))[2]),
-    Reference2  = referencebase.(mutations.(haplotype.(haplotypecounts))[2]),
-    Alternate2  = alternatebase.(mutations.(haplotype.(haplotypecounts))[2]),
-    Ref_Ref     = ref_ref.(haplotypecounts),
-    Ref_Alt     = ref_alt.(haplotypecounts),
-    Alt_Ref     = alt_ref.(haplotypecounts),
-    Alt_Alt     = alt_alt.(haplotypecounts),
-    LD          = first.(linkage.(counts.(haplotypecounts))),
-    p_val       = last.(linkage.(counts.(haplotypecounts)))
-)
-CSV.write(outfile, hapdata, delim="\t")
+if length(haplotypecounts) > 0
+    # Write the significant haplotypes out to a file for later processing
+    hapdata = DataFrame(
+        Chromosome1 = region.(mutations.(haplotype.(haplotypecounts))[1]),
+        Position1   = position.(mutations.(haplotype.(haplotypecounts))[1]),
+        Reference1  = referencebase.(mutations.(haplotype.(haplotypecounts))[1]),
+        Alternate1  = alternatebase.(mutations.(haplotype.(haplotypecounts))[1]),
+        Chromosome2 = region.(mutations.(haplotype.(haplotypecounts))[2]),
+        Position2   = position.(mutations.(haplotype.(haplotypecounts))[2]),
+        Reference2  = referencebase.(mutations.(haplotype.(haplotypecounts))[2]),
+        Alternate2  = alternatebase.(mutations.(haplotype.(haplotypecounts))[2]),
+        Ref_Ref     = ref_ref.(haplotypecounts),
+        Ref_Alt     = ref_alt.(haplotypecounts),
+        Alt_Ref     = alt_ref.(haplotypecounts),
+        Alt_Alt     = alt_alt.(haplotypecounts),
+        LD          = first.(linkage.(counts.(haplotypecounts))),
+        p_val       = last.(linkage.(counts.(haplotypecounts)))
+    )
+    CSV.write(outfile, hapdata, delim="\t")
 
-# Find all variant positions that exhibit linkage
-linkedvariants = unique(cat(mutations.(haplotypecounts)..., dims=1))
+    # Find all variant positions that exhibit linkage
+    linkedvariants = unique(cat(mutations.(haplotypecounts)..., dims=1))
+else
+    touch(outfile)
+    linkedvariants = Haplotype[]
+end
 
 # Create haplotype objects for any non-linked variants
 individualhaplotypes = Haplotype.(filter(!v -> v ∈ linkedvariants, variants))
