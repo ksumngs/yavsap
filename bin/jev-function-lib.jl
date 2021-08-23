@@ -83,6 +83,10 @@ function HaplotypeCounts(haplotype::Haplotype, counts::Int...)
     return HaplotypeCounts(haplotype, countmat)
 end
 
+function counts(h::HaplotypeCounts)
+    return h.counts
+end
+
 """
     myref2seq(aln::Alignment, i::Int)
 
@@ -223,6 +227,39 @@ function findoccurrences(haplotype::Haplotype, reads::AbstractVector{BAM.Record}
     return HaplotypeCounts(haplotype, [ref_ref ref_alt; alt_ref alt_alt])
 
 end
+
+function linkage(counts::AbstractMatrix{Int})
+    # Split out the fields into managable variables
+    ref_ref = counts[1,1]
+    ref_alt = counts[1,2]
+    alt_ref = counts[2,1]
+    alt_alt = counts[2,2]
+
+    # Tabulate allele frequencies
+    total = ref_ref .+ ref_alt .+ alt_ref .+ alt_alt
+    ref_1 = ref_ref .+ ref_alt
+    ref_2 = ref_ref .+ alt_ref
+    alt_1 = alt_ref .+ alt_alt
+    alt_2 = ref_alt .+ alt_alt
+
+    # Calculate allele probabilities (unused figures are not present)
+    p_ref_ref = ref_ref ./ total
+    p_ref_1 = ref_1 ./ total
+    p_ref_2 = ref_2 ./ total
+
+    # Calculate linkage disequilibrium
+    Δ = p_ref_ref .- (p_ref_1 .* p_ref_2)
+
+    # Get the test statstic for linkage disequilibrium
+    r = Δ / sqrt(p_ref_1 * (1 - p_ref_1) * p_ref_2 * (1 - p_ref_2))
+    Χ_squared = r^2 * total
+
+    # Check for significance
+    p = 1 .- cdf.(Chisq(1), Χ_squared)
+
+    return Δ, p
+end
+
 
 """
     haplotypeoccurances(variantparings::Vector{Vector{Variant}}, reader::BAM.Reader)
