@@ -20,7 +20,7 @@ function baseatreferenceposition(record::BAM.Record, pos::Int)
     if seqpos > 0 && seqpos < BAM.seqlength(record)
         return BAM.sequence(record)[seqpos]
     else
-        return dna"-"
+        return dna"N"
     end
 end # function
 
