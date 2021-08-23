@@ -16,16 +16,12 @@ using XAM
 Get the base at reference position `pos` present in the sequence of `record`.
 """
 function baseatreferenceposition(record::BAM.Record, pos::Int)
-    return BAM.sequence(record)[myref2seq(BAM.alignment(record), pos)[1]]
-end # function
-
-"""
-    baseatreferenceposition(record::SAM.Record, pos::Int)
-
-Get the base at reference position `pos` present in the sequence of `record`.
-"""
-function baseatreferenceposition(record::SAM.Record, pos::Int)
-    return SAM.sequence(record)[myref2seq(SAM.alignment(record), pos)[1]]
+    seqpos = myref2seq(BAM.alignment(record), pos)[1]
+    if seqpos > 0
+        return BAM.sequence(record)[seqpos]
+    else
+        return dna"-"
+    end
 end # function
 
 struct Variant
@@ -128,9 +124,28 @@ function myref2seq(aln::Alignment, i::Int)
         workingalignment = aln
     end #if
 
+    # Check that the requested base is in range
+    if !seqisinrange(workingalignment, i)
+        return (0, OP_HARD_CLIP)
+    end
+
     # Perform regular alignment search, minus any hard clipping
     return ref2seq(workingalignment, i)
 
+end #function
+
+function seqisinrange(aln::Alignment, i::Int)
+    reflen = i - first(aln.anchors).refpos
+    seqlen = last(aln.anchors).seqpos - first(aln.anchors).seqpos
+    return seqlen > reflen
+end #function
+
+function firstseqpos(aln::Alignment)
+    return first(aln.anchors).seqpos
+end #function
+
+function lastseqpos(aln::Alignment)
+    return last(aln.anchors).seqpos
 end #function
 
 """
@@ -178,28 +193,23 @@ function findoccurrences(haplotype::Haplotype, reads::AbstractVector{BAM.Record}
 
     # Check every NGS read that contains both positions
     for record in containingreads
-        # Find this read's basecalls for both locations
-        try
-            basecalls = baseatreferenceposition.([record], position.(mutations))
+        basecalls = baseatreferenceposition.([record], position.(mutations))
 
-            # Find how the basecalls stack up
-            matches = matchvariant.(basecalls, mutations)
+        # Find how the basecalls stack up
+        matches = matchvariant.(basecalls, mutations)
 
-            # Find which haplotype we're dealing with, if any
-            # Theoretically, we could make an n-dimensional array for haplotypes consisting
-            # of n mutations, but for now we'll stick with two
-            if     matches[1] == :reference && matches[2] == :reference
-                ref_ref += 1
-            elseif matches[1] == :reference && matches[2] == :alternate
-                ref_alt += 1
-            elseif matches[1] == :alternate && matches[2] == :reference
-                alt_ref += 1
-            elseif matches[1] == :alternate && matches[2] == :alternate
-                alt_alt += 1
-            end #if
-        catch e
-            @warn "Base out of bounds" record e
-        end #try
+        # Find which haplotype we're dealing with, if any
+        # Theoretically, we could make an n-dimensional array for haplotypes consisting
+        # of n mutations, but for now we'll stick with two
+        if     matches[1] == :reference && matches[2] == :reference
+            ref_ref += 1
+        elseif matches[1] == :reference && matches[2] == :alternate
+            ref_alt += 1
+        elseif matches[1] == :alternate && matches[2] == :reference
+            alt_ref += 1
+        elseif matches[1] == :alternate && matches[2] == :alternate
+            alt_alt += 1
+        end #if
     end #for
 
     # Write the haplotype counts to the overall dataframe
@@ -243,27 +253,23 @@ function haplotypeoccurances(variantparings::Vector{Vector{Variant}}, reader::BA
         # Check every NGS read that contains both positions
         for record in containingreads
             # Find this read's basecalls for both locations
-            try
-                base1 = baseatreferenceposition(record, varpair[1].position)
-                base2 = baseatreferenceposition(record, varpair[2].position)
+            base1 = baseatreferenceposition(record, varpair[1].position)
+            base2 = baseatreferenceposition(record, varpair[2].position)
 
-                # Find how the basecalls stack up
-                match1 = matchvariant(base1, varpair[1])
-                match2 = matchvariant(base2, varpair[2])
+            # Find how the basecalls stack up
+            match1 = matchvariant(base1, varpair[1])
+            match2 = matchvariant(base2, varpair[2])
 
-                # Find which haplotype we're dealing with, if any
-                if     match1 == :reference && match2 == :reference
-                    ref_ref += 1
-                elseif match1 == :reference && match2 == :alternate
-                    ref_alt += 1
-                elseif match1 == :alternate && match2 == :reference
-                    alt_ref += 1
-                elseif match1 == :alternate && match2 == :alternate
-                    alt_alt += 1
-                end #if
-            catch e
-                @warn "Base out of bounds" record e
-            end #try
+            # Find which haplotype we're dealing with, if any
+            if     match1 == :reference && match2 == :reference
+                ref_ref += 1
+            elseif match1 == :reference && match2 == :alternate
+                ref_alt += 1
+            elseif match1 == :alternate && match2 == :reference
+                alt_ref += 1
+            elseif match1 == :alternate && match2 == :alternate
+                alt_alt += 1
+            end #if
         end #for
 
         # Write the haplotype counts to the overall dataframe
