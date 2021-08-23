@@ -421,7 +421,7 @@ process variants_analysis {
 
 // More strictly filter the variants based on strand bias and read position
 process variants_filter {
-    cpus 1
+    cpus params.threads
 
     input:
     file(variantCalls)
@@ -433,6 +433,7 @@ process variants_filter {
     script:
     prefix = variantCalls[0].getName().replace('.tsv', '')
     """
+    export JULIA_NUM_THREADS=${params.threads}
     variantfilter ${variantCalls[0]} ${variantStats[0]} ${prefix}.filtered.tsv
     """
 }
@@ -441,7 +442,7 @@ process variants_filter {
 // a single viral genome. To start, we will look to see if there are reads that contain more
 // than one mutation in them as called by ivar
 process multimutation_search {
-    cpus 1
+    cpus params.threads
 
     publishDir OutFolder, mode: 'symlink'
 
@@ -456,6 +457,7 @@ process multimutation_search {
     script:
     prefix = bamfile[0].getName().replace('.bam', '')
     """
+    export JULIA_NUM_THREADS=${params.threads}
     find-variant-reads ${bamfile[0]} ${variants[0]} ${prefix}.matrix.csv > ${prefix}.varreport
     """
 }

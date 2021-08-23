@@ -1,8 +1,8 @@
 #!/bin/bash
 # -*- mode: julia -*-
 #=
-julia --threads 4 --project="$(realpath "$(dirname "${BASH_SOURCE[0]}")")" -e 'using Pkg; Pkg.instantiate()'
-exec julia --threads 4 --project="$(realpath "$(dirname "${BASH_SOURCE[0]}")")" "${BASH_SOURCE[0]}" "$@"
+julia --project="$(realpath "$(dirname "${BASH_SOURCE[0]}")")" -e 'using Pkg; Pkg.instantiate()'
+exec julia --project="$(realpath "$(dirname "${BASH_SOURCE[0]}")")" "${BASH_SOURCE[0]}" "$@"
 =#
 # Searches for variant calls that can be verified using long NGS reads
 
