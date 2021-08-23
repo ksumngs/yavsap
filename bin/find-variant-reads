@@ -52,21 +52,62 @@ variantpairs = collect(combinations(variants, 2))
 reader = open(BAM.Reader, bamfile, index=baifile)
 
 # Compute frequency stats
-haplotypecounts = haplotypeoccurances(variantpairs, reader)
+haplotypecounts = findoccurrences.(variantpairs, [reader])
 
 # Cleanup the BAM stream
 close(reader)
 
-# Calculate linkage disequilibrium
-appendlinkagestatistics!(haplotypecounts)
+# Remove any haplotypes that occur so infrequently that linkage disequilibrium can't be calculated
+filter!(h -> min(h.counts...) > 10, haplotypecounts)
 
-# Keep only linkages above 0.01 (This number should be higher, but this will work for debugging)
-filter!(h -> abs(h.Linkage_Disequilibrium) > 0.01, haplotypecounts)
+# Remove any haplotypes that are not significant
+filter!(h -> linkage(h.counts)[2] < 0.05, haplotypecounts)
+
+# Write the significant haplotypes out to a file for later processing
+hapdata = DataFrame(
+    Chromosome1 = region.(mutations.(haplotype.(haplotypecounts))[1]),
+    Position1   = position.(mutations.(haplotype.(haplotypecounts))[1]),
+    Reference1  = referencebase.(mutations.(haplotype.(haplotypecounts))[1]),
+    Alternate1  = alternatebase.(mutations.(haplotype.(haplotypecounts))[1]),
+    Chromosome2 = region.(mutations.(haplotype.(haplotypecounts))[2]),
+    Position2   = position.(mutations.(haplotype.(haplotypecounts))[2]),
+    Reference2  = referencebase.(mutations.(haplotype.(haplotypecounts))[2]),
+    Alternate2  = alternatebase.(mutations.(haplotype.(haplotypecounts))[2]),
+    Ref_Ref     = ref_ref.(haplotypecounts),
+    Ref_Alt     = ref_alt.(haplotypecounts),
+    Alt_Ref     = alt_ref.(haplotypecounts),
+    Alt_Alt     = alt_alt.(haplotypecounts),
+    LD          = first.(linkage.(counts.(haplotypecounts))),
+    p_val       = last.(linkage.(counts.(haplotypecounts)))
+)
+CSV.write(outfile, hapdata, delim="\t")
 
 # Find all variant positions that exhibit linkage
-linkedvariants = unique([haplotypecounts.Position_1; haplotypecounts.Position_2])
+linkedvariants = unique(cat(mutations.(haplotypecounts)..., dims=1))
 
 # Create haplotype objects for any non-linked variants
-individualhaplotypes = Haplotype.(filter(!(v -> v.position in linkedvariants), variants))
+individualhaplotypes = Haplotype.(filter(!v -> v ∈ linkedvariants, variants))
 
-CSV.write(outfile, haplotypecounts)
+allhaplotypes = [haplotype.(haplotypecounts); individualhaplotypes]
+
+# Quick and dirty writeout in yaml
+open(string(outfile, ".out2"), "w") do f
+    for h in allhaplotypes
+        write(f, "---\n")
+        write(f, "mutations:\n")
+        for v in h.mutations
+            write(f, "  - chromosome: ")
+            write(f, v.region)
+            write(f, "\n")
+            write(f, "    position: ")
+            write(f, string(v.position))
+            write(f, "\n")
+            write(f, "    referencebase: ")
+            write(f, string(v.referencebase))
+            write(f, "\n")
+            write(f, "    alternatebase: ")
+            write(f, string(v.alternatebase))
+            write(f, "\n")
+        end #for
+    end #for
+end #do
