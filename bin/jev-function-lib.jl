@@ -179,20 +179,21 @@ function matchvariant(base::AbstractVector{DNA}, var::Variant)
 end
 
 function findoccurrences(haplotype::Haplotype, reads::AbstractVector{BAM.Record})
-    # Set up haplotype counts
-    ref_ref = 0
-    ref_alt = 0
-    alt_ref = 0
-    alt_alt = 0
-
     # Make things easier to call
     mutations = haplotype.mutations
 
     # Get only the reads that contain all of the variant positions
     containingreads = filter(b -> BAM.position(b) < min(position.(mutations)...) && BAM.rightposition(b) > max(position.(mutations)...), reads)
 
+    # Set up haplotype counts
+    hapcounts = zeros(Int, (length(containingreads), 4))
+
     # Check every NGS read that contains both positions
-    for record in containingreads
+    Threads.@threads for i in 1:length(containingreads)
+        # Extract the pertinant record (like this was a for each loop)
+        record = containingreads[i]
+
+        # Pull the basecalls
         basecalls = baseatreferenceposition.([record], position.(mutations))
 
         # Find how the basecalls stack up
@@ -202,15 +203,21 @@ function findoccurrences(haplotype::Haplotype, reads::AbstractVector{BAM.Record}
         # Theoretically, we could make an n-dimensional array for haplotypes consisting
         # of n mutations, but for now we'll stick with two
         if     matches[1] == :reference && matches[2] == :reference
-            ref_ref += 1
+            hapcounts[i,1] = 1
         elseif matches[1] == :reference && matches[2] == :alternate
-            ref_alt += 1
+            hapcounts[i,2] = 1
         elseif matches[1] == :alternate && matches[2] == :reference
-            alt_ref += 1
+            hapcounts[i,3] = 1
         elseif matches[1] == :alternate && matches[2] == :alternate
-            alt_alt += 1
+            hapcounts[i,4] = 1
         end #if
     end #for
+
+    # Tabulate results
+    ref_ref = sum(hapcounts[:,1])
+    ref_alt = sum(hapcounts[:,2])
+    alt_ref = sum(hapcounts[:,3])
+    alt_alt = sum(hapcounts[:,4])
 
     # Write the haplotype counts to the overall dataframe
     return HaplotypeCounts(haplotype, [ref_ref ref_alt; alt_ref alt_alt])
