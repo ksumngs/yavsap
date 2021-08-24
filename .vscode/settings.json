@@ -5,6 +5,7 @@
         "baifile",
         "bamcounts",
         "bamfields",
+        "bamfile",
         "bamline",
         "bammatch",
         "bammatches",
@@ -18,7 +19,10 @@
         "haplotypes",
         "individualhaplotypes",
         "ivar",
+        "ivarfile",
         "linkage",
+        "outtsv",
+        "outyaml",
         "possiblehaplotypes",
         "pvalue",
         "Δlinkage"

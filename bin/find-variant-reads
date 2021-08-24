@@ -7,35 +7,69 @@ exec julia --project="$(realpath "$(dirname "${BASH_SOURCE[0]}")")" "${BASH_SOUR
 # Searches for variant calls that can be verified using long NGS reads
 
 # Import packages
-using BioAlignments
-using BioSequences
-using BioSymbols
+using ArgParse
 using Combinatorics
 using CSV
 using DataFrames
-using GenomicFeatures
 using XAM
+
+# Declare arguments
+s = ArgParseSettings()
+@add_arg_table s begin
+    "bamfile"
+        help     = "BAM file containing reads with variants"
+        required = true
+        arg_type = String
+    "ivarfile"
+        help     = "tab-separated output file from iVar"
+        required = true
+        arg_type = String
+    "haplotype_tsv"
+        help     = "tab-separated results of multi-variant haplotype frequencies"
+        required = true
+        arg_type = String
+    "haplotype_yaml"
+        help     = "YAML results of all haplotypes"
+        required = true
+        arg_type = String
+    "--significance", "-p"
+        help     = "Χ-squared significance level above which to filter reads"
+        required = false
+        arg_type = Float64
+        default  = 0.05
+    "--min_occurrences", "-m"
+        help     = "Minimum number of times a haplotype must appear to be counted. Cannot be less than 1"
+        required = false
+        arg_type = Int64
+        default  = 10
+        range_tester = x -> x > 0
+end
+
+# Parse the arguments
+args = parse_args(s)
+bamfile = args["bamfile"]
+varfile = args["ivarfile"]
+outtsv  = args["haplotype_tsv"]
+outyaml = args["haplotype_yaml"]
+hap_sig = args["significance"]
+hap_min = args["min_occurrences"]
 
 # Bring in the function definitions
 include("jev-function-lib.jl")
-
-# Parse the arguments
-bamfile = ARGS[1]
-varfile = ARGS[2]
-outfile = ARGS[3]
 
 # Find the index file
 baifile = string(bamfile, ".bai")
 if !isfile(baifile)
     baifile = replace(bamfile, ".bam" => ".bai")
-    if !isfile(baifile)
-        error("Could not find index file for BAM file")
-    end
+end
+if !isfile(baifile)
+    error("Could not find index file for BAM file")
 end
 
 # Check if there are any variants
 if length(readlines(varfile)) < 2
-    touch(outfile)
+    touch(outtsv)
+    touch(outyaml)
     exit(0)
 end
 
@@ -58,10 +92,10 @@ haplotypecounts = findoccurrences.(variantpairs, [reader])
 close(reader)
 
 # Remove any haplotypes that occur so infrequently that linkage disequilibrium can't be calculated
-filter!(h -> min(h.counts...) > 10, haplotypecounts)
+filter!(h -> min(h.counts...) > hap_min, haplotypecounts)
 
 # Remove any haplotypes that are not significant
-filter!(h -> linkage(h.counts)[2] < 0.05, haplotypecounts)
+filter!(h -> linkage(h.counts)[2] < hap_sig, haplotypecounts)
 
 if length(haplotypecounts) > 0
     # Write the significant haplotypes out to a file for later processing
@@ -81,7 +115,7 @@ if length(haplotypecounts) > 0
         LD          = first.(linkage.(counts.(haplotypecounts))),
         p_val       = last.(linkage.(counts.(haplotypecounts)))
     )
-    CSV.write(outfile, hapdata, delim="\t")
+    CSV.write(outtsv, hapdata, delim="\t")
 
     # Find all variant positions that exhibit linkage
     linkedvariants = unique(cat(mutations.(haplotypecounts)..., dims=1))
@@ -96,7 +130,7 @@ individualhaplotypes = Haplotype.(filter(!v -> v ∈ linkedvariants, variants))
 allhaplotypes = [haplotype.(haplotypecounts); individualhaplotypes]
 
 # Quick and dirty writeout in yaml
-open(string(outfile, ".out2"), "w") do f
+open(outyaml, "w") do f
     for h in allhaplotypes
         write(f, "---\n")
         write(f, "mutations:\n")
