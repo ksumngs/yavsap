@@ -466,7 +466,7 @@ process multimutation_search {
 process presentation_generator {
     cpus 1
 
-    publishDir OutFolder, mode: 'symlink'
+    publishDir OutFolder, mode: 'copy'
 
     input:
     file '*'
