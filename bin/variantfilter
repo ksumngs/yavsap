@@ -159,8 +159,9 @@ for variant in eachrow(ivar)
     ref_plus_frac = ref_plus / ref_total
     alt_plus_frac = alt_plus / alt_total
 
-    # Only do statistics if the proportions are different by 5% of the total or more
-    if abs(ref_plus_frac - alt_plus_frac) > 0.05
+    # Only do statistics if the proportions are different by 10% of the total or more
+    # and also if the distribution is skewed more than 20%
+    if abs(ref_plus_frac - alt_plus_frac) > 0.05 && abs(0.5 - alt_plus_frac) > 0.4
         # Perform a binomial test
         test = BinomialTest(alt_plus, alt_total, ref_plus_frac)
 
