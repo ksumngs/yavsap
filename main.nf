@@ -367,8 +367,6 @@ process reads_realign_to_reference {
 process variants_calling_ivar {
     cpus 1
 
-    publishDir OutFolder, mode: 'symlink'
-
     input:
     file(bamfile)
     file(reference)
@@ -422,6 +420,8 @@ process variants_analysis {
 // More strictly filter the variants based on strand bias and read position
 process variants_filter {
     cpus params.threads
+
+    publishDir OutFolder, mode: 'symlink'
 
     input:
     file(variantCalls)
