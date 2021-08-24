@@ -483,6 +483,9 @@ process presentation_generator {
     mkdir data
     mv *.fasta *.fasta.fai *.bam *.bam.bai data
     git clone https://github.com/MillironX/igv-bundler.git igv-bundler
+    cd igv-bundler
+    git checkout jev
+    cd ..
     mv igv-bundler/{index.html,index.js,package.json} .
     """
 }
