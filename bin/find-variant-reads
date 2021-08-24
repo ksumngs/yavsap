@@ -37,6 +37,7 @@ s = ArgParseSettings()
         required = false
         arg_type = Float64
         default  = 0.05
+        range_tester = x -> (x >= 0) && (x <= 1)
     "--min_occurrences", "-m"
         help     = "Minimum number of times a haplotype must appear to be counted. Cannot be less than 1"
         required = false
