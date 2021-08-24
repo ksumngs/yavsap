@@ -451,7 +451,6 @@ process multimutation_search {
     file(variants)
 
     output:
-    file("*.varreport")
     file("*.csv")
     file("*.yaml")
 
