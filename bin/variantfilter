@@ -104,6 +104,9 @@ end
 # Keep track of which variants to delete
 deletedvars = Int[]
 
+# Remove indels from the iVar table
+filter!(v -> first(v.ALT) != '-' && first(v.ALT) != '+', ivar)
+
 # Loop through every iVar variant
 for variant in eachrow(ivar)
     # If these conditions are not met, then drop this entry from the variant table
