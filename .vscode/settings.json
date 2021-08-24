@@ -2,6 +2,7 @@
     "cSpell.words": [
         "FASTX",
         "Nanopore",
+        "allhaplotypes",
         "baifile",
         "bamcounts",
         "bamfields",
@@ -28,5 +29,9 @@
         "Δlinkage"
     ],
     "julia.environmentPath": "/home/tchristensen/src/jev-analysis-pipeline/bin",
-    "python.pythonPath": "/home/tchristensen/miniconda3/envs/jev-analysis-pipeline/bin/python"
+    "python.pythonPath": "/home/tchristensen/miniconda3/envs/jev-analysis-pipeline/bin/python",
+    "files.associations": {
+        "*find-variant-reads": "julia",
+        "*variantfilter": "julia"
+    }
 }
