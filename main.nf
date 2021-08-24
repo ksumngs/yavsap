@@ -453,12 +453,13 @@ process multimutation_search {
     output:
     file("*.varreport")
     file("*.csv")
+    file("*.yaml")
 
     script:
     prefix = bamfile[0].getName().replace('.bam', '')
     """
     export JULIA_NUM_THREADS=${params.threads}
-    find-variant-reads ${bamfile[0]} ${variants[0]} ${prefix}.matrix.csv > ${prefix}.varreport
+    find-variant-reads ${bamfile[0]} ${variants[0]} ${prefix}.haplotypes.csv ${prefix}.haplotypes.yaml
     """
 }
 
