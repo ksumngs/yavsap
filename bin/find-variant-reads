@@ -120,7 +120,7 @@ if length(haplotypecounts) > 0
     # Find all variant positions that exhibit linkage
     linkedvariants = unique(cat(mutations.(haplotypecounts)..., dims=1))
 else
-    touch(outfile)
+    touch(outtsv)
     linkedvariants = Haplotype[]
 end
 
