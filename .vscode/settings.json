@@ -32,6 +32,7 @@
     "python.pythonPath": "/home/tchristensen/miniconda3/envs/jev-analysis-pipeline/bin/python",
     "files.associations": {
         "*find-variant-reads": "julia",
-        "*variantfilter": "julia"
+        "*variantfilter": "julia",
+        "nextflow.config": "nextflow"
     }
 }
