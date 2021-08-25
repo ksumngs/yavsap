@@ -12,6 +12,7 @@
         "bammatches",
         "bamref",
         "delim",
+        "equalhaplotypes",
         "haplotype",
         "haplotypecounts",
         "haplotypedata",
