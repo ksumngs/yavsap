@@ -86,9 +86,6 @@ variantpairs = Haplotype.(collect(combinations(variants, 2)))
 # Find statistically equal frequency haplotypes
 equalhaplotypes = filter(h -> prop_test(alternatedepth.(h.mutations), totaldepth.(h.mutations)) > 0.05, variantpairs)
 
-# Filter out those haplotypes
-filter!(!h -> h ∈ equalhaplotypes, variantpairs)
-
 # Import reads from the BAM file
 reader = open(BAM.Reader, bamfile, index=baifile)
 
@@ -134,7 +131,7 @@ end
 # Create haplotype objects for any non-linked variants
 individualhaplotypes = Haplotype.(filter(!v -> v ∈ linkedvariants, variants))
 
-allhaplotypes = [haplotype.(haplotypecounts); equalhaplotypes; individualhaplotypes]
+allhaplotypes = unique([haplotype.(haplotypecounts); equalhaplotypes; individualhaplotypes])
 
 # Quick and dirty writeout in yaml
 open(outyaml, "w") do f
