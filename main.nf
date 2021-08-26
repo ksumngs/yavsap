@@ -53,11 +53,16 @@ workflow {
             .take( params.dev ? params.devinputs : -1 )
     }
 
+    // Trim the reads
+    read_trimming(raw_reads)
+    trimmed_reads = read_trimming.out
+
     // Classify the reads
-    raw_reads | read_trimming | read_classification
+    read_classification(trimmed_reads)
+    classifed_reads = read_classification.out
 
     // Filter out the non-viral reads
-    read_filtering(read_trimming.out, read_classification.out)
+    read_filtering(trimmed_reads, classifed_reads)
 
     // Realign reads to the reference genome
     reads_realign_to_reference(read_filtering.out, reference_genome_index_samtools.out)
