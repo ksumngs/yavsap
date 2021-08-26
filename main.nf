@@ -67,17 +67,11 @@ workflow {
     // Realign reads to the reference genome
     reads_realign_to_reference(read_filtering.out, reference_genome_index_samtools.out)
 
-    /*
     // _de novo_ assemble the viral reads
-    assembly(read_filtering.out, reference_genome_pull_fasta.out) | \
-        contigs_convert_to_fastq
+    assembly(read_filtering.out, reference_genome_pull_fasta.out)
 
     // Realign contigs to the reference genome
-    contigs_realign_to_reference(contigs_convert_to_fastq.out, reference_genome_index_bowtie.out)
-
-    // Make alignments suitable for IGV
-    alignment_sort_and_index(reads_realign_to_reference.out.concat(contigs_realign_to_reference.out))
-    */
+    contigs_realign_to_reference(assembly.out, reference_genome_pull_fasta.out)
 
     // Call variants
     variants_calling_ivar(reads_realign_to_reference.out, reference_genome_index_samtools.out, reference_genome_annotate.out)
@@ -92,7 +86,7 @@ workflow {
     multimutation_search(reads_realign_to_reference.out, variants_filter.out)
 
     // Put a pretty bow on everything
-    presentation_generator(reference_genome_index_samtools.out, reads_realign_to_reference.out.collect())
+    presentation_generator(reference_genome_index_samtools.out, reads_realign_to_reference.out.concat(contigs_realign_to_reference.out).collect())
 }
 
 // Main workflow: will be promoted to ont workflow someday
@@ -317,22 +311,6 @@ process assembly_pe {
 
 }
 
-// Convert the contigs to fastq with dummy read scores for realignment
-process contigs_convert_to_fastq {
-    cpus 1
-
-    input:
-    tuple val(sampleName), file(contigs)
-
-    output:
-    tuple val(sampleName), file("*.fastq.gz")
-
-    script:
-    """
-    seqtk seq -F '~' ${contigs} | gzip > ${sampleName}.contigs.fastq.gz
-    """
-}
-
 // Remap contigs using bowtie2
 process contigs_realign_to_reference {
     cpus params.threads
@@ -342,11 +320,13 @@ process contigs_realign_to_reference {
     file(reference)
 
     output:
-    file("${sampleName}.contigs.sam")
+    file("*.{bam,bai}")
 
     script:
     """
-    bowtie2 --threads ${params.threads} -x ${ReferenceName} -U ${contigs} > ${sampleName}.contigs.sam
+    minimap2 -at ${params.threads} --MD ${reference[0]} ${contigs} | \
+        samtools sort > ${sampleName}.contigs.bam
+    samtools index ${sampleName}.contigs.bam
     """
 }
 
