@@ -81,6 +81,9 @@ workflow {
     contigs_realign_to_reference(SampleNames, Assemblies, IndexedReference)
     AlignedContigs = contigs_realign_to_reference.out
 
+    // Call haplotypes
+    haplotype_calling_cliquesnv(Alignments)
+
     // Call variants
     variants_calling_ivar(SampleNames, Alignments, IndexedReference, AnnotatedReference)
     VariantCalls = variants_calling_ivar.out
@@ -406,6 +409,25 @@ process variants_calling_ivar {
     """
     samtools mpileup -aa -A -B -Q 0 --reference ${reference[0]} ${bamfile[0]} | \
         ivar variants -p ${sampleName}.ivar -r ${reference[0]} -g ${annotations} ${qualFlags}
+    """
+}
+
+process haplotype_calling_cliquesnv {
+    cpus params.threads
+
+    publishDir OutFolder, mode: 'symlink'
+
+    input:
+    file(bamfile)
+
+    output:
+    file "*.{json,fasta}"
+
+    script:
+    mode = (params.ont) ? 'snv-pacbio' : 'snv-illumina'
+    """
+    clique-snv -m ${mode} -in ${bamfile[0]}
+    mv snv_output/* .
     """
 }
 
