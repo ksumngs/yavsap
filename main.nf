@@ -35,73 +35,105 @@ else {
 
 workflow {
     // Pull and index the reference genome of choice
-    reference_genome_pull_fasta | (reference_genome_index_bowtie & reference_genome_index_samtools)
+    reference_genome_pull_fasta | reference_genome_index_samtools
+    IndexedReference = reference_genome_index_samtools.out
 
     // Pull and annotate the reference genome of choice
     reference_genome_pull_genbank | reference_genome_annotate
+    AnnotatedReference = reference_genome_annotate.out
 
     // Bring in the reads files
     if (params.ont) {
-        raw_reads = Channel
+        RawReads = Channel
             .fromPath("${params.readsfolder}/*.{fastq,fq}.gz")
             .take( params.dev ? params.devinputs : -1 )
             .map{ file -> tuple(file.simpleName, file) }
     }
     else {
-        raw_reads = Channel
+        RawReads = Channel
             .fromFilePairs("${params.readsfolder}/*{R1,R2,_1,_2}*.{fastq,fq}.gz")
             .take( params.dev ? params.devinputs : -1 )
     }
 
     // Trim the reads
-    read_trimming(raw_reads)
-    trimmed_reads = read_trimming.out
+    trimming(RawReads)
+    SampleNames = trimming.out.samplename
+    TrimmedReads = trimming.out.trimmedreads
 
     // Classify the reads
-    read_classification(trimmed_reads)
-    classifed_reads = read_classification.out
+    read_classification(SampleNames, TrimmedReads)
+    KrakenFiles = read_classification.out.krakenfile
+    KrakenReports = read_classification.out.krakenreport
 
     // Filter out the non-viral reads
-    read_filtering(trimmed_reads, classifed_reads)
+    read_filtering(SampleNames, TrimmedReads, KrakenFiles, KrakenReports)
+    FilteredReads = read_filtering.out
 
     // Realign reads to the reference genome
-    reads_realign_to_reference(read_filtering.out, reference_genome_index_samtools.out)
+    reads_realign_to_reference(SampleNames, FilteredReads, IndexedReference)
+    Alignments = reads_realign_to_reference.out
 
     // _de novo_ assemble the viral reads
-    assembly(read_filtering.out, reference_genome_pull_fasta.out)
+    assembly(SampleNames, FilteredReads)
+    Assemblies = assembly.out
 
     // Realign contigs to the reference genome
-    contigs_realign_to_reference(assembly.out, reference_genome_pull_fasta.out)
+    contigs_realign_to_reference(SampleNames, Assemblies, IndexedReference)
+    AlignedContigs = contigs_realign_to_reference.out
 
     // Call variants
-    variants_calling_ivar(reads_realign_to_reference.out, reference_genome_index_samtools.out, reference_genome_annotate.out)
+    variants_calling_ivar(SampleNames, Alignments, IndexedReference, AnnotatedReference)
+    VariantCalls = variants_calling_ivar.out
 
     // Get variant stats
-    variants_analysis(variants_calling_ivar.out, reads_realign_to_reference.out, reference_genome_index_samtools.out)
+    variants_analysis(SampleNames, VariantCalls, Alignments, IndexedReference)
+    VariantStats = variants_analysis.out
 
     // Filter variants
-    variants_filter(variants_calling_ivar.out, variants_analysis.out)
+    variants_filter(SampleNames, VariantCalls, VariantStats)
+    FilteredVariantCalls = variants_filter.out
 
     // Sanity-check those variants
-    multimutation_search(reads_realign_to_reference.out, variants_filter.out)
+    multimutation_search(SampleNames, Alignments, FilteredVariantCalls)
 
     // Put a pretty bow on everything
-    presentation_generator(reference_genome_index_samtools.out, reads_realign_to_reference.out.concat(contigs_realign_to_reference.out).collect())
+    presentation_generator(IndexedReference, Alignments.concat(AlignedContigs).collect())
+}
+
+workflow trimming {
+    take:
+    reads
+
+    main:
+    if (params.ont) {
+        read_trimming_ont(reads)
+        samplename = read_trimming_ont.out.samplename
+        trimmedreads = read_trimming_ont.out.trimmedreads
+    }
+    else {
+        read_trimming_pe(reads)
+        samplename = read_trimming_pe.out.samplename
+        trimmedreads = read_trimming_pe.out.trimmedreads
+    }
+
+    emit:
+    samplename = samplename
+    trimmedreads = trimmedreads
 }
 
 // Main workflow: will be promoted to ont workflow someday
 workflow assembly {
     take:
-    reads
-    ref
+    SampleName
+    Reads
 
     main:
     if (params.ont) {
-        assembly_ont(reads)
+        assembly_ont(SampleName, Reads)
         results = assembly_ont.out
     }
     else {
-        assembly_pe(reads)
+        assembly_pe(SampleName, Reads)
         results = assembly_pe.out
     }
 
@@ -132,22 +164,6 @@ process reference_genome_pull_genbank {
     script:
     """
     efetch -db nucleotide -id ${params.genomeId} -format gb > reference.gb
-    """
-}
-
-// Index the reference genome for use with Bowtie2
-process reference_genome_index_bowtie {
-    cpus params.threads
-
-    input:
-    file genome
-
-    output:
-    file("*.bt2")
-
-    script:
-    """
-    bowtie2-build --threads ${params.threads} ${genome} ${ReferenceName}
     """
 }
 
@@ -186,42 +202,57 @@ process reference_genome_annotate {
     '''
 }
 
-// Trim Illumina reads
-process read_trimming {
+process read_trimming_ont {
     cpus params.threads
+
     input:
-    tuple val(sampleName), file(readsFiles)
+    tuple val(fileName), file(readsFiles)
 
     output:
-    tuple val(sampleName), file("${sampleName}_trimmed*.fastq.gz")
+    val(sampleName), emit: samplename
+    path "*.fastq.gz", emit: trimmedreads
 
     script:
-    if (params.ont) {
-        // Bypass this step for nanopore reads
-        """
-        cp ${readsFiles} ${sampleName}_trimmed.fastq.gz
-        """
-    }
-    else {
-        // Put together the trimmomatic parameters
-        ILLUMINACLIP = "ILLUMINACLIP:/Trimmomatic-0.39/adapters/${params.trimAdapters}:${params.trimMismatches}:${params.trimPclip}:${params.trimClip}"
-        SLIDINGWINDOW = ( params.trimWinsize > 0 && params.trimWinqual > 0 ) ? "SLIDINGWINDOW:${params.trimWinsize}:${params.trimWinqual}" : ""
-        LEADING = ( params.trimLeading > 0 ) ? "LEADING:${params.trimLeading}" : ""
-        TRAILING = ( params.trimTrailing > 0 ) ? "TRAILING:${params.trimTrailing}" : ""
-        CROP = ( params.trimCrop > 0 ) ? "CROP:${params.trimCrop}" : ""
-        HEADCROP = ( params.trimHeadcrop > 0 ) ? "HEADCROP:${params.trimHeadcrop}" : ""
-        MINLEN = ( params.trimMinlen > 0 ) ? "MINLEN:${params.trimMinlen}" : ""
-        trimsteps = ILLUMINACLIP + ' ' + SLIDINGWINDOW + ' ' + LEADING + ' ' + TRAILING + ' ' + CROP + ' ' + HEADCROP + ' ' + MINLEN
-        """
-        trimmomatic PE -threads ${params.threads} \
-            ${readsFiles} \
-            ${sampleName}_trimmed_R1.fastq.gz \
-            /dev/null \
-            ${sampleName}_trimmed_R2.fastq.gz \
-            /dev/null \
-            ${trimsteps}
-        """
-    }
+    sampleName = fileName.split('_')[0]
+    """
+    gunzip -c ${readsFiles} | \
+        NanoFilt -l 100 -q 10 | \
+        gzip > ${sampleName}_trimmed.fastq.gz
+    """
+
+}
+
+// Trim Illumina reads
+process read_trimming_pe {
+    cpus params.threads
+    input:
+    tuple val(fileName), file(readsFiles)
+
+    output:
+    val(sampleName), emit: samplename
+    path "*.fastq.gz", emit: trimmedreads
+
+    script:
+    sampleName = fileName.split('_')[0]
+    // Put together the trimmomatic parameters
+    ILLUMINACLIP = "ILLUMINACLIP:/Trimmomatic-0.39/adapters/${params.trimAdapters}:${params.trimMismatches}:${params.trimPclip}:${params.trimClip}"
+    SLIDINGWINDOW = ( params.trimWinsize > 0 && params.trimWinqual > 0 ) ? "SLIDINGWINDOW:${params.trimWinsize}:${params.trimWinqual}" : ""
+    LEADING = ( params.trimLeading > 0 ) ? "LEADING:${params.trimLeading}" : ""
+    TRAILING = ( params.trimTrailing > 0 ) ? "TRAILING:${params.trimTrailing}" : ""
+    CROP = ( params.trimCrop > 0 ) ? "CROP:${params.trimCrop}" : ""
+    HEADCROP = ( params.trimHeadcrop > 0 ) ? "HEADCROP:${params.trimHeadcrop}" : ""
+    MINLEN = ( params.trimMinlen > 0 ) ? "MINLEN:${params.trimMinlen}" : ""
+    trimsteps = ILLUMINACLIP + ' ' + SLIDINGWINDOW + ' ' + LEADING + ' ' + TRAILING + ' ' + CROP + ' ' + HEADCROP + ' ' + MINLEN
+    """
+    trimmomatic PE -threads ${params.threads} \
+        ${readsFiles} \
+        ${sampleName}_trimmed_R1.fastq.gz \
+        /dev/null \
+        ${sampleName}_trimmed_R2.fastq.gz \
+        /dev/null \
+        ${trimsteps}
+    """
+
 }
 
 // Classify reads using Kraken
@@ -229,10 +260,12 @@ process read_classification {
     cpus params.threads
 
     input:
-    tuple val(sampleName), file(readsFile)
+    val(sampleName)
+    file(readsFile)
 
     output:
-    tuple file("${sampleName}.kraken"), file("${sampleName}.kreport")
+    path "${sampleName}.kraken", emit: krakenfile
+    path "${sampleName}.kreport", emit: krakenreport
 
     script:
     quickflag = params.dev ? '--quick' : ''
@@ -252,11 +285,13 @@ process read_filtering {
     cpus 1
 
     input:
-    tuple val(sampleName),  file(readsFile)
-    tuple file(krakenFile), file(krakenReport)
+    val(sampleName)
+    file(readsFile)
+    file(krakenFile)
+    file(krakenReport)
 
     output:
-    tuple val(sampleName), file("${sampleName}_filtered*.fastq.gz")
+    file("${sampleName}_filtered*.fastq.gz")
 
     script:
     read2flagin  = (params.pe) ? "-s2 ${readsFile[1]}" : ''
@@ -278,10 +313,11 @@ process assembly_ont {
     cpus params.threads
 
     input:
-    tuple val(sampleName), file(readsFile)
+    val(sampleName)
+    file(readsFile)
 
     output:
-    tuple val(sampleName), file("${sampleName}.contigs.fasta")
+    file("${sampleName}.contigs.fasta")
 
     script:
     """
@@ -298,10 +334,11 @@ process assembly_pe {
     cpus params.threads
 
     input:
-    tuple val(sampleName), file(readsFiles)
+    val(samplename)
+    file(readsFiles)
 
     output:
-    tuple val(sampleName), file("contigs.fasta")
+    file("contigs.fasta")
 
     script:
     """
@@ -311,12 +348,13 @@ process assembly_pe {
 
 }
 
-// Remap contigs using bowtie2
+// Remap contigs
 process contigs_realign_to_reference {
     cpus params.threads
 
     input:
-    tuple val(sampleName), file(contigs)
+    val(sampleName)
+    file(contigs)
     file(reference)
 
     output:
@@ -334,7 +372,8 @@ process reads_realign_to_reference {
     cpus params.threads
 
     input:
-    tuple val(sampleName), file(readsFile)
+    val(sampleName)
+    file(readsFile)
     file(reference)
 
     output:
@@ -353,6 +392,7 @@ process variants_calling_ivar {
     cpus 1
 
     input:
+    val(sampleName)
     file(bamfile)
     file(reference)
     file(annotations)
@@ -361,15 +401,11 @@ process variants_calling_ivar {
     file("*.ivar.tsv")
 
     script:
-    // We have to refer to the first file in each of the inputs b/c they are tuples
-    // containing the required index files as well
-    prefix = bamfile[0].getName().replace('.bam', '')
-
     // Crank up the quality metrics (just do it less if we're working with nanopore reads)
     qualFlags = (params.pe) ? '-q30 -t 0.05 -m 1000' : '-q 21 -t 0.05 -m 1500'
     """
     samtools mpileup -aa -A -B -Q 0 --reference ${reference[0]} ${bamfile[0]} | \
-        ivar variants -p ${prefix}.ivar -r ${reference[0]} -g ${annotations} ${qualFlags}
+        ivar variants -p ${sampleName}.ivar -r ${reference[0]} -g ${annotations} ${qualFlags}
     """
 }
 
@@ -378,6 +414,7 @@ process variants_analysis {
     cpus 1
 
     input:
+    val(prefix)
     file(variantCalls)
     file(bamfile)
     file(reference)
@@ -386,7 +423,6 @@ process variants_analysis {
     file("*.counts.tsv")
 
     shell:
-    prefix = bamfile[0].getName().replace('.bam', '')
     '''
     touch !{prefix}.counts.tsv
     while read -r LINE; do
@@ -409,6 +445,7 @@ process variants_filter {
     publishDir OutFolder, mode: 'symlink'
 
     input:
+    val(prefix)
     file(variantCalls)
     file(variantStats)
 
@@ -416,7 +453,6 @@ process variants_filter {
     file("*.filtered.tsv")
 
     script:
-    prefix = variantCalls[0].getName().replace('.tsv', '')
     """
     export JULIA_NUM_THREADS=${params.threads}
     variantfilter ${variantCalls[0]} ${variantStats[0]} ${prefix}.filtered.tsv
@@ -432,6 +468,7 @@ process multimutation_search {
     publishDir OutFolder, mode: 'symlink'
 
     input:
+    val(prefix)
     file(bamfile)
     file(variants)
 
@@ -440,7 +477,6 @@ process multimutation_search {
     file("*.yaml")
 
     script:
-    prefix = bamfile[0].getName().replace('.bam', '')
     """
     export JULIA_NUM_THREADS=${params.threads}
     find-variant-reads ${bamfile[0]} ${variants[0]} ${prefix}.haplotypes.csv ${prefix}.haplotypes.yaml
