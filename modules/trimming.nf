@@ -8,17 +8,14 @@ workflow trimming {
     main:
     if (params.ont) {
         read_trimming_ont(reads)
-        samplename = read_trimming_ont.out.samplename
-        trimmedreads = read_trimming_ont.out.trimmedreads
+        trimmedreads = read_trimming_ont.out
     }
     else {
         read_trimming_pe(reads)
-        samplename = read_trimming_pe.out.samplename
-        trimmedreads = read_trimming_pe.out.trimmedreads
+        trimmedreads = read_trimming_pe.out
     }
 
     emit:
-    samplename = samplename
     trimmedreads = trimmedreads
 }
 
@@ -27,31 +24,28 @@ process read_trimming_ont {
     cpus params.threads
 
     input:
-    tuple val(fileName), file(readsFiles)
+    tuple val(sampleName), file(readsFiles)
 
     output:
-    val(sampleName), emit: samplename
-    path "*.fastq.gz", emit: trimmedreads
+    tuple val(sampleName), file("*.fastq.gz")
 
     script:
-    sampleName = fileName.split('_')[0]
     """
     gunzip -c ${readsFiles} | \
         NanoFilt -l 100 -q 10 | \
         gzip > ${sampleName}_trimmed.fastq.gz
     """
-
 }
 
 // Trim Illumina reads
 process read_trimming_pe {
     cpus params.threads
+
     input:
-    tuple val(fileName), file(readsFiles)
+    tuple val(sampleName), file(readsFiles)
 
     output:
-    val(sampleName), emit: samplename
-    path "*.fastq.gz", emit: trimmedreads
+    tuple val(sampleName), file("*.fastq.gz")
 
     script:
     sampleName = fileName.split('_')[0]
@@ -73,5 +67,4 @@ process read_trimming_pe {
         /dev/null \
         ${trimsteps}
     """
-
 }

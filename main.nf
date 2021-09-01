@@ -58,15 +58,7 @@ workflow {
             .take( params.dev ? params.devinputs : -1 )
     }
 
-    // Trim the reads
-    trimming(RawReads)
-    SampleNames = trimming.out.samplename
-    TrimmedReads = trimming.out.trimmedreads
-
-    // Classify the reads
-    read_classification(SampleNames, TrimmedReads)
-    KrakenFiles = read_classification.out.krakenfile
-    KrakenReports = read_classification.out.krakenreport
+    RawReads | sample_rename | trimming | read_classification
 
     // Filter out the non-viral reads
     read_filtering(SampleNames, TrimmedReads, KrakenFiles, KrakenReports)
@@ -104,6 +96,32 @@ workflow {
 
     // Put a pretty bow on everything
     presentation_generator(IndexedReference, Alignments.concat(AlignedContigs).collect())
+}
+
+process sample_rename {
+    cpus 1
+
+    input:
+    tuple(fileName), file(readsFiles)
+
+    output:
+    tuple(sampleName), file("out/*.fastq.gz")
+
+    script:
+    sampleName = givenName.split('_')[0]
+    if (params.ont) {
+        """
+        mkdir out
+        mv ${readsFiles[0]} out/${sampleName}.fastq.gz
+        """
+    }
+    else {
+        """
+        mkdir out
+        mv ${readsFiles[0]} out/${sampleName}_R1.fastq.gz
+        mv ${readsFiles[1]} out/${sampleName}_R2.fastq.gz
+        """
+    }
 }
 
 // Get the reference genome in FASTA format
@@ -172,12 +190,10 @@ process read_classification {
     cpus params.threads
 
     input:
-    val(sampleName)
-    file(readsFile)
+    tuple val(sampleName), file(readsFile)
 
     output:
-    path "${sampleName}.kraken", emit: krakenfile
-    path "${sampleName}.kreport", emit: krakenreport
+    tuple val(sampleName), file("${sampleName}.kraken"), file("${sampleName}.kreport")
 
     script:
     quickflag = params.dev ? '--quick' : ''
