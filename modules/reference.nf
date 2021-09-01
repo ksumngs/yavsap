@@ -1,6 +1,9 @@
 #!/usr/bin/env nextflow
 nextflow.enable.dsl = 2
 
+// Declare what we're going to call our reference genome
+ReferenceName = 'JEV'
+
 workflow reference_genome_pull {
     main:
     // Pull and index the reference genome of choice

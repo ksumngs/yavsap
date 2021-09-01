@@ -38,7 +38,7 @@ include { trimming } from './modules/trimming.nf'
 include { assembly } from './modules/assembly.nf'
 
 workflow {
-    reference_genome_pull
+    reference_genome_pull()
     IndexedReference = reference_genome_pull.out.indexedreference
     AnnotatedReference = reference_genome_pull.out.annotatedreference
 
@@ -57,39 +57,43 @@ workflow {
 
     RawReads | sample_rename | trimming | read_classification
 
+    KrakenReads = trimming.out.join(read_classification.out)
+
     // Filter out the non-viral reads
-    read_filtering(SampleNames, TrimmedReads, KrakenFiles, KrakenReports)
+    read_filtering(KrakenReads)
     FilteredReads = read_filtering.out
 
-    // Realign reads to the reference genome
-    reads_realign_to_reference(SampleNames, FilteredReads, IndexedReference)
-    Alignments = reads_realign_to_reference.out
-
     // _de novo_ assemble the viral reads
-    assembly(SampleNames, FilteredReads)
+    assembly(FilteredReads)
     Assemblies = assembly.out
 
     // Realign contigs to the reference genome
-    contigs_realign_to_reference(SampleNames, Assemblies, IndexedReference)
+    contigs_realign_to_reference(Assemblies, IndexedReference)
     AlignedContigs = contigs_realign_to_reference.out
+
+    // Realign reads to the reference genome
+    reads_realign_to_reference(FilteredReads, IndexedReference)
+    Alignments = reads_realign_to_reference.out
 
     // Call haplotypes
     haplotype_calling_cliquesnv(Alignments)
 
     // Call variants
-    variants_calling_ivar(SampleNames, Alignments, IndexedReference, AnnotatedReference)
+    variants_calling_ivar(Alignments, IndexedReference, AnnotatedReference)
     VariantCalls = variants_calling_ivar.out
 
+    AlignmentStats = Alignments.join(VariantCalls)
+
     // Get variant stats
-    variants_analysis(SampleNames, VariantCalls, Alignments, IndexedReference)
-    VariantStats = variants_analysis.out
+    variants_analysis(AlignmentStats, IndexedReference)
+    VariantStats = VariantCalls.join(variants_analysis.out)
 
     // Filter variants
-    variants_filter(SampleNames, VariantCalls, VariantStats)
-    FilteredVariantCalls = variants_filter.out
+    variants_filter(VariantStats)
+    FilteredVariantCalls = Alignments.join(variants_filter.out)
 
     // Sanity-check those variants
-    multimutation_search(SampleNames, Alignments, FilteredVariantCalls)
+    multimutation_search(FilteredVariantCalls)
 
     // Put a pretty bow on everything
     presentation_generator(IndexedReference, Alignments.concat(AlignedContigs).collect())
@@ -99,10 +103,10 @@ process sample_rename {
     cpus 1
 
     input:
-    tuple(fileName), file(readsFiles)
+    tuple val(givenName), file(readsFiles)
 
     output:
-    tuple(sampleName), file("out/*.fastq.gz")
+    tuple val(sampleName), file("out/*.fastq.gz")
 
     script:
     sampleName = givenName.split('_')[0]
@@ -149,13 +153,10 @@ process read_filtering {
     cpus 1
 
     input:
-    val(sampleName)
-    file(readsFile)
-    file(krakenFile)
-    file(krakenReport)
+    tuple val(sampleName), file(readsFile), file(krakenFile), file(krakenReport)
 
     output:
-    file("${sampleName}_filtered*.fastq.gz")
+    tuple val(sampleName), file("${sampleName}_filtered*.fastq.gz")
 
     script:
     read2flagin  = (params.pe) ? "-s2 ${readsFile[1]}" : ''
@@ -177,12 +178,11 @@ process contigs_realign_to_reference {
     cpus params.threads
 
     input:
-    val(sampleName)
-    file(contigs)
+    tuple val(sampleName), file(contigs)
     file(reference)
 
     output:
-    file("*.{bam,bai}")
+    tuple val(sampleName), file("*.{bam,bai}")
 
     script:
     """
@@ -196,12 +196,11 @@ process reads_realign_to_reference {
     cpus params.threads
 
     input:
-    val(sampleName)
-    file(readsFile)
+    tuple val(sampleName), file(readsFile)
     file(reference)
 
     output:
-    file("*.{bam,bai}")
+    tuple val(sampleName), file("*.{bam,bai}")
 
     script:
     minimapMethod = (params.pe) ? 'sr' : 'map-ont'
@@ -216,13 +215,12 @@ process variants_calling_ivar {
     cpus 1
 
     input:
-    val(sampleName)
-    file(bamfile)
+    tuple val(sampleName), file(bamfile)
     file(reference)
     file(annotations)
 
     output:
-    file("*.ivar.tsv")
+    tuple val(sampleName), file("*.ivar.tsv")
 
     script:
     // Crank up the quality metrics (just do it less if we're working with nanopore reads)
@@ -239,7 +237,7 @@ process haplotype_calling_cliquesnv {
     publishDir OutFolder, mode: 'symlink'
 
     input:
-    file(bamfile)
+    tuple val(sampleName), file(bamfile)
 
     output:
     file "*.{json,fasta}"
@@ -257,13 +255,11 @@ process variants_analysis {
     cpus 1
 
     input:
-    val(prefix)
-    file(variantCalls)
-    file(bamfile)
+    tuple val(prefix), file(bamfile), file(variantCalls)
     file(reference)
 
     output:
-    file("*.counts.tsv")
+    tuple val(prefix), file("*.counts.tsv")
 
     shell:
     '''
@@ -288,12 +284,10 @@ process variants_filter {
     publishDir OutFolder, mode: 'symlink'
 
     input:
-    val(prefix)
-    file(variantCalls)
-    file(variantStats)
+    tuple val(prefix), file(variantCalls), file(variantStats)
 
     output:
-    file("*.filtered.tsv")
+    tuple val(prefix), file("*.filtered.tsv")
 
     script:
     """
@@ -311,9 +305,7 @@ process multimutation_search {
     publishDir OutFolder, mode: 'symlink'
 
     input:
-    val(prefix)
-    file(bamfile)
-    file(variants)
+    tuple val(prefix), file(bamfile), file(variants)
 
     output:
     file("*.csv")

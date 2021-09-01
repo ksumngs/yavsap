@@ -3,16 +3,15 @@ nextflow.enable.dsl = 2
 
 workflow assembly {
     take:
-    SampleName
-    Reads
+    reads
 
     main:
     if (params.ont) {
-        assembly_ont(SampleName, Reads)
+        assembly_ont(reads)
         results = assembly_ont.out
     }
     else {
-        assembly_pe(SampleName, Reads)
+        assembly_pe(reads)
         results = assembly_pe.out
     }
 
@@ -26,11 +25,10 @@ process assembly_ont {
     cpus params.threads
 
     input:
-    val(sampleName)
-    file(readsFile)
+    tuple val(sampleName), file(readsFile)
 
     output:
-    file("${sampleName}.contigs.fasta")
+    tuple val(sampleName), file("${sampleName}.contigs.fasta")
 
     script:
     """
@@ -47,11 +45,10 @@ process assembly_pe {
     cpus params.threads
 
     input:
-    val(samplename)
-    file(readsFiles)
+    tuple val(sampleName), file(readsFiles)
 
     output:
-    file("contigs.fasta")
+    tuple val(sampleName), file("contigs.fasta")
 
     script:
     """
