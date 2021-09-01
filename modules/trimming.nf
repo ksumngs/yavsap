@@ -32,7 +32,7 @@ process read_trimming_ont {
     script:
     """
     gunzip -c ${readsFiles} | \
-        NanoFilt -l ${params.trimMinLen} -q ${params.trimWinqual} | \
+        NanoFilt -l ${params.trimMinlen} -q ${params.trimWinqual} | \
         gzip > ${sampleName}_trimmed.fastq.gz
     """
 }
