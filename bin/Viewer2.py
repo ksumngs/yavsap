@@ -1,1 +1,1 @@
-ProwlerTrimmer/Viewer2.py
+../ProwlerTrimmer/Viewer2.py

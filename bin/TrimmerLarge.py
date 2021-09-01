@@ -1,1 +1,1 @@
-ProwlerTrimmer/TrimmerLarge.py
+../ProwlerTrimmer/TrimmerLarge.py

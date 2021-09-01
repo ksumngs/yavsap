@@ -1,1 +1,1 @@
-ProwlerTrimmer/Fastq.py
+../ProwlerTrimmer/Fastq.py
