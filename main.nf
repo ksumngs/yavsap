@@ -341,6 +341,7 @@ process haplotype_calling_julia {
 
 process haplotype_calling_cliquesnv {
     cpus params.threads
+    memory params.cliquemem
 
     publishDir OutFolder, mode: 'symlink'
 
@@ -353,7 +354,8 @@ process haplotype_calling_cliquesnv {
     script:
     mode = (params.ont) ? 'snv-pacbio' : 'snv-illumina'
     """
-    clique-snv -m ${mode} -in ${bamfile[0]}
+    java -Xmx${params.cliquemem} -jar /opt/CliqueSNV-2.0.2/clique-snv.jar \
+        -m ${mode} -threads ${params.threads} -in ${bamfile[0]}
     mv snv_output/* .
     """
 }
