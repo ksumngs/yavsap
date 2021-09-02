@@ -283,6 +283,8 @@ process variants_filter {
 // a single viral genome. To start, we will look to see if there are reads that contain more
 // than one mutation in them as called by ivar
 process haplotype_calling_julia {
+    label 'julia'
+
     cpus params.threads
 
     publishDir OutFolder, mode: 'symlink'
