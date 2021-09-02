@@ -1,3 +1,3 @@
 bin/variantfilter linguist-language=Julia
-bin/find-variant-reads linguist-language=Julia
+bin/haplotype-finder linguist-language=Julia
 nextflow.config linguist-language=Nextflow

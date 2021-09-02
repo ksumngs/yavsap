@@ -75,9 +75,6 @@ workflow {
     reads_realign_to_reference(FilteredReads, IndexedReference)
     Alignments = reads_realign_to_reference.out
 
-    // Call haplotypes
-    haplotype_calling_cliquesnv(Alignments)
-
     // Call variants
     variants_calling_ivar(Alignments, IndexedReference, AnnotatedReference)
     VariantCalls = variants_calling_ivar.out
@@ -93,7 +90,10 @@ workflow {
     FilteredVariantCalls = Alignments.join(variants_filter.out)
 
     // Sanity-check those variants
-    multimutation_search(FilteredVariantCalls)
+    haplotype_calling_julia(FilteredVariantCalls)
+
+    // Call haplotypes
+    haplotype_calling_cliquesnv(Alignments)
 
     AllAlignments = Alignments.join(AlignedContigs, remainder: true).flatMap{ n -> [n[1], n[2]] }.collect()
 
@@ -233,25 +233,6 @@ process variants_calling_ivar {
     """
 }
 
-process haplotype_calling_cliquesnv {
-    cpus params.threads
-
-    publishDir OutFolder, mode: 'symlink'
-
-    input:
-    tuple val(sampleName), file(bamfile)
-
-    output:
-    file "*.{json,fasta}"
-
-    script:
-    mode = (params.ont) ? 'snv-pacbio' : 'snv-illumina'
-    """
-    clique-snv -m ${mode} -in ${bamfile[0]}
-    mv snv_output/* .
-    """
-}
-
 // Get stats on the called variants
 process variants_analysis {
     cpus 1
@@ -301,7 +282,7 @@ process variants_filter {
 // At some point, we will need to use long reads to find if mutations are linked within
 // a single viral genome. To start, we will look to see if there are reads that contain more
 // than one mutation in them as called by ivar
-process multimutation_search {
+process haplotype_calling_julia {
     cpus params.threads
 
     publishDir OutFolder, mode: 'symlink'
@@ -316,7 +297,26 @@ process multimutation_search {
     script:
     """
     export JULIA_NUM_THREADS=${params.threads}
-    find-variant-reads ${bamfile[0]} ${variants[0]} ${prefix}.haplotypes.csv ${prefix}.haplotypes.yaml
+    haplotype-finder ${bamfile[0]} ${variants[0]} ${prefix}.haplotypes.csv ${prefix}.haplotypes.yaml
+    """
+}
+
+process haplotype_calling_cliquesnv {
+    cpus params.threads
+
+    publishDir OutFolder, mode: 'symlink'
+
+    input:
+    tuple val(sampleName), file(bamfile)
+
+    output:
+    file "*.{json,fasta}"
+
+    script:
+    mode = (params.ont) ? 'snv-pacbio' : 'snv-illumina'
+    """
+    clique-snv -m ${mode} -in ${bamfile[0]}
+    mv snv_output/* .
     """
 }
 
