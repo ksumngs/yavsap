@@ -95,7 +95,7 @@ workflow {
     // Sanity-check those variants
     multimutation_search(FilteredVariantCalls)
 
-    AllAlignments = Alignments.join(AlignedContigs).flatMap{ n -> [n[1], n[2]] }.collect()
+    AllAlignments = Alignments.join(AlignedContigs, remainder: true).flatMap{ n -> [n[1], n[2]] }.collect()
 
     // Put a pretty bow on everything
     presentation_generator(IndexedReference, AllAlignments)
