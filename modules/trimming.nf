@@ -49,7 +49,6 @@ process read_trimming_pe {
     tuple val(sampleName), file("*.fastq.gz")
 
     script:
-    sampleName = fileName.split('_')[0]
     // Put together the trimmomatic parameters
     ILLUMINACLIP = "ILLUMINACLIP:/Trimmomatic-0.39/adapters/${params.trimAdapters}:${params.trimMismatches}:${params.trimPclip}:${params.trimClip}"
     SLIDINGWINDOW = ( params.trimWinsize > 0 && params.trimWinqual > 0 ) ? "SLIDINGWINDOW:${params.trimWinsize}:${params.trimWinqual}" : ""
