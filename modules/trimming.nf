@@ -21,6 +21,8 @@ workflow trimming {
 
 
 process read_trimming_ont {
+    label 'filtlong'
+
     cpus params.threads
 
     input:
@@ -40,6 +42,8 @@ process read_trimming_ont {
 
 // Trim Illumina reads
 process read_trimming_pe {
+    label 'trimmomatic'
+
     cpus params.threads
 
     input:

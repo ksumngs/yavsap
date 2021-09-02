@@ -21,6 +21,8 @@ workflow reference_genome_pull {
 
 // Get the reference genome in FASTA format
 process reference_genome_pull_fasta {
+    label 'edirect'
+
     cpus 1
 
     output:
@@ -34,6 +36,8 @@ process reference_genome_pull_fasta {
 
 // Get the reference genome in GenBank format
 process reference_genome_pull_genbank {
+    label 'edirect'
+
     cpus 1
 
     output:
@@ -47,6 +51,8 @@ process reference_genome_pull_genbank {
 
 // Index the reference genome for use with Samtools
 process reference_genome_index_samtools {
+    label 'samtools'
+
     cpus 1
 
     input:
@@ -65,6 +71,8 @@ process reference_genome_index_samtools {
 
 // Process the reference genome's feature table into GFF format
 process reference_genome_annotate {
+    label 'seqret'
+
     cpus 1
 
     input:

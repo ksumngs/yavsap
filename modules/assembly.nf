@@ -22,6 +22,8 @@ workflow assembly {
 
 // Assemble using Canu
 process assembly_ont {
+    label 'canu'
+
     cpus params.threads
 
     input:
@@ -40,6 +42,8 @@ process assembly_ont {
 }
 
 process assembly_pe {
+    label 'spades'
+
     cpus params.threads
 
     input:

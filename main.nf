@@ -132,6 +132,8 @@ process sample_rename {
 
 // Classify reads using Kraken
 process read_classification {
+    label 'kraken'
+
     cpus params.threads
 
     input:
@@ -155,6 +157,8 @@ process read_classification {
 // Pull the viral reads and any unclassified reads from the original reads
 // files for futher downstream processing using KrakenTools
 process read_filtering {
+    label 'krakentools'
+
     cpus 1
 
     input:
@@ -180,6 +184,8 @@ process read_filtering {
 
 // Remap contigs
 process contigs_realign_to_reference {
+    label 'minimap'
+
     cpus params.threads
 
     input:
@@ -198,6 +204,8 @@ process contigs_realign_to_reference {
 }
 
 process reads_realign_to_reference {
+    label 'minimap'
+
     cpus params.threads
 
     input:
@@ -250,6 +258,8 @@ process alignments_index_samtools {
 }
 
 process variants_calling_ivar {
+    label 'ivar'
+
     cpus 1
 
     input:
@@ -271,6 +281,8 @@ process variants_calling_ivar {
 
 // Get stats on the called variants
 process variants_analysis {
+    label 'bam_readcount'
+
     cpus 1
 
     input:
@@ -298,6 +310,8 @@ process variants_analysis {
 
 // More strictly filter the variants based on strand bias and read position
 process variants_filter {
+    label 'julia'
+
     cpus params.threads
 
     publishDir OutFolder, mode: 'symlink'
@@ -340,6 +354,8 @@ process haplotype_calling_julia {
 }
 
 process haplotype_calling_cliquesnv {
+    label 'cliquesnv'
+
     cpus params.threads
     memory params.cliquemem
 
