@@ -34,6 +34,7 @@
     "files.associations": {
         "*haplotype-finder": "julia",
         "*variantfilter": "julia",
+        "*remove-invalid-reads": "julia",
         "nextflow.config": "nextflow"
     }
 }

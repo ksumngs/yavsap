@@ -72,8 +72,11 @@ workflow {
     AlignedContigs = contigs_realign_to_reference.out
 
     // Realign reads to the reference genome
-    reads_realign_to_reference(FilteredReads, IndexedReference)
-    Alignments = reads_realign_to_reference.out
+    reads_realign_to_reference(FilteredReads, IndexedReference) | \
+        alignments_remove_invalids | \
+        alignments_index_samtools
+    Alignments = alignments_remove_invalids.out.join(alignments_index_samtools.out)
+        .map{n -> [n[0], [n[1], n[2]]] }
 
     // Call variants
     variants_calling_ivar(Alignments, IndexedReference, AnnotatedReference)
@@ -202,14 +205,47 @@ process reads_realign_to_reference {
     file(reference)
 
     output:
-    tuple val(sampleName), file("*.{bam,bai}")
+    tuple val(sampleName), file("${sampleName}_raw.bam")
 
     script:
     minimapMethod = (params.pe) ? 'sr' : 'map-ont'
     """
     minimap2 -ax ${minimapMethod} -t ${params.threads} --MD ${reference[0]} ${readsFile} | \
-        samtools sort > ${sampleName}.bam
-    samtools index ${sampleName}.bam
+        samtools sort > ${sampleName}_raw.bam
+    """
+}
+
+process alignments_remove_invalids {
+    label 'julia'
+
+    cpus 1
+
+    input:
+    tuple val(sampleName), file(bamFile)
+
+    output:
+    tuple val(sampleName), file("${sampleName}.bam")
+
+    script:
+    """
+    remove-invalid-reads ${bamFile} ${sampleName}.bam
+    """
+}
+
+process alignments_index_samtools {
+    label 'samtools'
+
+    cpus 1
+
+    input:
+    tuple val(sampleName), file(bamFile)
+
+    output:
+    tuple val(sampleName), file("*.bai")
+
+    script:
+    """
+    samtools index ${bamFile}
     """
 }
 
