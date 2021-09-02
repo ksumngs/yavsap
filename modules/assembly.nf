@@ -32,12 +32,10 @@ process assembly_ont {
 
     script:
     """
-    canu -p ${sampleName} -d out \
-        genomeSize=10976\
+    canu -p ${sampleName} \
+        genomeSize=10.5k \
         maxThreads=${params.threads} \
-        stopOnLowCoverage=3 \
         -nanopore ${readsFile}
-    cp out/${sampleName}.contigs.fasta .
     """
 }
 

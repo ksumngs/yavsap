@@ -27,13 +27,14 @@ process read_trimming_ont {
     tuple val(sampleName), file(readsFiles)
 
     output:
-    tuple val(sampleName), file("*.fastq.gz")
+    tuple val(sampleName), file("${sampleName}_trimmed.fastq.gz")
 
     script:
     """
-    gunzip -c ${readsFiles} | \
-        NanoFilt -l ${params.trimMinlen} -q ${params.trimWinqual} | \
-        gzip > ${sampleName}_trimmed.fastq.gz
+    filtlong --min_length ${params.trimMinlen} \
+        --keep_percent ${params.trimKeepPercent} \
+        --target_bases ${params.trimTargetBases} \
+        ${readsFiles} | gzip > ${sampleName}_trimmed.fastq.gz
     """
 }
 

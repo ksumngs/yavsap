@@ -1,1 +1,0 @@
-../ProwlerTrimmer/TrimmerLarge.py
