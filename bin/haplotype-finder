@@ -110,38 +110,25 @@ if length(haplotypecounts) > 0
         LD          = first.(linkage.(counts.(haplotypecounts))),
         p_val       = last.(linkage.(counts.(haplotypecounts)))
     )
-    CSV.write(outtsv, hapdata, delim="\t")
+    # CSV.write(outtsv, hapdata, delim="\t")
 
     # Find all variant positions that exhibit linkage
     linkedvariants = unique(cat(mutations.(haplotypecounts)..., dims=1))
 else
-    touch(outtsv)
+    # touch(outtsv)
     linkedvariants = Haplotype[]
 end
 
 # Create haplotype objects for any non-linked variants
 individualhaplotypes = Haplotype.(filter(!v -> v ∈ linkedvariants, variants))
+linkedhaplotypes = haplotype.(haplotypecounts)
 
 allhaplotypes = unique([haplotype.(haplotypecounts); equalhaplotypes; individualhaplotypes])
+filter!(!h -> h ∈ linkedhaplotypes, equalhaplotypes)
 
 # Quick and dirty writeout in yaml
 open(outyaml, "w") do f
-    for h in allhaplotypes
-        write(f, "---\n")
-        write(f, "mutations:\n")
-        for v in h.mutations
-            write(f, "  - chromosome: ")
-            write(f, v.region)
-            write(f, "\n")
-            write(f, "    position: ")
-            write(f, string(v.position))
-            write(f, "\n")
-            write(f, "    referencebase: ")
-            write(f, string(v.referencebase))
-            write(f, "\n")
-            write(f, "    alternatebase: ")
-            write(f, string(v.alternatebase))
-            write(f, "\n")
-        end #for
-    end #for
+    write(f, string(yamlize.(linkedhaplotypes, reason="linkage")...))
+    write(f, string(yamlize.(equalhaplotypes, reason="equality")...))
+    write(f, string(yamlize.(individualhaplotypes, reason="individual")...))
 end #do

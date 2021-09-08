@@ -497,3 +497,35 @@ function isunbiased(variant::DataFrameRow, countsdata::DataFrame; maxdiff=0.1, m
     return true
 
 end
+
+function yamlize(h::Haplotype; reason::Union{String,Nothing}=nothing)
+    return string(
+        "---\n",
+        isnothing(reason) ? "" : string("reason: ", reason, "\n"),
+        "mutations: \n",
+        yamlize.(h.mutations)...
+    )
+end
+
+function yamlize(v::Variant)
+    return string(
+        "  - chromosome: ",
+        v.region,
+        "\n",
+        "    position: ",
+        string(v.position),
+        "\n",
+        "    referencebase: ",
+        string(v.referencebase),
+        "\n",
+        "    alternatebase: ",
+        string(v.alternatebase),
+        "\n",
+        "    totaldepth: ",
+        string(v.totaldepth),
+        "\n",
+        "    alternatedepth: ",
+        string(v.alternatedepth),
+        "\n",
+    )
+end
