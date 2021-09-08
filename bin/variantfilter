@@ -8,7 +8,9 @@ exec julia --project="$(realpath "$(dirname "${BASH_SOURCE[0]}")")" "${BASH_SOUR
 # Import packages
 using CSV
 using DataFrames
-using HypothesisTests
+
+# Bring in the function definitions
+include("jev-function-lib.jl")
 
 # Take in the filenames
 variantfile = ARGS[1]
@@ -163,12 +165,12 @@ for variant in eachrow(ivar)
     # and also if the distribution is skewed more than 20%
     if abs(ref_plus_frac - alt_plus_frac) > 0.05 && abs(0.5 - alt_plus_frac) > 0.4
         # Perform a binomial test
-        test = BinomialTest(alt_plus, alt_total, ref_plus_frac)
+        p_val = prop_test([ref_plus, alt_plus], [ref_total, alt_total])
 
         # Check if the proportion of plus reads in the alternate base is significantly different
         # than the proportion of plus reads in the reference base
-        if pvalue(test) < 0.05
-            dropvariant(string("strand distribution reference plus strand ", ref_plus, "/", ref_total, " alternate plus strand ", alt_plus, "/", alt_total, " p-value ", pvalue(test)))
+        if p_val < 0.05
+            dropvariant(string("strand distribution reference plus strand ", ref_plus, "/", ref_total, " alternate plus strand ", alt_plus, "/", alt_total, " p-value ", p_val))
             continue
         end
     end
