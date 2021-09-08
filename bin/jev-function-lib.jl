@@ -336,3 +336,164 @@ function prop_test(x, n)
     statistic = sum((abs.(x2 .- E) .- yates).^2 ./ E)
     p_val = 1 .- cdf.(Chisq(param), statistic)
 end #function
+
+function bamcounts2bamdata(bamcounts::AbstractVector{String})
+    # Declare an empty bam stats data frame
+    countsdata = DataFrame(
+        chr                                  = String[],
+        position                             = Int[],
+        reference_base                       = String[],
+        depth                                = Int[],
+        base                                 = String[],
+        count                                = Int[],
+        avg_mapping_quality                  = Float64[],
+        avg_basequality                      = Float64[],
+        avg_se_mapping_quality               = Float64[],
+        num_plus_strand                      = Int[],
+        num_minus_strand                     = Int[],
+        avg_pos_as_fraction                  = Float64[],
+        avg_num_mismatches_as_fraction       = Float64[],
+        avg_sum_mismatch_qualities           = Float64[],
+        num_q2_containing_reads              = Int[],
+        avg_distance_to_q2_start_in_q2_reads = Float64[],
+        avg_clipped_length                   = Float64[],
+        avg_distance_to_effective_3p_end     = Float64[]
+    )
+
+    # Transform the bam stats file
+    for bamline in bamcounts
+        # Split the base-independent stats by tabs
+        bamfields = split(bamline, "\t")
+
+        # Loop through the base-dependent stat blocks
+        for i in 6:length(bamfields)
+                # Split the base-dependent stats by colons
+                basestats = split(bamfields[i], ":")
+
+                # Parse the data into the correct types
+                chr                                  = bamfields[1]
+                position                             = parse(Int, bamfields[2])
+                reference_base                       = bamfields[3]
+                depth                                = parse(Int, bamfields[4])
+                base                                 = basestats[1]
+                count                                = parse(Int, basestats[2])
+                avg_mapping_quality                  = parse(Float64, basestats[3])
+                avg_basequality                      = parse(Float64, basestats[4])
+                avg_se_mapping_quality               = parse(Float64, basestats[5])
+                num_plus_strand                      = parse(Int, basestats[6])
+                num_minus_strand                     = parse(Int, basestats[7])
+                avg_pos_as_fraction                  = parse(Float64, basestats[8])
+                avg_num_mismatches_as_fraction       = parse(Float64, basestats[9])
+                avg_sum_mismatch_qualities           = parse(Float64, basestats[10])
+                num_q2_containing_reads              = parse(Int, basestats[11])
+                avg_distance_to_q2_start_in_q2_reads = parse(Float64, basestats[12])
+                avg_clipped_length                   = parse(Float64, basestats[13])
+                avg_distance_to_effective_3p_end     = parse(Float64, basestats[14])
+
+                # Append the data to the dataframe
+                push!(countsdata, [
+                    chr,
+                    position,
+                    reference_base,
+                    depth,
+                    base,
+                    count,
+                    avg_mapping_quality,
+                    avg_basequality,
+                    avg_se_mapping_quality,
+                    num_plus_strand,
+                    num_minus_strand,
+                    avg_pos_as_fraction,
+                    avg_num_mismatches_as_fraction,
+                    avg_sum_mismatch_qualities,
+                    num_q2_containing_reads,
+                    avg_distance_to_q2_start_in_q2_reads,
+                    avg_clipped_length,
+                    avg_distance_to_effective_3p_end
+                ])
+        end
+    end
+
+    return countsdata
+end #function
+
+function variantwarning(variant::DataFrameRow, reason::String)
+    @warn string("Dropping variant '", variant.ALT, "' from ", variant.REGION, ":", variant.POS, "-", variant.POS, ". Reason: ", reason)
+end #function
+
+function matchingbam(variant::DataFrameRow, countsdata::DataFrame)
+    # Find the matching bam stats for this variant call
+    bammatches = countsdata[(countsdata.chr .== variant.REGION) .& (countsdata.position .== variant.POS) .& (countsdata.base .== variant.ALT),:]
+    if length(eachrow(bammatches)) < 1
+        variantwarning(variant, "variant mismatch")
+        return nothing
+    end
+    bammatch = first(bammatches)
+
+    # Sanity-check => ivar.REF == bam.reference_base
+    if variant.REF != bammatch.reference_base
+        error(string("iVar reports reference base ", variant.REF, ", but bam reports ", bammatch.reference_base, " at ", variant.REGION, ":", variant.POS))
+    end
+
+    return bammatch
+end #function
+
+function isdistributed(variant::DataFrameRow, countsdata::DataFrame; strandpos=0.1)
+    bammatch = matchingbam(variant, countsdata)
+    if isnothing(bammatch)
+        return false
+    end
+
+    # Check that average read position is greater than 0.1 (variants are not called exclusively within 10% of the read edges)
+    if abs(bammatch.avg_pos_as_fraction) < strandpos
+        variantwarning(variant, string("read position ", bammatch.avg_pos_as_fraction))
+        return false
+    end
+
+    return true
+end #function
+
+function isunbiased(variant::DataFrameRow, countsdata::DataFrame; maxdiff=0.1, maxskew=0.2, minp=1e-5)
+    bammatch = matchingbam(variant, countsdata)
+    if isnothing(bammatch)
+        return false
+    end
+
+    # Pull the reference stats
+    bamref = first(countsdata[(countsdata.chr .== variant.REGION) .& (countsdata.position .== variant.POS) .& (countsdata.base .== variant.REF),:])
+
+    # Pull the contingencies into variables for clarity
+    ref_plus  = bamref.num_plus_strand
+    ref_minus = bamref.num_minus_strand
+    alt_plus  = bammatch.num_plus_strand
+    alt_minus = bammatch.num_minus_strand
+
+    # If all reads are only on one strand (e.g. Nanopore), then skip this analysis
+    if (ref_plus + alt_plus) == 0 || (ref_minus + alt_minus == 0)
+        return true
+    end
+
+    # Get the proportions
+    ref_total = ref_plus + ref_minus
+    alt_total = alt_plus + alt_minus
+    ref_plus_frac = ref_plus / ref_total
+    alt_plus_frac = alt_plus / alt_total
+
+    # Calculate difference
+    diff = abs(ref_plus_frac - alt_plus_frac)
+
+    # Calculate skew
+    skew = abs(0.5 - alt_plus_frac)
+
+    # Calculate probabilities
+    p_val = prop_test([ref_plus, alt_plus], [ref_total, alt_total])
+
+    # Check if this record is in range
+    if (diff > maxdiff) && (skew > 2maxskew) && (p_val < minp)
+        variantwarning(variant, string("strand distribution reference plus strand ", ref_plus, "/", ref_total, " alternate plus strand ", alt_plus, "/", alt_total, " p-value ", p_val))
+        return false
+    end
+
+    return true
+
+end
