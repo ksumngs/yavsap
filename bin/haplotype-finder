@@ -58,15 +58,6 @@ hap_min = args["min_occurrences"]
 # Bring in the function definitions
 include("jev-function-lib.jl")
 
-# Find the index file
-baifile = string(bamfile, ".bai")
-if !isfile(baifile)
-    baifile = replace(bamfile, ".bam" => ".bai")
-end
-if !isfile(baifile)
-    error("Could not find index file for BAM file")
-end
-
 # Check if there are any variants
 if length(readlines(varfile)) < 2
     touch(outtsv)
@@ -87,7 +78,7 @@ variantpairs = Haplotype.(collect(combinations(variants, 2)))
 equalhaplotypes = filter(h -> prop_test(alternatedepth.(h.mutations), totaldepth.(h.mutations)) > hap_sig, variantpairs)
 
 # Import reads from the BAM file
-reader = open(BAM.Reader, bamfile, index=baifile)
+reader = open(BAM.Reader, bamfile)
 
 # Compute frequency stats
 haplotypecounts = findoccurrences.(variantpairs, [reader])
