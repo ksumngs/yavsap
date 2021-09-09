@@ -9,6 +9,7 @@ using BioSymbols
 using DataFrames
 using Distributions
 using FASTX
+using UUIDs
 using XAM
 
 """
@@ -552,7 +553,7 @@ end
 
 function mutaterecord(record::FASTA.Record, haplotype::Haplotype)
     mutationpos = position.(mutations(haplotype))
-    newid = string(identifier(record),"_mutated_pos_",join(mutationpos, "_"))
+    newid = string(identifier(record), ".", last(string(uuid1()),2))
     newseq = mutatesequence(sequence(record), haplotype)
     newdesc = ""
     if FASTA.hasdescription(record)
