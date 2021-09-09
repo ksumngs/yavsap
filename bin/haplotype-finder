@@ -110,12 +110,12 @@ if length(haplotypecounts) > 0
         LD          = first.(linkage.(counts.(haplotypecounts))),
         p_val       = last.(linkage.(counts.(haplotypecounts)))
     )
-    # CSV.write(outtsv, hapdata, delim="\t")
+    CSV.write(outtsv, hapdata, delim="\t")
 
     # Find all variant positions that exhibit linkage
     linkedvariants = unique(cat(mutations.(haplotypecounts)..., dims=1))
 else
-    # touch(outtsv)
+    touch(outtsv)
     linkedvariants = Haplotype[]
 end
 
