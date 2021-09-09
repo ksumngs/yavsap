@@ -72,11 +72,8 @@ workflow {
     AlignedContigs = contigs_realign_to_reference.out
 
     // Realign reads to the reference genome
-    reads_realign_to_reference(FilteredReads, IndexedReference) | \
-        alignments_remove_invalids | \
-        alignments_index_samtools
-    Alignments = alignments_remove_invalids.out.join(alignments_index_samtools.out)
-        .map{n -> [n[0], [n[1], n[2]]] }
+    reads_realign_to_reference(FilteredReads, IndexedReference)
+    Alignments = reads_realign_to_reference.out
 
     // Call variants
     variants_calling_ivar(Alignments, IndexedReference, AnnotatedReference)
@@ -94,9 +91,6 @@ workflow {
 
     // Sanity-check those variants
     haplotype_calling_julia(FilteredVariantCalls)
-
-    // Call haplotypes
-    haplotype_calling_cliquesnv(Alignments)
 
     AllAlignments = Alignments.join(AlignedContigs, remainder: true).flatMap{ n -> [n[1], n[2]] }.collect()
 
@@ -213,47 +207,14 @@ process reads_realign_to_reference {
     file(reference)
 
     output:
-    tuple val(sampleName), file("${sampleName}_raw.bam")
+    tuple val(sampleName), file("${sampleName}.{bam,bam.bai}")
 
     script:
     minimapMethod = (params.pe) ? 'sr' : 'map-ont'
     """
     minimap2 -ax ${minimapMethod} -t ${params.threads} --MD ${reference[0]} ${readsFile} | \
-        samtools sort > ${sampleName}_raw.bam
-    """
-}
-
-process alignments_remove_invalids {
-    label 'julia'
-
-    cpus 1
-
-    input:
-    tuple val(sampleName), file(bamFile)
-
-    output:
-    tuple val(sampleName), file("${sampleName}.bam")
-
-    script:
-    """
-    remove-invalid-reads ${bamFile} ${sampleName}.bam
-    """
-}
-
-process alignments_index_samtools {
-    label 'samtools'
-
-    cpus 1
-
-    input:
-    tuple val(sampleName), file(bamFile)
-
-    output:
-    tuple val(sampleName), file("*.bai")
-
-    script:
-    """
-    samtools index ${bamFile}
+        samtools sort > ${sampleName}.bam
+    samtools index ${sampleName}.bam
     """
 }
 
@@ -350,29 +311,6 @@ process haplotype_calling_julia {
     """
     export JULIA_NUM_THREADS=${params.threads}
     haplotype-finder ${bamfile[0]} ${variants[0]} ${prefix}.haplotypes.csv ${prefix}.haplotypes.yaml
-    """
-}
-
-process haplotype_calling_cliquesnv {
-    label 'cliquesnv'
-
-    cpus params.threads
-    memory params.cliquemem
-
-    publishDir OutFolder, mode: 'symlink'
-
-    input:
-    tuple val(sampleName), file(bamfile)
-
-    output:
-    file "*.{json,fasta}"
-
-    script:
-    mode = (params.ont) ? 'snv-pacbio' : 'snv-illumina'
-    """
-    java -Xmx${params.cliquemem} -jar /opt/CliqueSNV-2.0.2/clique-snv.jar \
-        -m ${mode} -threads ${params.threads} -in ${bamfile[0]}
-    mv snv_output/* .
     """
 }
 
