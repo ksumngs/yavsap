@@ -8,6 +8,7 @@ using BioSequences
 using BioSymbols
 using DataFrames
 using Distributions
+using FASTX
 using XAM
 
 """
