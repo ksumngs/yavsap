@@ -553,7 +553,7 @@ end
 
 function mutaterecord(record::FASTA.Record, haplotype::Haplotype)
     mutationpos = position.(mutations(haplotype))
-    newid = string(identifier(record), ".", last(string(uuid1()),2))
+    newid = appendedid(record)
     newseq = mutatesequence(sequence(record), haplotype)
     newdesc = ""
     if FASTA.hasdescription(record)
@@ -576,4 +576,11 @@ function mutatesequence(seq::NucleotideSeq, haplotype::Haplotype)
     end
 
     return newseq
+end
+
+function appendedid(record::FASTA.Record)
+    oldid = identifier(record)
+    accessionnum = first(split(oldid, ".")[1],5)
+    uniqueid = last(string(uuid1()),2)
+    return string(accessionnum, "...", uniqueid)
 end

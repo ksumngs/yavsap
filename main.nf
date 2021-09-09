@@ -92,6 +92,11 @@ workflow {
     // Sanity-check those variants
     haplotype_calling_julia(FilteredVariantCalls)
 
+    Haplotypes = haplotype_calling_julia.out.haplotype_yaml
+    haplotype_conversion_fasta(Haplotypes, IndexedReference) | \
+        haplotype_alignment | \
+        haplotype_conversion_phyml
+
     AllAlignments = Alignments.join(AlignedContigs, remainder: true).flatMap{ n -> [n[1], n[2]] }.collect()
 
     // Put a pretty bow on everything
@@ -304,13 +309,68 @@ process haplotype_calling_julia {
     tuple val(prefix), file(bamfile), file(variants)
 
     output:
-    file("*.csv")
-    file("*.yaml")
+    tuple val(prefix), path("${prefix}.haplotypes.csv"), emit: linkage_stats
+    tuple val(prefix), path("${prefix}.haplotypes.yaml"), emit: haplotype_yaml
 
     script:
     """
     export JULIA_NUM_THREADS=${params.threads}
     haplotype-finder ${bamfile[0]} ${variants[0]} ${prefix}.haplotypes.csv ${prefix}.haplotypes.yaml
+    """
+}
+
+process haplotype_conversion_fasta {
+    label 'julia'
+
+    publishDir OutFolder, mode: 'symlink'
+
+    cpus 1
+
+    input:
+    tuple val(sampleName), file(haplotypeYaml)
+    file(reference)
+
+    output:
+    tuple val(sampleName), file("${sampleName}.haplotypes.fasta")
+
+    script:
+    """
+    make-haplotype-fastas ${haplotypeYaml} ${reference[0]} ${sampleName}.fasta
+    cat ${reference[0]} ${sampleName}.fasta > ${sampleName}.haplotypes.fasta
+    """
+}
+
+process haplotype_alignment {
+    label 'mafft'
+
+    cpus 1
+
+    input:
+    tuple val(sampleName), file(haploReads)
+
+    output:
+    tuple val(sampleName), file("${sampleName}.haplotypes.clustal")
+
+    script:
+    """
+    mafft --clustalout ${haploReads} > ${sampleName}.haplotypes.clustal
+    """
+}
+
+process haplotype_conversion_phyml {
+    label 'seqret'
+
+    publishDir OutFolder, mode: 'symlink'
+
+    input:
+    tuple val(sampleName), file(haploAlignment)
+
+    output:
+    tuple val(sampleName), file("${sampleName}.haplotypes.phy")
+
+    script:
+    """
+    seqret -sequence ${haploAlignment} -sformat1 clustal -outseq ${sampleName}.haplotypes.phy -osformat phylip -auto
     """
 }
 
