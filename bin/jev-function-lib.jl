@@ -58,6 +58,20 @@ function Variant(data::DataFrameRow)
 
 end # function
 
+function Variant(vardict::Dict{String,Any})
+    region  = vardict["chromosome"]
+    pos     = vardict["position"]
+    refbase = vardict["referencebase"]
+    altbase = vardict["alternatebase"]
+    tdepth  = vardict["totaldepth"]
+    altdep  = vardict["alternatedepth"]
+
+    refseq = LongDNASeq(refbase)
+    altseq = LongDNASeq(altbase)
+
+    return Variant(region, pos, refseq, altseq, tdepth, altdep)
+end #function
+
 function region(v::Variant)
     return v.region
 end
@@ -92,6 +106,11 @@ end
 
 function Haplotype(var::Variant)
     return Haplotype([var])
+end
+
+function Haplotype(hapdict::Dict{String,Any})
+    v = Variant.(hapdict["mutations"])
+    return Haplotype(v)
 end
 
 struct HaplotypeCounts
@@ -528,4 +547,31 @@ function yamlize(v::Variant)
         string(v.alternatedepth),
         "\n",
     )
+end
+
+function mutaterecord(record::FASTA.Record, haplotype::Haplotype)
+    mutationpos = position.(mutations(haplotype))
+    newid = string(identifier(record),"_mutated_pos_",join(mutationpos, "_"))
+    newseq = mutatesequence(sequence(record), haplotype)
+    newdesc = ""
+    if FASTA.hasdescription(record)
+        newdesc = string(description(record), ", mutated at position(s) ", join(mutationpos, ", ", ", and "))
+    end
+
+    return FASTA.Record(
+        newid,
+        newdesc,
+        newseq
+    )
+
+end
+
+function mutatesequence(seq::NucleotideSeq, haplotype::Haplotype)
+    newseq = seq
+
+    for var in mutations(haplotype)
+        newseq[var.position] = var.alternatebase[1]
+    end
+
+    return newseq
 end

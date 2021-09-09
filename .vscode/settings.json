@@ -35,6 +35,7 @@
         "*haplotype-finder": "julia",
         "*variantfilter": "julia",
         "*remove-invalid-reads": "julia",
+        "*make-haplotype-fastas": "julia",
         "nextflow.config": "nextflow"
     }
 }

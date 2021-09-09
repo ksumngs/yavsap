@@ -144,6 +144,12 @@ version = "0.8.5"
 deps = ["ArgTools", "LibCURL", "NetworkOptions"]
 uuid = "f43a241f-c20a-4ad4-852c-f6b1247861c6"
 
+[[FASTX]]
+deps = ["Automa", "BioGenerics", "BioSequences", "BioSymbols", "TranscodingStreams"]
+git-tree-sha1 = "6582055aa8f890663f63cbf9bc748b0a537b5fd3"
+uuid = "c2308a5c-f048-11e8-3e8a-31650f418d12"
+version = "1.2.0"
+
 [[FillArrays]]
 deps = ["LinearAlgebra", "Random", "SparseArrays", "Statistics"]
 git-tree-sha1 = "8c8eac2af06ce35973c3eadb4ab3243076a408e7"
@@ -229,6 +235,12 @@ uuid = "29816b5a-b9ab-546f-933c-edad1886dfa8"
 
 [[Libdl]]
 uuid = "8f399da3-3557-5675-b5ff-fb832c97cbdb"
+
+[[Libiconv_jll]]
+deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
+git-tree-sha1 = "42b62845d70a619f063a7da093d995ec8e15e778"
+uuid = "94ce4f54-9a6c-5748-9c1c-f9c7231a4531"
+version = "1.16.1+1"
 
 [[LinearAlgebra]]
 deps = ["Libdl"]
@@ -429,6 +441,12 @@ git-tree-sha1 = "30cd8c360c54081f806b1ee14d2eecbef3c04c49"
 uuid = "4c63d2b9-4356-54db-8cca-17b64c39e42c"
 version = "0.9.8"
 
+[[StringEncodings]]
+deps = ["Libiconv_jll"]
+git-tree-sha1 = "50ccd5ddb00d19392577902f0079267a72c5ab04"
+uuid = "69024149-9ee7-55f6-a4c4-859efe599b68"
+version = "0.3.5"
+
 [[SuiteSparse]]
 deps = ["Libdl", "LinearAlgebra", "Serialization", "SparseArrays"]
 uuid = "4607b0f0-06f3-5cda-b6b1-a6196a1729e9"
@@ -485,6 +503,12 @@ deps = ["Automa", "BGZFStreams", "BioAlignments", "BioGenerics", "BioSequences",
 git-tree-sha1 = "a71e8a6d88e3ef9949319031eefe262b0fa8b5ab"
 uuid = "d759349c-bcba-11e9-07c2-5b90f8f05f7c"
 version = "0.2.7"
+
+[[YAML]]
+deps = ["Base64", "Dates", "Printf", "StringEncodings"]
+git-tree-sha1 = "3c6e8b9f5cdaaa21340f841653942e1a6b6561e5"
+uuid = "ddb6d928-2868-570f-bddf-ab3f9cf99eb6"
+version = "0.4.7"
 
 [[Zlib_jll]]
 deps = ["Libdl"]

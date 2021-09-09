@@ -1,3 +1,4 @@
 bin/variantfilter linguist-language=Julia
 bin/haplotype-finder linguist-language=Julia
+bin/make-haplotype-fastas linguist-language=Julia
 nextflow.config linguist-language=Nextflow
