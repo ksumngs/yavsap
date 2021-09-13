@@ -93,9 +93,9 @@ workflow {
     haplotype_calling_julia(FilteredVariantCalls)
 
     Haplotypes = haplotype_calling_julia.out.haplotype_yaml
-    haplotype_conversion_fasta(Haplotypes, IndexedReference) | \
-        haplotype_alignment | \
-        haplotype_conversion_phyml
+    ConsensusHaplotypes = Haplotypes.join(Assemblies)
+    haplotype_conversion_fasta(ConsensusHaplotypes, IndexedReference) | \
+        haplotype_alignment
 
     AllAlignments = Alignments.join(AlignedContigs, remainder: true).flatMap{ n -> [n[1], n[2]] }.collect()
 
@@ -322,26 +322,36 @@ process haplotype_calling_julia {
 process haplotype_conversion_fasta {
     label 'julia'
 
-    publishDir OutFolder, mode: 'symlink'
-
     cpus 1
 
     input:
-    tuple val(sampleName), file(haplotypeYaml)
+    tuple val(sampleName), file(haplotypeYaml), file(assembly)
     file(reference)
 
     output:
     tuple val(sampleName), file("${sampleName}.haplotypes.fasta")
 
-    script:
-    """
-    make-haplotype-fastas ${haplotypeYaml} ${reference[0]} ${sampleName}.fasta
-    cat ${reference[0]} ${sampleName}.fasta > ${sampleName}.haplotypes.fasta
-    """
+    shell:
+    '''
+    # Keep only the first (most complete) consensus sequence
+    if [ "$(grep -c '^>' !{assembly})" -gt 1 ]; then
+        head JEV.fasta -n $(( $(grep -n '^>' JEV.fasta | tail -n +2 | head -n1 | awk '{split($0,a,":"); print a[1]}') - 1 )) > consensus.fasta
+    else
+        cp !{assembly} consensus.fasta
+    fi
+
+    # Label the consensus sequences as such
+    sed -i "s/>/>CONSENSUS /g" consensus.fasta
+
+    make-haplotype-fastas !{haplotypeYaml} !{reference[0]} !{sampleName}.fasta
+    cat !{reference[0]} consensus.fasta !{sampleName}.fasta > !{sampleName}.haplotypes.fasta
+    '''
 }
 
 process haplotype_alignment {
     label 'mafft'
+
+    publishDir OutFolder, mode: 'symlink'
 
     cpus 1
 
@@ -349,28 +359,11 @@ process haplotype_alignment {
     tuple val(sampleName), file(haploReads)
 
     output:
-    tuple val(sampleName), file("${sampleName}.haplotypes.clustal")
+    tuple val(sampleName), file("${sampleName}.haplotypes.fas")
 
     script:
     """
-    mafft --clustalout ${haploReads} > ${sampleName}.haplotypes.clustal
-    """
-}
-
-process haplotype_conversion_phyml {
-    label 'seqret'
-
-    publishDir OutFolder, mode: 'symlink'
-
-    input:
-    tuple val(sampleName), file(haploAlignment)
-
-    output:
-    tuple val(sampleName), file("${sampleName}.haplotypes.phy")
-
-    script:
-    """
-    seqret -sequence ${haploAlignment} -sformat1 clustal -outseq ${sampleName}.haplotypes.phy -osformat phylip -auto
+    mafft ${haploReads} > ${sampleName}.haplotypes.fas
     """
 }
 
