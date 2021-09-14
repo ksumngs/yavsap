@@ -75,6 +75,7 @@ workflow {
     reads_realign_to_reference(FilteredReads, IndexedReference)
     Alignments = reads_realign_to_reference.out
 
+    /*
     // Call variants
     variants_calling_ivar(Alignments, IndexedReference, AnnotatedReference)
     VariantCalls = variants_calling_ivar.out
@@ -97,10 +98,16 @@ workflow {
     haplotype_conversion_fasta(ConsensusHaplotypes, IndexedReference) | \
         haplotype_alignment | \
         haplotype_phylogenetic_tree
+    */
 
     AllAlignments = Alignments.join(AlignedContigs, remainder: true).flatMap{ n -> [n[1], n[2]] }.collect()
 
     haplotype_calling_cliquesnv(Alignments)
+    HaplotypeSequences = haplotype_calling_cliquesnv.out.haplotypeSequences.join(Assemblies)
+
+    haplotype_merge_fastas(HaplotypeSequences, IndexedReference) | \
+        haplotype_alignment | \
+        haplotype_phylogenetic_tree
 
     // Put a pretty bow on everything
     presentation_generator(IndexedReference, AllAlignments)
@@ -337,17 +344,13 @@ process haplotype_conversion_fasta {
     shell:
     '''
     # Keep only the first (most complete) consensus sequence
-    if [ "$(grep -c '^>' !{assembly})" -gt 1 ]; then
-        head !{assembly} -n $(( $(grep -n '^>' !{assembly} | tail -n +2 | head -n1 | awk '{split($0,a,":"); print a[1]}') - 1 )) > consensus.fasta
-    else
-        cp !{assembly} consensus.fasta
-    fi
+    cp !{assembly} consensus.fasta
 
     # Label the consensus sequences as such
     sed -i "s/>/>CONSENSUS /g" consensus.fasta
 
     make-haplotype-fastas !{haplotypeYaml} !{reference[0]} !{sampleName}.fasta
-    cat !{reference[0]} consensus.fasta !{sampleName}.fasta > !{sampleName}.haplotypes.fasta
+
     '''
 }
 
@@ -402,15 +405,42 @@ process haplotype_calling_cliquesnv {
     tuple val(sampleName), file(bamfile)
 
     output:
-    file "*.{json,fasta}"
+    tuple val(sampleName), path("${sampleName}.fasta"), emit: haplotypeSequences
+    tuple val(sampleName), path("${sampleName}.json"), emit: haplotypeData
 
     script:
     mode = (params.ont) ? 'snv-pacbio' : 'snv-illumina'
     """
     java -Xmx${params.cliquemem} -jar /opt/CliqueSNV-2.0.2/clique-snv.jar \
-        -m ${mode} -threads ${params.threads} -in ${bamfile[0]}
+        -m ${mode} -threads ${params.threads} -in ${bamfile[0]} -tf 0.01 -fdf extended -rm -log
     mv snv_output/* .
     """
+}
+
+process haplotype_merge_fastas {
+    cpus 1
+
+    input:
+    tuple val(sampleName), file(haplotypes), file(assembly)
+    file(reference)
+
+    output:
+    tuple val(sampleName), file("${sampleName}.haplotypes.fasta")
+
+    shell:
+    '''
+    # Keep only the first (most complete) consensus sequence
+    if [ "$(grep -c '^>' !{assembly})" -gt 1 ]; then
+        head !{assembly} -n $(( $(grep -n '^>' !{assembly} | tail -n +2 | head -n1 | awk '{split($0,a,":"); print a[1]}') - 1 )) > consensus.fasta
+    else
+        cp !{assembly} consensus.fasta
+    fi
+
+    # Label the consensus sequences as such
+    sed -i "s/>/>CONSENSUS /g" consensus.fasta
+
+    cat !{reference[0]} consensus.fasta !{haplotypes} > !{sampleName}.haplotypes.fasta
+    '''
 }
 
 // Create a viewer of all the assembly files
