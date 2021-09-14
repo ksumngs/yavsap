@@ -100,6 +100,8 @@ workflow {
 
     AllAlignments = Alignments.join(AlignedContigs, remainder: true).flatMap{ n -> [n[1], n[2]] }.collect()
 
+    haplotype_calling_cliquesnv(Alignments)
+
     // Put a pretty bow on everything
     presentation_generator(IndexedReference, AllAlignments)
 }
@@ -385,6 +387,29 @@ process haplotype_phylogenetic_tree {
     script:
     """
     raxml-ng --threads ${params.threads} --prefix ${sampleName} --all --msa ${alignedHaplotypes} --model GTR+G
+    """
+}
+
+process haplotype_calling_cliquesnv {
+    label 'cliquesnv'
+
+    cpus params.threads
+    memory params.cliquemem
+
+    publishDir OutFolder, mode: 'symlink'
+
+    input:
+    tuple val(sampleName), file(bamfile)
+
+    output:
+    file "*.{json,fasta}"
+
+    script:
+    mode = (params.ont) ? 'snv-pacbio' : 'snv-illumina'
+    """
+    java -Xmx${params.cliquemem} -jar /opt/CliqueSNV-2.0.2/clique-snv.jar \
+        -m ${mode} -threads ${params.threads} -in ${bamfile[0]}
+    mv snv_output/* .
     """
 }
 
