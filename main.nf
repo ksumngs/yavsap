@@ -95,7 +95,8 @@ workflow {
     Haplotypes = haplotype_calling_julia.out.haplotype_yaml
     ConsensusHaplotypes = Haplotypes.join(Assemblies)
     haplotype_conversion_fasta(ConsensusHaplotypes, IndexedReference) | \
-        haplotype_alignment
+        haplotype_alignment | \
+        haplotype_phylogenetic_tree
 
     AllAlignments = Alignments.join(AlignedContigs, remainder: true).flatMap{ n -> [n[1], n[2]] }.collect()
 
@@ -335,7 +336,7 @@ process haplotype_conversion_fasta {
     '''
     # Keep only the first (most complete) consensus sequence
     if [ "$(grep -c '^>' !{assembly})" -gt 1 ]; then
-        head JEV.fasta -n $(( $(grep -n '^>' JEV.fasta | tail -n +2 | head -n1 | awk '{split($0,a,":"); print a[1]}') - 1 )) > consensus.fasta
+        head !{assembly} -n $(( $(grep -n '^>' !{assembly} | tail -n +2 | head -n1 | awk '{split($0,a,":"); print a[1]}') - 1 )) > consensus.fasta
     else
         cp !{assembly} consensus.fasta
     fi
@@ -361,9 +362,29 @@ process haplotype_alignment {
     output:
     tuple val(sampleName), file("${sampleName}.haplotypes.fas")
 
+    shell:
+    '''
+    mafft --auto !{haploReads} > !{sampleName}.haplotypes.fas
+    sed -i "s/ .*$//" !{sampleName}.haplotypes.fas
+    '''
+}
+
+process haplotype_phylogenetic_tree {
+    label 'raxml'
+
+    publishDir OutFolder, mode: 'symlink'
+
+    cpus params.threads
+
+    input:
+    tuple val(sampleName), file(alignedHaplotypes)
+
+    output:
+    tuple val(sampleName), file("${sampleName}.raxml.bestTree")
+
     script:
     """
-    mafft ${haploReads} > ${sampleName}.haplotypes.fas
+    raxml-ng --threads ${params.threads} --prefix ${sampleName} --all --msa ${alignedHaplotypes} --model GTR+G
     """
 }
 
