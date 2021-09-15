@@ -22,8 +22,7 @@ workflow trimming {
 
 process read_trimming_ont {
     label 'filtlong'
-
-    cpus params.threads
+    label 'process_low'
 
     input:
     tuple val(sampleName), file(readsFiles)
@@ -33,9 +32,9 @@ process read_trimming_ont {
 
     script:
     """
-    filtlong --min_length ${params.trimMinlen} \
-        --keep_percent ${params.trimKeepPercent} \
-        --target_bases ${params.trimTargetBases} \
+    filtlong --min_length ${params.trim_minlen} \
+        --keep_percent ${params.trim_keep_percent} \
+        --target_bases ${params.trim_target_bases} \
         ${readsFiles} | gzip > ${sampleName}_trimmed.fastq.gz
     """
 }
@@ -43,8 +42,7 @@ process read_trimming_ont {
 // Trim Illumina reads
 process read_trimming_pe {
     label 'trimmomatic'
-
-    cpus params.threads
+    label 'process_medium'
 
     input:
     tuple val(sampleName), file(readsFiles)
@@ -54,16 +52,16 @@ process read_trimming_pe {
 
     script:
     // Put together the trimmomatic parameters
-    ILLUMINACLIP = "ILLUMINACLIP:/Trimmomatic-0.39/adapters/${params.trimAdapters}:${params.trimMismatches}:${params.trimPclip}:${params.trimClip}"
-    SLIDINGWINDOW = ( params.trimWinsize > 0 && params.trimWinqual > 0 ) ? "SLIDINGWINDOW:${params.trimWinsize}:${params.trimWinqual}" : ""
-    LEADING = ( params.trimLeading > 0 ) ? "LEADING:${params.trimLeading}" : ""
-    TRAILING = ( params.trimTrailing > 0 ) ? "TRAILING:${params.trimTrailing}" : ""
-    CROP = ( params.trimCrop > 0 ) ? "CROP:${params.trimCrop}" : ""
-    HEADCROP = ( params.trimHeadcrop > 0 ) ? "HEADCROP:${params.trimHeadcrop}" : ""
-    MINLEN = ( params.trimMinlen > 0 ) ? "MINLEN:${params.trimMinlen}" : ""
+    ILLUMINACLIP = "ILLUMINACLIP:/Trimmomatic-0.39/adapters/${params.trim_adapters}:${params.trim_mismatches}:${params.trim_pclip}:${params.trim_clip}"
+    SLIDINGWINDOW = ( params.trim_winsize > 0 && params.trim_winqual > 0 ) ? "SLIDINGWINDOW:${params.trim_winsize}:${params.trim_winqual}" : ""
+    LEADING = ( params.trim_leading > 0 ) ? "LEADING:${params.trim_leading}" : ""
+    TRAILING = ( params.trim_trailing > 0 ) ? "TRAILING:${params.trim_trailing}" : ""
+    CROP = ( params.trim_crop > 0 ) ? "CROP:${params.trim_crop}" : ""
+    HEADCROP = ( params.trim_headcrop > 0 ) ? "HEADCROP:${params.trim_headcrop}" : ""
+    MINLEN = ( params.trim_minlen > 0 ) ? "MINLEN:${params.trim_minlen}" : ""
     trimsteps = ILLUMINACLIP + ' ' + SLIDINGWINDOW + ' ' + LEADING + ' ' + TRAILING + ' ' + CROP + ' ' + HEADCROP + ' ' + MINLEN
     """
-    trimmomatic PE -threads ${params.threads} \
+    trimmomatic PE -threads ${task.cpus} \
         ${readsFiles} \
         ${sampleName}_trimmed_R1.fastq.gz \
         /dev/null \

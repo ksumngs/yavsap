@@ -4,6 +4,10 @@ nextflow.enable.dsl = 2
 if (params.help) {
     log.info \
     """
+=============================
+    JEV Analysis Pipeline
+=============================
+
 NAME
     jev-analysis-pipeline - Automated analysis of Japanese Encephalitis Virus next-generation sequencing data
 
@@ -18,24 +22,33 @@ exit 0
 }
 
 if (!params.ont && !params.pe) {
-    log.error "ERROR: Either --ont or --pe must be specified"
+    log.error "ERROR: --platform <illumina,nanopore> must be specified"
     exit 1
 }
 
 // Declare what we're going to call our reference genome
 ReferenceName = 'JEV'
 
-// Create an output folder name if one wasn't provided
-if(params.outfolder == "") {
-    OutFolder = params.runname + "_out"
-}
-else {
-    OutFolder = params.outfolder
-}
-
 include { reference_genome_pull } from './modules/reference.nf'
 include { trimming } from './modules/trimming.nf'
 include { assembly } from './modules/assembly.nf'
+
+println \
+"""
+=============================
+    JEV Analysis Pipeline
+=============================
+
+Input folder:           ${params.input}
+Sequencing platform:    ${params.platform}
+    Illumina?:          ${params.pe}
+    Nanopore?:          ${params.ont}
+Reference genome:       ${params.genome}
+Kraken2 Database:       ${params.kraken2_db}
+Taxonomic Ids:          '${params.keep_taxid}'
+Output folder           ${params.outdir}
+Diagnostics folder:     ${params.tracedir}
+"""
 
 workflow {
     reference_genome_pull()
@@ -45,14 +58,12 @@ workflow {
     // Bring in the reads files
     if (params.ont) {
         RawReads = Channel
-            .fromPath("${params.readsfolder}/*.{fastq,fq}.gz")
-            .take( params.dev ? params.devinputs : -1 )
+            .fromPath("${params.input}/*.{fastq,fq}.gz")
             .map{ file -> tuple(file.simpleName, file) }
     }
     else {
         RawReads = Channel
-            .fromFilePairs("${params.readsfolder}/*{R1,R2,_1,_2}*.{fastq,fq}.gz")
-            .take( params.dev ? params.devinputs : -1 )
+            .fromFilePairs("${params.input}/*{R1,R2,_1,_2}*.{fastq,fq}.gz")
     }
 
     RawReads | sample_rename | trimming | read_classification
@@ -114,7 +125,7 @@ workflow {
 }
 
 process sample_rename {
-    cpus 1
+    label 'process_low'
 
     input:
     tuple val(givenName), file(readsFiles)
@@ -142,8 +153,7 @@ process sample_rename {
 // Classify reads using Kraken
 process read_classification {
     label 'kraken'
-
-    cpus params.threads
+    label 'process_high_memory'
 
     input:
     tuple val(sampleName), file(readsFile)
@@ -152,10 +162,9 @@ process read_classification {
     tuple val(sampleName), file("${sampleName}.kraken"), file("${sampleName}.kreport")
 
     script:
-    quickflag = params.dev ? '--quick' : ''
     pairedflag = params.pe ? '--paired' : ''
     """
-    kraken2 --db ${params.krakenDb} --threads ${params.threads} ${quickflag} \
+    kraken2 --db ${params.krakenDb} --threads ${task.cpus} \
         --report "${sampleName}.kreport" \
         --output "${sampleName}.kraken" \
         ${pairedflag} \
@@ -167,8 +176,7 @@ process read_classification {
 // files for futher downstream processing using KrakenTools
 process read_filtering {
     label 'krakentools'
-
-    cpus 1
+    label 'process_low'
 
     input:
     tuple val(sampleName), file(readsFile), file(krakenFile), file(krakenReport)
@@ -195,8 +203,6 @@ process read_filtering {
 process contigs_realign_to_reference {
     label 'minimap'
 
-    cpus params.threads
-
     input:
     tuple val(sampleName), file(contigs)
     file(reference)
@@ -206,7 +212,7 @@ process contigs_realign_to_reference {
 
     script:
     """
-    minimap2 -at ${params.threads} --MD ${reference[0]} ${contigs} | \
+    minimap2 -at ${task.cpus} --MD ${reference[0]} ${contigs} | \
         samtools sort > ${sampleName}.contigs.bam
     samtools index ${sampleName}.contigs.bam
     """
@@ -214,8 +220,6 @@ process contigs_realign_to_reference {
 
 process reads_realign_to_reference {
     label 'minimap'
-
-    cpus params.threads
 
     input:
     tuple val(sampleName), file(readsFile)
@@ -227,7 +231,7 @@ process reads_realign_to_reference {
     script:
     minimapMethod = (params.pe) ? 'sr' : 'map-ont'
     """
-    minimap2 -ax ${minimapMethod} -t ${params.threads} --MD ${reference[0]} ${readsFile} | \
+    minimap2 -ax ${minimapMethod} -t ${task.cpus} --MD ${reference[0]} ${readsFile} | \
         samtools sort > ${sampleName}.bam
     samtools index ${sampleName}.bam
     """
@@ -235,8 +239,7 @@ process reads_realign_to_reference {
 
 process variants_calling_ivar {
     label 'ivar'
-
-    cpus 1
+    label 'process_low'
 
     input:
     tuple val(sampleName), file(bamfile)
@@ -258,8 +261,7 @@ process variants_calling_ivar {
 // Get stats on the called variants
 process variants_analysis {
     label 'bam_readcount'
-
-    cpus 1
+    label 'process_low'
 
     input:
     tuple val(prefix), file(bamfile), file(variantCalls)
@@ -287,10 +289,8 @@ process variants_analysis {
 // More strictly filter the variants based on strand bias and read position
 process variants_filter {
     label 'julia'
-
-    cpus params.threads
-
-    publishDir OutFolder, mode: 'symlink'
+    label 'error_retry'
+    publishDir "${params.outdir}", mode: "${params.publish_dir_mode}"
 
     input:
     tuple val(prefix), file(variantCalls), file(variantStats)
@@ -300,7 +300,7 @@ process variants_filter {
 
     script:
     """
-    export JULIA_NUM_THREADS=${params.threads}
+    export JULIA_NUM_THREADS=${task.cpus}
     variantfilter ${variantCalls[0]} ${variantStats[0]} ${prefix}.filtered.tsv
     """
 }
@@ -310,10 +310,8 @@ process variants_filter {
 // than one mutation in them as called by ivar
 process haplotype_calling_julia {
     label 'julia'
-
-    cpus params.threads
-
-    publishDir OutFolder, mode: 'symlink'
+    label 'error_retry'
+    publishDir "${params.outdir}", mode: "${params.publish_dir_mode}"
 
     input:
     tuple val(prefix), file(bamfile), file(variants)
@@ -324,15 +322,15 @@ process haplotype_calling_julia {
 
     script:
     """
-    export JULIA_NUM_THREADS=${params.threads}
+    export JULIA_NUM_THREADS=${task.cpus}
     haplotype-finder ${bamfile[0]} ${variants[0]} ${prefix}.haplotypes.csv ${prefix}.haplotypes.yaml
     """
 }
 
 process haplotype_conversion_fasta {
     label 'julia'
-
-    cpus 1
+    label 'error_retry'
+    label 'process_low'
 
     input:
     tuple val(sampleName), file(haplotypeYaml), file(assembly)
@@ -356,8 +354,8 @@ process haplotype_conversion_fasta {
 
 process haplotype_alignment {
     label 'mafft'
-
-    publishDir OutFolder, mode: 'symlink'
+    label 'process_low'
+    publishDir "${params.outdir}", mode: "${params.publish_dir_mode}"
 
     cpus 1
 
@@ -376,10 +374,7 @@ process haplotype_alignment {
 
 process haplotype_phylogenetic_tree {
     label 'raxml'
-
-    publishDir OutFolder, mode: 'symlink'
-
-    cpus params.threads
+    publishDir "${params.outdir}", mode: "${params.publish_dir_mode}"
 
     input:
     tuple val(sampleName), file(alignedHaplotypes)
@@ -389,17 +384,14 @@ process haplotype_phylogenetic_tree {
 
     script:
     """
-    raxml-ng --threads ${params.threads} --prefix ${sampleName} --all --msa ${alignedHaplotypes} --model GTR+G
+    raxml-ng --threads ${task.cpus} --prefix ${sampleName} --all --msa ${alignedHaplotypes} --model GTR+G
     """
 }
 
 process haplotype_calling_cliquesnv {
     label 'cliquesnv'
-
-    cpus params.threads
-    memory params.cliquemem
-
-    publishDir OutFolder, mode: 'symlink'
+    label 'process_medium'
+    publishDir "${params.outdir}", mode: "${params.publish_dir_mode}"
 
     input:
     tuple val(sampleName), file(bamfile)
@@ -411,14 +403,15 @@ process haplotype_calling_cliquesnv {
     script:
     mode = (params.ont) ? 'snv-pacbio' : 'snv-illumina'
     """
-    java -Xmx${params.cliquemem} -jar /usr/local/share/cliquesnv/clique-snv.jar \
-        -m ${mode} -threads ${params.threads} -in ${bamfile[0]} -tf 0.01 -fdf extended -rm -log
+    echo "${task.memory}"
+    java -jar /usr/local/share/cliquesnv/clique-snv.jar \
+        -m ${mode} -threads ${task.cpus} -in ${bamfile[0]} -tf 0.01 -fdf extended -rm -log
     mv snv_output/* .
     """
 }
 
 process haplotype_merge_fastas {
-    cpus 1
+    label 'process_low'
 
     input:
     tuple val(sampleName), file(haplotypes), file(assembly)
@@ -445,9 +438,8 @@ process haplotype_merge_fastas {
 
 // Create a viewer of all the assembly files
 process presentation_generator {
-    cpus 1
-
-    publishDir OutFolder, mode: 'copy'
+    label 'process_low'
+    publishDir "${params.outdir}", mode: "${params.publish_dir_mode}"
 
     input:
     file '*'

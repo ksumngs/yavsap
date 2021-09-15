@@ -23,8 +23,7 @@ workflow assembly {
 // Assemble using Canu
 process assembly_ont {
     label 'canu'
-
-    cpus params.threads
+    label 'process_medium'
 
     input:
     tuple val(sampleName), file(readsFile)
@@ -36,15 +35,15 @@ process assembly_ont {
     """
     canu -p ${sampleName} \
         genomeSize=10.5k \
-        maxThreads=${params.threads} \
+        maxThreads=${task.cpus} \
+        maxMemory=${task.memory}
         -nanopore ${readsFile}
     """
 }
 
 process assembly_pe {
     label 'spades'
-
-    cpus params.threads
+    label 'process_medium'
 
     input:
     tuple val(sampleName), file(readsFiles)
@@ -54,7 +53,7 @@ process assembly_pe {
 
     script:
     """
-    rnaviralspades.py -o out -1 ${readsFiles[0]} -2 ${readsFiles[1]} -t ${params.threads}
+    rnaviralspades.py -o out -1 ${readsFiles[0]} -2 ${readsFiles[1]} -t ${task.cpus}
     cp out/contigs.fasta .
     """
 
