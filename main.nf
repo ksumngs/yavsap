@@ -481,7 +481,7 @@ else {
 balloon =
 """ ${"_"*paddinglength}
 / ${messagelines[0].padRight(linelength)} \\"""
-for (int i=1;i<(nlines-2);i++) {
+for (int i=1;i<(nlines-1);i++) {
 balloon =
 """${balloon}
 | ${messagelines[i].padRight(linelength)} |"""
