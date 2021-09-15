@@ -2,22 +2,49 @@
 nextflow.enable.dsl = 2
 
 if (params.help) {
-    log.info \
-    """
-=============================
-    JEV Analysis Pipeline
-=============================
+    cowsay(
+    """\
+====================================================================================
+                                JEV Analysis Pipeline
+====================================================================================
 
-NAME
-    jev-analysis-pipeline - Automated analysis of Japanese Encephalitis Virus next-generation sequencing data
+    jev-analysis-pipeline - Intra-sample viral population analysis targeted at
+    Japanese Encephalitis
 
-SYNOPSIS
-    nextflow run millironx/jev-analysis-pipeline
-        --kraken-db <kraken2 database location>
+    Usage:
 
-MORE INFO
-    https://github.com/MillironX/jev-analysis-pipeline
+        nextflow run millironx/jev-analysis-pipeline
+
+    Options:
+
+        --input             Relative or absolute path to directory containing
+                            gzipped fastq files
+                                type: path, default: .
+
+        --platform          Type of reads to process. Options are 'illumina' and
+                            'nanopore'
+                                type: string, default: none
+
+        --genome            NCBI accession number of the reference genome to align
+                            reads against
+                                type: string, default: 'NC_001437.1'
+
+        --kraken2_db        Kraken2-compatible database for classifying reads
+                                type: path, default: none
+
+        --keep_taxid        Space-separated list of NCBI taxids to keep and process
+                            after classifying
+                                type: string, default: '0 10239'
+
+        --outdir            Directory in which to place results
+                                type: path, default: ./results
+
+        --help              Print this message and exit
+
+    For more information on usage and parameters, visit the website at
+        https://github.com/MillironX/jev-analysis-pipeline
 """
+)
 exit 0
 }
 
@@ -35,9 +62,9 @@ include { assembly } from './modules/assembly.nf'
 
 cowsay(
 """\
-=============================
-    JEV Analysis Pipeline
-=============================
+====================================================================================
+                                JEV Analysis Pipeline
+====================================================================================
 
 Input folder:           ${params.input}
 Sequencing platform:    ${params.platform}
@@ -504,5 +531,5 @@ cowput =
 ${cow}
 """
 
-println(cowput)
+log.info cowput
 }
