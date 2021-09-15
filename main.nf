@@ -402,6 +402,7 @@ process haplotype_alignment {
 
 process haplotype_phylogenetic_tree {
     label 'raxml'
+    label 'error_ignore'
     publishDir "${params.outdir}", mode: "${params.publish_dir_mode}"
 
     input:
