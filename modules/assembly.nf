@@ -36,7 +36,6 @@ process assembly_ont {
     canu -p ${sampleName} \
         genomeSize=10.5k \
         maxThreads=${task.cpus} \
-        maxMemory=${task.memory}
         -nanopore ${readsFile}
     """
 }
