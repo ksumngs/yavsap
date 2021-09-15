@@ -192,7 +192,7 @@ process read_classification {
     script:
     pairedflag = params.pe ? '--paired' : ''
     """
-    kraken2 --db ${params.krakenDb} --threads ${task.cpus} \
+    kraken2 --db ${params.kraken2_db} --threads ${task.cpus} \
         --report "${sampleName}.kreport" \
         --output "${sampleName}.kraken" \
         ${pairedflag} \
@@ -220,7 +220,7 @@ process read_filtering {
     extract_kraken_reads.py -k ${krakenFile} \
         -s ${readsFile[0]} ${read2flagin} \
         -r ${krakenReport} \
-        -t ${params.taxIdsToKeep} --include-children \
+        -t ${params.keep_taxid} --include-children \
         --fastq-output \
         ${read1flagout} ${read2flagout}
     gzip -k ${sampleName}_filtered*.fastq

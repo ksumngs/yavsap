@@ -30,7 +30,7 @@ process reference_genome_pull_fasta {
 
     script:
     """
-    efetch -db nucleotide -id ${params.genomeId} -format fasta > reference.fasta
+    efetch -db nucleotide -id ${params.genome} -format fasta > reference.fasta
     """
 }
 
@@ -47,7 +47,7 @@ process reference_genome_pull_genbank {
 
     script:
     """
-    efetch -db nucleotide -id ${params.genomeId} -format gb > reference.gb
+    efetch -db nucleotide -id ${params.genome} -format gb > reference.gb
     """
 }
 
