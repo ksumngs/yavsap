@@ -33,8 +33,8 @@ include { reference_genome_pull } from './modules/reference.nf'
 include { trimming } from './modules/trimming.nf'
 include { assembly } from './modules/assembly.nf'
 
-println \
-"""
+cowsay(
+"""\
 =============================
     JEV Analysis Pipeline
 =============================
@@ -49,6 +49,7 @@ Taxonomic Ids:          '${params.keep_taxid}'
 Output folder           ${params.outdir}
 Diagnostics folder:     ${params.tracedir}
 """
+)
 
 workflow {
     reference_genome_pull()
@@ -461,4 +462,47 @@ process presentation_generator {
     cd ..
     mv igv-bundler/{index.html,index.js,package.json} .
     """
+}
+
+def cowsay(message) {
+messagelines = message.split('\n')
+nlines = messagelines.length
+linelength = 0
+messagelines.each{ l -> if ( l.length() > linelength ) { linelength = l.length() } }
+paddinglength = linelength + 2
+
+if ( nlines == 1 ) {
+    balloon =
+""" ${"_"*paddinglength}
+< ${message} >
+ ${"-"*paddinglength}"""
+}
+else {
+balloon =
+""" ${"_"*paddinglength}
+/ ${messagelines[0].padRight(linelength)} \\"""
+for (int i=1;i<(nlines-2);i++) {
+balloon =
+"""${balloon}
+| ${messagelines[i].padRight(linelength)} |"""
+}
+balloon =
+"""${balloon}
+\\ ${messagelines[nlines-1].padRight(linelength)} /
+ ${"-"*paddinglength}"""
+}
+
+cow =
+"""        \\   ^__^
+         \\  (oo)\\_______
+            (__)\\       )\\/\\
+                ||----w |
+                ||     ||"""
+
+cowput =
+"""${balloon}
+${cow}
+"""
+
+println(cowput)
 }
