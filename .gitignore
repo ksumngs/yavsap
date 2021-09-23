@@ -1,18 +1,11 @@
-#### Visual Studio Code gitignore ###
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
-*.code-workspace
-
-# Local History for Visual Studio Code
-.history/
-
-### Nextflow gitignore ###
 .nextflow*
-work
-pipeline_info
+work/
+data/
+results/
+.DS_Store
+testing/
+testing*
+*.pyc
 
 ### Bio gitignore ###
 *.sam
