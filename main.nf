@@ -431,9 +431,9 @@ process haplotype_calling_cliquesnv {
 
     script:
     mode = (params.ont) ? 'snv-pacbio' : 'snv-illumina'
+    jmemstring = task.memory.toMega() + 'M'
     """
-    echo "${task.memory}"
-    java -jar /usr/local/share/cliquesnv/clique-snv.jar \
+    java -Xmx${jmemstring} -jar /usr/local/share/cliquesnv/clique-snv.jar \
         -m ${mode} -threads ${task.cpus} -in ${bamfile[0]} -tf 0.01 -fdf extended -rm -log
     mv snv_output/* .
     """
