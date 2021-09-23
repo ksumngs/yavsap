@@ -84,14 +84,22 @@ workflow {
     AnnotatedReference = reference_genome_pull.out.annotatedreference
 
     // Bring in the reads files
-    if (params.ont) {
+    if (params.sra) {
         RawReads = Channel
-            .fromPath("${params.input}/*.{fastq,fq}.gz")
-            .map{ file -> tuple(file.simpleName, file) }
+            .fromSRA(params.input)
+        params.pe  = true
+        params.ont = false
     }
     else {
-        RawReads = Channel
-            .fromFilePairs("${params.input}/*{R1,R2,_1,_2}*.{fastq,fq}.gz")
+        if (params.ont) {
+            RawReads = Channel
+                .fromPath("${params.input}/*.{fastq,fq}.gz")
+                .map{ file -> tuple(file.simpleName, file) }
+        }
+        else {
+            RawReads = Channel
+                .fromFilePairs("${params.input}/*{R1,R2,_1,_2}*.{fastq,fq}.gz")
+        }
     }
 
     RawReads | sample_rename | trimming | read_classification

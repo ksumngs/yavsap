@@ -1,0 +1,51 @@
+name: nf-core CI
+# This workflow runs the pipeline with the minimal test dataset to check that it completes without any syntax errors
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+  release:
+    types: [published]
+
+# Uncomment if we need an edge release of Nextflow again
+env:
+  NXF_EDGE: 1
+
+jobs:
+  test:
+    name: Run workflow tests
+    # Only run on push if this is the nf-core dev branch (merged PRs)
+    if: ${{ github.event_name != 'push' || (github.event_name == 'push' && github.repository == 'nf-core/blank') }}
+    runs-on: ubuntu-latest
+    env:
+      NXF_VER: ${{ matrix.nxf_ver }}
+      NXF_ANSI_LOG: false
+      NXF_PROFILE: ${{ matrix.nxf_profile }}
+    strategy:
+      matrix:
+        # Nextflow versions: check pipeline minimum and current latest
+        nxf_ver: ['21.04.3', '']
+        nxf_profile: ['docker', 'singularity', 'podman']
+    steps:
+      - name: Check out pipeline code
+        uses: actions/checkout@v2
+
+      - name: Get a kraken database
+        run: |
+          mkdir kraken2db
+          wget -qO- https://genome-idx.s3.amazonaws.com/kraken/k2_viral_20210517.tar.gz | tar xzv -C kraken2db
+
+      - name: Install Nextflow
+        env:
+          CAPSULE_LOG: none
+        run: |
+          wget -qO- get.nextflow.io | bash
+          sudo mv nextflow /usr/local/bin/
+
+      - name: Run pipeline with test data
+        # TODO nf-core: You can customise CI pipeline run tests as required
+        # For example: adding multiple test runs with different parameters
+        # Remember that you can parallelise this by using strategy.matrix
+        run: |
+          nextflow run ${GITHUB_WORKSPACE} -profile test,${NXF_PROFILE}
