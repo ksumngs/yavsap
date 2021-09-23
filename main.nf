@@ -142,7 +142,7 @@ workflow {
     AllAlignments = Alignments.join(AlignedContigs, remainder: true).flatMap{ n -> [n[1], n[2]] }.collect()
 
     haplotype_calling_cliquesnv(Alignments)
-    HaplotypeSequences = haplotype_calling_cliquesnv.out.haplotypeSequences.join(Assemblies)
+    HaplotypeSequences = haplotype_calling_cliquesnv.out.haplotypeSequences.join(Assemblies, remainder: true)
 
     haplotype_merge_fastas(HaplotypeSequences, IndexedReference) | \
         haplotype_alignment | \

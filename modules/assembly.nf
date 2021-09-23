@@ -24,6 +24,7 @@ workflow assembly {
 process assembly_ont {
     label 'canu'
     label 'process_medium'
+    label 'error_ignore'
 
     input:
     tuple val(sampleName), file(readsFile)
@@ -43,6 +44,7 @@ process assembly_ont {
 process assembly_pe {
     label 'spades'
     label 'process_medium'
+    label 'error_ignore'
 
     input:
     tuple val(sampleName), file(readsFiles)
