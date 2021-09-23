@@ -223,7 +223,7 @@ process read_filtering {
         -t ${params.keep_taxid} --include-children \
         --fastq-output \
         ${read1flagout} ${read2flagout}
-    gzip -k ${sampleName}_filtered*.fastq
+    gzip ${sampleName}_filtered*.fastq
     """
 }
 
