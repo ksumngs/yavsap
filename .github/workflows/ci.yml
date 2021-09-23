@@ -8,7 +8,7 @@ jobs:
   test:
     name: Run workflow tests
     runs-on: ubuntu-latest
-    continue-on-error: ${{ matrix.experimental }}
+    continue-on-error: true
     env:
       NXF_VER: ${{ matrix.nxf_ver }}
       NXF_EDGE: ${{ matrix.nxf_edge }}
@@ -18,11 +18,6 @@ jobs:
         # Nextflow versions: check pipeline minimum and current latest
         nxf_ver: ['21.04.3', '']
         nxf_edge: ['', '1']
-        experimental: [false]
-        include:
-          - nxf_ver: '21.04.3'
-          - nxf_edge: ''
-          - experimental: true
     steps:
       - name: Check out pipeline code
         uses: actions/checkout@v2
