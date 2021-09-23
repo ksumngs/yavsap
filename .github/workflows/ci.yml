@@ -1,6 +1,8 @@
 name: nf-core CI
 # This workflow runs the pipeline with the minimal test dataset to check that it completes without any syntax errors
-on:  release
+on:
+  - release
+  - workflow_dispatch
 
 # Uncomment if we need an edge release of Nextflow again
 env:
