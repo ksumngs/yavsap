@@ -12,13 +12,13 @@ jobs:
       - name: Conda
         uses: conda-incubator/setup-miniconda@v2
         with:
-          python-version: 3.7    # Python version to build the html sphinx documentation
           environment-file: docs/doc_env.yml    # Path to the documentation conda environment
           auto-update-conda: false
           auto-activate-base: false
           show-channel-urls: true
       - name: Build docs
         run: |
+          conda activate docs
           sphinx-build -b html docs docs/_build
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@4.1.5
