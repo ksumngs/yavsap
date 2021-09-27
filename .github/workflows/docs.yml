@@ -4,11 +4,12 @@ on:
   - workflow_dispatch
 jobs:
   build:
-    runs-on: ubuntu-latest
     name: Sphinx docs to gh-pages
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - name: Make conda environment
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Conda
         uses: conda-incubator/setup-miniconda@v2
         with:
           python-version: 3.7    # Python version to build the html sphinx documentation
@@ -16,9 +17,11 @@ jobs:
           auto-update-conda: false
           auto-activate-base: false
           show-channel-urls: true
-      - name: Running the Sphinx to gh-pages Action
-        uses: uibcdf/action-sphinx-docs-to-gh-pages@v1.0-beta.2
+      - name: Build docs
+        run: |
+          sphinx-build -b html docs docs/_build
+      - name: Deploy
+        uses: JamesIves/github-pages-deploy-action@4.1.5
         with:
-          branch: master
-          dir_docs: docs
-          sphinxopts: ''
+          branch: gh-pages
+          dir_docs: docs/_build
