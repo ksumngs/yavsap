@@ -181,3 +181,6 @@ dist
 .pnp.*
 
 package-lock.json
+
+### Sphinx gitignore ###
+docs/_build

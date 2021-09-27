@@ -17,7 +17,7 @@
 
 # -- Project information -----------------------------------------------------
 
-project = 'jev-analysis-pipeline'
+project = 'JEV Analysis Pipeline'
 copyright = '2021, Thomas A. Christensen II'
 author = 'Thomas A. Christensen II'
 
@@ -28,6 +28,7 @@ author = 'Thomas A. Christensen II'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
+    'sphinx.ext.intersphinx'
 ]
 
 # Add any paths that contain templates here, relative to this directory.
