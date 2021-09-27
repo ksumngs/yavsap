@@ -7,20 +7,16 @@ jobs:
     name: Sphinx docs to gh-pages
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout 🛎️
         uses: actions/checkout@v2
-      - name: Conda
-        uses: conda-incubator/setup-miniconda@v2
+      - name: Install Sphinx 🇪🇬
+        uses: logikal-code/pip-install@v1.0.0
         with:
-          environment-file: docs/doc_env.yml    # Path to the documentation conda environment
-          auto-update-conda: false
-          auto-activate-base: false
-          show-channel-urls: true
-      - name: Build docs
+          requirements: docs/requirements.txt
+      - name: Build docs 📝
         run: |
-          conda activate docs
           sphinx-build -b html docs docs/_build
-      - name: Deploy
+      - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@4.1.5
         with:
           branch: gh-pages
