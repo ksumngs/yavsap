@@ -417,11 +417,12 @@ process haplotype_phylogenetic_tree {
     tuple val(sampleName), file(alignedHaplotypes)
 
     output:
-    tuple val(sampleName), file("${sampleName}.raxml.bestTree")
+    tuple val(sampleName), file("${sampleName}.tree")
 
     script:
     """
-    raxml-ng --threads ${task.cpus} --prefix ${sampleName} --all --msa ${alignedHaplotypes} --model GTR+G
+    raxml-ng --threads ${task.cpus} --prefix ${sampleName} --all --msa ${alignedHaplotypes} --model --bs-trees 1000 GTR+G
+    cp ${sampleName}.raxml.support ${sampleName}.tree
     """
 }
 
