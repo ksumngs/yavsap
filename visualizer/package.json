@@ -1,0 +1,14 @@
+{
+  "name": "igv-bundler",
+  "version": "0.0.1",
+  "description": "Lists all contigs and alignments for a metagenomics pipeline",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}

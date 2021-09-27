@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            body {
+                background-color: #d1d1f1;
+            }
+            #viewer {
+                outline: solid;
+                border-radius: 2pt;
+                background-color: white;
+            }
+            h1 {
+                font-family: 'Myriad Pro', 'Noto Sans', 'Lucida Sans', Verdana, 'Liberation Sans', sans-serif;
+                text-align: center;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>JEV Results</h1>
+        <div id="viewer"></div>
+        <!-- <script src="node_modules/igv/dist/igv.js"></script> -->
+        <script src="https://cdn.jsdelivr.net/npm/igv@2.8.6/dist/igv.min.js"></script>
+        <script>
+            var reference
+            var req = new XMLHttpRequest();
+            req.onload = reqlistener;
+            function reqlistener(e) {
+                reference = JSON.parse(this.responseText)[0];
+            }
+            req.open('GET', '/reference', false)
+            req.send()
+
+            var samples
+            var re = new XMLHttpRequest();
+            re.onload = relistener;
+            function relistener(e) {
+                samples = JSON.parse(this.responseText);
+            }
+            re.open('GET', '/samples', false)
+            re.send()
+
+            var trks = [];
+
+            for (var i = 0; i < samples.length; i++) {
+                s = samples[i]
+                trks.push(
+                    {
+                        type: 'alignment',
+                        format: 'bam',
+                        url: 'data/'+s,
+                        indexURL: 'data/'+s+'.bai',
+                        name: s.slice(0,-4)
+                    }
+                )
+            }
+
+            igvDiv = document.getElementById('viewer');
+            options = {
+                reference: {
+                    id: reference.slice(0,-6),
+                    fastaURL: "data/"+reference
+                },
+                tracks: trks
+            }
+            igv.createBrowser(igvDiv, options).
+                then(function(browser) {
+                    igv.browser = browser;
+                });
+        </script>
+    </body>
+</html>
