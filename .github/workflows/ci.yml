@@ -1,4 +1,4 @@
-name: nf-core CI
+name: Testing
 # This workflow runs the pipeline with the minimal test dataset to check that it completes without any syntax errors
 on:
   - release
@@ -31,6 +31,9 @@ jobs:
         env:
           CAPSULE_LOG: none
         run: |
+          export NXF_VER
+          export NXF_EDGE
+          echo $NXF_VER $NXF_EDGE
           wget -qO- get.nextflow.io | bash
           sudo mv nextflow /usr/local/bin/
 
