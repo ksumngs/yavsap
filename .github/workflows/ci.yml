@@ -36,6 +36,7 @@ jobs:
           echo $NXF_VER $NXF_EDGE
           wget -qO- get.nextflow.io | bash
           sudo mv nextflow /usr/local/bin/
+          nextflow self-update
 
       - name: Run pipeline with test data
         env:
