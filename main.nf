@@ -82,6 +82,7 @@ workflow {
     reference_genome_pull()
     IndexedReference = reference_genome_pull.out.indexedreference
     AnnotatedReference = reference_genome_pull.out.annotatedreference
+    GenomeSize = reference_genome_pull.out.genomesize
 
     // Bring in the reads files
     if (params.sra) {
@@ -111,7 +112,7 @@ workflow {
     FilteredReads = read_filtering.out
 
     // _de novo_ assemble the viral reads
-    assembly(FilteredReads)
+    assembly(FilteredReads, GenomeSize)
     Assemblies = assembly.out
 
     // Realign contigs to the reference genome

@@ -4,10 +4,11 @@ nextflow.enable.dsl = 2
 workflow assembly {
     take:
     reads
+    size
 
     main:
     if (params.ont) {
-        assembly_ont(reads)
+        assembly_ont(reads, size)
         results = assembly_ont.out
     }
     else {
@@ -28,6 +29,7 @@ process assembly_ont {
 
     input:
     tuple val(sampleName), file(readsFile)
+    val(genomeSize)
 
     output:
     tuple val(sampleName), file("${sampleName}.contigs.fasta")
@@ -35,7 +37,7 @@ process assembly_ont {
     script:
     """
     canu -p ${sampleName} \
-        genomeSize=10.5k \
+        genomeSize=${genomeSize} \
         maxThreads=${task.cpus} \
         -nanopore ${readsFile}
     """
