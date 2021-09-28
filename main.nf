@@ -494,7 +494,7 @@ process presentation_generator {
     """
     mkdir data
     mv *.fasta *.fasta.fai *.bam *.bam.bai data
-    cp ${workflow.projectDir}/visualizer/* .
+    cp ${workflow.projectDir}/visualizer/{index.html,index.js,package.json} .
     """
 }
 
