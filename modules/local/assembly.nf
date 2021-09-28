@@ -40,6 +40,10 @@ process assembly_ont {
         genomeSize=${genomeSize} \
         maxThreads=${task.cpus} \
         useGrid=false \
+        correctedErrorRate=${params.canu_corrected_error_rate} \
+        minReadLength=${params.canu_min_read_length} \
+        minOverlapLength=${params.canu_min_overlap_length} \
+        stopOnLowCoverage=${params.canu_stop_on_low_coverage} \
         -nanopore ${readsFile}
     """
 }
