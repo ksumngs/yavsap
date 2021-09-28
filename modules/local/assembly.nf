@@ -60,8 +60,14 @@ process assembly_pe {
     tuple val(sampleName), file("contigs.fasta")
 
     script:
+    if (params.spades_mode.getClass() == Boolean || params.spades_mode.allWhitespace) {
+        modeflag = ''
+    }
+    else {
+        modeflag = "--${params.spades_mode}"
+    }
     """
-    rnaviralspades.py -o out -1 ${readsFiles[0]} -2 ${readsFiles[1]} -t ${task.cpus}
+    spades.py ${modeflag} -o out -1 ${readsFiles[0]} -2 ${readsFiles[1]} -t ${task.cpus}
     cp out/contigs.fasta .
     """
 
