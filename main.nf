@@ -56,9 +56,9 @@ if (!params.ont && !params.pe) {
 // Declare what we're going to call our reference genome
 ReferenceName = 'JEV'
 
-include { reference_genome_pull } from './modules/local/reference.nf'
-include { trimming }              from './modules/local/trimming.nf'
-include { assembly }              from './modules/local/assembly.nf'
+include { reference_genome_pull } from './subworkflows/reference.nf'
+include { trimming }              from './subworkflows/trimming.nf'
+include { assembly }              from './subworkflows/assembly.nf'
 
 cowsay(
 """\
