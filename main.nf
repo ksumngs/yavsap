@@ -55,9 +55,6 @@ if (!params.ont && !params.pe) {
     exit 1
 }
 
-// Declare what we're going to call our reference genome
-ReferenceName = 'JEV'
-
 include { reference_genome_pull } from './subworkflows/reference.nf'
 include { trimming }              from './subworkflows/trimming.nf'
 include { assembly }              from './subworkflows/assembly.nf'

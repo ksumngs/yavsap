@@ -1,20 +1,13 @@
 #!/usr/bin/env nextflow
 nextflow.enable.dsl = 2
 
-// Declare what we're going to call our reference genome
-ReferenceName = 'JEV'
-
 workflow reference_genome_pull {
     main:
-    // Pull and index the reference genome of choice
-    download_fasta | indexing
-    indexedreference = indexing.out
-
-    // Pull and annotate the reference genome of choice
+    // Download the files
+    download_fasta()
     download_genbank()
+    fastaref   = download_fasta.out
     genbankref = download_genbank.out
-    annotation(genbankref)
-    annotatedreference = annotation.out
 
     // Measure the size of the genome based on the genbank record
     gensize = genbankref
@@ -25,6 +18,23 @@ workflow reference_genome_pull {
         .flatten()
         .take(3)
         .last()
+
+    // Get the name of the reference genome
+    refname = genbankref
+        .splitText()
+        .take(2)
+        .last()
+        .map{ s -> s.replace('DEFINITION  ', '') }
+        .map{ s -> s.replace(',', '') }
+        .map{ s -> s.replace('.', '') }
+        .map{ s -> s.replace(' ', '_') }
+        .map{ s -> s.trim() }
+
+    // Process the files
+    indexing(fastaref, refname)
+    indexedreference = indexing.out
+    annotation(genbankref, refname)
+    annotatedreference = annotation.out
 
     emit:
     indexedreference = indexedreference
@@ -71,15 +81,16 @@ process indexing {
 
     input:
     file(reference)
+    val(refname)
 
     output:
-    tuple file("${ReferenceName}.fasta"), file("*.fai")
+    tuple file("${refname}.fasta"), file("*.fai")
 
     script:
     """
     # Create a reference genome index
-    cp ${reference} ${ReferenceName}.fasta
-    samtools faidx ${ReferenceName}.fasta
+    cp ${reference} ${refname}.fasta
+    samtools faidx ${refname}.fasta
     """
 }
 
@@ -90,13 +101,14 @@ process annotation {
 
     input:
     file(reference)
+    val(refname)
 
     output:
-    file "${ReferenceName}.gff"
+    file "${refname}.gff"
 
     shell:
     '''
     seqret -sequence !{reference} -sformat1 genbank -feature -outseq ref.gff -osformat gff -auto
-    head -n $(($(grep -n '##FASTA' ref.gff | cut -d : -f 1) - 1)) ref.gff > !{ReferenceName}.gff
+    head -n $(($(grep -n '##FASTA' ref.gff | cut -d : -f 1) - 1)) ref.gff > !{refname}.gff
     '''
 }
