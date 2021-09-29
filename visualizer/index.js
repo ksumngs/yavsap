@@ -13,6 +13,8 @@ app.get('/favicon.ico', function(req, res) {
 
 app.use('/data', express.static(__dirname + '/data'));
 
+app.use('/js', express.static(__dirname + '/js'));
+
 app.get('/samples', function(req, res) {
     files = fs.readdirSync(path.join(__dirname + '/data'));
     contig_files = files.filter(file => file.endsWith('.bam'));
