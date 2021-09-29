@@ -57,7 +57,7 @@ process assembly_pe {
     tuple val(sampleName), file(readsFiles)
 
     output:
-    tuple val(sampleName), file("contigs.fasta")
+    tuple val(sampleName), file("${sampleName}.contigs.fasta")
 
     script:
     if (params.spades_mode.getClass() == Boolean || params.spades_mode.allWhitespace) {
@@ -67,8 +67,8 @@ process assembly_pe {
         modeflag = "--${params.spades_mode}"
     }
     """
-    spades.py ${modeflag} -o out -1 ${readsFiles[0]} -2 ${readsFiles[1]} -t ${task.cpus}
-    cp out/contigs.fasta .
+    spades.py ${modeflag} -o ${sampleName} -1 ${readsFiles[0]} -2 ${readsFiles[1]} -t ${task.cpus}
+    cp ${sampleName}/contigs.fasta ./${sampleName}.contigs.fasta
     """
 
 }
