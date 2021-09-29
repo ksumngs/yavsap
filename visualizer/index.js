@@ -29,5 +29,5 @@ app.get('/reference', function(req, res) {
 
 const port = process.env.PORT || 3000;
 app.listen(port, function() {
-    console.log('running listening on port ' + port)
+    console.log('jev-analysis-pipeline results visualizer running, available at http://localhost:' + port)
 })
