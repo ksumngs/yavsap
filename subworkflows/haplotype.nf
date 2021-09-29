@@ -98,7 +98,7 @@ process phylogenetic_tree {
 
     script:
     """
-    raxml-ng --threads ${task.cpus} --prefix ${sampleName} --all --msa ${alignedHaplotypes} --model --bs-trees 1000 GTR+G
+    raxml-ng --threads ${task.cpus} --prefix ${sampleName} --all --msa ${alignedHaplotypes} --model GTR+G --bs-trees 1000
     cp ${sampleName}.raxml.support ${sampleName}.tree
     """
 }
