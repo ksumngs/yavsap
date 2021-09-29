@@ -17,9 +17,8 @@
         </style>
     </head>
     <body>
-        <h1>JEV Results</h1>
+        <h1><span id="refname"></span> Results</h1>
         <div id="viewer"></div>
-        <!-- <script src="node_modules/igv/dist/igv.js"></script> -->
         <script src="https://cdn.jsdelivr.net/npm/igv@2.8.6/dist/igv.min.js"></script>
         <script>
             var reference
@@ -41,6 +40,10 @@
             re.send()
 
             var trks = [];
+
+            refname = reference.replace('.fasta', '')
+            refspan = document.getElementById('refname');
+            refspan.innerHTML = refname
 
             for (var i = 0; i < samples.length; i++) {
                 s = samples[i]
