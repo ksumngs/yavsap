@@ -7,6 +7,10 @@ app.get('/', function (req, res) {
     res.sendFile(path.join(__dirname+'/index.html'));
 })
 
+app.get('/favicon.ico', function(req, res) {
+    res.sendFile(path.join(__dirname+'/favicon.ico'));
+})
+
 app.use('/data', express.static(__dirname + '/data'));
 
 app.get('/samples', function(req, res) {
