@@ -28,6 +28,7 @@ workflow reference_genome_pull {
         .map{ s -> s.replace(',', '') }
         .map{ s -> s.replace('.', '') }
         .map{ s -> s.replace(' ', '_') }
+        .map{ s -> s.replace('/', '_') }
         .map{ s -> s.trim() }
 
     // Process the files
