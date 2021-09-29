@@ -1,6 +1,8 @@
 #!/usr/bin/env nextflow
 nextflow.enable.dsl = 2
 
+include { cowsay } from './lib/cowsay.nf'
+
 if (params.help) {
     cowsay(
     """\
@@ -427,47 +429,4 @@ process presentation_generator {
     mv *.fasta *.fasta.fai *.bam *.bam.bai data
     cp ${workflow.projectDir}/visualizer/{index.html,index.js,package.json} .
     """
-}
-
-def cowsay(message) {
-messagelines = message.split('\n')
-nlines = messagelines.length
-linelength = 0
-messagelines.each{ l -> if ( l.length() > linelength ) { linelength = l.length() } }
-paddinglength = linelength + 2
-
-if ( nlines == 1 ) {
-    balloon =
-""" ${"_"*paddinglength}
-< ${message} >
- ${"-"*paddinglength}"""
-}
-else {
-balloon =
-""" ${"_"*paddinglength}
-/ ${messagelines[0].padRight(linelength)} \\"""
-for (int i=1;i<(nlines-1);i++) {
-balloon =
-"""${balloon}
-| ${messagelines[i].padRight(linelength)} |"""
-}
-balloon =
-"""${balloon}
-\\ ${messagelines[nlines-1].padRight(linelength)} /
- ${"-"*paddinglength}"""
-}
-
-cow =
-"""        \\   ^__^
-         \\  (oo)\\_______
-            (__)\\       )\\/\\
-                ||----w |
-                ||     ||"""
-
-cowput =
-"""${balloon}
-${cow}
-"""
-
-log.info cowput
 }
