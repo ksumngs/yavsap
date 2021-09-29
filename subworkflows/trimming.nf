@@ -8,15 +8,18 @@ workflow trimming {
     main:
     if (params.ont) {
         read_trimming_ont(reads)
-        trimmedreads = read_trimming_ont.out
+        trimmedreads = read_trimming_ont.out.trimmedreads
+        tr_report = read_trimming_ont.out.report
     }
     else {
         read_trimming_pe(reads)
-        trimmedreads = read_trimming_pe.out
+        trimmedreads = read_trimming_pe.out.trimmedreads
+        tr_report = read_trimming_pe.out.report
     }
 
     emit:
     trimmedreads = trimmedreads
+    report = tr_report
 }
 
 
@@ -28,14 +31,15 @@ process read_trimming_ont {
     tuple val(sampleName), file(readsFiles)
 
     output:
-    tuple val(sampleName), file("${sampleName}_trimmed.fastq.gz")
+    tuple val(sampleName), path("${sampleName}_trimmed.fastq.gz"), emit: trimmedreads
+    path("${sampleName}.filtlong.log"), emit: report
 
     script:
     """
     filtlong --min_length ${params.trim_minlen} \
         --keep_percent ${params.trim_keep_percent} \
         --target_bases ${params.trim_target_bases} \
-        ${readsFiles} | gzip > ${sampleName}_trimmed.fastq.gz
+        ${readsFiles} 2> ${sampleName}.filtlong.log | gzip > ${sampleName}_trimmed.fastq.gz
     """
 }
 
@@ -48,7 +52,8 @@ process read_trimming_pe {
     tuple val(sampleName), file(readsFiles)
 
     output:
-    tuple val(sampleName), file("*.fastq.gz")
+    tuple val(sampleName), path("*.fastq.gz"), emit: trimmedreads
+    path("${sampleName}.trimmomatic.log"), emit: report
 
     script:
     // Put together the trimmomatic parameters
@@ -67,6 +72,6 @@ process read_trimming_pe {
         /dev/null \
         ${sampleName}_trimmed_R2.fastq.gz \
         /dev/null \
-        ${trimsteps}
+        ${trimsteps} 2> ${sampleName}.trimmomatic.log
     """
 }

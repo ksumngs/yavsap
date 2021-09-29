@@ -104,7 +104,8 @@ workflow {
         }
     }
 
-    RawReads | sample_rename | trimming | read_filtering
+    RawReads | sample_rename | trimming
+    read_filtering(trimming.out.trimmedreads)
     FilteredReads = read_filtering.out
 
     if (!params.skip_assembly) {
@@ -156,6 +157,8 @@ workflow {
     else {
         PhyloTrees = Channel.from([])
     }
+
+    multiqc(trimming.out.report.collect())
 
     // Put a pretty bow on everything
     presentation_generator(IndexedReference, AllAlignments, PhyloTrees)
@@ -319,6 +322,23 @@ process haplotype_conversion_fasta {
     make-haplotype-fastas !{haplotypeYaml} !{reference[0]} !{sampleName}.fasta
 
     '''
+}
+
+process multiqc {
+    label 'process_low'
+    label 'multiqc'
+    publishDir "${params.outdir}", mode: "${params.publish_dir_mode}"
+
+    input:
+    file '*'
+
+    output:
+    path 'multiqc_report.html', emit: multiqc_report
+
+    script:
+    """
+    multiqc .
+    """
 }
 
 // Create a viewer of all the assembly files
