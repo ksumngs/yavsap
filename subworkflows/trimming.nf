@@ -39,6 +39,8 @@ process read_trimming_ont {
     filtlong --min_length ${params.trim_minlen} \
         --keep_percent ${params.trim_keep_percent} \
         --target_bases ${params.trim_target_bases} \
+        --window_size  ${params.trim_winsize} \
+        --min_mean_q   ${params.trim_winqual} \
         ${readsFiles} 2> ${sampleName}.filtlong.log | gzip > ${sampleName}_trimmed.fastq.gz
     """
 }
