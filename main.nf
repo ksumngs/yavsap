@@ -106,7 +106,8 @@ workflow {
 
     RawReads | sample_rename | trimming
     read_filtering(trimming.out.trimmedreads)
-    FilteredReads = read_filtering.out
+    KrakenReports = read_filtering.out.KrakenReports
+    FilteredReads = read_filtering.out.FilteredReads
 
     if (!params.skip_assembly) {
         // _de novo_ assemble the viral reads
@@ -158,7 +159,9 @@ workflow {
         PhyloTrees = Channel.from([])
     }
 
-    multiqc(trimming.out.report.collect())
+    multiqc(KrakenReports
+        .concat(trimming.out.report)
+        .collect())
 
     // Put a pretty bow on everything
     presentation_generator(IndexedReference, AllAlignments, PhyloTrees)
@@ -337,6 +340,7 @@ process multiqc {
 
     script:
     """
+    cp ${workflow.projectDir}/multiqc_config.yaml .
     multiqc .
     """
 }

@@ -8,11 +8,13 @@ workflow read_filtering {
     main:
     if (params.skip_filtering) {
         FilteredReads = InputReads
+        KrakenReports = Channel.from([])
     }
     else {
         classification(InputReads)
+        KrakenReports = classification.out
 
-        KrakenReads = InputReads.join(classification.out)
+        KrakenReads = InputReads.join(KrakenReports)
 
         // Filter out the non-viral reads
         filtering(KrakenReads)
@@ -21,6 +23,7 @@ workflow read_filtering {
 
     emit:
     FilteredReads
+    KrakenReports
 }
 
 // Classify reads using Kraken
