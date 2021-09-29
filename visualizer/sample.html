@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            body {
+                background-color: #d1d1f1;
+            }
+            #viewer {
+                outline: solid;
+                border-radius: 2pt;
+                background-color: white;
+            }
+            h1 {
+                font-family: 'Myriad Pro', 'Noto Sans', 'Lucida Sans', Verdana, 'Liberation Sans', sans-serif;
+                text-align: center;
+            }
+        </style>
+    </head>
+    <body>
+        <h1 id="sname"></h1>
+        <div id="viewer"></div>
+        <script src="https://cdn.jsdelivr.net/npm/igv@2.8.6/dist/igv.min.js"></script>
+        <script>
+            var p = new URLSearchParams(window.location.search);
+            var s = p.get('s')
+
+            header = document.getElementById('sname');
+            header.innerHTML = s;
+
+            var reference
+            var req = new XMLHttpRequest();
+            req.onload = reqlistener;
+            function reqlistener(e) {
+                reference = JSON.parse(this.responseText)[0];
+            }
+            req.open('GET', '/reference', false)
+            req.send()
+
+            igvDiv = document.getElementById('viewer');
+            options = {
+                reference: {
+                    id: reference.slice(0,-6),
+                    fastaURL: "data/"+reference
+                },
+                tracks: [
+                    {
+                        type: 'alignment',
+                        format: 'bam',
+                        url: 'data/'+s+'.bam',
+                        indexURL: 'data/'+s+'.bam.bai',
+                        name: s
+                    },
+                    {
+                        type: 'alignment',
+                        format: 'bam',
+                        url: 'data/'+s+'.contigs.bam',
+                        indexURL: 'data/'+s+'.contigs.bam.bai',
+                        name: s+'.contigs'
+                    }
+                ]
+            }
+            igv.createBrowser(igvDiv, options).
+                then(function(browser) {
+                    igv.browser = browser;
+                });
+        </script>
+    </body>
+</html>

@@ -16,6 +16,10 @@ app.get('/samples', function(req, res) {
     res.end(JSON.stringify(contig_files));
 })
 
+app.get('/sample', function(req, res) {
+    res.sendFile(path.join(__dirname+'/sample.html'));
+})
+
 app.get('/reference', function(req, res) {
     files = fs.readdirSync(path.join(__dirname + '/data'));
     fasta_files = files.filter(file => file.endsWith('.fasta'));
