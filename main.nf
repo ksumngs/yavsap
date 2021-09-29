@@ -107,13 +107,16 @@ workflow {
     RawReads | sample_rename | trimming | read_filtering
     FilteredReads = read_filtering.out
 
-    // _de novo_ assemble the viral reads
-    assembly(FilteredReads, GenomeSize)
-    Assemblies = assembly.out
-
-    // Realign contigs to the reference genome
-    contigs_realign_to_reference(Assemblies, IndexedReference)
-    AlignedContigs = contigs_realign_to_reference.out
+    if (!params.skip_assembly) {
+        // _de novo_ assemble the viral reads
+        assembly(FilteredReads, IndexedReference, GenomeSize)
+        Assemblies = assembly.out.Contigs
+        AlignedContigs = assembly.out.AlignedContigs
+    }
+    else {
+        Assemblies = Channel.from([])
+        AlignedContigs = Channel.from([])
+    }
 
     // Realign reads to the reference genome
     reads_realign_to_reference(FilteredReads, IndexedReference)
@@ -181,25 +184,6 @@ process sample_rename {
         mv ${readsFiles[1]} out/${sampleName}_R2.fastq.gz
         """
     }
-}
-
-// Remap contigs
-process contigs_realign_to_reference {
-    label 'minimap'
-
-    input:
-    tuple val(sampleName), file(contigs)
-    file(reference)
-
-    output:
-    tuple val(sampleName), file("*.{bam,bai}")
-
-    script:
-    """
-    minimap2 -at ${task.cpus} --MD ${reference[0]} ${contigs} | \
-        samtools sort > ${sampleName}.contigs.bam
-    samtools index ${sampleName}.contigs.bam
-    """
 }
 
 process reads_realign_to_reference {

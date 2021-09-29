@@ -3,26 +3,30 @@ nextflow.enable.dsl = 2
 
 workflow assembly {
     take:
-    reads
-    size
+    InputReads
+    ReferenceGenome
+    GenomeSize
 
     main:
     if (params.ont) {
-        assembly_ont(reads, size)
-        results = assembly_ont.out
+        denovo_canu(InputReads, GenomeSize)
+        Contigs = denovo_canu.out
     }
     else {
-        assembly_pe(reads)
-        results = assembly_pe.out
+        denovo_spades(InputReads)
+        Contigs = denovo_spades.out
     }
+    align_to_reference(Contigs, ReferenceGenome)
+    AlignedContigs = align_to_reference.out
 
     emit:
-    results
+    Contigs
+    AlignedContigs
 }
 
 
 // Assemble using Canu
-process assembly_ont {
+process denovo_canu {
     label 'canu'
     label 'process_medium'
     label 'error_ignore'
@@ -48,7 +52,7 @@ process assembly_ont {
     """
 }
 
-process assembly_pe {
+process denovo_spades {
     label 'spades'
     label 'process_medium'
     label 'error_ignore'
@@ -71,4 +75,23 @@ process assembly_pe {
     cp ${sampleName}/contigs.fasta ./${sampleName}.contigs.fasta
     """
 
+}
+
+// Remap contigs
+process align_to_reference {
+    label 'minimap'
+
+    input:
+    tuple val(sampleName), file(contigs)
+    file(reference)
+
+    output:
+    tuple val(sampleName), file("*.{bam,bai}")
+
+    script:
+    """
+    minimap2 -at ${task.cpus} --MD ${reference[0]} ${contigs} | \
+        samtools sort > ${sampleName}.contigs.bam
+    samtools index ${sampleName}.contigs.bam
+    """
 }
