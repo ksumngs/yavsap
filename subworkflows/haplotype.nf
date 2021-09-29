@@ -14,6 +14,11 @@ workflow haplotyping {
     merge_fastas(HaplotypeSequences, ReferenceGenome) | \
         alignment | \
         phylogenetic_tree
+
+    trees = phylogenetic_tree.out
+
+    emit:
+    trees
 }
 
 process calling {
@@ -59,7 +64,7 @@ process merge_fastas {
     fi
 
     # Label the consensus sequences as such
-    sed -i "s/>/>CONSENSUS /g" consensus.fasta
+    sed -i "s/>/>!{sampleName}./g" consensus.fasta
 
     cat !{reference[0]} consensus.fasta !{haplotypes} > !{sampleName}.haplotypes.fasta
     '''
@@ -88,7 +93,6 @@ process alignment {
 process phylogenetic_tree {
     label 'raxml'
     label 'error_ignore'
-    publishDir "${params.outdir}", mode: "${params.publish_dir_mode}"
 
     input:
     tuple val(sampleName), file(alignedHaplotypes)

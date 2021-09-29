@@ -151,10 +151,14 @@ workflow {
 
     if (!params.skip_haplotype) {
         haplotyping(Alignments, Assemblies, IndexedReference)
+        PhyloTrees = haplotyping.out
+    }
+    else {
+        PhyloTrees = Channel.from([])
     }
 
     // Put a pretty bow on everything
-    presentation_generator(IndexedReference, AllAlignments)
+    presentation_generator(IndexedReference, AllAlignments, PhyloTrees)
 }
 
 process sample_rename {
@@ -325,6 +329,7 @@ process presentation_generator {
     input:
     file '*'
     file '*'
+    file '*'
 
     output:
     file 'index.html'
@@ -335,7 +340,7 @@ process presentation_generator {
     script:
     """
     mkdir data
-    mv *.fasta *.fasta.fai *.bam *.bam.bai data
+    mv *.fasta *.fasta.fai *.bam *.bam.bai *.tree data
     cp ${workflow.projectDir}/visualizer/{index.html,index.js,package.json} .
     """
 }
