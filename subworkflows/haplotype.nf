@@ -168,20 +168,12 @@ process merge_fastas {
     output:
     tuple val(sampleName), file("${sampleName}.population.fasta")
 
-    shell:
-    '''
-    # Keep only the first (most complete) consensus sequence
-    if [ "$(grep -c '^>' !{assembly})" -gt 1 ]; then
-        head !{assembly} -n $(( $(grep -n '^>' !{assembly} | tail -n +2 | head -n1 | awk '{split($0,a,":"); print a[1]}') - 1 )) > consensus.fasta
-    else
-        cp !{assembly} consensus.fasta
-    fi
-
+    script:
+    """
     # Label the consensus sequences as such
-    sed -i "s/>/>!{sampleName}./g" consensus.fasta
-
-    cat !{reference[0]} consensus.fasta !{haplotypes} > !{sampleName}.population.fasta
-    '''
+    sed -i "s/>/>${sampleName}./g" consensus.fasta
+    cat ${reference[0]} consensus.fasta ${haplotypes} > ${sampleName}.population.fasta
+    """
 }
 
 process alignment {
