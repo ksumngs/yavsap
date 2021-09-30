@@ -186,7 +186,7 @@ process merge_fastas {
 
 process alignment {
     label 'mafft'
-    label 'process_low'
+    label 'process_medium'
     publishDir "${params.outdir}", mode: "${params.publish_dir_mode}"
 
     cpus 1
@@ -199,7 +199,8 @@ process alignment {
 
     shell:
     '''
-    mafft --auto !{haploReads} > !{sampleName}.haplotypes.fas
+    mafft --thread !{task.cpus} --auto \
+        !{haploReads} > !{sampleName}.haplotypes.fas
     sed -i "s/ .*$//" !{sampleName}.haplotypes.fas
     '''
 }
