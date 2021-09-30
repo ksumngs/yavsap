@@ -15,6 +15,8 @@ app.use('/data', express.static(__dirname + '/data'));
 
 app.use('/js', express.static(__dirname + '/js'));
 
+app.use('/multiqc_data', express.static(__dirname + '/multiqc_data'));
+
 app.get('/samples', function(req, res) {
     files = fs.readdirSync(path.join(__dirname + '/data'));
     contig_files = files.filter(file => file.endsWith('.bam'));
@@ -31,6 +33,10 @@ app.get('/reference', function(req, res) {
     fasta_files = files.filter(file => file.endsWith('.fasta'));
     res.setHeader('Content-Type', 'application/json');
     res.end(JSON.stringify(fasta_files))
+})
+
+app.get('/multiqc', function(req, res) {
+    res.sendFile(path.join(__dirname+'/multiqc_report.html'));
 })
 
 const port = process.env.PORT || 3000;

@@ -216,9 +216,10 @@ process presentation_generator {
     file 'index.html'
     file 'index.js'
     file 'package.json'
+    file 'js/*'
 
     script:
     """
-    cp ${workflow.projectDir}/visualizer/{index.html,index.js,package.json} .
+    cp -r ${workflow.projectDir}/visualizer/{index.html,index.js,package.json,js} .
     """
 }
