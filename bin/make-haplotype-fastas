@@ -23,7 +23,7 @@ rreader = open(FASTA.Reader, rfile)
 refrec = collect(rreader)[1]
 close(rreader)
 
-newrecords = mutaterecord.([refrec], haplotypes)
+newrecords = unique(mutaterecord.([refrec], haplotypes))
 
 fwriter = open(FASTA.Writer, ffile)
 for r in newrecords
