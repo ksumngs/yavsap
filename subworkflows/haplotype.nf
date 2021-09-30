@@ -207,6 +207,7 @@ process alignment {
 process phylogenetic_tree {
     label 'raxml'
     label 'error_ignore'
+    publishDir "${params.outdir}/data", mode: "${params.publish_dir_mode}"
 
     input:
     tuple val(sampleName), file(alignedHaplotypes)

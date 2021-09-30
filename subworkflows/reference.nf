@@ -79,6 +79,7 @@ process download_genbank {
 process indexing {
     label 'samtools'
     label 'process_low'
+    publishDir "${params.outdir}/data", mode: "${params.publish_dir_mode}"
 
     input:
     file(reference)

@@ -80,6 +80,7 @@ process denovo_spades {
 // Remap contigs
 process align_to_reference {
     label 'minimap'
+    publishDir "${params.outdir}/data", mode: "${params.publish_dir_mode}"
 
     input:
     tuple val(sampleName), file(contigs)

@@ -139,7 +139,7 @@ workflow {
         .collect())
 
     // Put a pretty bow on everything
-    presentation_generator(IndexedReference, AllAlignments, PhyloTrees)
+    presentation_generator()
 }
 
 process sample_rename {
@@ -170,6 +170,7 @@ process sample_rename {
 
 process reads_realign_to_reference {
     label 'minimap'
+    publishDir "${params.outdir}/data", mode: "${params.publish_dir_mode}"
 
     input:
     tuple val(sampleName), file(readsFile)
@@ -196,7 +197,8 @@ process multiqc {
     file '*'
 
     output:
-    path 'multiqc_report.html', emit: multiqc_report
+    path 'multiqc_report.html'
+    path 'multiqc_data'
 
     script:
     """
@@ -210,21 +212,13 @@ process presentation_generator {
     label 'process_low'
     publishDir "${params.outdir}", mode: "${params.publish_dir_mode}"
 
-    input:
-    file '*'
-    file '*'
-    file '*'
-
     output:
     file 'index.html'
     file 'index.js'
     file 'package.json'
-    file 'data/*'
 
     script:
     """
-    mkdir data
-    mv *.fasta *.fasta.fai *.bam *.bam.bai *.tree data
     cp ${workflow.projectDir}/visualizer/{index.html,index.js,package.json} .
     """
 }
