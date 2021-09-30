@@ -124,35 +124,10 @@ workflow {
     reads_realign_to_reference(FilteredReads, IndexedReference)
     Alignments = reads_realign_to_reference.out
 
-    /*
-    // Call variants
-    variants_calling_ivar(Alignments, IndexedReference, AnnotatedReference)
-    VariantCalls = variants_calling_ivar.out
-
-    AlignmentStats = Alignments.join(VariantCalls)
-
-    // Get variant stats
-    variants_analysis(AlignmentStats, IndexedReference)
-    VariantStats = VariantCalls.join(variants_analysis.out)
-
-    // Filter variants
-    variants_filter(VariantStats)
-    FilteredVariantCalls = Alignments.join(variants_filter.out)
-
-    // Sanity-check those variants
-    haplotype_calling_julia(FilteredVariantCalls)
-
-    Haplotypes = haplotype_calling_julia.out.haplotype_yaml
-    ConsensusHaplotypes = Haplotypes.join(Assemblies)
-    haplotype_conversion_fasta(ConsensusHaplotypes, IndexedReference) | \
-        haplotype_alignment | \
-        haplotype_phylogenetic_tree
-    */
-
     AllAlignments = Alignments.join(AlignedContigs, remainder: true).flatMap{ n -> [n[1], n[2]] }.collect()
 
     if (!params.skip_haplotype) {
-        haplotyping(Alignments, Assemblies, IndexedReference)
+        haplotyping(Alignments, Assemblies, IndexedReference, AnnotatedReference)
         PhyloTrees = haplotyping.out
     }
     else {
@@ -210,121 +185,6 @@ process reads_realign_to_reference {
         samtools sort > ${sampleName}.bam
     samtools index ${sampleName}.bam
     """
-}
-
-process variants_calling_ivar {
-    label 'ivar'
-    label 'process_low'
-
-    input:
-    tuple val(sampleName), file(bamfile)
-    file(reference)
-    file(annotations)
-
-    output:
-    tuple val(sampleName), file("*.ivar.tsv")
-
-    script:
-    // Crank up the quality metrics (just do it less if we're working with nanopore reads)
-    qualFlags = (params.pe) ? '-q30 -t 0.05 -m 1000' : '-q 21 -t 0.05 -m 1500'
-    """
-    samtools mpileup -aa -A -B -Q 0 --reference ${reference[0]} ${bamfile[0]} | \
-        ivar variants -p ${sampleName}.ivar -r ${reference[0]} -g ${annotations} ${qualFlags}
-    """
-}
-
-// Get stats on the called variants
-process variants_analysis {
-    label 'bam_readcount'
-    label 'process_low'
-
-    input:
-    tuple val(prefix), file(bamfile), file(variantCalls)
-    file(reference)
-
-    output:
-    tuple val(prefix), file("*.counts.tsv")
-
-    shell:
-    '''
-    touch !{prefix}.counts.tsv
-    while read -r LINE; do
-        echo "$LINE" | while IFS=$'\\t' read -r -a CELLS; do
-            REGION="${CELLS[0]}"
-            POS="${CELLS[1]}"
-            if [[ $POS != "POS" ]]; then
-                bam-readcount -f !{reference[0]} !{bamfile[0]} "${REGION}:${POS}-${POS}" >> \
-                    !{prefix}.counts.tsv
-            fi
-        done
-    done < !{variantCalls}
-    '''
-}
-
-// More strictly filter the variants based on strand bias and read position
-process variants_filter {
-    label 'julia'
-    label 'error_retry'
-    publishDir "${params.outdir}", mode: "${params.publish_dir_mode}"
-
-    input:
-    tuple val(prefix), file(variantCalls), file(variantStats)
-
-    output:
-    tuple val(prefix), file("*.filtered.tsv")
-
-    script:
-    """
-    export JULIA_NUM_THREADS=${task.cpus}
-    variantfilter ${variantCalls[0]} ${variantStats[0]} ${prefix}.filtered.tsv
-    """
-}
-
-// At some point, we will need to use long reads to find if mutations are linked within
-// a single viral genome. To start, we will look to see if there are reads that contain more
-// than one mutation in them as called by ivar
-process haplotype_calling_julia {
-    label 'julia'
-    label 'error_retry'
-    publishDir "${params.outdir}", mode: "${params.publish_dir_mode}"
-
-    input:
-    tuple val(prefix), file(bamfile), file(variants)
-
-    output:
-    tuple val(prefix), path("${prefix}.haplotypes.csv"), emit: linkage_stats
-    tuple val(prefix), path("${prefix}.haplotypes.yaml"), emit: haplotype_yaml
-
-    script:
-    """
-    export JULIA_NUM_THREADS=${task.cpus}
-    haplotype-finder ${bamfile[0]} ${variants[0]} ${prefix}.haplotypes.csv ${prefix}.haplotypes.yaml
-    """
-}
-
-process haplotype_conversion_fasta {
-    label 'julia'
-    label 'error_retry'
-    label 'process_low'
-
-    input:
-    tuple val(sampleName), file(haplotypeYaml), file(assembly)
-    file(reference)
-
-    output:
-    tuple val(sampleName), file("${sampleName}.haplotypes.fasta")
-
-    shell:
-    '''
-    # Keep only the first (most complete) consensus sequence
-    cp !{assembly} consensus.fasta
-
-    # Label the consensus sequences as such
-    sed -i "s/>/>CONSENSUS /g" consensus.fasta
-
-    make-haplotype-fastas !{haplotypeYaml} !{reference[0]} !{sampleName}.fasta
-
-    '''
 }
 
 process multiqc {
