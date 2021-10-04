@@ -9,7 +9,7 @@ using BioSymbols
 using DataFrames
 using Distributions
 using FASTX
-using UUIDs
+using SHA
 using XAM
 
 """
@@ -552,13 +552,10 @@ function yamlize(v::Variant)
 end
 
 function mutaterecord(record::FASTA.Record, haplotype::Haplotype)
-    mutationpos = position.(mutations(haplotype))
-    newid = string(lpad.(base62.(mutationpos),3,'0')...)
     newseq = mutatesequence(sequence(record), haplotype)
-    newdesc = ""
-    if FASTA.hasdescription(record)
-        newdesc = string(description(record), ", mutated at position(s) ", join(mutationpos, ", ", ", and "))
-    end
+    sequencehash = bytes2hex(sha1(string(newseq)))
+    newid = sequencehash[1:8]
+    newdesc = string(description(record), ", variant ", sequencehash)
 
     return FASTA.Record(
         newid,
@@ -576,79 +573,4 @@ function mutatesequence(seq::NucleotideSeq, haplotype::Haplotype)
     end
 
     return newseq
-end
-
-BaseLookup = Dict([
-    (0,  '0'),
-    (1,  '1'),
-    (2,  '2'),
-    (3,  '3'),
-    (4,  '4'),
-    (5,  '5'),
-    (6,  '6'),
-    (7,  '7'),
-    (8,  '8'),
-    (9,  '9'),
-    (10, 'a'),
-    (11, 'b'),
-    (12, 'c'),
-    (13, 'd'),
-    (14, 'e'),
-    (15, 'f'),
-    (16, 'g'),
-    (17, 'h'),
-    (18, 'I'),
-    (19, 'j'),
-    (20, 'k'),
-    (21, 'l'),
-    (22, 'm'),
-    (23, 'n'),
-    (24, 'o'),
-    (25, 'p'),
-    (26, 'q'),
-    (27, 'r'),
-    (28, 's'),
-    (29, 't'),
-    (30, 'u'),
-    (31, 'v'),
-    (32, 'w'),
-    (33, 'x'),
-    (34, 'y'),
-    (35, 'z'),
-    (36, 'A'),
-    (37, 'B'),
-    (38, 'C'),
-    (39, 'D'),
-    (40, 'E'),
-    (41, 'F'),
-    (42, 'G'),
-    (43, 'H'),
-    (44, 'I'),
-    (45, 'J'),
-    (46, 'K'),
-    (47, 'L'),
-    (48, 'M'),
-    (49, 'N'),
-    (50, 'O'),
-    (51, 'P'),
-    (52, 'Q'),
-    (53, 'R'),
-    (54, 'S'),
-    (55, 'T'),
-    (56, 'U'),
-    (57, 'V'),
-    (58, 'W'),
-    (59, 'X'),
-    (60, 'Y'),
-    (61, 'Z')
-])
-
-function base62(number::Int)
-    returnstring = Char[]
-    while number >= 1
-        remainder = number % 62
-        pushfirst!(returnstring, BaseLookup[remainder])
-        number = number ÷ 62
-    end
-    return string(returnstring...)
 end
