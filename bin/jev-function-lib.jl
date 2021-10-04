@@ -118,19 +118,7 @@ end
 
 struct HaplotypeCounts
     haplotype::Haplotype
-    counts::AbstractMatrix{Int}
-end
-
-function HaplotypeCounts(haplotype::Haplotype, counts::Int...)
-    if !isinteger(sqrt(length(counts)))
-        error(ArgumentError("number of count arguments must be reshabable to a square matrix"))
-    end
-    nhaps = Int(sqrt(length(counts)))
-    if length(haplotype.mutations) != nhaps
-        error(ArgumentError("the number of count arguments should be equal to the square of the number of variants in the haplotype"))
-    end
-    countmat = Matrix(reshape(counts, (nhaps, nhaps)))
-    return HaplotypeCounts(haplotype, countmat)
+    counts::AbstractArray{Int}
 end
 
 function counts(h::HaplotypeCounts)
@@ -260,6 +248,20 @@ function matchvariant(base::AbstractVector{DNA}, var::Variant)
     return matchvariant(LongDNASeq(base), var)
 end
 
+"""
+    findoccurrences(haplotype::Haplotype, reads::Union{AbstractVector{BAM.Record}, BAM.Reader})
+
+Finds the number of times variants occur within `reads` in accordance with `haplotype`.
+
+Return an ``N``-dimensional array where the ``N``th dimension represents the ``N``th
+variant call position within a haplotype. Position 1 of ``N`` indicates the number of times
+the reference base was called for this variant position, while position 2 indicates the
+number of times the alternate base was called. For example,
+`findoccurences(hap, read)[1,2,1]` would give the number of times the reference was called
+in position 1, the alternate was also called in position 2, and the reference was also
+called in position 3.
+
+"""
 function findoccurrences(haplotype::Haplotype, reads::AbstractVector{BAM.Record})
     # Make things easier to call
     mutations = haplotype.mutations
@@ -268,41 +270,24 @@ function findoccurrences(haplotype::Haplotype, reads::AbstractVector{BAM.Record}
     containingreads = filter(b -> BAM.position(b) < min(position.(mutations)...) && BAM.rightposition(b) > max(position.(mutations)...), reads)
 
     # Set up haplotype counts
-    hapcounts = zeros(Int, (length(containingreads), 4))
+    hapcounts = zeros(Int, repeat([2], length(mutations))...)
 
     # Check every NGS read that contains both positions
-    Threads.@threads for i in 1:length(containingreads)
-        # Extract the pertinant record (like this was a for each loop)
-        record = containingreads[i]
-
+    for record in containingreads
         # Pull the basecalls
         basecalls = baseatreferenceposition.([record], position.(mutations))
 
         # Find how the basecalls stack up
         matches = matchvariant.(basecalls, mutations)
 
-        # Find which haplotype we're dealing with, if any
-        # Theoretically, we could make an n-dimensional array for haplotypes consisting
-        # of n mutations, but for now we'll stick with two
-        if     matches[1] == :reference && matches[2] == :reference
-            hapcounts[i,1] = 1
-        elseif matches[1] == :reference && matches[2] == :alternate
-            hapcounts[i,2] = 1
-        elseif matches[1] == :alternate && matches[2] == :reference
-            hapcounts[i,3] = 1
-        elseif matches[1] == :alternate && matches[2] == :alternate
-            hapcounts[i,4] = 1
+        if !any(matches .== :other)
+            coordinate = CartesianIndex((Int.(matches .== :alternate) .+ 1)...)
+            hapcounts[coordinate] += 1
         end #if
     end #for
 
-    # Tabulate results
-    ref_ref = sum(hapcounts[:,1])
-    ref_alt = sum(hapcounts[:,2])
-    alt_ref = sum(hapcounts[:,3])
-    alt_alt = sum(hapcounts[:,4])
-
     # Write the haplotype counts to the overall dataframe
-    return HaplotypeCounts(haplotype, [ref_ref ref_alt; alt_ref alt_alt])
+    return HaplotypeCounts(haplotype, hapcounts)
 
 end
 
@@ -317,11 +302,7 @@ Calculates the linkage disequilibrium and Chi-squared significance level of a co
 haplotypes whose number of occurrences are given by `counts`.
 
 `counts` is an ``N``-dimensional array where the ``N``th dimension represents the ``N``th
-variant call position within a haplotype. Position 1 of ``N`` indicates the number of times
-the reference base was called for this variant position, while position 2 indicates the
-number of times the alternate base was called. For example, `counts[1,2,1]` would give the
-number of times the reference was called in position 1, the alternate was also called in
-position 2, and the reference was also called in position 3.
+variant call position within a haplotype. `findoccurrences` produces such an array.
 """
 function linkage(counts::AbstractArray{Int})
     # Get the probability of finding a perfect reference sequence
