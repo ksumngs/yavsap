@@ -208,3 +208,32 @@ Corresponds to the |first ILLUMINACLIP option of Trimmomatic|_.
 
 .. |first ILLUMINACLIP option of Trimmomatic| replace:: first ``ILLUMINACLIP`` option of Trimmomatic
 .. _first ILLUMINACLIP option of Trimmomatic: http://www.usadellab.org/cms/?page=trimmomatic
+
+Haplotyping Options
+-------------------
+
+``--haplotype_significance``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+======== ======
+Type     Float
+======== ======
+Required No
+Default  0.05
+======== ======
+
+The highest p-value that will be considered a significant haplotype based on
+linkage disequilibrium and proportional equivalence.
+
+``--haplotype_minimum``
+^^^^^^^^^^^^^^^^^^^^^^^
+
+======== ======
+Type     Integer
+======== ======
+Required No
+Default  10
+======== ======
+
+The minimum number of times a particular haplotype has to occur for it to be
+considered real and processed downstream and output.

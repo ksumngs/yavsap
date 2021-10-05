@@ -153,7 +153,8 @@ process calling_ont {
     script:
     """
     export JULIA_NUM_THREADS=${task.cpus}
-    haplotype-finder ${bamfile[0]} ${variants[0]} ${prefix}.haplotypes.csv ${prefix}.haplotypes.yaml
+    haplotype-finder -p ${params.haplotype_significance} -m ${params.haplotype_minimum} \
+        ${bamfile[0]} ${variants[0]} ${prefix}.haplotypes.csv ${prefix}.haplotypes.yaml
     make-haplotype-fastas ${prefix}.haplotypes.yaml ${reference[0]} ${prefix}.haplotypes.fasta
     """
 }
