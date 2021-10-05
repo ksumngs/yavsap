@@ -66,22 +66,19 @@ variantdata = DataFrame(CSV.File(varfile))
 variants = Variant.(eachrow(variantdata))
 
 # Find all possible pairings of these variants
-variantpairs = Haplotype.(collect(combinations(variants, 2)))
+variantpairs = Haplotype.(collect(combinations(variants)))
+filter!(h -> length(h.mutations) > 1, variantpairs)
 
 # Import reads from the BAM file
 reader = open(BAM.Reader, bamfile)
-
-# Compute frequency stats
-haplotypecounts = findoccurrences.(variantpairs, [reader])
-
-# Cleanup the BAM stream
+bamreads = collect(reader)
 close(reader)
 
-# Remove any haplotypes that occur so infrequently that linkage disequilibrium can't be calculated
-filter!(h -> min(h.counts...) > hap_min, haplotypecounts)
+# Compute frequency stats
+haplotypecounts = findoccurrences.(variantpairs, [bamreads])
 
-# Remove any haplotypes that are not significant
-filter!(h -> linkage(h.counts)[2] < hap_sig, haplotypecounts)
+# Remove any haplotypes that occur so infrequently that linkage disequilibrium can't be calculated
+filter!(h -> last(h.counts) > hap_min, haplotypecounts)
 
 # Find all variant positions that exhibit linkage
 linkedvariants = unique(cat(mutations.(haplotypecounts)..., dims=1))
