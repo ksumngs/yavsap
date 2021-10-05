@@ -10,7 +10,6 @@ using DataFrames
 using Distributions
 using FASTX
 using SHA
-using Statistics
 using XAM
 
 """
@@ -315,10 +314,11 @@ function linkage(counts::AbstractArray{Int})
     Δ = P_allref - prod(P_refs)
 
     # Calculate the test statistic
-    S = Δ^2 / var(counts)
+    r = Δ / (prod(P_refs .* (1 .- P_refs))^(1/ndims(counts)))
+    Χ_squared = r^2 * sum(counts)
 
     # Calculate the significance
-    p = 1 - cdf(Chisq(1), S)
+    p = 1 - cdf(Chisq(1), Χ_squared)
 
     return Δ, p
 end #function
