@@ -24,10 +24,6 @@ s = ArgParseSettings()
         help     = "tab-separated output file from iVar"
         required = true
         arg_type = String
-    "haplotype_tsv"
-        help     = "tab-separated results of multi-variant haplotype frequencies"
-        required = true
-        arg_type = String
     "haplotype_yaml"
         help     = "YAML results of all haplotypes"
         required = true
@@ -50,7 +46,6 @@ end
 args = parse_args(s)
 bamfile = args["bamfile"]
 varfile = args["ivarfile"]
-outtsv  = args["haplotype_tsv"]
 outyaml = args["haplotype_yaml"]
 hap_sig = args["significance"]
 hap_min = args["min_occurrences"]
@@ -60,7 +55,6 @@ include("jev-function-lib.jl")
 
 # Check if there are any variants
 if length(readlines(varfile)) < 2
-    touch(outtsv)
     touch(outyaml)
     exit(0)
 end
@@ -73,9 +67,6 @@ variants = Variant.(eachrow(variantdata))
 
 # Find all possible pairings of these variants
 variantpairs = Haplotype.(collect(combinations(variants, 2)))
-
-# Find statistically equal frequency haplotypes
-equalhaplotypes = filter(h -> prop_test(alternatedepth.(h.mutations), totaldepth.(h.mutations)) > hap_sig, variantpairs)
 
 # Import reads from the BAM file
 reader = open(BAM.Reader, bamfile)
@@ -92,43 +83,16 @@ filter!(h -> min(h.counts...) > hap_min, haplotypecounts)
 # Remove any haplotypes that are not significant
 filter!(h -> linkage(h.counts)[2] < hap_sig, haplotypecounts)
 
-if length(haplotypecounts) > 0
-    # Write the significant haplotypes out to a file for later processing
-    hapdata = DataFrame(
-        Chromosome1 = region.(mutations.(haplotype.(haplotypecounts))[1]),
-        Position1   = position.(mutations.(haplotype.(haplotypecounts))[1]),
-        Reference1  = referencebase.(mutations.(haplotype.(haplotypecounts))[1]),
-        Alternate1  = alternatebase.(mutations.(haplotype.(haplotypecounts))[1]),
-        Chromosome2 = region.(mutations.(haplotype.(haplotypecounts))[2]),
-        Position2   = position.(mutations.(haplotype.(haplotypecounts))[2]),
-        Reference2  = referencebase.(mutations.(haplotype.(haplotypecounts))[2]),
-        Alternate2  = alternatebase.(mutations.(haplotype.(haplotypecounts))[2]),
-        Ref_Ref     = ref_ref.(haplotypecounts),
-        Ref_Alt     = ref_alt.(haplotypecounts),
-        Alt_Ref     = alt_ref.(haplotypecounts),
-        Alt_Alt     = alt_alt.(haplotypecounts),
-        LD          = first.(linkage.(counts.(haplotypecounts))),
-        p_val       = last.(linkage.(counts.(haplotypecounts)))
-    )
-    CSV.write(outtsv, hapdata, delim="\t")
-
-    # Find all variant positions that exhibit linkage
-    linkedvariants = unique(cat(mutations.(haplotypecounts)..., dims=1))
-else
-    touch(outtsv)
-    linkedvariants = Haplotype[]
-end
+# Find all variant positions that exhibit linkage
+linkedvariants = unique(cat(mutations.(haplotypecounts)..., dims=1))
 
 # Create haplotype objects for any non-linked variants
 individualhaplotypes = Haplotype.(filter(!v -> v ∈ linkedvariants, variants))
 linkedhaplotypes = haplotype.(haplotypecounts)
-
-allhaplotypes = unique([haplotype.(haplotypecounts); equalhaplotypes; individualhaplotypes])
-filter!(!h -> h ∈ linkedhaplotypes, equalhaplotypes)
+filter!(!h -> h ∈ linkedhaplotypes, individualhaplotypes)
 
 # Quick and dirty writeout in yaml
 open(outyaml, "w") do f
-    write(f, string(yamlize.(linkedhaplotypes, reason="linkage")...))
-    write(f, string(yamlize.(equalhaplotypes, reason="equality")...))
+    write(f, string(yamlize.(haplotypecounts, reason="linkage")...))
     write(f, string(yamlize.(individualhaplotypes, reason="individual")...))
 end #do

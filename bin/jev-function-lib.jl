@@ -535,6 +535,28 @@ function isunbiased(variant::DataFrameRow, countsdata::DataFrame; maxdiff=0.1, m
 
 end
 
+function yamlize(hc::HaplotypeCounts; reason::Union{String,Nothing}=nothing)
+    occurrences = "occurrences:\n"
+    for i in CartesianIndices(hc.counts)
+        location = [Tuple(i)...]
+        variantpattern = string.(replace(replace(location, 1 => "ref"), 2 => "alt"))
+        key = join(variantpattern, "_")
+        occurrences = string(occurrences, "  ", key, ": ", hc.counts[i], "\n")
+    end
+
+    return string(
+        yamlize(hc.haplotype, reason=reason),
+        occurrences,
+        "ldcofficient: ",
+        linkage(hc.counts)[1],
+        "\n",
+        "p_val: ",
+        linkage(hc.counts)[2],
+        "\n"
+    )
+end
+
+
 function yamlize(h::Haplotype; reason::Union{String,Nothing}=nothing)
     return string(
         "---\n",

@@ -146,7 +146,6 @@ process calling_ont {
     file(reference)
 
     output:
-    tuple val(prefix), path("${prefix}.haplotypes.csv"), emit: linkage_stats
     tuple val(prefix), path("${prefix}.haplotypes.yaml"), emit: haplotype_yaml
     tuple val(prefix), path("${prefix}.haplotypes.fasta"), emit: haplotype_fasta
 
@@ -154,7 +153,7 @@ process calling_ont {
     """
     export JULIA_NUM_THREADS=${task.cpus}
     haplotype-finder -p ${params.haplotype_significance} -m ${params.haplotype_minimum} \
-        ${bamfile[0]} ${variants[0]} ${prefix}.haplotypes.csv ${prefix}.haplotypes.yaml
+        ${bamfile[0]} ${variants[0]} ${prefix}.haplotypes.yaml
     make-haplotype-fastas ${prefix}.haplotypes.yaml ${reference[0]} ${prefix}.haplotypes.fasta
     """
 }

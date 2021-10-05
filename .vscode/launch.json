@@ -18,12 +18,19 @@
         {
             "type": "julia",
             "request": "launch",
-            "name": "Run find-variant-reads",
+            "name": "Launch haplotype-finder",
             "program": "${file}",
             "stopOnEntry": false,
             "cwd": "${workspaceFolder}",
             "juliaEnv": "${command:activeJuliaEnvironment}",
-            "args": ["2fab.bam", "2fab.ivar.tsv", "2fab.matrix.csv"]
+            "args": [
+                "data/sample.bam",
+                "data/sample.tsv",
+                "data/sample.haplotypes.csv",
+                "data/sample.haplotypes.yaml",
+                "-p 1.0",
+                "-m 1"
+            ]
         }
     ]
 }
