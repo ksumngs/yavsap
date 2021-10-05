@@ -216,7 +216,9 @@ process phylogenetic_tree {
 
     script:
     """
-    raxml-ng --threads ${task.cpus} --prefix ${sampleName} --all --msa ${alignedHaplotypes} --model GTR+G --bs-trees 1000
+    raxml-ng --threads ${task.cpus}{auto} --workers auto \
+        --prefix ${sampleName} --all --model GTR+G --bs-trees 1000 \
+        --msa ${alignedHaplotypes}
     cp ${sampleName}.raxml.support ${sampleName}.tree
     """
 }
