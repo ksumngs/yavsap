@@ -308,7 +308,7 @@ function linkage(counts::AbstractArray{Int})
     P_allref = first(counts) / sum(counts)
 
     # Get the probabilities of finding reference bases in any of the haplotypes
-    P_refs = sumsliced.([counts], 1:ndims(counts)) ./ sum(instances)
+    P_refs = sumsliced.([counts], 1:ndims(counts)) ./ sum(counts)
 
     # Calculate linkage disequilibrium
     Δ = P_allref - prod(P_refs)
