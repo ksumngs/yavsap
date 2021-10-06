@@ -60,6 +60,7 @@ include { trimming }              from './subworkflows/trimming.nf'
 include { assembly }              from './subworkflows/assembly.nf'
 include { read_filtering }        from './subworkflows/filtering.nf'
 include { haplotyping }           from './subworkflows/haplotype.nf'
+include { simulated_reads }       from './test/test.nf'
 
 cowsay(
 """\
@@ -87,10 +88,8 @@ workflow {
 
     // Bring in the reads files
     if (params.sra) {
-        RawReads = Channel
-            .fromSRA(params.input)
-        params.pe  = true
-        params.ont = false
+        simulated_reads()
+        RawReads = simulated_reads.out
     }
     else {
         if (params.ont) {
