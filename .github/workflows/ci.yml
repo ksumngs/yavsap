@@ -10,7 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     continue-on-error: true
     env:
-      NXF_VER: ${{ matrix.nxf_ver }}
+      NXF_VER: ${{ format(matrix.nxf_ver, '') }}
+      NXF_EDGE: ${{ matrix.nxf_ver == '{0}' }}
       NXF_ANSI_LOG: false
       RUN_CONTAINER: ${{ matrix.container_env }}
       RUN_READTYPE: ${{ matrix.read_type }}
@@ -18,7 +19,7 @@ jobs:
     strategy:
       matrix:
         # Nextflow versions: check pipeline minimum and current latest
-        nxf_ver: ['20.10.0', 'latest', 'edge']
+        nxf_ver: ['20.10.0', '', '{0}']
         container_env: ['docker', 'singularity', 'podman']
         read_type: ['ont', 'pe']
         skipping: ['', '--skip_filtering', '--skip_assembly', '--skip_haplotype']
@@ -43,18 +44,9 @@ jobs:
         env:
           CAPSULE_LOG: none
         run: |
-          if [ "$NXF_VER" == "edge" ]; then
-            export NXF_VER=''
-            export NXF_EDGE=1
-          elif [ "$NXF_VER" == "latest" ]; then
-            export NXF_VER=''
-          else
-            export NXF_VER
-          fi
-          export NXF_ANSI_LOG
           wget -qO- get.nextflow.io | bash
           sudo mv nextflow /usr/local/bin/
-          nextflow self-update
+          [ -n $NXF_EDGE ] && nextflow self-update
 
       - name: Run pipeline with test data
         env:
@@ -63,5 +55,4 @@ jobs:
         # For example: adding multiple test runs with different parameters
         # Remember that you can parallelise this by using strategy.matrix
         run: |
-          export NXF_ANSI_LOG
           nextflow run ${GITHUB_WORKSPACE} -profile test${RUN_READTYPE},${RUN_CONTAINER} $RUN_SKIPPING
