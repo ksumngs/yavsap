@@ -10,7 +10,7 @@ workflow haplotyping {
 
     main:
     if (params.pe) {
-        calling(Alignments)
+        calling_pe(Alignments)
         HaplotypeSequences = calling_pe.out.haplotypeSequences.join(Assemblies, remainder: true)
     }
     else {
