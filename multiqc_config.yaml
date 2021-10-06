@@ -1,0 +1,3 @@
+fn_clean_exts:
+  - "_R1"
+  - "kreport"
