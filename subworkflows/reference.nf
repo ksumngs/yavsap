@@ -56,6 +56,7 @@ process download_fasta {
     script:
     """
     efetch -db nucleotide -id ${params.genome} -format fasta > reference.fasta
+    grep -q '[^[:space:]]' reference.fasta || exit 1
     """
 }
 
@@ -74,6 +75,7 @@ process download_genbank {
     script:
     """
     efetch -db nucleotide -id ${params.genome} -format gb > reference.gb
+    grep -q '[^[:space:]]' reference.gb || exit 1
     """
 }
 
