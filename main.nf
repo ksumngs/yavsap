@@ -196,8 +196,8 @@ process multiqc {
     file '*'
 
     output:
-    path 'multiqc_report.html'
-    path 'multiqc_data'
+    path 'multiqc_report.html' optional true
+    path 'multiqc_data'        optional true
 
     script:
     """
