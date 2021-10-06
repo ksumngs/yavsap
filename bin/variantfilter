@@ -33,6 +33,12 @@ countsdata = bamcounts2bamdata(bamcounts)
 # Remove indels from the iVar table
 filter!(v -> first(v.ALT) != '-' && first(v.ALT) != '+', ivar)
 
+# Remove annotation data
+select!(ivar, Not([:GFF_FEATURE, :REF_CODON, :REF_AA, :ALT_CODON, :ALT_AA]))
+
+# Remove any duplicates from the data
+unique!(ivar)
+
 # Remove read-end biases from the iVar table
 filter!(v -> isdistributed(v, countsdata), ivar)
 
