@@ -48,6 +48,7 @@ process download_fasta {
     label 'edirect'
     label 'run_local'
     label 'process_low'
+    label 'error_backoff'
 
     output:
     file '*'
@@ -63,6 +64,7 @@ process download_genbank {
     label 'edirect'
     label 'run_local'
     label 'process_low'
+    label 'error_backoff'
 
     cpus 1
 
