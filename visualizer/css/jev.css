@@ -1,0 +1,13 @@
+body {
+    background-color: #d1d1f1;
+}
+#viewer,#tree {
+    outline: solid;
+    border-radius: 2pt;
+    background-color: white;
+    overflow: hidden
+}
+h1 {
+    font-family: 'Myriad Pro', 'Noto Sans', 'Lucida Sans', Verdana, 'Liberation Sans', sans-serif;
+    text-align: center;
+}

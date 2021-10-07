@@ -1,0 +1,22 @@
+extends layout
+
+block layout-content
+  h1 #{refname} Results
+  div.row
+    div.col-xs-6
+      div.panel.panel-primary
+        div.panel-heading
+          h2.panel-title Pipeline Results
+        div.panel-body
+          ul
+            li
+              a(href="/multiqc") MultiQC Report
+    div.col-xs-6
+      div.panel.panel-primary
+        div.panel-heading
+          h2.panel-title Sample Results
+        div.panel-body
+          ul
+            each sample in samples
+              li
+                a(href="/sample?s=" + sample)= sample

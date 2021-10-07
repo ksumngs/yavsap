@@ -1,10 +1,34 @@
 const express = require('express');
+const pug = require('pug');
 const app = express();
 const path = require('path');
 const fs = require('fs');
 
+app.set('views', path.join(__dirname, '/views'));
+app.set('view engine', 'pug');
+
+function getSampleList() {
+    files = fs.readdirSync(path.join(__dirname + '/data'));
+    bam_files = files.filter(file => file.endsWith('.bam'));
+    sample_files = [];
+    for (var i = 0; i < bam_files.length; i++) {
+        b = bam_files[i];
+        if (!b.includes('contigs')) {
+            sample_name = b.replace('.bam', '');
+            sample_files.push(sample_name);
+        }
+    }
+    return sample_files;
+}
+
+function getReferenceGenomeName() {
+    files = fs.readdirSync(path.join(__dirname + '/data'));
+    fasta_files = files.filter(file => file.endsWith('.fasta'));
+    return fasta_files[0].replace('.fasta', '');
+}
+
 app.get('/', function (req, res) {
-    res.sendFile(path.join(__dirname+'/index.html'));
+    res.render('index', {refname: getReferenceGenomeName(), samples: getSampleList()});
 })
 
 app.get('/favicon.ico', function(req, res) {
@@ -23,8 +47,11 @@ app.use('/js/cjson', express.static(__dirname + '/node_modules/circular-json/bui
 app.use('/js/cblob', express.static(__dirname + '/node_modules/canvas-toBlob'));
 app.use('/js/filesaver', express.static(__dirname + '/node_modules/file-saver'));
 app.use('/js/twbs', express.static(__dirname + '/node_modules/bootstrap/dist/js'));
+
+// CSS Serving, from node_modules and locally
 app.use('/css/twbs', express.static(__dirname + '/node_modules/bootstrap/dist/css'));
 app.use('/css/fonts', express.static(__dirname + '/node_modules/bootstrap/dist/fonts'));
+app.use('/css/local', express.static(__dirname + '/css'))
 
 app.use('/multiqc_data', express.static(__dirname + '/multiqc_data'));
 
