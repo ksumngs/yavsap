@@ -28,6 +28,12 @@ function getReferenceGenomeName() {
     return fasta_files[0].replace('.fasta', '');
 }
 
+function hasPhylogeneticTree(sample) {
+    files = fs.readdirSync(path.join(__dirname + '/data'));
+    tree_files = files.filter(file => file.endsWith('.tree'));
+    return tree_files.includes(sample + '.tree');
+}
+
 app.get('/', function (req, res) {
     res.render('index', {refname: getReferenceGenomeName(), samples: getSampleList()});
 })
@@ -60,6 +66,15 @@ app.get('/alignments/:sample', function(req, res) {
         ]
     };
     res.render('alignment', { samplename: req.params.sample, options: igvOptions });
+})
+
+app.get('/phylogenetics/:sample', function(req, res) {
+    sampleName = req.params.sample;
+    if (!hasPhylogeneticTree(sampleName)) {
+        res.send(404);
+    }
+    newickData = fs.readFileSync(path.join(__dirname+'/data/'+sampleName+'.tree'), {encoding: 'utf8', flag: 'r'}).trim();
+    res.render('tree', {samplename: sampleName, sampletree: newickData});
 })
 
 app.get('/favicon.ico', function(req, res) {
