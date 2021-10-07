@@ -3,7 +3,6 @@ const pug = require('pug');
 const app = express();
 const path = require('path');
 const fs = require('fs');
-const { randomWeibull } = require('d3');
 
 app.set('views', path.join(__dirname, '/views'));
 app.set('view engine', 'pug');
@@ -100,24 +99,6 @@ app.use('/css/fonts', express.static(__dirname + '/node_modules/bootstrap/dist/f
 app.use('/css/local', express.static(__dirname + '/css'))
 
 app.use('/multiqc_data', express.static(__dirname + '/multiqc_data'));
-
-app.get('/samples', function(req, res) {
-    files = fs.readdirSync(path.join(__dirname + '/data'));
-    contig_files = files.filter(file => file.endsWith('.bam'));
-    res.setHeader('Content-Type', 'application/json');
-    res.end(JSON.stringify(contig_files));
-})
-
-app.get('/sample', function(req, res) {
-    res.sendFile(path.join(__dirname+'/sample.html'));
-})
-
-app.get('/reference', function(req, res) {
-    files = fs.readdirSync(path.join(__dirname + '/data'));
-    fasta_files = files.filter(file => file.endsWith('.fasta'));
-    res.setHeader('Content-Type', 'application/json');
-    res.end(JSON.stringify(fasta_files))
-})
 
 app.get('/multiqc', function(req, res) {
     res.sendFile(path.join(__dirname+'/multiqc_report.html'));
