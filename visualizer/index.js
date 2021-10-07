@@ -42,6 +42,12 @@ function hasPhylogeneticTree(sample) {
     return tree_files.includes(sample + '.tree');
 }
 
+function hasContigsAlignment(sample) {
+    files = fs.readdirSync(path.join(__dirname + '/data'));
+    contig_files = files.filter(file => file.endsWith('.contigs.bam'))
+    return contig_files.includes(sample + '.contigs.bam');
+}
+
 app.get('/', function (req, res) {
     res.render('index', {refname: getReferenceGenomeName(), samples: getSampleList()});
 })
@@ -63,17 +69,19 @@ app.get('/alignments/:sample', function(req, res) {
                 url: '/data/'+ sampleName + '.bam',
                 indexURL: '/data/' + sampleName + '.bam.bai',
                 name: sampleName
-            },
-            {
-                type: 'alignment',
-                format: 'bam',
-                url: '/data/' + sampleName + '.contigs.bam',
-                indexURL: '/data/' + sampleName + '.contigs.bam.bai',
-                name: sampleName + '.contigs'
             }
         ]
     };
-    res.render('alignment', { samplename: req.params.sample, options: igvOptions });
+    if (hasContigsAlignment(sampleName)) {
+        igvOptions.tracks.push({
+            type: 'alignment',
+            format: 'bam',
+            url: '/data/' + sampleName + '.contigs.bam',
+            indexURL: '/data/' + sampleName + '.contigs.bam.bai',
+            name: sampleName + '.contigs'
+        })
+    }
+    res.render('alignment', { samplename: req.params.sample, options: igvOptions, hascontigs: hasContigsAlignment(sampleName) });
 })
 
 app.get('/phylogenetics/:sample', function(req, res) {

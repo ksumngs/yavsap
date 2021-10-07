@@ -2,6 +2,10 @@ extends layout
 
 block layout-content
   h1 #{samplename}
+  if !hascontigs
+    div.alert.alert-danger
+      i de novo
+      |  assembly failed for this sample
   div#igviewer
 
 block layout-scripts
