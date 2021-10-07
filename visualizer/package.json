@@ -12,6 +12,7 @@
     "big-integer": "^1.6.49",
     "express": "^4.17.1",
     "igv": "^2.10.1",
-    "jquery": "^3.6.0"
+    "jquery": "^3.6.0",
+    "underscore": "^1.13.1"
   }
 }
