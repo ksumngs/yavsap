@@ -19,6 +19,7 @@ app.use('/js/big-integer', express.static(__dirname + '/node_modules/big-integer
 app.use('/js/underscore', express.static(__dirname + '/node_modules/underscore'));
 app.use('/js/spin', express.static(__dirname + '/node_modules/spin.js'));
 app.use('/js/d3', express.static(__dirname + '/node_modules/d3'));
+app.use('/js/cjson', express.static(__dirname + '/node_modules/circular-json/build'));
 
 app.use('/multiqc_data', express.static(__dirname + '/multiqc_data'));
 
