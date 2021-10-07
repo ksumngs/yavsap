@@ -19,8 +19,11 @@ block layout-content
           table.table.table-striped.table-responsive.table-hover
             each sample in samples
               tr
-                td=sample
+                td=sample.samplename
                 td
-                  a(href="/alignments/" + sample) Alignment
+                  a(href=`/alignments/${sample.samplename}`) Alignment
                 td
-                  a(href="/phylogenetics/" + sample) Phylogenetic Tree
+                  if sample.hastree
+                    a(href=`/phylogenetics/${sample.samplename}`) Phylogenetic Tree
+                  else
+                    span.label.label-warning No phylogenetic results

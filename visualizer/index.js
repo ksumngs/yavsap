@@ -15,10 +15,19 @@ function getSampleList() {
         b = bam_files[i];
         if (!b.includes('contigs')) {
             sample_name = b.replace('.bam', '');
-            sample_files.push(sample_name);
+            sample_files.push({ samplename: sample_name, hastree: hasPhylogeneticTree(sample_name) });
         }
     }
     return sample_files;
+}
+
+function getSampleNames() {
+    sample_names = [];
+    for (var i = 0; i < getSampleList().length; i++) {
+        sn = getSampleList()[i].samplename;
+        sample_names.push(sn);
+    }
+    return sample_names;
 }
 
 function getReferenceGenomeName() {
@@ -39,7 +48,7 @@ app.get('/', function (req, res) {
 
 app.get('/alignments/:sample', function(req, res) {
     sampleName = req.params.sample;
-    if (!getSampleList().includes(sampleName)) {
+    if (!getSampleNames().includes(sampleName)) {
         res.send(404);
     }
     igvOptions = {
