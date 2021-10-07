@@ -10,6 +10,7 @@
   "license": "MIT",
   "dependencies": {
     "express": "^4.17.1",
-    "igv": "^2.10.1"
+    "igv": "^2.10.1",
+    "jquery": "^3.6.0"
   }
 }

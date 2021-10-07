@@ -14,6 +14,7 @@ app.get('/favicon.ico', function(req, res) {
 app.use('/data', express.static(__dirname + '/data'));
 
 app.use('/js/igv', express.static(__dirname + '/node_modules/igv/dist'));
+app.use('/js/jquery', express.static(__dirname + '/node_modules/jquery/dist'));
 
 app.use('/multiqc_data', express.static(__dirname + '/multiqc_data'));
 
