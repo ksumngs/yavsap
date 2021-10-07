@@ -21,6 +21,7 @@ app.use('/js/spin', express.static(__dirname + '/node_modules/spin.js'));
 app.use('/js/d3', express.static(__dirname + '/node_modules/d3'));
 app.use('/js/cjson', express.static(__dirname + '/node_modules/circular-json/build'));
 app.use('/js/cblob', express.static(__dirname + '/node_modules/canvas-toBlob'));
+app.use('/js/filesaver', express.static(__dirname + '/node_modules/file-saver'));
 
 app.use('/multiqc_data', express.static(__dirname + '/multiqc_data'));
 
