@@ -1,0 +1,15 @@
+extends layout
+
+block layout-content
+  h1 #{samplename}
+  div#igviewer
+
+block layout-scripts
+  script(src="/js/igv/igv.min.js")
+  script.
+    igvDiv = $('#igviewer');
+    options = !{JSON.stringify(options)};
+    igv.createBrowser(igvDiv, options).
+      then(function(browser) {
+        igv.browser = browser;
+      });

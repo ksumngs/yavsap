@@ -3,6 +3,7 @@ const pug = require('pug');
 const app = express();
 const path = require('path');
 const fs = require('fs');
+const { randomWeibull } = require('d3');
 
 app.set('views', path.join(__dirname, '/views'));
 app.set('view engine', 'pug');
@@ -29,6 +30,36 @@ function getReferenceGenomeName() {
 
 app.get('/', function (req, res) {
     res.render('index', {refname: getReferenceGenomeName(), samples: getSampleList()});
+})
+
+app.get('/alignments/:sample', function(req, res) {
+    sampleName = req.params.sample;
+    if (!getSampleList().includes(sampleName)) {
+        res.send(404);
+    }
+    igvOptions = {
+        reference: {
+            id: getReferenceGenomeName(),
+            fastaURL: '/data/' + getReferenceGenomeName() + '.fasta'
+        },
+        tracks: [
+            {
+                type: 'alignment',
+                format: 'bam',
+                url: '/data/'+ sampleName + '.bam',
+                indexURL: '/data/' + sampleName + '.bam.bai',
+                name: sampleName
+            },
+            {
+                type: 'alignment',
+                format: 'bam',
+                url: '/data/' + sampleName + '.contigs.bam',
+                indexURL: '/data/' + sampleName + '.contigs.bam.bai',
+                name: sampleName + '.contigs'
+            }
+        ]
+    };
+    res.render('alignment', { samplename: req.params.sample, options: igvOptions });
 })
 
 app.get('/favicon.ico', function(req, res) {

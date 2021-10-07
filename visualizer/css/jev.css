@@ -1,7 +1,7 @@
 body {
     background-color: #d1d1f1;
 }
-#viewer,#tree {
+#igviewer,#tree {
     outline: solid;
     border-radius: 2pt;
     background-color: white;
