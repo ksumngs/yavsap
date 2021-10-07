@@ -17,6 +17,7 @@ app.use('/js/igv', express.static(__dirname + '/node_modules/igv/dist'));
 app.use('/js/jquery', express.static(__dirname + '/node_modules/jquery/dist'));
 app.use('/js/big-integer', express.static(__dirname + '/node_modules/big-integer'));
 app.use('/js/underscore', express.static(__dirname + '/node_modules/underscore'));
+app.use('/js/spin', express.static(__dirname + '/node_modules/spin.js'));
 
 app.use('/multiqc_data', express.static(__dirname + '/multiqc_data'));
 
