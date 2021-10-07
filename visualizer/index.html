@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <link rel="stylesheet" href="/css/twbs/bootstrap.min.css" type="text/css">
         <style>
             body {
                 background-color: #d1d1f1;
@@ -17,11 +18,37 @@
         </style>
     </head>
     <body>
-        <h1><span id="refname"></span> Results</h1>
-        <a href="/multiqc">MultiQC Report</a>
-        <div style="margin-left: auto; margin-right: auto;">
-            <ul id="sample-list"></ul>
+        <div class="container-fluid">
+            <header><h1><span id="refname"></span> Results</h1></header>
+            <div class="row">
+                <div class="col-xs-6">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <h2 class="panel-title">Pipeline Results</h2>
+                        </div>
+                        <div class="panel-body">
+                            <ul>
+                                <li><a href="/multiqc">MultiQC Report</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-6">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <h2 class="panel-title">Sample Results</h2>
+                        </div>
+                        <div class="panel-body">
+                            <ul id="sample-list"></ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
+
+        <script src="/js/jquery/jquery.slim.min.js"></script>
+        <script src="/js/twbs/bootstrap.min.js"></script>
+
         <script>
             var reference
             var req = new XMLHttpRequest();

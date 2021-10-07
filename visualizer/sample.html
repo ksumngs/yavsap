@@ -19,12 +19,21 @@
         </style>
     </head>
     <body>
-        <h1 id="sname"></h1>
-        <div id="tree" style="height: 765px;"></div>
-        <br/>
-        <hr/>
-        <br/>
-        <div id="viewer"></div>
+        <div class="container-fluid">
+            <header><h1 id="sname"></h1></header>
+            <ul class="nav nav-tabs">
+                <li class="active"><a href="#tree-tab" data-toggle="tab">Phylogenetic Tree</a></li>
+                <li><a href="#alignment-tab" data-toggle="tab">Alignment</a></li>
+            </ul>
+            <div id="tabs-container" class="tab-content" style="height: 100%;">
+                <div class="tab-pane fade active in" id="tree-tab" style="height: 100%;">
+                            <div id="tree" style="height: 100%;"></div>
+                </div>
+                <div class="tab-pane fade" id="alignment-tab">
+                    <div id="viewer"></div>
+                </div>
+            </div>
+        </div>
 
         <script src="/js/jquery/jquery.slim.min.js"></script>
         <script src="/js/twbs/bootstrap.min.js"></script>
