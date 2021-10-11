@@ -49,16 +49,40 @@ function hasContigsAlignment(sample) {
     return contig_files.includes(sample + '.contigs.bam');
 }
 
-function getNextflowReports() {
+function getTraceDocuments(prefix, suffix) {
     files = fs.readdirSync(path.join(__dirname + '/.trace'));
-    report_files = files.filter(file => file.includes('_report_'));
-    reports = [];
-    for (var i = 0; i < report_files.length; i++) {
-        report_file = report_files[i];
-        title = report_file.substring(17,36);
-        reports.push( { file: report_file, timestamp: title } );
+    trace_files = files.filter(file => file.startsWith(prefix) && file.endsWith(suffix));
+    traces = [];
+    for (var i = 0; i < trace_files.length; i++) {
+        trace_file = trace_files[i];
+        title = trace_file.replace(prefix, '').replace(suffix, '');
+        traces.push( { file: trace_file, timestamp: title } );
     }
-    return reports
+    return traces;
+}
+
+function getNextflowReports() {
+    return getTraceDocuments('execution_report_', '.html');
+}
+
+function serveTraceDocument(prefix, suffix) {
+    return function(req, res) {
+        timestamp = req.params.timestamp;
+        if (timestamp.toLowerCase() == 'latest') {
+            trace_files = getTraceDocuments(prefix, suffix).map(doc => doc.file);
+            trace_files.sort();
+            latest_document = trace_files[trace_files.length - 1];
+            res.sendFile(path.join(__dirname+'/.trace/'+latest_document));
+        }
+        else {
+            if (! getTraceDocuments(prefix, suffix).map(doc => doc.timestamp).includes(timestamp)) {
+                res.send(404);
+            }
+            else {
+                res.sendFile(path.join(__dirname+'/.trace/'+prefix+timestamp+suffix));
+            }
+        }
+    }
 }
 
 app.get('/', function (req, res) {
@@ -111,23 +135,7 @@ app.get('/phylogenetics/:sample', function(req, res) {
     res.render('tree', {samplename: sampleName, sampletree: newickData});
 })
 
-app.get('/nf-report/:timestamp', function(req, res) {
-    timestamp = req.params.timestamp;
-    if (timestamp.toLowerCase() == 'latest') {
-        report_files = getNextflowReports().map(rp => rp.file);
-        report_files.sort();
-        latest_report = report_files[report_files.length - 1];
-        res.sendFile(path.join(__dirname+'/.trace/'+latest_report));
-    }
-    else {
-        if (! getNextflowReports().map(rp => rp.timestamp).includes(timestamp)) {
-            res.send(404);
-        }
-        else {
-            res.sendFile(path.join(__dirname+'/.trace/execution_report_'+timestamp+'.html'));
-        }
-    }
-})
+app.get('/nf-report/:timestamp', serveTraceDocument('execution_report_', '.html'))
 
 app.get('/favicon.ico', function(req, res) {
     res.sendFile(path.join(__dirname+'/favicon.ico'));
