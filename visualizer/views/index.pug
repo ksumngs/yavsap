@@ -54,6 +54,9 @@ block layout-content
                 td=sample.samplename
                 td
                   a(href=`/alignments/${sample.samplename}`) Alignment
+                  | &ensp;
+                  a(href=`/data/${sample.samplename}.bam`)
+                    span.glyphicon.glyphicon-download-alt
                 td
                   if sample.hastree
                     a(href=`/phylogenetics/${sample.samplename}`) Phylogenetic Tree
