@@ -212,13 +212,15 @@ process presentation_generator {
     publishDir "${params.outdir}", mode: "${params.publish_dir_mode}"
 
     output:
-    file 'index.html'
+
     file 'index.js'
     file 'package.json'
-    file 'sample.html'
+    file 'favicon.ico'
+    file 'views/*.pug'
+    file 'css/*.css'
 
     script:
     """
-    cp ${workflow.projectDir}/visualizer/{index.html,index.js,package.json,sample.html} .
+    cp -r ${workflow.projectDir}/visualizer/{index.js,package.json,favicon.ico,views,css} .
     """
 }
