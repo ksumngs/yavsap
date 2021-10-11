@@ -3,6 +3,7 @@ const pug = require('pug');
 const app = express();
 const path = require('path');
 const fs = require('fs');
+const { report } = require('process');
 
 app.set('views', path.join(__dirname, '/views'));
 app.set('view engine', 'pug');
@@ -48,8 +49,25 @@ function hasContigsAlignment(sample) {
     return contig_files.includes(sample + '.contigs.bam');
 }
 
+function getNextflowReports() {
+    files = fs.readdirSync(path.join(__dirname + '/.trace'));
+    report_files = files.filter(file => file.includes('_report_'));
+    reports = [];
+    for (var i = 0; i < report_files.length; i++) {
+        report_file = report_files[i];
+        title = report_file.substring(17,36);
+        reports.push( { file: report_file, timestamp: title } );
+    }
+    return reports
+}
+
 app.get('/', function (req, res) {
-    res.render('index', {refname: getReferenceGenomeName(), samples: getSampleList()});
+    res.render('index',
+        {
+            refname: getReferenceGenomeName(),
+            samples: getSampleList(),
+            nfreports: getNextflowReports()
+        });
 })
 
 app.get('/alignments/:sample', function(req, res) {
@@ -91,6 +109,24 @@ app.get('/phylogenetics/:sample', function(req, res) {
     }
     newickData = fs.readFileSync(path.join(__dirname+'/data/'+sampleName+'.tree'), {encoding: 'utf8', flag: 'r'}).trim();
     res.render('tree', {samplename: sampleName, sampletree: newickData});
+})
+
+app.get('/nf-report/:timestamp', function(req, res) {
+    timestamp = req.params.timestamp;
+    if (timestamp.toLowerCase() == 'latest') {
+        report_files = getNextflowReports().map(rp => rp.file);
+        report_files.sort();
+        latest_report = report_files[report_files.length - 1];
+        res.sendFile(path.join(__dirname+'/.trace/'+latest_report));
+    }
+    else {
+        if (! getNextflowReports().map(rp => rp.timestamp).includes(timestamp)) {
+            res.send(404);
+        }
+        else {
+            res.sendFile(path.join(__dirname+'/.trace/execution_report_'+timestamp+'.html'));
+        }
+    }
 })
 
 app.get('/favicon.ico', function(req, res) {

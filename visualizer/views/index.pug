@@ -11,6 +11,20 @@ block layout-content
           ul
             li
               a(href="/multiqc") MultiQC Report
+            li.dropdown
+              a(href="/nf-report/latest") Nextflow Report
+              a.dropdown-toggle(href="#", data-toggle="dropdown")
+                span.caret
+              ul.dropdown-menu
+                each report in nfreports
+                  li
+                    a(href=`/nf-report/${report.timestamp}`)= report.timestamp
+            li
+              a(href="/nf-timeline/latest") Nextflow Timeline
+            li
+              a(href="/nf-trace/latest") Nextflow Trace
+            li
+              a(href="/nf-dag/latest") Nextflow
     div.col-xs-6
       div.panel.panel-primary
         div.panel-heading
