@@ -69,6 +69,14 @@ function getNextflowTimelines() {
     return getTraceDocuments('execution_timeline_', '.html');
 }
 
+function getNextflowTraces() {
+    return getTraceDocuments('execution_trace_', '.txt');
+}
+
+function getNextflowGraphs() {
+    return getTraceDocuments('pipeline_dag_', '.svg');
+}
+
 function serveTraceDocument(prefix, suffix) {
     return function(req, res) {
         timestamp = req.params.timestamp;
@@ -95,7 +103,9 @@ app.get('/', function (req, res) {
             refname: getReferenceGenomeName(),
             samples: getSampleList(),
             nfreports: getNextflowReports(),
-            nftimelines: getNextflowTimelines()
+            nftimelines: getNextflowTimelines(),
+            nftraces: getNextflowTraces(),
+            nfdags: getNextflowGraphs()
         });
 })
 
@@ -142,6 +152,8 @@ app.get('/phylogenetics/:sample', function(req, res) {
 
 app.get('/nf-report/:timestamp', serveTraceDocument('execution_report_', '.html'))
 app.get('/nf-timeline/:timestamp', serveTraceDocument('execution_timeline_', '.html'))
+app.get('/nf-trace/:timestamp', serveTraceDocument('execution_trace_', '.txt'))
+app.get('/nf-dag/:timestamp', serveTraceDocument('pipeline_dag_', '.svg'))
 
 app.get('/favicon.ico', function(req, res) {
     res.sendFile(path.join(__dirname+'/favicon.ico'));

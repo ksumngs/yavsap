@@ -27,10 +27,22 @@ block layout-content
                 each timeline in nftimelines
                   li
                     a(href=`/nf-timeline/${timeline.timestamp}`)= timeline.timestamp
-            li
+            li.dropdown
               a(href="/nf-trace/latest") Nextflow Trace
-            li
-              a(href="/nf-dag/latest") Nextflow
+              a.dropdown-toggle(href="#", data-toggle="dropdown")
+                span.caret
+              ul.dropdown-menu
+                each trace in nftraces
+                  li
+                    a(href=`/nf-trace/${trace.timestamp}`)= trace.timestamp
+            li.dropdown
+              a(href="/nf-dag/latest") Nextflow Graph
+              a.dropdown-toggle(href="#", data-toggle="dropdown")
+                span.caret
+              ul.dropdown-menu
+                each dag in nfdags
+                  li
+                    a(href=`/nf-dag/${dag.timestamp}`)= dag.timestamp
     div.col-xs-6
       div.panel.panel-primary
         div.panel-heading
