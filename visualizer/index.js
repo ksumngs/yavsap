@@ -65,6 +65,10 @@ function getNextflowReports() {
     return getTraceDocuments('execution_report_', '.html');
 }
 
+function getNextflowTimelines() {
+    return getTraceDocuments('execution_timeline_', '.html');
+}
+
 function serveTraceDocument(prefix, suffix) {
     return function(req, res) {
         timestamp = req.params.timestamp;
@@ -90,7 +94,8 @@ app.get('/', function (req, res) {
         {
             refname: getReferenceGenomeName(),
             samples: getSampleList(),
-            nfreports: getNextflowReports()
+            nfreports: getNextflowReports(),
+            nftimelines: getNextflowTimelines()
         });
 })
 
@@ -136,6 +141,7 @@ app.get('/phylogenetics/:sample', function(req, res) {
 })
 
 app.get('/nf-report/:timestamp', serveTraceDocument('execution_report_', '.html'))
+app.get('/nf-timeline/:timestamp', serveTraceDocument('execution_timeline_', '.html'))
 
 app.get('/favicon.ico', function(req, res) {
     res.sendFile(path.join(__dirname+'/favicon.ico'));

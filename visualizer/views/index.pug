@@ -19,8 +19,14 @@ block layout-content
                 each report in nfreports
                   li
                     a(href=`/nf-report/${report.timestamp}`)= report.timestamp
-            li
+            li.dropdown
               a(href="/nf-timeline/latest") Nextflow Timeline
+              a.dropdown-toggle(href="#", data-toggle="dropdown")
+                span.caret
+              ul.dropdown-menu
+                each timeline in nftimelines
+                  li
+                    a(href=`/nf-timeline/${timeline.timestamp}`)= timeline.timestamp
             li
               a(href="/nf-trace/latest") Nextflow Trace
             li
