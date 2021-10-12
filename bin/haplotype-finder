@@ -11,6 +11,7 @@ using ArgParse
 using Combinatorics
 using CSV
 using DataFrames
+using StructArrays
 using XAM
 
 # Declare arguments
@@ -75,21 +76,21 @@ bamreads = collect(reader)
 close(reader)
 
 # Compute frequency stats
-haplotypecounts = findoccurrences.(variantpairs, [bamreads])
+haplotypecounts = StructArray(findoccurrences.(variantpairs, [bamreads]))
 
 # Remove any haplotypes that occur so infrequently that linkage disequilibrium can't be calculated
 filter!(h -> last(h.counts) > hap_min, haplotypecounts)
 
 # Find all variant positions that exhibit linkage
-linkedvariants = unique(cat(mutations.(haplotypecounts)..., dims=1))
+linkedvariants = unique(cat(haplotypecountsmutations.(Vector(haplotypecounts))..., dims=1))
 
 # Create haplotype objects for any non-linked variants
 individualhaplotypes = Haplotype.(filter(!v -> v ∈ linkedvariants, variants))
-linkedhaplotypes = haplotype.(haplotypecounts)
+linkedhaplotypes = haplotypecounts.haplotype
 filter!(!h -> h ∈ linkedhaplotypes, individualhaplotypes)
 
 # Quick and dirty writeout in yaml
 open(outyaml, "w") do f
-    write(f, string(yamlize.(haplotypecounts, reason="linkage")...))
-    write(f, string(yamlize.(individualhaplotypes, reason="individual")...))
+    write(f, string(yamlize.(Vector(haplotypecounts), reason="linkage")...))
+    write(f, string(yamlize.(Vector(individualhaplotypes), reason="individual")...))
 end #do

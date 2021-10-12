@@ -10,6 +10,7 @@ using DataFrames
 using Distributions
 using FASTX
 using SHA
+using StructArrays
 using XAM
 
 """
@@ -74,34 +75,6 @@ function Variant(vardict::Dict{String,Any})
     return Variant(region, pos, refseq, altseq, tdepth, altdep)
 end #function
 
-function region(v::Variant)
-    return v.region
-end
-
-function Base.position(v::Variant)
-    return v.position
-end
-
-function referencebase(v::Variant)
-    return v.referencebase
-end
-
-function alternatebase(v::Variant)
-    return v.alternatebase
-end
-
-function frequency(v::Variant)
-    return v.alternatedepth / v.totaldepth
-end
-
-function totaldepth(v::Variant)
-    return v.totaldepth
-end
-
-function alternatedepth(v::Variant)
-    return v.alternatedepth
-end
-
 struct Haplotype
     mutations::AbstractVector{Variant}
 end
@@ -120,36 +93,8 @@ struct HaplotypeCounts
     counts::AbstractArray{Int}
 end
 
-function counts(h::HaplotypeCounts)
-    return h.counts
-end
-
-function haplotype(h::HaplotypeCounts)
-    return h.haplotype
-end
-
-function mutations(h::HaplotypeCounts)
+function haplotypecountsmutations(h::HaplotypeCounts)
     return h.haplotype.mutations
-end
-
-function mutations(h::Haplotype)
-    return h.mutations
-end
-
-function ref_ref(h::HaplotypeCounts)
-    return h.counts[1,1]
-end
-
-function ref_alt(h::HaplotypeCounts)
-    return h.counts[1,2]
-end
-
-function alt_ref(h::HaplotypeCounts)
-    return h.counts[2,1]
-end
-
-function alt_alt(h::HaplotypeCounts)
-    return h.counts[2,2]
 end
 
 """
@@ -263,10 +208,10 @@ called in position 3.
 """
 function findoccurrences(haplotype::Haplotype, reads::AbstractVector{BAM.Record})
     # Make things easier to call
-    mutations = haplotype.mutations
+    mutations = StructArray(haplotype.mutations)
 
     # Get only the reads that contain all of the variant positions
-    containingreads = filter(b -> BAM.position(b) < min(position.(mutations)...) && BAM.rightposition(b) > max(position.(mutations)...), reads)
+    containingreads = filter(b -> BAM.position(b) < min(mutations.position...) && BAM.rightposition(b) > max(mutations.position...), reads)
 
     # Set up haplotype counts
     hapcounts = zeros(Int, repeat([2], length(mutations))...)
@@ -274,10 +219,10 @@ function findoccurrences(haplotype::Haplotype, reads::AbstractVector{BAM.Record}
     # Check every NGS read that contains both positions
     for record in containingreads
         # Pull the basecalls
-        basecalls = baseatreferenceposition.([record], position.(mutations))
+        basecalls = baseatreferenceposition.([record], mutations.position)
 
         # Find how the basecalls stack up
-        matches = matchvariant.(basecalls, mutations)
+        matches = matchvariant.(basecalls, Vector(mutations))
 
         if !any(matches .== :other)
             coordinate = CartesianIndex((Int.(matches .== :alternate) .+ 1)...)
@@ -606,7 +551,7 @@ end
 function mutatesequence(seq::NucleotideSeq, haplotype::Haplotype)
     newseq = seq
 
-    for var in mutations(haplotype)
+    for var in haplotype.mutations
         newseq[var.position] = var.alternatebase[1]
     end
 
