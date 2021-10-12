@@ -1,6 +1,10 @@
 {
-  "name": "igv-bundler",
-  "version": "0.0.1",
+  "name": "jev-analysis-pipeline",
+  "version": "0.1.0-alpha",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MillironX/jev-analysis-pipeline.git"
+  },
   "description": "Lists all contigs and alignments for a metagenomics pipeline",
   "main": "index.js",
   "scripts": {
