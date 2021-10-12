@@ -154,7 +154,5 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
-package-lock.json
-
 ### Sphinx gitignore ###
 docs/_build
