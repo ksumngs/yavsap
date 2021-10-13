@@ -41,7 +41,7 @@ Required No
 Default  false
 ======== ======
 
-This flag switches the meaning of ``--input`` to mean an NCBI Short Read Archive
+This flag switches the meaning of :ref:`--input` to mean an NCBI Short Read Archive
 (SRA) accession number, then pulls the associated files directly from NCBI and
 runs the pipeline on them. To use this flag, you **must** have an `NCBI API key
 <https://ncbiinsights.ncbi.nlm.nih.gov/2017/11/02/new-api-keys-for-the-e-utilities/>`_
@@ -76,7 +76,7 @@ Default  false
     line! Bad things will happen if you do!
 
 Internally-used parameter to check if the pipeline is processing Illumina reads.
-Automatically set by ``--platform``
+Automatically set by :ref:`--platform`
 
 --ont
 ^^^^^
@@ -92,7 +92,7 @@ Default  false
     line! Bad things will happen if you do!
 
 Internally-used parameter to check if the pipeline is processing Nanopore reads.
-Automatically set by ``--platform``
+Automatically set by :ref:`--platform`
 
 --help
 ^^^^^^
@@ -130,7 +130,7 @@ Where to store the results files. For more info, see
 Type     String
 ======== ======
 Required No
-Default  ``--outdir``/.trace
+Default  :ref:`--outdir`/.trace
 ======== ======
 
 Where to store pipeline performance reports and diagnostic info. If you keep
@@ -147,7 +147,7 @@ Default  copy
 ======== ======
 
 How to take files out of the ``work`` dirctories they were generated in and put
-them into ``--outdir``. Supports every mode that the
+them into :ref:`--outdir`. Supports every mode that the
 `Nextflow publishDir directive <https://nextflow.io/docs/latest/process.html#publishdir>`_
 does, which as of Nextflow 21.04, includes
 
@@ -561,7 +561,7 @@ Corresponds to the |minReadLength option of Canu|_.
 Type     Integer
 ======== ======
 Required No
-Default  ``--canu_min_read_length`` ÷ 2
+Default  :ref:`--canu_min_read_length` ÷ 2
 ======== ======
 
 The shortest length allowed for reads to overlap to be considered in the assembly.
