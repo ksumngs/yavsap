@@ -616,3 +616,45 @@ Default  10
 
 The minimum number of times a particular haplotype has to occur for it to be
 considered real and processed downstream and output.
+
+Workflow Options
+----------------
+
+These options allow you to skip entire sections of the pipeline. They can
+significantly speed up pipeline execution if you know they are not needed, e.g.
+skipping read trimming from reads already trimmed in CLC Genomic Workbench. All
+of these options are boolean flags that are disabled by default.
+
+``--skip_filtering``
+^^^^^^^^^^^^^^^^^^^^
+
+Treats the input reads as trimmed reads and skips using Trimmomatic or Filtlong
+on the reads.
+
+``--skip_assembly``
+^^^^^^^^^^^^^^^^^^^
+
+Bypasses *de novo* assembly entirely. Note that phylogenetic trees may not be
+generated if no assemblies are input.
+
+``--skip_haplotype``
+^^^^^^^^^^^^^^^^^^^^
+
+Basically negate the entire purpose of the pipeline by performing no variant
+calling, haplotype calling, or phylogenetic analysis on the samples. Can be
+useful for debugging.
+
+Resource Allocation Options
+---------------------------
+
+These are the maximum resources allowed for a single process within the
+pipeline. Place these in a ``nextflow.config`` in a central location on your HPC
+to ensure that your pipeline is not cancelled for requesting too many resources.
+
+================== =======
+Parameter          Default
+================== =======
+``--max_memory``   750.GB
+``--max_cpus``     72
+``--max_time``     240.h
+================== =======
