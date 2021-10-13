@@ -167,7 +167,7 @@ Common Options
 Type     Integer
 ======== ======
 Required No
-Default  100
+Default  100/300 (Illumina/Nanopore)
 ======== ======
 
 Remove reads that are shorter than this length in bases.
