@@ -419,6 +419,111 @@ Corresponds to the |--target_bases option of Filtlong|_.
 .. |--target_bases option of Filtlong| replace:: ``--target_bases`` option of Filtlong
 .. _--target_bases option of Filtlong: https://github.com/rrwick/Filtlong#full-usage
 
+*de novo* Assembly Options
+--------------------------
+
+Illumina-Specific (SPAdes) Options
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+``--spades_mode``
+"""""""""""""""""
+
+======== ======
+Type     String
+======== ======
+Required No
+Default  rnaviral
+======== ======
+
+If provided, this parameter is turned into a flag and passed as the 'mode' to
+the SPAdes assembly, e.g.
+``nextflow run jev-analysis-pipeline --spades_mode 'metaviral'`` will run SPAdes
+as ``spades.py --metaviral``. The available modes are
+
+* meta
+* plasmid
+* metaplasmid
+* metaviral
+* rna
+* rnaviral
+
+Due to parameter mismatches, the ``isolate`` and ``bio`` modes normally provided
+by SPAdes are unavailable in the pipeline.
+
+See `SPAdes command line options <https://cab.spbu.ru/files/release3.15.3/manual.html#sec3.2>`_
+for more info on what each of these mean.
+
+Nanopore-Specific (Canu) Options
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+``--canu_corrected_error_rate``
+"""""""""""""""""""""""""""""""
+
+======== ======
+Type     Float
+======== ======
+Required No
+Default  0.144
+======== ======
+
+How dissimilar overlap between two reads can be and still be assembled together.
+
+Corresponds to the |correctedErrorRate option of Canu|_.
+
+.. |correctedErrorRate option of Canu| replace:: ``correctedErrorRate`` option of Canu
+.. _correctedErrorRate option of Canu: https://canu.readthedocs.io/en/latest/parameter-reference.html#correctederrorrate
+
+``--canu_min_read_length``
+"""""""""""""""""""""""""""""""
+
+======== ======
+Type     Integer
+======== ======
+Required No
+Default  1000
+======== ======
+
+The shortest length allowed for a read to be considered in the assembly.
+
+Corresponds to the |minReadLength option of Canu|_.
+
+.. |minReadLength option of Canu| replace:: ``minReadLength`` option of Canu
+.. _minReadLength option of Canu: https://canu.readthedocs.io/en/latest/parameter-reference.html#minreadlength
+
+``--canu_min_overlap_length``
+"""""""""""""""""""""""""""""""
+
+======== ======
+Type     Integer
+======== ======
+Required No
+Default  ``--canu_min_read_length`` ÷ 2
+======== ======
+
+The shortest length allowed for reads to overlap to be considered in the assembly.
+
+Corresponds to the |minOverlapLength option of Canu|_.
+
+.. |minOverlapLength option of Canu| replace:: ``minOverlapLength`` option of Canu
+.. _minOverlapLength option of Canu: https://canu.readthedocs.io/en/latest/parameter-reference.html#minoverlaplength
+
+``--canu_stop_on_low_coverage``
+"""""""""""""""""""""""""""""""
+
+======== ======
+Type     Integer
+======== ======
+Required No
+Default  10
+======== ======
+
+Lowest depth allowable for assembly to proceed.
+
+Corresponds to the |stopOnLowCoverage option of Canu|_.
+
+.. |stopOnLowCoverage option of Canu| replace:: ``stopOnLowCoverage`` option of Canu
+.. _stopOnLowCoverage option of Canu: https://canu.readthedocs.io/en/latest/parameter-reference.html#stoponlowcoverage
+
 Haplotyping Options
 -------------------
 
