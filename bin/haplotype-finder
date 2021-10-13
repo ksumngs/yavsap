@@ -76,7 +76,7 @@ bamreads = collect(reader)
 close(reader)
 
 # Compute frequency stats
-haplotypecounts = StructArray(findoccurrences.(variantpairs, [bamreads]))
+haplotypecounts = StructArray(findsimulatedoccurrences.(variantpairs, [bamreads]))
 
 # Remove any haplotypes that occur so infrequently that linkage disequilibrium can't be calculated
 filter!(h -> last(h.counts) > hap_min, haplotypecounts)

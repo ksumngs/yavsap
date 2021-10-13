@@ -19,15 +19,14 @@
             "type": "julia",
             "request": "launch",
             "name": "Launch haplotype-finder",
-            "program": "${file}",
+            "program": "${workspaceFolder}/bin/haplotype-finder",
             "stopOnEntry": false,
-            "cwd": "${workspaceFolder}",
+            "cwd": "${workspaceFolder}/data",
             "juliaEnv": "${command:activeJuliaEnvironment}",
             "args": [
-                "data/sample.bam",
-                "data/sample.tsv",
-                "data/sample.haplotypes.csv",
-                "data/sample.haplotypes.yaml",
+                "sample.bam",
+                "sample.tsv",
+                "sample.haplotypes.yaml",
                 "-p 1.0",
                 "-m 1"
             ]

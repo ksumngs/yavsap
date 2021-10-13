@@ -239,6 +239,67 @@ function findoccurrences(haplotype::Haplotype, reads::BAM.Reader)
     return findoccurrences(haplotype, collect(reads))
 end
 
+function findsimulatedoccurrences(haplotype::Haplotype, reads::AbstractVector{BAM.Record}; iterations::Int=1000)
+    # Extract the SNPs we care about
+    mutations = haplotype.mutations
+
+    # Create an empty array for the simulated long reads
+    pseudoreads = Array{Symbol}(undef, iterations, length(mutations))
+
+    # Set up haplotype counts
+    hapcounts = zeros(Int, repeat([2], length(mutations))...)
+
+    # Start iterating
+    for i ∈ 1:iterations
+        # Get the reads that contain the first mutation
+        lastcontainingreads = filter(b -> BAM.position(b) < mutations[1].position && BAM.rightposition(b) > mutations[1].position, reads)
+
+        # Pull a random read from that pool
+        lastread = rand(lastcontainingreads)
+
+        # Find this read's basecall at that position
+        basecall = baseatreferenceposition(lastread, mutations[1].position)
+        basematch = matchvariant(basecall, mutations[1])
+
+        pseudoreads[i, 1] = basematch
+
+        for j ∈ 2:length(mutations)
+            if (BAM.position(lastread) < mutations[j].position && BAM.rightposition(lastread) > mutations[j].position)
+                thisread = lastread
+            else
+                thiscontainingreads = filter(
+                    b -> BAM.position(b) > BAM.rightposition(lastread) && BAM.position(b) < mutations[j].position && BAM.rightposition(b) > mutations[j].position,
+                    reads
+                )
+                if length(thiscontainingreads) < 1
+                    pseudoreads[i,j] = :other
+                    continue
+                end
+                thisread = rand(thiscontainingreads)
+            end #if
+
+            # Find this read's basecall at that position
+            basecall = baseatreferenceposition(thisread, mutations[j].position)
+            basematch = matchvariant(basecall, mutations[j])
+
+            pseudoreads[i, j] = basematch
+
+            lastread = thisread
+
+        end #for
+
+        matches = pseudoreads[i, :]
+        if !any(matches .== :other)
+            coordinate = CartesianIndex((Int.(matches .== :alternate) .+ 1)...)
+            hapcounts[coordinate] += 1
+        end #if
+
+    end #for
+
+    return HaplotypeCounts(haplotype, hapcounts)
+
+end #function
+
 """
     linkage(counts::AbstractArray{Int})
 
