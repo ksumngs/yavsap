@@ -181,6 +181,51 @@ Corresponds to the |--min_length option of Filtlong|_ for Nanopore reads.
 .. |--min_length option of Filtlong| replace:: ``--min_length`` option of Filtlong
 .. _--min_length option of Filtlong: https://github.com/rrwick/Filtlong#full-usage
 
+``--trim_winsize``
+""""""""""""""""""
+
+======== ======
+Type     Integer
+======== ======
+Required No
+Default  50/250 (Illumina/Nanopore)
+======== ======
+
+The number of bases to average quality accross during sliding window trimming.
+
+Corresponds to the |first SLIDINGWINDOW option of Trimmomatic|_ for Illumina reads.
+
+Corresponds to the |--window_size option of Filtlong|_ for Nanopore reads.
+
+.. |first SLIDINGWINDOW option of Trimmomatic| replace:: ``first SLIDINGWINDOW`` option of Trimmomatic
+.. _first SLIDINGWINDOW option of Trimmomatic: http://www.usadellab.org/cms/?page=trimmomatic
+.. |--window_size option of Filtlong| replace:: ``--window_size`` option of Filtlong
+.. _--window_size option of Filtlong: https://github.com/rrwick/Filtlong#full-usage
+
+``--trim_winqual``
+""""""""""""""""""
+
+======== ======
+Type     Integer
+======== ======
+Required No
+Default  15/90 (Illumina/Nanopore)
+======== ======
+
+The minimum average quality within the sliding window to keep a read. Note that
+this value is the minmum PHRED score when trimming Illumina reads, but it is a
+percentage score when trimming Nanopore reads.
+
+Corresponds to the |second SLIDINGWINDOW option of Trimmomatic|_ for Illumina reads.
+
+Corresponds to the |--min_mean_q option of Filtlong|_ for Nanopore reads.
+
+.. |second SLIDINGWINDOW option of Trimmomatic| replace:: ``second SLIDINGWINDOW`` option of Trimmomatic
+.. _second SLIDINGWINDOW option of Trimmomatic: http://www.usadellab.org/cms/?page=trimmomatic
+.. |--min_mean_q option of Filtlong| replace:: ``--min_mean_q`` option of Filtlong
+.. _--min_mean_q option of Filtlong: https://github.com/rrwick/Filtlong#full-usage
+
+
 Illumina-Specific (Trimmomatic) Options
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
