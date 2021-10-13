@@ -18,6 +18,8 @@ clean and organized. You can use n, Node.js, and the Visualizer on any computer,
 including Mac and Windows computers. Once you have Node.js installed, point a
 terminal to the output directory, and run
 
+::
+
     npm install && npm start
 
 A link should appear in the terminal. Follow the link in your browser to access
