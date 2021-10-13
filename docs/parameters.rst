@@ -9,8 +9,8 @@ shouldn't be used, so proceed with caution!
 Input Options
 -------------
 
-``--input``
-^^^^^^^^^^^
+--input
+^^^^^^^
 
 ======== ======
 Type     String
@@ -31,8 +31,8 @@ gzipped, and have the extension '.fastq.gz' or '.fq.gz'.
 
 Defaults to the current working directory.
 
-``--sra``
-^^^^^^^^^
+--sra
+^^^^^
 
 ======== ======
 Type     Flag
@@ -41,7 +41,7 @@ Required No
 Default  false
 ======== ======
 
-This flag switches the meaning of ``--input`` to mean an NCBI Short Read Archive
+This flag switches the meaning of :ref:`--input` to mean an NCBI Short Read Archive
 (SRA) accession number, then pulls the associated files directly from NCBI and
 runs the pipeline on them. To use this flag, you **must** have an `NCBI API key
 <https://ncbiinsights.ncbi.nlm.nih.gov/2017/11/02/new-api-keys-for-the-e-utilities/>`_
@@ -49,8 +49,8 @@ and it **must** be exported in the shell environment as ``NCBI_API_KEY``, e.g.
 ``NCBI_API_KEY=0123456789abcdef``. This feature is currenly broken due to an
 upstream issue in Nextflow, but should be fixed by Nextflow version 21.10.0.
 
-``--platform``
-^^^^^^^^^^^^^^
+--platform
+^^^^^^^^^^
 
 ======== ======
 Type     String
@@ -62,8 +62,8 @@ Default  n/a
 Defines which type of reads to analyze. Must be either 'illumina' or 'nanopore'.
 
 
-``--pe``
-^^^^^^^^
+--pe
+^^^^
 
 ======== ======
 Type     Boolean
@@ -76,10 +76,10 @@ Default  false
     line! Bad things will happen if you do!
 
 Internally-used parameter to check if the pipeline is processing Illumina reads.
-Automatically set by ``--platform``
+Automatically set by :ref:`--platform`
 
-``--ont``
-^^^^^^^^^
+--ont
+^^^^^
 
 ======== ======
 Type     Boolean
@@ -92,13 +92,77 @@ Default  false
     line! Bad things will happen if you do!
 
 Internally-used parameter to check if the pipeline is processing Nanopore reads.
-Automatically set by ``--platform``
+Automatically set by :ref:`--platform`
+
+--help
+^^^^^^
+
+======== ======
+Type     Boolean
+======== ======
+Required No
+Default  false
+======== ======
+
+Print a friendly help message that is both less daunting and less complete than
+the document you're reading right now, and exit.
+
+Output Options
+--------------
+
+--outdir
+^^^^^^^^
+
+======== ======
+Type     String
+======== ======
+Required No
+Default  ./results
+======== ======
+
+Where to store the results files. For more info, see
+:doc:`the page on output <output>`.
+
+--tracedir
+^^^^^^^^^^
+
+======== ======
+Type     String
+======== ======
+Required No
+Default  :ref:`--outdir`/.trace
+======== ======
+
+Where to store pipeline performance reports and diagnostic info. If you keep
+this as the default, then you can access these documents through the visualizer.
+
+--publish_dir_mode
+^^^^^^^^^^^^^^^^^^
+
+======== ======
+Type     String
+======== ======
+Required No
+Default  copy
+======== ======
+
+How to take files out of the ``work`` dirctories they were generated in and put
+them into :ref:`--outdir`. Supports every mode that the
+`Nextflow publishDir directive <https://nextflow.io/docs/latest/process.html#publishdir>`_
+does, which as of Nextflow 21.04, includes
+
+* symlink
+* relink
+* link
+* copy
+* copyNoFollow
+* move
 
 Reference Genome Options
 ------------------------
 
-``--genome``
-^^^^^^^^^^^^
+--genome
+^^^^^^^^
 
 ======== ======
 Type     String
@@ -116,8 +180,8 @@ record.
 Kraken2 Options
 ---------------
 
-``--kraken2_db``
-^^^^^^^^^^^^^^^^
+--kraken2_db
+^^^^^^^^^^^^
 
 ======== ======
 Type     String
@@ -137,8 +201,8 @@ Corresponds to the |--db option of Kraken2|_.
 .. |--db option of Kraken2| replace:: ``--db`` option of Kraken2
 .. _--db option of Kraken2: https://github.com/DerrickWood/kraken2/wiki/Manual#classification
 
-``--keep_taxid``
-^^^^^^^^^^^^^^^^
+--keep_taxid
+^^^^^^^^^^^^
 ======== ======
 Type     String
 ======== ======
@@ -160,14 +224,14 @@ Read Trimming Options
 Common Options
 ^^^^^^^^^^^^^^
 
-``--trim_minlen``
-"""""""""""""""""
+--trim_minlen
+"""""""""""""
 
 ======== ======
 Type     Integer
 ======== ======
 Required No
-Default  100
+Default  100/300 (Illumina/Nanopore)
 ======== ======
 
 Remove reads that are shorter than this length in bases.
@@ -181,11 +245,56 @@ Corresponds to the |--min_length option of Filtlong|_ for Nanopore reads.
 .. |--min_length option of Filtlong| replace:: ``--min_length`` option of Filtlong
 .. _--min_length option of Filtlong: https://github.com/rrwick/Filtlong#full-usage
 
+--trim_winsize
+""""""""""""""
+
+======== ======
+Type     Integer
+======== ======
+Required No
+Default  50/250 (Illumina/Nanopore)
+======== ======
+
+The number of bases to average quality accross during sliding window trimming.
+
+Corresponds to the |first SLIDINGWINDOW option of Trimmomatic|_ for Illumina reads.
+
+Corresponds to the |--window_size option of Filtlong|_ for Nanopore reads.
+
+.. |first SLIDINGWINDOW option of Trimmomatic| replace:: ``first SLIDINGWINDOW`` option of Trimmomatic
+.. _first SLIDINGWINDOW option of Trimmomatic: http://www.usadellab.org/cms/?page=trimmomatic
+.. |--window_size option of Filtlong| replace:: ``--window_size`` option of Filtlong
+.. _--window_size option of Filtlong: https://github.com/rrwick/Filtlong#full-usage
+
+--trim_winqual
+""""""""""""""
+
+======== ======
+Type     Integer/Float (Illumina/Nanopore)
+======== ======
+Required No
+Default  15/0.9 (Illumina/Nanopore)
+======== ======
+
+The minimum average quality within the sliding window to keep a read. Note that
+this value is the minmum PHRED score when trimming Illumina reads, but it is a
+percentage score when trimming Nanopore reads.
+
+Corresponds to the |second SLIDINGWINDOW option of Trimmomatic|_ for Illumina reads.
+
+Corresponds to the |--min_mean_q option of Filtlong|_ for Nanopore reads.
+
+.. |second SLIDINGWINDOW option of Trimmomatic| replace:: ``second SLIDINGWINDOW`` option of Trimmomatic
+.. _second SLIDINGWINDOW option of Trimmomatic: http://www.usadellab.org/cms/?page=trimmomatic
+.. |--min_mean_q option of Filtlong| replace:: ``--min_mean_q`` option of Filtlong
+.. _--min_mean_q option of Filtlong: https://github.com/rrwick/Filtlong#full-usage
+
+
 Illumina-Specific (Trimmomatic) Options
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-``--trim_adapers``
-""""""""""""""""""
+--trim_adapers
+""""""""""""""
 
 ======== ======
 Type     String
@@ -209,11 +318,281 @@ Corresponds to the |first ILLUMINACLIP option of Trimmomatic|_.
 .. |first ILLUMINACLIP option of Trimmomatic| replace:: first ``ILLUMINACLIP`` option of Trimmomatic
 .. _first ILLUMINACLIP option of Trimmomatic: http://www.usadellab.org/cms/?page=trimmomatic
 
+--trim_mismatches
+"""""""""""""""""
+
+======== ======
+Type     Integer
+======== ======
+Required No
+Default  2
+======== ======
+
+The maximum mismatch count which will still allow a full adapter match to be
+performed.
+
+Corresponds to the |second ILLUMINACLIP option of Trimmomatic|_.
+
+.. |second ILLUMINACLIP option of Trimmomatic| replace:: second ``ILLUMINACLIP`` option of Trimmomatic
+.. _second ILLUMINACLIP option of Trimmomatic: http://www.usadellab.org/cms/?page=trimmomatic
+
+--trim_pclip
+""""""""""""
+
+======== ======
+Type     Integer
+======== ======
+Required No
+Default  30
+======== ======
+
+``pclip``: palindrome clip. How accurate the match between the two adapter
+ligated reads must be for paired-end palindrome read alignment.
+
+Corresponds to the |third ILLUMINACLIP option of Trimmomatic|_.
+
+.. |third ILLUMINACLIP option of Trimmomatic| replace:: third ``ILLUMINACLIP`` option of Trimmomatic
+.. _third ILLUMINACLIP option of Trimmomatic: http://www.usadellab.org/cms/?page=trimmomatic
+
+--trim_clip
+"""""""""""
+
+======== ======
+Type     Integer
+======== ======
+Required No
+Default  10
+======== ======
+
+How accurate the match between any adapter sequence must be against a read.
+
+Corresponds to the |final ILLUMINACLIP option of Trimmomatic|_.
+
+.. |final ILLUMINACLIP option of Trimmomatic| replace:: final ``ILLUMINACLIP`` option of Trimmomatic
+.. _final ILLUMINACLIP option of Trimmomatic: http://www.usadellab.org/cms/?page=trimmomatic
+
+--trim_leading
+""""""""""""""
+
+======== ======
+Type     Integer
+======== ======
+Required No
+Default  15
+======== ======
+
+The minimum quality to keep a base in the leading end of a read. If set to
+``0``, LEADING trimming is disabled.
+
+Corresponds to the |LEADING option of Trimmomatic|_.
+
+.. |LEADING option of Trimmomatic| replace:: ``LEADING:`` option of Trimmomatic
+.. _LEADING option of Trimmomatic: http://www.usadellab.org/cms/?page=trimmomatic
+
+--trim_trailing
+"""""""""""""""
+
+======== ======
+Type     Integer
+======== ======
+Required No
+Default  15
+======== ======
+
+The minimum quality to keep a base in the trailing end of a read. If set to
+``0``, TRAILING trimming is disabled.
+
+Corresponds to the |TRAILING option of Trimmomatic|_.
+
+.. |TRAILING option of Trimmomatic| replace:: ``TRAILING:`` option of Trimmomatic
+.. _TRAILING option of Trimmomatic: http://www.usadellab.org/cms/?page=trimmomatic
+
+--trim_crop
+"""""""""""
+
+======== ======
+Type     Integer
+======== ======
+Required No
+Default  0
+======== ======
+
+The number of bases to keep from the start of the read. If set to ``0``, CROP
+trimming is disabled.
+
+Corresponds to the |CROP option of Trimmomatic|_.
+
+.. |CROP option of Trimmomatic| replace:: ``CROP:`` option of Trimmomatic
+.. _CROP option of Trimmomatic: http://www.usadellab.org/cms/?page=trimmomatic
+
+--trim_headcrop
+"""""""""""""""
+
+======== ======
+Type     Integer
+======== ======
+Required No
+Default  0
+======== ======
+
+The number of bases to remove from the start of the read. If set to ``0``,
+HEADCROP trimming is disabled.
+
+Corresponds to the |HEADCROP option of Trimmomatic|_.
+
+.. |HEADCROP option of Trimmomatic| replace:: ``HEADCROP:`` option of Trimmomatic
+.. _HEADCROP option of Trimmomatic: http://www.usadellab.org/cms/?page=trimmomatic
+
+Nanopore-Specific (Filtlong) Options
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+--trim_keep_percent
+"""""""""""""""""""
+
+======== ======
+Type     Float
+======== ======
+Required No
+Default  0.9
+======== ======
+
+The number of reads to keep as a percentage of the total reads, discarding the
+lowest-quality reads.
+
+Corresponds to the |--keep_percent option of Filtlong|_.
+
+.. |--keep_percent option of Filtlong| replace:: ``--keep_percent`` option of Filtlong
+.. _--keep_percent option of Filtlong: https://github.com/rrwick/Filtlong#full-usage
+
+--trim_target_bases
+"""""""""""""""""""
+
+======== ======
+Type     Integer
+======== ======
+Required No
+Default  500,000,000
+======== ======
+
+The maximum number of bases to keep, discarding the lowest quality reads until
+this threshold is met. Can be effectively disabled by using a very high number
+of bases.
+
+Corresponds to the |--target_bases option of Filtlong|_.
+
+.. |--target_bases option of Filtlong| replace:: ``--target_bases`` option of Filtlong
+.. _--target_bases option of Filtlong: https://github.com/rrwick/Filtlong#full-usage
+
+*de novo* Assembly Options
+--------------------------
+
+Illumina-Specific (SPAdes) Options
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+--spades_mode
+"""""""""""""
+
+======== ======
+Type     String
+======== ======
+Required No
+Default  rnaviral
+======== ======
+
+If provided, this parameter is turned into a flag and passed as the 'mode' to
+the SPAdes assembly, e.g.
+``nextflow run jev-analysis-pipeline --spades_mode 'metaviral'`` will run SPAdes
+as ``spades.py --metaviral``. The available modes are
+
+* meta
+* plasmid
+* metaplasmid
+* metaviral
+* rna
+* rnaviral
+
+Due to parameter mismatches, the ``isolate`` and ``bio`` modes normally provided
+by SPAdes are unavailable in the pipeline.
+
+See `SPAdes command line options <https://cab.spbu.ru/files/release3.15.3/manual.html#sec3.2>`_
+for more info on what each of these mean.
+
+Nanopore-Specific (Canu) Options
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+--canu_corrected_error_rate
+"""""""""""""""""""""""""""
+
+======== ======
+Type     Float
+======== ======
+Required No
+Default  0.144
+======== ======
+
+How dissimilar overlap between two reads can be and still be assembled together.
+
+Corresponds to the |correctedErrorRate option of Canu|_.
+
+.. |correctedErrorRate option of Canu| replace:: ``correctedErrorRate`` option of Canu
+.. _correctedErrorRate option of Canu: https://canu.readthedocs.io/en/latest/parameter-reference.html#correctederrorrate
+
+--canu_min_read_length
+""""""""""""""""""""""
+
+======== ======
+Type     Integer
+======== ======
+Required No
+Default  1000
+======== ======
+
+The shortest length allowed for a read to be considered in the assembly.
+
+Corresponds to the |minReadLength option of Canu|_.
+
+.. |minReadLength option of Canu| replace:: ``minReadLength`` option of Canu
+.. _minReadLength option of Canu: https://canu.readthedocs.io/en/latest/parameter-reference.html#minreadlength
+
+--canu_min_overlap_length
+"""""""""""""""""""""""""
+
+======== ======
+Type     Integer
+======== ======
+Required No
+Default  :ref:`--canu_min_read_length` ÷ 2
+======== ======
+
+The shortest length allowed for reads to overlap to be considered in the assembly.
+
+Corresponds to the |minOverlapLength option of Canu|_.
+
+.. |minOverlapLength option of Canu| replace:: ``minOverlapLength`` option of Canu
+.. _minOverlapLength option of Canu: https://canu.readthedocs.io/en/latest/parameter-reference.html#minoverlaplength
+
+--canu_stop_on_low_coverage
+"""""""""""""""""""""""""""
+
+======== ======
+Type     Integer
+======== ======
+Required No
+Default  10
+======== ======
+
+Lowest depth allowable for assembly to proceed.
+
+Corresponds to the |stopOnLowCoverage option of Canu|_.
+
+.. |stopOnLowCoverage option of Canu| replace:: ``stopOnLowCoverage`` option of Canu
+.. _stopOnLowCoverage option of Canu: https://canu.readthedocs.io/en/latest/parameter-reference.html#stoponlowcoverage
+
 Haplotyping Options
 -------------------
 
-``--haplotype_significance``
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+--haplotype_significance
+^^^^^^^^^^^^^^^^^^^^^^^^
 
 ======== ======
 Type     Float
@@ -225,8 +604,8 @@ Default  0.05
 The highest p-value that will be considered a significant haplotype based on
 linkage disequilibrium and proportional equivalence.
 
-``--haplotype_minimum``
-^^^^^^^^^^^^^^^^^^^^^^^
+--haplotype_minimum
+^^^^^^^^^^^^^^^^^^^
 
 ======== ======
 Type     Integer
@@ -237,3 +616,45 @@ Default  10
 
 The minimum number of times a particular haplotype has to occur for it to be
 considered real and processed downstream and output.
+
+Workflow Options
+----------------
+
+These options allow you to skip entire sections of the pipeline. They can
+significantly speed up pipeline execution if you know they are not needed, e.g.
+skipping read trimming from reads already trimmed in CLC Genomic Workbench. All
+of these options are boolean flags that are disabled by default.
+
+--skip_filtering
+^^^^^^^^^^^^^^^^
+
+Treats the input reads as trimmed reads and skips using Trimmomatic or Filtlong
+on the reads.
+
+--skip_assembly
+^^^^^^^^^^^^^^^
+
+Bypasses *de novo* assembly entirely. Note that phylogenetic trees may not be
+generated if no assemblies are input.
+
+--skip_haplotype
+^^^^^^^^^^^^^^^^
+
+Basically negate the entire purpose of the pipeline by performing no variant
+calling, haplotype calling, or phylogenetic analysis on the samples. Can be
+useful for debugging.
+
+Resource Allocation Options
+---------------------------
+
+These are the maximum resources allowed for a single process within the
+pipeline. Place these in a ``nextflow.config`` in a central location on your HPC
+to ensure that your pipeline is not cancelled for requesting too many resources.
+
+================== =======
+Parameter          Default
+================== =======
+``--max_memory``   750.GB
+``--max_cpus``     72
+``--max_time``     240.h
+================== =======
