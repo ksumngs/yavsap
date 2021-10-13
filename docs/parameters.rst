@@ -9,8 +9,8 @@ shouldn't be used, so proceed with caution!
 Input Options
 -------------
 
-``--input``
-^^^^^^^^^^^
+--input
+^^^^^^^
 
 ======== ======
 Type     String
@@ -31,8 +31,8 @@ gzipped, and have the extension '.fastq.gz' or '.fq.gz'.
 
 Defaults to the current working directory.
 
-``--sra``
-^^^^^^^^^
+--sra
+^^^^^
 
 ======== ======
 Type     Flag
@@ -49,8 +49,8 @@ and it **must** be exported in the shell environment as ``NCBI_API_KEY``, e.g.
 ``NCBI_API_KEY=0123456789abcdef``. This feature is currenly broken due to an
 upstream issue in Nextflow, but should be fixed by Nextflow version 21.10.0.
 
-``--platform``
-^^^^^^^^^^^^^^
+--platform
+^^^^^^^^^^
 
 ======== ======
 Type     String
@@ -62,8 +62,8 @@ Default  n/a
 Defines which type of reads to analyze. Must be either 'illumina' or 'nanopore'.
 
 
-``--pe``
-^^^^^^^^
+--pe
+^^^^
 
 ======== ======
 Type     Boolean
@@ -78,8 +78,8 @@ Default  false
 Internally-used parameter to check if the pipeline is processing Illumina reads.
 Automatically set by ``--platform``
 
-``--ont``
-^^^^^^^^^
+--ont
+^^^^^
 
 ======== ======
 Type     Boolean
@@ -94,8 +94,8 @@ Default  false
 Internally-used parameter to check if the pipeline is processing Nanopore reads.
 Automatically set by ``--platform``
 
-``--help``
-^^^^^^^^^^
+--help
+^^^^^^
 
 ======== ======
 Type     Boolean
@@ -110,8 +110,8 @@ the document you're reading right now, and exit.
 Output Options
 --------------
 
-``--outdir``
-^^^^^^^^^^^^
+--outdir
+^^^^^^^^
 
 ======== ======
 Type     String
@@ -123,8 +123,8 @@ Default  ./results
 Where to store the results files. For more info, see
 :doc:`the page on output <output>`.
 
-``--tracedir``
-^^^^^^^^^^^^^^
+--tracedir
+^^^^^^^^^^
 
 ======== ======
 Type     String
@@ -136,8 +136,8 @@ Default  ``--outdir``/.trace
 Where to store pipeline performance reports and diagnostic info. If you keep
 this as the default, then you can access these documents through the visualizer.
 
-``--publish_dir_mode``
-^^^^^^^^^^^^^^^^^^^^^^
+--publish_dir_mode
+^^^^^^^^^^^^^^^^^^
 
 ======== ======
 Type     String
@@ -161,8 +161,8 @@ does, which as of Nextflow 21.04, includes
 Reference Genome Options
 ------------------------
 
-``--genome``
-^^^^^^^^^^^^
+--genome
+^^^^^^^^
 
 ======== ======
 Type     String
@@ -180,8 +180,8 @@ record.
 Kraken2 Options
 ---------------
 
-``--kraken2_db``
-^^^^^^^^^^^^^^^^
+--kraken2_db
+^^^^^^^^^^^^
 
 ======== ======
 Type     String
@@ -201,8 +201,8 @@ Corresponds to the |--db option of Kraken2|_.
 .. |--db option of Kraken2| replace:: ``--db`` option of Kraken2
 .. _--db option of Kraken2: https://github.com/DerrickWood/kraken2/wiki/Manual#classification
 
-``--keep_taxid``
-^^^^^^^^^^^^^^^^
+--keep_taxid
+^^^^^^^^^^^^
 ======== ======
 Type     String
 ======== ======
@@ -224,8 +224,8 @@ Read Trimming Options
 Common Options
 ^^^^^^^^^^^^^^
 
-``--trim_minlen``
-"""""""""""""""""
+--trim_minlen
+"""""""""""""
 
 ======== ======
 Type     Integer
@@ -245,8 +245,8 @@ Corresponds to the |--min_length option of Filtlong|_ for Nanopore reads.
 .. |--min_length option of Filtlong| replace:: ``--min_length`` option of Filtlong
 .. _--min_length option of Filtlong: https://github.com/rrwick/Filtlong#full-usage
 
-``--trim_winsize``
-""""""""""""""""""
+--trim_winsize
+""""""""""""""
 
 ======== ======
 Type     Integer
@@ -266,8 +266,8 @@ Corresponds to the |--window_size option of Filtlong|_ for Nanopore reads.
 .. |--window_size option of Filtlong| replace:: ``--window_size`` option of Filtlong
 .. _--window_size option of Filtlong: https://github.com/rrwick/Filtlong#full-usage
 
-``--trim_winqual``
-""""""""""""""""""
+--trim_winqual
+""""""""""""""
 
 ======== ======
 Type     Integer/Float (Illumina/Nanopore)
@@ -293,8 +293,8 @@ Corresponds to the |--min_mean_q option of Filtlong|_ for Nanopore reads.
 Illumina-Specific (Trimmomatic) Options
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-``--trim_adapers``
-""""""""""""""""""
+--trim_adapers
+""""""""""""""
 
 ======== ======
 Type     String
@@ -318,8 +318,8 @@ Corresponds to the |first ILLUMINACLIP option of Trimmomatic|_.
 .. |first ILLUMINACLIP option of Trimmomatic| replace:: first ``ILLUMINACLIP`` option of Trimmomatic
 .. _first ILLUMINACLIP option of Trimmomatic: http://www.usadellab.org/cms/?page=trimmomatic
 
-``--trim_mismatches``
-"""""""""""""""""""""
+--trim_mismatches
+"""""""""""""""""
 
 ======== ======
 Type     Integer
@@ -336,8 +336,8 @@ Corresponds to the |second ILLUMINACLIP option of Trimmomatic|_.
 .. |second ILLUMINACLIP option of Trimmomatic| replace:: second ``ILLUMINACLIP`` option of Trimmomatic
 .. _second ILLUMINACLIP option of Trimmomatic: http://www.usadellab.org/cms/?page=trimmomatic
 
-``--trim_pclip``
-""""""""""""""""
+--trim_pclip
+""""""""""""
 
 ======== ======
 Type     Integer
@@ -354,8 +354,8 @@ Corresponds to the |third ILLUMINACLIP option of Trimmomatic|_.
 .. |third ILLUMINACLIP option of Trimmomatic| replace:: third ``ILLUMINACLIP`` option of Trimmomatic
 .. _third ILLUMINACLIP option of Trimmomatic: http://www.usadellab.org/cms/?page=trimmomatic
 
-``--trim_clip``
-"""""""""""""""
+--trim_clip
+"""""""""""
 
 ======== ======
 Type     Integer
@@ -371,8 +371,8 @@ Corresponds to the |final ILLUMINACLIP option of Trimmomatic|_.
 .. |final ILLUMINACLIP option of Trimmomatic| replace:: final ``ILLUMINACLIP`` option of Trimmomatic
 .. _final ILLUMINACLIP option of Trimmomatic: http://www.usadellab.org/cms/?page=trimmomatic
 
-``--trim_leading``
-""""""""""""""""""
+--trim_leading
+""""""""""""""
 
 ======== ======
 Type     Integer
@@ -389,8 +389,8 @@ Corresponds to the |LEADING option of Trimmomatic|_.
 .. |LEADING option of Trimmomatic| replace:: ``LEADING:`` option of Trimmomatic
 .. _LEADING option of Trimmomatic: http://www.usadellab.org/cms/?page=trimmomatic
 
-``--trim_trailing``
-"""""""""""""""""""
+--trim_trailing
+"""""""""""""""
 
 ======== ======
 Type     Integer
@@ -407,8 +407,8 @@ Corresponds to the |TRAILING option of Trimmomatic|_.
 .. |TRAILING option of Trimmomatic| replace:: ``TRAILING:`` option of Trimmomatic
 .. _TRAILING option of Trimmomatic: http://www.usadellab.org/cms/?page=trimmomatic
 
-``--trim_crop``
-"""""""""""""""
+--trim_crop
+"""""""""""
 
 ======== ======
 Type     Integer
@@ -425,8 +425,8 @@ Corresponds to the |CROP option of Trimmomatic|_.
 .. |CROP option of Trimmomatic| replace:: ``CROP:`` option of Trimmomatic
 .. _CROP option of Trimmomatic: http://www.usadellab.org/cms/?page=trimmomatic
 
-``--trim_headcrop``
-"""""""""""""""""""
+--trim_headcrop
+"""""""""""""""
 
 ======== ======
 Type     Integer
@@ -446,8 +446,8 @@ Corresponds to the |HEADCROP option of Trimmomatic|_.
 Nanopore-Specific (Filtlong) Options
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-``--trim_keep_percent``
-"""""""""""""""""""""""
+--trim_keep_percent
+"""""""""""""""""""
 
 ======== ======
 Type     Float
@@ -464,8 +464,8 @@ Corresponds to the |--keep_percent option of Filtlong|_.
 .. |--keep_percent option of Filtlong| replace:: ``--keep_percent`` option of Filtlong
 .. _--keep_percent option of Filtlong: https://github.com/rrwick/Filtlong#full-usage
 
-``--trim_target_bases``
-"""""""""""""""""""""""
+--trim_target_bases
+"""""""""""""""""""
 
 ======== ======
 Type     Integer
@@ -489,8 +489,8 @@ Corresponds to the |--target_bases option of Filtlong|_.
 Illumina-Specific (SPAdes) Options
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-``--spades_mode``
-"""""""""""""""""
+--spades_mode
+"""""""""""""
 
 ======== ======
 Type     String
@@ -520,8 +520,8 @@ for more info on what each of these mean.
 Nanopore-Specific (Canu) Options
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-``--canu_corrected_error_rate``
-"""""""""""""""""""""""""""""""
+--canu_corrected_error_rate
+"""""""""""""""""""""""""""
 
 ======== ======
 Type     Float
@@ -537,8 +537,8 @@ Corresponds to the |correctedErrorRate option of Canu|_.
 .. |correctedErrorRate option of Canu| replace:: ``correctedErrorRate`` option of Canu
 .. _correctedErrorRate option of Canu: https://canu.readthedocs.io/en/latest/parameter-reference.html#correctederrorrate
 
-``--canu_min_read_length``
-"""""""""""""""""""""""""""""""
+--canu_min_read_length
+""""""""""""""""""""""
 
 ======== ======
 Type     Integer
@@ -554,8 +554,8 @@ Corresponds to the |minReadLength option of Canu|_.
 .. |minReadLength option of Canu| replace:: ``minReadLength`` option of Canu
 .. _minReadLength option of Canu: https://canu.readthedocs.io/en/latest/parameter-reference.html#minreadlength
 
-``--canu_min_overlap_length``
-"""""""""""""""""""""""""""""""
+--canu_min_overlap_length
+"""""""""""""""""""""""""
 
 ======== ======
 Type     Integer
@@ -571,8 +571,8 @@ Corresponds to the |minOverlapLength option of Canu|_.
 .. |minOverlapLength option of Canu| replace:: ``minOverlapLength`` option of Canu
 .. _minOverlapLength option of Canu: https://canu.readthedocs.io/en/latest/parameter-reference.html#minoverlaplength
 
-``--canu_stop_on_low_coverage``
-"""""""""""""""""""""""""""""""
+--canu_stop_on_low_coverage
+"""""""""""""""""""""""""""
 
 ======== ======
 Type     Integer
@@ -591,8 +591,8 @@ Corresponds to the |stopOnLowCoverage option of Canu|_.
 Haplotyping Options
 -------------------
 
-``--haplotype_significance``
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+--haplotype_significance
+^^^^^^^^^^^^^^^^^^^^^^^^
 
 ======== ======
 Type     Float
@@ -604,8 +604,8 @@ Default  0.05
 The highest p-value that will be considered a significant haplotype based on
 linkage disequilibrium and proportional equivalence.
 
-``--haplotype_minimum``
-^^^^^^^^^^^^^^^^^^^^^^^
+--haplotype_minimum
+^^^^^^^^^^^^^^^^^^^
 
 ======== ======
 Type     Integer
@@ -625,20 +625,20 @@ significantly speed up pipeline execution if you know they are not needed, e.g.
 skipping read trimming from reads already trimmed in CLC Genomic Workbench. All
 of these options are boolean flags that are disabled by default.
 
-``--skip_filtering``
-^^^^^^^^^^^^^^^^^^^^
+--skip_filtering
+^^^^^^^^^^^^^^^^
 
 Treats the input reads as trimmed reads and skips using Trimmomatic or Filtlong
 on the reads.
 
-``--skip_assembly``
-^^^^^^^^^^^^^^^^^^^
+--skip_assembly
+^^^^^^^^^^^^^^^
 
 Bypasses *de novo* assembly entirely. Note that phylogenetic trees may not be
 generated if no assemblies are input.
 
-``--skip_haplotype``
-^^^^^^^^^^^^^^^^^^^^
+--skip_haplotype
+^^^^^^^^^^^^^^^^
 
 Basically negate the entire purpose of the pipeline by performing no variant
 calling, haplotype calling, or phylogenetic analysis on the samples. Can be
