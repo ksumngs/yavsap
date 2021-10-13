@@ -206,10 +206,10 @@ Corresponds to the |--window_size option of Filtlong|_ for Nanopore reads.
 """"""""""""""""""
 
 ======== ======
-Type     Integer
+Type     Integer/Float (Illumina/Nanopore)
 ======== ======
 Required No
-Default  15/90 (Illumina/Nanopore)
+Default  15/0.9 (Illumina/Nanopore)
 ======== ======
 
 The minimum average quality within the sliding window to keep a read. Note that
