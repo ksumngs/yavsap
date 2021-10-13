@@ -94,6 +94,70 @@ Default  false
 Internally-used parameter to check if the pipeline is processing Nanopore reads.
 Automatically set by ``--platform``
 
+``--help``
+^^^^^^^^^^
+
+======== ======
+Type     Boolean
+======== ======
+Required No
+Default  false
+======== ======
+
+Print a friendly help message that is both less daunting and less complete than
+the document you're reading right now, and exit.
+
+Output Options
+--------------
+
+``--outdir``
+^^^^^^^^^^^^
+
+======== ======
+Type     String
+======== ======
+Required No
+Default  ./results
+======== ======
+
+Where to store the results files. For more info, see
+:doc:`the page on output <output>`.
+
+``--tracedir``
+^^^^^^^^^^^^^^
+
+======== ======
+Type     String
+======== ======
+Required No
+Default  ``--outdir``/.trace
+======== ======
+
+Where to store pipeline performance reports and diagnostic info. If you keep
+this as the default, then you can access these documents through the visualizer.
+
+``--publish_dir_mode``
+^^^^^^^^^^^^^^^^^^^^^^
+
+======== ======
+Type     String
+======== ======
+Required No
+Default  copy
+======== ======
+
+How to take files out of the ``work`` dirctories they were generated in and put
+them into ``--outdir``. Supports every mode that the
+`Nextflow publishDir directive <https://nextflow.io/docs/latest/process.html#publishdir>`_
+does, which as of Nextflow 21.04, includes
+
+* symlink
+* relink
+* link
+* copy
+* copyNoFollow
+* move
+
 Reference Genome Options
 ------------------------
 
