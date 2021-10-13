@@ -326,7 +326,7 @@ Corresponds to the |LEADING option of Trimmomatic|_.
 .. _LEADING option of Trimmomatic: http://www.usadellab.org/cms/?page=trimmomatic
 
 ``--trim_trailing``
-""""""""""""""""""
+"""""""""""""""""""
 
 ======== ======
 Type     Integer
@@ -362,7 +362,7 @@ Corresponds to the |CROP option of Trimmomatic|_.
 .. _CROP option of Trimmomatic: http://www.usadellab.org/cms/?page=trimmomatic
 
 ``--trim_headcrop``
-"""""""""""""""
+"""""""""""""""""""
 
 ======== ======
 Type     Integer
@@ -379,6 +379,45 @@ Corresponds to the |HEADCROP option of Trimmomatic|_.
 .. |HEADCROP option of Trimmomatic| replace:: ``HEADCROP:`` option of Trimmomatic
 .. _HEADCROP option of Trimmomatic: http://www.usadellab.org/cms/?page=trimmomatic
 
+Nanopore-Specific (Filtlong) Options
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+``--trim_keep_percent``
+"""""""""""""""""""""""
+
+======== ======
+Type     Float
+======== ======
+Required No
+Default  0.9
+======== ======
+
+The number of reads to keep as a percentage of the total reads, discarding the
+lowest-quality reads.
+
+Corresponds to the |--keep_percent option of Filtlong|_.
+
+.. |--keep_percent option of Filtlong| replace:: ``--keep_percent`` option of Filtlong
+.. _--keep_percent option of Filtlong: https://github.com/rrwick/Filtlong#full-usage
+
+``--trim_target_bases``
+"""""""""""""""""""""""
+
+======== ======
+Type     Integer
+======== ======
+Required No
+Default  500,000,000
+======== ======
+
+The maximum number of bases to keep, discarding the lowest quality reads until
+this threshold is met. Can be effectively disabled by using a very high number
+of bases.
+
+Corresponds to the |--target_bases option of Filtlong|_.
+
+.. |--target_bases option of Filtlong| replace:: ``--target_bases`` option of Filtlong
+.. _--target_bases option of Filtlong: https://github.com/rrwick/Filtlong#full-usage
 
 Haplotyping Options
 -------------------
