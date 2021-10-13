@@ -272,7 +272,8 @@ Required No
 Default  15
 ======== ======
 
-The minimum quality to keep a base in the leading end of a read.
+The minimum quality to keep a base in the leading end of a read. If set to
+``0``, LEADING trimming is disabled.
 
 Corresponds to the |LEADING option of Trimmomatic|_.
 
@@ -289,7 +290,8 @@ Required No
 Default  15
 ======== ======
 
-The minimum quality to keep a base in the trailing end of a read.
+The minimum quality to keep a base in the trailing end of a read. If set to
+``0``, TRAILING trimming is disabled.
 
 Corresponds to the |TRAILING option of Trimmomatic|_.
 
@@ -303,10 +305,11 @@ Corresponds to the |TRAILING option of Trimmomatic|_.
 Type     Integer
 ======== ======
 Required No
-Default  null
+Default  0
 ======== ======
 
-The number of bases to keep from the start of the read.
+The number of bases to keep from the start of the read. If set to ``0``, CROP
+trimming is disabled.
 
 Corresponds to the |CROP option of Trimmomatic|_.
 
@@ -320,10 +323,11 @@ Corresponds to the |CROP option of Trimmomatic|_.
 Type     Integer
 ======== ======
 Required No
-Default  null
+Default  0
 ======== ======
 
-The number of bases to remove from the start of the read.
+The number of bases to remove from the start of the read. If set to ``0``,
+HEADCROP trimming is disabled.
 
 Corresponds to the |HEADCROP option of Trimmomatic|_.
 
