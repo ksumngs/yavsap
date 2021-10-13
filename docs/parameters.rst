@@ -209,6 +209,128 @@ Corresponds to the |first ILLUMINACLIP option of Trimmomatic|_.
 .. |first ILLUMINACLIP option of Trimmomatic| replace:: first ``ILLUMINACLIP`` option of Trimmomatic
 .. _first ILLUMINACLIP option of Trimmomatic: http://www.usadellab.org/cms/?page=trimmomatic
 
+``--trim_mismatches``
+"""""""""""""""""""""
+
+======== ======
+Type     Integer
+======== ======
+Required No
+Default  2
+======== ======
+
+The maximum mismatch count which will still allow a full adapter match to be
+performed.
+
+Corresponds to the |second ILLUMINACLIP option of Trimmomatic|_.
+
+.. |second ILLUMINACLIP option of Trimmomatic| replace:: second ``ILLUMINACLIP`` option of Trimmomatic
+.. _second ILLUMINACLIP option of Trimmomatic: http://www.usadellab.org/cms/?page=trimmomatic
+
+``--trim_pclip``
+""""""""""""""""
+
+======== ======
+Type     Integer
+======== ======
+Required No
+Default  30
+======== ======
+
+``pclip``: palindrome clip. How accurate the match between the two adapter
+ligated reads must be for paired-end palindrome read alignment.
+
+Corresponds to the |third ILLUMINACLIP option of Trimmomatic|_.
+
+.. |third ILLUMINACLIP option of Trimmomatic| replace:: third ``ILLUMINACLIP`` option of Trimmomatic
+.. _third ILLUMINACLIP option of Trimmomatic: http://www.usadellab.org/cms/?page=trimmomatic
+
+``--trim_clip``
+"""""""""""""""
+
+======== ======
+Type     Integer
+======== ======
+Required No
+Default  10
+======== ======
+
+How accurate the match between any adapter sequence must be against a read.
+
+Corresponds to the |final ILLUMINACLIP option of Trimmomatic|_.
+
+.. |final ILLUMINACLIP option of Trimmomatic| replace:: final ``ILLUMINACLIP`` option of Trimmomatic
+.. _final ILLUMINACLIP option of Trimmomatic: http://www.usadellab.org/cms/?page=trimmomatic
+
+``--trim_leading``
+""""""""""""""""""
+
+======== ======
+Type     Integer
+======== ======
+Required No
+Default  15
+======== ======
+
+The minimum quality to keep a base in the leading end of a read.
+
+Corresponds to the |LEADING option of Trimmomatic|_.
+
+.. |LEADING option of Trimmomatic| replace:: ``LEADING:`` option of Trimmomatic
+.. _LEADING option of Trimmomatic: http://www.usadellab.org/cms/?page=trimmomatic
+
+``--trim_trailing``
+""""""""""""""""""
+
+======== ======
+Type     Integer
+======== ======
+Required No
+Default  15
+======== ======
+
+The minimum quality to keep a base in the trailing end of a read.
+
+Corresponds to the |TRAILING option of Trimmomatic|_.
+
+.. |TRAILING option of Trimmomatic| replace:: ``TRAILING:`` option of Trimmomatic
+.. _TRAILING option of Trimmomatic: http://www.usadellab.org/cms/?page=trimmomatic
+
+``--trim_crop``
+"""""""""""""""
+
+======== ======
+Type     Integer
+======== ======
+Required No
+Default  null
+======== ======
+
+The number of bases to keep from the start of the read.
+
+Corresponds to the |CROP option of Trimmomatic|_.
+
+.. |CROP option of Trimmomatic| replace:: ``CROP:`` option of Trimmomatic
+.. _CROP option of Trimmomatic: http://www.usadellab.org/cms/?page=trimmomatic
+
+``--trim_headcrop``
+"""""""""""""""
+
+======== ======
+Type     Integer
+======== ======
+Required No
+Default  null
+======== ======
+
+The number of bases to remove from the start of the read.
+
+Corresponds to the |HEADCROP option of Trimmomatic|_.
+
+.. |HEADCROP option of Trimmomatic| replace:: ``HEADCROP:`` option of Trimmomatic
+.. _HEADCROP option of Trimmomatic: http://www.usadellab.org/cms/?page=trimmomatic
+
+
 Haplotyping Options
 -------------------
 
