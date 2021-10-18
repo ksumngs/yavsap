@@ -148,7 +148,7 @@ Default  copy
 
 How to take files out of the ``work`` dirctories they were generated in and put
 them into :ref:`--outdir`. Supports every mode that the
-`Nextflow publishDir directive <https://nextflow.io/docs/latest/process.html#publishdir>`_
+:ref:`Nextflow publishDir directive <process-publishdir>`
 does, which as of Nextflow 21.04, includes
 
 * symlink
@@ -532,10 +532,7 @@ Default  0.144
 
 How dissimilar overlap between two reads can be and still be assembled together.
 
-Corresponds to the |correctedErrorRate option of Canu|_.
-
-.. |correctedErrorRate option of Canu| replace:: ``correctedErrorRate`` option of Canu
-.. _correctedErrorRate option of Canu: https://canu.readthedocs.io/en/latest/parameter-reference.html#correctederrorrate
+Corresponds to the :ref:`correctedErrorRate` option of Canu.
 
 --canu_min_read_length
 """"""""""""""""""""""
@@ -549,10 +546,7 @@ Default  1000
 
 The shortest length allowed for a read to be considered in the assembly.
 
-Corresponds to the |minReadLength option of Canu|_.
-
-.. |minReadLength option of Canu| replace:: ``minReadLength`` option of Canu
-.. _minReadLength option of Canu: https://canu.readthedocs.io/en/latest/parameter-reference.html#minreadlength
+Corresponds to the :ref:`minReadLength` option of Canu.
 
 --canu_min_overlap_length
 """""""""""""""""""""""""
@@ -566,10 +560,7 @@ Default  :ref:`--canu_min_read_length` ÷ 2
 
 The shortest length allowed for reads to overlap to be considered in the assembly.
 
-Corresponds to the |minOverlapLength option of Canu|_.
-
-.. |minOverlapLength option of Canu| replace:: ``minOverlapLength`` option of Canu
-.. _minOverlapLength option of Canu: https://canu.readthedocs.io/en/latest/parameter-reference.html#minoverlaplength
+Corresponds to the :ref:`minOverlapLength` option of Canu.
 
 --canu_stop_on_low_coverage
 """""""""""""""""""""""""""
@@ -583,10 +574,7 @@ Default  10
 
 Lowest depth allowable for assembly to proceed.
 
-Corresponds to the |stopOnLowCoverage option of Canu|_.
-
-.. |stopOnLowCoverage option of Canu| replace:: ``stopOnLowCoverage`` option of Canu
-.. _stopOnLowCoverage option of Canu: https://canu.readthedocs.io/en/latest/parameter-reference.html#stoponlowcoverage
+Corresponds to the :ref:`stopOnLowCoverage` option of Canu.
 
 Haplotyping Options
 -------------------

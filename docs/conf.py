@@ -52,3 +52,9 @@ html_theme = 'sphinx_rtd_theme'
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
+
+intersphinx_mapping = {
+    'nextflow': ('https://nextflow.io/docs/latest/', None),
+    'canu': ('https://canu.readthedocs.io/en/latest', None),
+    'singularity': ('https://singularity.hpcng.org/user-docs/3.8', None)
+}

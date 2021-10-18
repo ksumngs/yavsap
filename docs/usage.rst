@@ -155,7 +155,7 @@ singularity
   **Recommended**
 
   Use the
-  `Singularity <https://singularity.hpcng.org/user-docs/>`_ container enginer.
+  :doc:`Singularity <singularity:index>` container enginer.
   This engine was build with HPC use in mind, and doesn't require any special
   permissions to run. Singularity's downfall is how it will expose your home
   directory to the container, resulting in rare, but difficult to explain bugs

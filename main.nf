@@ -169,7 +169,7 @@ process sample_rename {
 
 process reads_realign_to_reference {
     label 'minimap'
-    publishDir "${params.outdir}/data", mode: "${params.publish_dir_mode}"
+    publishDir "${params.outdir}/alignment", mode: "${params.publish_dir_mode}"
 
     input:
     tuple val(sampleName), file(readsFile)
@@ -213,14 +213,15 @@ process presentation_generator {
 
     output:
 
+    file '_css/*.css'
+    file '_views/*.pug'
     file 'index.js'
     file 'package.json'
+    file 'package-lock.json'
     file 'favicon.ico'
-    file 'views/*.pug'
-    file 'css/*.css'
 
     script:
     """
-    cp -r ${workflow.projectDir}/visualizer/{index.js,package.json,favicon.ico,views,css} .
+    cp -r ${workflow.projectDir}/visualizer/{_css,_views,index.js,package.json,package-lock.json,favicon.ico} .
     """
 }
