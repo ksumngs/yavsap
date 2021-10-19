@@ -46,7 +46,7 @@ workflow haplotyping {
 process calling_pe {
     label 'cliquesnv'
     label 'process_medium'
-    publishDir "${params.outdir}", mode: "${params.publish_dir_mode}"
+    publishDir "${params.outdir}/haplotypes", mode: "${params.publish_dir_mode}"
 
     input:
     tuple val(sampleName), file(bamfile)
@@ -118,18 +118,18 @@ process alignment_analysis {
 process variant_filter {
     label 'julia'
     label 'error_retry'
-    publishDir "${params.outdir}", mode: "${params.publish_dir_mode}"
+    publishDir "${params.outdir}/variants", mode: "${params.publish_dir_mode}"
 
     input:
     tuple val(prefix), file(variantCalls), file(variantStats)
 
     output:
-    tuple val(prefix), file("*.filtered.tsv")
+    tuple val(prefix), file("*.variants.tsv")
 
     script:
     """
     export JULIA_NUM_THREADS=${task.cpus}
-    variantfilter ${variantCalls[0]} ${variantStats[0]} ${prefix}.filtered.tsv
+    variantfilter ${variantCalls[0]} ${variantStats[0]} ${prefix}.variants.tsv
     """
 }
 
@@ -140,7 +140,7 @@ process calling_ont {
     label 'julia'
     label 'error_retry'
     label 'process_high_memory'
-    publishDir "${params.outdir}", mode: "${params.publish_dir_mode}"
+    publishDir "${params.outdir}/haplotypes", mode: "${params.publish_dir_mode}"
 
     input:
     tuple val(prefix), file(bamfile), file(variants)
@@ -186,7 +186,7 @@ process merge_fastas {
 process alignment {
     label 'mafft'
     label 'process_medium'
-    publishDir "${params.outdir}", mode: "${params.publish_dir_mode}"
+    publishDir "${params.outdir}/multi_alignment", mode: "${params.publish_dir_mode}"
 
     cpus 1
 
@@ -207,7 +207,7 @@ process alignment {
 process phylogenetic_tree {
     label 'raxml'
     label 'error_ignore'
-    publishDir "${params.outdir}/data", mode: "${params.publish_dir_mode}"
+    publishDir "${params.outdir}/phylogenetics", mode: "${params.publish_dir_mode}"
 
     input:
     tuple val(sampleName), file(alignedHaplotypes)
@@ -221,6 +221,6 @@ process phylogenetic_tree {
         --prefix ${sampleName} --outgroup ${params.genome} \
         --all --model GTR+G --bs-trees 1000 \
         --msa ${alignedHaplotypes}
-    cp ${sampleName}.raxml.support ${sampleName}.tree
+    cp ${sampleName}.raxml.support ${sampleName}.nwk
     """
 }

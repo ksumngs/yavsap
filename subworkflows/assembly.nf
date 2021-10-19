@@ -30,6 +30,7 @@ process denovo_canu {
     label 'canu'
     label 'process_medium'
     label 'error_ignore'
+    publishDir "${params.outdir}/assembly/sequence", mode: "${params.publish_dir_mode}"
 
     input:
     tuple val(sampleName), file(readsFile)
@@ -56,6 +57,7 @@ process denovo_spades {
     label 'spades'
     label 'process_medium'
     label 'error_ignore'
+    publishDir "${params.outdir}/assembly/sequence", mode: "${params.publish_dir_mode}"
 
     input:
     tuple val(sampleName), file(readsFiles)
@@ -80,7 +82,7 @@ process denovo_spades {
 // Remap contigs
 process align_to_reference {
     label 'minimap'
-    publishDir "${params.outdir}/data", mode: "${params.publish_dir_mode}"
+    publishDir "${params.outdir}/assembly/alignment", mode: "${params.publish_dir_mode}"
 
     input:
     tuple val(sampleName), file(contigs)

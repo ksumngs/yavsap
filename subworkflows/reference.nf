@@ -83,7 +83,7 @@ process download_genbank {
 process indexing {
     label 'samtools'
     label 'process_low'
-    publishDir "${params.outdir}/data", mode: "${params.publish_dir_mode}"
+    publishDir "${params.outdir}/reference", mode: "${params.publish_dir_mode}"
 
     input:
     file(reference)
@@ -104,6 +104,7 @@ process indexing {
 process annotation {
     label 'seqret'
     label 'process_low'
+        publishDir "${params.outdir}/reference", mode: "${params.publish_dir_mode}"
 
     input:
     file(reference)
