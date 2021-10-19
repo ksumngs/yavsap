@@ -224,19 +224,20 @@ app.use('/multiqc_data', express.static(__dirname + '/multiqc_data'));
 // Javascript serving
 app.use('/js/igv', express.static(__dirname + '/node_modules/igv/dist'));
 app.use('/js/jquery', express.static(__dirname + '/node_modules/jquery/dist'));
-app.use('/js/big-integer', express.static(__dirname + '/node_modules/big-integer'));
-app.use('/js/underscore', express.static(__dirname + '/node_modules/underscore'));
-app.use('/js/spin', express.static(__dirname + '/node_modules/spin.js'));
-app.use('/js/d3', express.static(__dirname + '/node_modules/d3'));
-app.use('/js/cjson', express.static(__dirname + '/node_modules/circular-json/build'));
-app.use('/js/cblob', express.static(__dirname + '/node_modules/canvas-toBlob'));
-app.use('/js/filesaver', express.static(__dirname + '/node_modules/file-saver'));
 app.use('/js/twbs', express.static(__dirname + '/node_modules/bootstrap/dist/js'));
+app.use('/js/popper', express.static(__dirname + '/node_modules/@popperjs/core/dist/umd'));
+app.use('/js/fa', express.static(__dirname + '/node_modules/@fortawesome/fontawesome-free/js'));
+app.use('/js/d3', express.static(__dirname + '/node_modules/d3/dist'));
+app.use('/js/underscore', express.static(__dirname + '/node_modules/underscore'));
+app.use('/js/lodash', express.static(__dirname + '/node_modules/lodash'));
+app.use('/js/phylotree', express.static(__dirname + '/node_modules/phylotree/dist'));
 
 // CSS Serving, from node_modules and locally
 app.use('/css/twbs', express.static(__dirname + '/node_modules/bootstrap/dist/css'));
-app.use('/css/fonts', express.static(__dirname + '/node_modules/bootstrap/dist/fonts'));
 app.use('/css/local', express.static(__dirname + '/_css'))
+app.use('/css/fa', express.static(__dirname + '/node_modules/@fortawesome/fontawesome-free/css'));
+app.use('/css/webfonts', express.static(__dirname + '/node_modules/@fortawesome/fontawesome-free/webfonts'));
+app.use('/css/phylotree', express.static(__dirname + '/node_modules/phylotree/dist'));
 
 // App startup
 const port = process.env.PORT || 3000;

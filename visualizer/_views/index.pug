@@ -3,172 +3,174 @@ extends layout
 block layout-content
   h1 #{refname} Results
   div.row
-    div.col-xs-2
-      div.panel.panel-primary
-        div.panel-heading
-          h2.panel-title Pipeline Results
-        div.panel-body
+    div.col-2
+      div.card.mb-3.mx-3
+        div.card-header
+          h2.card-title Pipeline Results
+        div.card-body
           ul
             li
               a(href="/multiqc") MultiQC Report
             li.dropdown
               a(href="/nf-report/latest") Nextflow Report
-              a.dropdown-toggle(href="#", data-toggle="dropdown")
+              a.dropdown-toggle(href="#", data-bs-toggle="dropdown")
                 span.caret
-              ul.dropdown-menu
+              .dropdown-menu
                 each report in nfreports
-                  li
-                    a(href=`/nf-report/${report.timestamp}`)= report.timestamp
+                  a(href=`/nf-report/${report.timestamp}`).dropdown-item= report.timestamp
             li.dropdown
               a(href="/nf-timeline/latest") Nextflow Timeline
-              a.dropdown-toggle(href="#", data-toggle="dropdown")
+              a.dropdown-toggle(href="#", data-bs-toggle="dropdown")
                 span.caret
-              ul.dropdown-menu
+              .dropdown-menu
                 each timeline in nftimelines
-                  li
-                    a(href=`/nf-timeline/${timeline.timestamp}`)= timeline.timestamp
+                  a(href=`/nf-timeline/${timeline.timestamp}`).dropdown-item= timeline.timestamp
             li.dropdown
               a(href="/nf-trace/latest") Nextflow Trace
-              a.dropdown-toggle(href="#", data-toggle="dropdown")
+              a.dropdown-toggle(href="#", data-bs-toggle="dropdown")
                 span.caret
-              ul.dropdown-menu
+              .dropdown-menu
                 each trace in nftraces
-                  li
-                    a(href=`/nf-trace/${trace.timestamp}`)= trace.timestamp
+                  a(href=`/nf-trace/${trace.timestamp}`).dropdown-item= trace.timestamp
             li.dropdown
               a(href="/nf-dag/latest") Nextflow Graph
-              a.dropdown-toggle(href="#", data-toggle="dropdown")
+              a.dropdown-toggle(href="#", data-bs-toggle="dropdown")
                 span.caret
-              ul.dropdown-menu
+              .dropdown-menu
                 each dag in nfdags
-                  li
-                    a(href=`/nf-dag/${dag.timestamp}`)= dag.timestamp
-      .panel.panel-primary
-        .panel-heading
-          h2.panel-title Reference Genome Results
-        .panel-body
+                  a(href=`/nf-dag/${dag.timestamp}`).dropdown-item= dag.timestamp
+      .card.mb-3.mx-3
+        .card-header
+          h2.card-title Reference Genome Results
+        .card-body
           ul
             li.dropdown
               a(href=`/reference/${refname}.fasta`)
-                span.glyphicon.glyphicon-download-alt
+                i.fas.fa-download
                 | &ensp; Download sequence
-              a.dropdown-toggle(href="#", data-toggle="dropdown")
+              a.dropdown-toggle(href="#", data-bs-toggle="dropdown")
                 span.caret
-              ul.dropdown-menu
-                li
-                  a(href=`/reference/${refname}.fasta.fai`)
-                    span.glyphicon.glyphicon-download-alt
+              .dropdown-menu
+                a(href=`/reference/${refname}.fasta.fai`).dropdown-item
+                    i.fas.fa-download
                     | &ensp; Download index
             li
               a(href=`/reference/${refname}.gff`)
-                span.glyphicon.glyphicon-download-alt
+                i.fas.fa-download
                 | &ensp; Download annotation
-    div.col-xs-10
-      div.panel.panel-primary
-        div.panel-heading
-          h2.panel-title Sample Results
-        div.panel-body
-          table.table.table-striped.table-responsive.table-hover
-            tr
-              th Sample Name
-              th Classification
-              th Alignment
-              th Assemblies
-              if platform == 'ont'
-                th Variant Calls
-              th Haplotypes
-              th Multiple Alignments
-              th Phylogenetics
-            each sample in samples
+    div.col-10
+      div.card.mb-3.mx-3
+        div.card-header
+          h2.card-title Sample Results
+        div.card-body
+          .table-responsive
+            table.table.table-striped.table-hover.table-sm
               tr
-                th=sample.samplename
-                td
-                  if haskraken
-                    ul
-                      li
-                        a(href=`/classification/${sample.samplename}.kreport`)
-                          span.glyphicon.glyphicon-download-alt
-                          | &nbsp; Report
-                      li
-                        a(href=`/classification/${sample.samplename}.kraken`)
-                          span.glyphicon.glyphicon-download-alt
-                          | &nbsp; Assignments
-                  else
-                    span.label.label-warning Read filtering skipped
-                td
-                  a(href=`/alignments/${sample.samplename}`)
-                    span.glyphicon.glyphicon-align-left
-                    | &nbsp; Interactive Viewer
-                  ul
-                    li.dropdown
-                      a(href=`/alignment/${sample.samplename}.bam`)
-                        span.glyphicon.glyphicon-download-alt
-                        | &nbsp; BAM File
-                      a(href="#", data-toggle="dropdown")
-                        span.caret
-                      ul.dropdown-menu
-                        li
-                          a(href=`/alignment/${sample.samplename}.bam.bai`)
-                            span.glyphicon.glyphicon-download-alt
-                            | &nbsp; BAM Index
-                td
-                  if sample.hascontigs
-                    ul
-                      li
-                        a(href=`/assembly/sequence/${sample.samplename}.contigs.fasta`)
-                          span.glyphicon.glyphicon-download-alt
-                          | &nbsp; Sequences
-                      li.dropdown
-                        a(href=`/assembly/alignment/${sample.samplename}.contigs.bam`)
-                          span.glyphicon.glyphicon-download-alt
-                          | &nbsp; Alignment
-                        a(href="#", data-toggle="dropdown")
-                          span.caret
-                        ul.dropdown-menu
-                          li
-                            a(href=`assembly/alignment/${sample.samplename}.contigs.bam.bai`)
-                              span.glyphicon.glyphicon-download-alt
-                              | &nbsp; BAM Index
-                  else
-                    span.label.label-warning
-                      i de novo
-                      |  assembly failed
+                th Sample Name
+                th Classification
+                th Alignment
+                th Assemblies
                 if platform == 'ont'
-                  td
-                    if sample.hasvariants
+                  th Variant Calls
+                th Haplotypes
+                th Multiple Alignments
+                th Phylogenetics
+              each sample in samples
+                tr
+                  th=sample.samplename
+                  if haskraken
+                    td
                       ul
                         li
-                          a(href=`/variants/${sample.samplename}.variants.tsv`)
-                            span.glyphicon.glyphicon-download-alt
-                            | &nbsp; Variant TSV
-                    else
-                      span.label.label-warning No variants table
-                td
-                  ul
-                    li
-                      a(href=`/haplotypes/${sample.samplename}.haplotypes.fasta`)
-                        span.glyphicon.glyphicon-download-alt
-                        | &nbsp; Sequences
-                      if platform == 'ont'
+                          a(href=`/classification/${sample.samplename}.kreport`)
+                            i.fas.fa-download
+                            | &nbsp; Report
                         li
-                          a(href=`/haplotypes/${sample.samplename}.haplotypes.yaml`)
-                            span.glyphicon.glyphicon-download-alt
-                            | &nbsp; Stats &amp; data
-                      else
-                        li
-                          a(href=`/haplotypes/${sample.samplename}.haplotypes.json`)
-                            span.glyphicon.glyphicon-download-alt
-                            | &nbsp; Stats &amp; data
-                td
-                  ul
-                    li
-                      a(href=`/multi_alignment/${sample.samplename}.haplotypes.fas`)
-                        span.glyphicon.glyphicon-download-alt
-                        | &nbsp; FASTA Alignment
-                td
-                  if sample.hastree
-                    a(href=`/phylogenetics/${sample.samplename}`)
-                      span.glyphicon.glyphicon-tree-conifer
-                      | &nbsp; Tree Viewer
+                          a(href=`/classification/${sample.samplename}.kraken`)
+                            i.fas.fa-download
+                            | &nbsp; Assignments
                   else
-                    span.label.label-warning No phylogenetic results
+                    td.table-warning
+                    i.fas.fa-exclamation
+                    | Read filtering skipped
+                  td
+                    a(href=`/alignments/${sample.samplename}`)
+                      i.fas.fa-stream
+                      | &nbsp; Interactive Viewer
+                    ul
+                      li.dropdown
+                        a(href=`/alignment/${sample.samplename}.bam`)
+                          i.fas.fa-download
+                          | &nbsp; BAM File
+                        a(href="#", data-bs-toggle="dropdown").dropdown-toggle
+                          span.caret
+                        .dropdown-menu
+                          a(href=`/alignment/${sample.samplename}.bam.bai`).dropdown-item
+                            i.fas.fa-download
+                            | &nbsp; BAM Index
+                    if sample.hascontigs
+                      td
+                        ul
+                          li
+                            a(href=`/assembly/sequence/${sample.samplename}.contigs.fasta`)
+                              i.fas.fa-download
+                              | &nbsp; Sequences
+                          li.dropdown
+                            a(href=`/assembly/alignment/${sample.samplename}.contigs.bam`)
+                              i.fas.fa-download
+                              | &nbsp; Alignment
+                            a(href="#", data-bs-toggle="dropdown").dropdown-toggle
+                              span.caret
+                            .dropdown-menu
+                              a(href=`assembly/alignment/${sample.samplename}.contigs.bam.bai`).dropdown-item
+                                i.fas.fa-download
+                                | &nbsp; BAM Index
+                    else
+                      td.table-warning
+                        i.fas.fa-exclamation
+                        | &nbsp;
+                        i de novo
+                        |  assembly failed
+                  if platform == 'ont'
+                      if sample.hasvariants
+                        td
+                          ul
+                            li
+                              a(href=`/variants/${sample.samplename}.variants.tsv`)
+                                i.fas.fa-download
+                                | &nbsp; Variant TSV
+                      else
+                        td.table-warning
+                          i.fas.fa-exclamation
+                          | &nbsp; No variants table
+                  td
+                    ul
+                      li
+                        a(href=`/haplotypes/${sample.samplename}.haplotypes.fasta`)
+                          i.fas.fa-download
+                          | &nbsp; Sequences
+                        if platform == 'ont'
+                          li
+                            a(href=`/haplotypes/${sample.samplename}.haplotypes.yaml`)
+                              i.fas.fa-download
+                              | &nbsp; Stats &amp; data
+                        else
+                          li
+                            a(href=`/haplotypes/${sample.samplename}.haplotypes.json`)
+                              i.fas.fa-download
+                              | &nbsp; Stats &amp; data
+                  td
+                    ul
+                      li
+                        a(href=`/multi_alignment/${sample.samplename}.haplotypes.fas`)
+                          i.fas.fa-download
+                          | &nbsp; FASTA Alignment
+                    if sample.hastree
+                      td
+                        a(href=`/phylogenetics/${sample.samplename}`)
+                          i.fas.fa-tree
+                          | &nbsp; Tree Viewer
+                    else
+                      td.table-warning
+                        i.fas.fa-exclamation
+                        | &nbsp; No phylogenetic results

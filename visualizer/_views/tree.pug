@@ -1,22 +1,42 @@
 extends layout
 
+block layout-styles
+  link(rel="stylesheet", href="/css/phylotree/phylotree.css", type="text/css")
+
 block layout-content
   h1 #{samplename}
+  div.group(role="group")
+    button(type="button", onClick="zoomin()").btn
+      i.fas.fa-search-plus
+    button(type="button" onClick="zoomout()").btn
+      i.fas.fa-search-minus
   div#phylotree
 
 block layout-scripts
-  script(src="/js/big-integer/BigInteger.min.js")
+  script(src="/js/d3/d3.js")
   script(src="/js/underscore/underscore-umd-min.js")
-  script(src="/js/spin/spin.min.js")
-  script(src="/js/d3/d3.min.js")
-  script(src="/js/cjson/circular-json.js")
-  script(src="/js/cblob/canvas-toBlob.js")
-  script(src="/js/filesaver/FileSaver.min.js")
-  script(src="https://cdn.jsdelivr.net/gh/DessimozLab/phylo-io@1.9/www/js/treecompare.js")
+  script(src="/js/lodash/lodash.min.js")
+  script(src="/js/phylotree/phylotree.js")
   script.
-    treecomp = TreeCompare().init({
-      treeHeight: 0.8*window.innerHeight
-    });
     newick = "#{sampletree}";
-    tree = treecomp.addTree(newick, undefined, 'single');
-    treecomp.viewTree(tree.name, 'phylotree');
+    tree = new phylotree.phylotree(newick);
+    rendered_tree = tree.render({
+      container: "#phylotree"
+    });
+    $(tree.display.container).empty();
+    $(tree.display.container).html(tree.display.show());
+
+    function zoom(amount) {
+      xzoom = tree.display.spacing_x.bind(tree.display);
+      yzoom = tree.display.spacing_y.bind(tree.display);
+      xzoom(xzoom() + amount).update();
+      yzoom(yzoom() + amount).update();
+    }
+
+    function zoomin(e) {
+      zoom(1);
+    }
+
+    function zoomout(e) {
+      zoom(-1);
+    }
