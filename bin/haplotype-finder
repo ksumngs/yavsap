@@ -11,6 +11,7 @@ using ArgParse
 using Combinatorics
 using CSV
 using DataFrames
+using Dates
 using StructArrays
 using XAM
 
@@ -41,6 +42,12 @@ s = ArgParseSettings()
         arg_type = Int64
         default  = 10
         range_tester = x -> x > 0
+    "--max_variants", "-x"
+        help     = "Maximum number of variants to consider in a single haplotype"
+        required = false
+        arg_type = Int64
+        default  = 6
+        range_tester = x -> (x >= 2) && (x < 24)
 end
 
 # Parse the arguments
@@ -50,6 +57,7 @@ varfile = args["ivarfile"]
 outyaml = args["haplotype_yaml"]
 hap_sig = args["significance"]
 hap_min = args["min_occurrences"]
+max_var = args["max_variants"]
 
 # Bring in the function definitions
 include("jev-function-lib.jl")
@@ -66,31 +74,72 @@ variantdata = DataFrame(CSV.File(varfile))
 # Parse the variants
 variants = Variant.(eachrow(variantdata))
 
-# Find all possible pairings of these variants
-variantpairs = Haplotype.(collect(combinations(variants)))
-filter!(h -> length(h.mutations) > 1, variantpairs)
-
 # Import reads from the BAM file
 reader = open(BAM.Reader, bamfile)
 bamreads = collect(reader)
 close(reader)
 
-# Compute frequency stats
-haplotypecounts = StructArray(findsimulatedoccurrences.(variantpairs, [bamreads]))
+# Hold any variants that have already been shown to exhibit linkage
+linkedvariants = Variant[]
 
-# Remove any haplotypes that occur so infrequently that linkage disequilibrium can't be calculated
-filter!(h -> last(h.counts) > hap_min, haplotypecounts)
+@info string("# of variants:", '\t', length(variants))
 
-# Find all variant positions that exhibit linkage
-linkedvariants = unique(cat(haplotypecountsmutations.(Vector(haplotypecounts))..., dims=1))
+# Find the number of variants allowed to be in a haplotype
+max_var = min(max_var, length(variants))
+
+# Find all possible pairings of these variants
+for i ∈ max_var:-1:2
+    @info string("Now considering haplotypes of ", '\t', i, '\t', "variants.", '\t', Dates.now())
+
+    # Take out any variants that have already been considered
+    filteredvariants = filter(!v -> v ∈ linkedvariants, variants)
+
+    # Find the combinations of variants that can be assembled into haplotypes
+    variantcombos = combinations(filteredvariants, i)
+    @info string('\t', length(variantcombos), '\t', "haplotype(s) possible")
+
+    # Set up a rough progressbar
+    print(string('\t', '\t', "progress: "))
+    numcombos = length(variantcombos)
+    j = 0
+    lastpoint = 0
+    endpoint = 57
+
+    # Compute for each possible combo
+    for variantcombo in variantcombos
+        j += 1
+        percentcomplete = j / numcombos
+        if percentcomplete > lastpoint / endpoint
+            lastpoint += 1
+            print(".")
+        end
+        # Convert the combo into a haplotype
+        expectedhaplotype = Haplotype(variantcombo)
+
+        # Find the simulated counts
+        haplotypecounts = findsimulatedoccurrences(expectedhaplotype, bamreads)
+
+        # Check if this haplotype is significant
+        linkstats = linkage(haplotypecounts.counts)
+        if linkstats[2] <= hap_sig && last(haplotypecounts.counts) >= hap_min
+
+            # Add the variant positions of this haplotype to the list of variants that can
+            # be ignored
+            push!(linkedvariants, cat(haplotypecounts.haplotype.mutations, dims=1)...)
+
+            # Write this haplotype to the output file
+            open(outyaml, "a") do f
+                write(f, string(yamlize(haplotypecounts, reason="linkage")))
+            end #do
+        end #if
+    end #for
+    print("\n")
+end #for
 
 # Create haplotype objects for any non-linked variants
 individualhaplotypes = Haplotype.(filter(!v -> v ∈ linkedvariants, variants))
-linkedhaplotypes = haplotypecounts.haplotype
-filter!(!h -> h ∈ linkedhaplotypes, individualhaplotypes)
 
 # Quick and dirty writeout in yaml
-open(outyaml, "w") do f
-    write(f, string(yamlize.(Vector(haplotypecounts), reason="linkage")...))
+open(outyaml, "a") do f
     write(f, string(yamlize.(Vector(individualhaplotypes), reason="individual")...))
 end #do
