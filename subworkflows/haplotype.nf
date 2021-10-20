@@ -139,7 +139,7 @@ process variant_filter {
 process calling_ont {
     label 'julia'
     label 'error_retry'
-    label 'process_high_memory'
+    label 'process_high'
     publishDir "${params.outdir}/haplotypes", mode: "${params.publish_dir_mode}"
 
     input:
