@@ -363,23 +363,6 @@ function sumsliced(A::AbstractArray, dim::Int, pos::Int=1)
     return sum(A[i_pre, pos, i_post])
 end
 
-function prop_test(x, n)
-    k = length(x)
-    conf = 0.95
-    estimate = x ./ n
-    yates = 0.5
-    Δ = estimate[1] - estimate[2]
-    yates = min(yates, abs(Δ) / sum(1 ./ n))
-    width = quantile(Normal(0,1), (1 + conf) / 2) * sqrt(sum(estimate .* (1 .- estimate) ./ n)) + yates * sum(1 ./ n)
-    cint = [max(Δ-width, -1), min(Δ+width, 1)]
-    p = sum(x) / sum(n)
-    param = k - 1
-    x2 = cat(x, n .- x, dims=2)
-    E = cat(n .* p, n .* (1-p), dims=2)
-    statistic = sum((abs.(x2 .- E) .- yates).^2 ./ E)
-    p_val = 1 .- cdf.(Chisq(param), statistic)
-end #function
-
 function bamcounts2bamdata(bamcounts::AbstractVector{String})
     # Declare an empty bam stats data frame
     countsdata = DataFrame(
