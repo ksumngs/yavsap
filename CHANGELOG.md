@@ -9,7 +9,21 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
-## [0.1.0-alpha]
+## Added
+
+- Made a changelog (365b3f1964f24c686aedc8a8019a14287a99a0f7)
+
+## Changed
+
+- Documentation more fully-fleshed out
+  (e9604d29edacb828154ba50d9f17cd7e0072d2ad)
+- Visualizer made more modular and more complete
+  (c408cc00531cde39c9df8daa8eed8fc95d20a3f5)
+- Visualizer switched to https://github.com/veg/phylotree.js for phylogenetic
+  tree viewing (3d50edc91d4c7479e15552ff251d0a10834dc55e)
+- Debug profile output increased (ee2b3d0552b5487302ae475816a9b38ee4e97d2a)
+
+## [0.1.0-alpha] - 2021-10-12
 
 ## Added
 
@@ -44,7 +58,7 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 - Remove `-k` flag from gzip commands (963125d)
 - Contig files from SPAdes now contain the sample name (ad810bc)
 
-## [0.0.1]
+## [0.0.1] - 2021-09-15
 
 > **Notice:** jev-analysis-pipeline is forked from another project,
 > viral-metagenomics-pipeline. While this was the first release, there are still
