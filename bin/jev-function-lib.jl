@@ -6,7 +6,9 @@
 using BioAlignments
 using BioSequences
 using BioSymbols
+using Combinatorics
 using DataFrames
+using Dates
 using Distributions
 using FASTX
 using SHA
@@ -362,6 +364,67 @@ function sumsliced(A::AbstractArray, dim::Int, pos::Int=1)
     i_post = CartesianIndices(size(A)[dim+1:end])
     return sum(A[i_pre, pos, i_post])
 end
+
+function writesimulatedhaplotypes(variants, bamreads, outyaml, max_var, hap_min, hap_sig)
+    # Hold any variants that have already been shown to exhibit linkage
+    linkedvariants = Variant[]
+
+    @info string("# of variants:", '\t', length(variants))
+
+    # Find the number of variants allowed to be in a haplotype
+    max_var = min(max_var, length(variants))
+
+    # Find all possible pairings of these variants
+    for i ∈ max_var:-1:2
+        @info string("Now considering haplotypes of ", '\t', i, '\t', "variants.", '\t', Dates.now())
+
+        # Take out any variants that have already been considered
+        filteredvariants = filter(!v -> v ∈ linkedvariants, variants)
+
+        # Find the combinations of variants that can be assembled into haplotypes
+        variantcombos = combinations(filteredvariants, i)
+        @info string('\t', length(variantcombos), '\t', "haplotype(s) possible")
+
+        # Set up a rough progressbar
+        print(string('\t', '\t', "progress: "))
+        numcombos = length(variantcombos)
+        j = 0
+        lastpoint = 0
+        endpoint = 57
+
+        # Compute for each possible combo
+        for variantcombo in variantcombos
+            j += 1
+            percentcomplete = j / numcombos
+            if percentcomplete > lastpoint / endpoint
+                lastpoint += 1
+                print(".")
+            end
+            # Convert the combo into a haplotype
+            expectedhaplotype = Haplotype(variantcombo)
+
+            # Find the simulated counts
+            haplotypecounts = findsimulatedoccurrences(expectedhaplotype, bamreads)
+
+            # Check if this haplotype is significant
+            linkstats = linkage(haplotypecounts.counts)
+            if linkstats[2] <= hap_sig && last(haplotypecounts.counts) >= hap_min
+
+                # Add the variant positions of this haplotype to the list of variants that can
+                # be ignored
+                push!(linkedvariants, cat(haplotypecounts.haplotype.mutations, dims=1)...)
+
+                # Write this haplotype to the output file
+                open(outyaml, "a") do f
+                    write(f, string(yamlize(haplotypecounts, reason="linkage")))
+                end #do
+            end #if
+        end #for
+        print("\n")
+    end #for
+
+    return linkedvariants
+end #function
 
 function bamcounts2bamdata(bamcounts::AbstractVector{String})
     # Declare an empty bam stats data frame
