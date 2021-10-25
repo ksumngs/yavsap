@@ -9,23 +9,21 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
-## Added
+### Added
 
-- Made a changelog (365b3f1964f24c686aedc8a8019a14287a99a0f7)
+- Made a changelog (365b3f1)
 
-## Changed
+### Changed
 
-- Documentation more fully-fleshed out
-  (e9604d29edacb828154ba50d9f17cd7e0072d2ad)
-- Visualizer made more modular and more complete
-  (c408cc00531cde39c9df8daa8eed8fc95d20a3f5)
+- Documentation more fully-fleshed out (e9604d2)
+- Visualizer made more modular and more complete (c408cc0)
 - Visualizer switched to https://github.com/veg/phylotree.js for phylogenetic
-  tree viewing (3d50edc91d4c7479e15552ff251d0a10834dc55e)
-- Debug profile output increased (ee2b3d0552b5487302ae475816a9b38ee4e97d2a)
+  tree viewing (3d50edc)
+- Debug profile output increased (ee2b3d0)
 
 ## [0.1.0-alpha] - 2021-10-12
 
-## Added
+### Added
 
 - Standard out logs are now printed via built-in cowsay (0defca3)
 - Sphinx-based documentation (b1398a1)
@@ -35,19 +33,19 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 - CI pipeline testing via simulated reads and GitHub actions
 - _N_-dimensional haplotype finding for ONT reads (e56899a)
 
-## Changed
+### Changed
 
 - Resource allocations have been increased (45e4ea5)
 - The visualization generator code is now a part of the pipeline (d5a788f)
 - Filtering and haplotyping have been moved to subworkflows
 - Visualizer is now written in Pug
 
-## Removed
+### Removed
 
 - The Julia-based ONT haplotype finder no longer outputs a CSV of the linkage
   statistics
 
-## Fixed
+### Fixed
 
 - Canu can now use its full memory allocation (75780a6)
 - Parameter names are now consistent internally (517d0e3)
