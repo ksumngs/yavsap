@@ -9,9 +9,21 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
-## [0.1.0-alpha]
+### Added
 
-## Added
+- Made a changelog (365b3f1)
+
+### Changed
+
+- Documentation more fully-fleshed out (e9604d2)
+- Visualizer made more modular and more complete (c408cc0)
+- Visualizer switched to https://github.com/veg/phylotree.js for phylogenetic
+  tree viewing (3d50edc)
+- Debug profile output increased (ee2b3d0)
+
+## [0.1.0-alpha] - 2021-10-12
+
+### Added
 
 - Standard out logs are now printed via built-in cowsay (0defca3)
 - Sphinx-based documentation (b1398a1)
@@ -21,19 +33,19 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 - CI pipeline testing via simulated reads and GitHub actions
 - _N_-dimensional haplotype finding for ONT reads (e56899a)
 
-## Changed
+### Changed
 
 - Resource allocations have been increased (45e4ea5)
 - The visualization generator code is now a part of the pipeline (d5a788f)
 - Filtering and haplotyping have been moved to subworkflows
 - Visualizer is now written in Pug
 
-## Removed
+### Removed
 
 - The Julia-based ONT haplotype finder no longer outputs a CSV of the linkage
   statistics
 
-## Fixed
+### Fixed
 
 - Canu can now use its full memory allocation (75780a6)
 - Parameter names are now consistent internally (517d0e3)
@@ -44,7 +56,7 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 - Remove `-k` flag from gzip commands (963125d)
 - Contig files from SPAdes now contain the sample name (ad810bc)
 
-## [0.0.1]
+## [0.0.1] - 2021-09-15
 
 > **Notice:** jev-analysis-pipeline is forked from another project,
 > viral-metagenomics-pipeline. While this was the first release, there are still

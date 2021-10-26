@@ -196,10 +196,9 @@ will be used to filter out host reads in the pipeline. This path will be
 automatically mounted into the container environments if a containerized profile
 is used.
 
-Corresponds to the |--db option of Kraken2|_.
-
-.. |--db option of Kraken2| replace:: ``--db`` option of Kraken2
-.. _--db option of Kraken2: https://github.com/DerrickWood/kraken2/wiki/Manual#classification
+Corresponds to the
+`--db <https://github.com/DerrickWood/kraken2/wiki/Manual#classification>`_
+option of Kraken2.
 
 --keep_taxid
 ^^^^^^^^^^^^
@@ -236,65 +235,36 @@ Default  100/300 (Illumina/Nanopore)
 
 Remove reads that are shorter than this length in bases.
 
-Corresponds to the |MINLEN option of Trimmomatic|_ for Illumina reads.
+Corresponds to the `MINLEN <http://www.usadellab.org/cms/?page=trimmomatic>`_
+option of Trimmomatic for Illumina reads.
 
-Corresponds to the |--min_length option of Filtlong|_ for Nanopore reads.
+Corresponds to the `--length <https://github.com/wdecoster/nanofilt/#usage>`_
+option of NanoFilt for Nanopore reads.
 
-.. |MINLEN option of Trimmomatic| replace:: ``MINLEN:`` option of Trimmomatic
-.. _MINLEN option of Trimmomatic: http://www.usadellab.org/cms/?page=trimmomatic
-.. |--min_length option of Filtlong| replace:: ``--min_length`` option of Filtlong
-.. _--min_length option of Filtlong: https://github.com/rrwick/Filtlong#full-usage
-
---trim_winsize
-""""""""""""""
+--trim_headcrop
+"""""""""""""""
 
 ======== ======
 Type     Integer
 ======== ======
 Required No
-Default  50/250 (Illumina/Nanopore)
+Default  0
 ======== ======
 
-The number of bases to average quality accross during sliding window trimming.
+The number of bases to remove from the start of the read.
 
-Corresponds to the |first SLIDINGWINDOW option of Trimmomatic|_ for Illumina reads.
+Corresponds to the `HEADCROP <http://www.usadellab.org/cms/?page=trimmomatic>`_
+option of Trimmomatic for Illumina reads.
 
-Corresponds to the |--window_size option of Filtlong|_ for Nanopore reads.
-
-.. |first SLIDINGWINDOW option of Trimmomatic| replace:: ``first SLIDINGWINDOW`` option of Trimmomatic
-.. _first SLIDINGWINDOW option of Trimmomatic: http://www.usadellab.org/cms/?page=trimmomatic
-.. |--window_size option of Filtlong| replace:: ``--window_size`` option of Filtlong
-.. _--window_size option of Filtlong: https://github.com/rrwick/Filtlong#full-usage
-
---trim_winqual
-""""""""""""""
-
-======== ======
-Type     Integer/Float (Illumina/Nanopore)
-======== ======
-Required No
-Default  15/0.9 (Illumina/Nanopore)
-======== ======
-
-The minimum average quality within the sliding window to keep a read. Note that
-this value is the minmum PHRED score when trimming Illumina reads, but it is a
-percentage score when trimming Nanopore reads.
-
-Corresponds to the |second SLIDINGWINDOW option of Trimmomatic|_ for Illumina reads.
-
-Corresponds to the |--min_mean_q option of Filtlong|_ for Nanopore reads.
-
-.. |second SLIDINGWINDOW option of Trimmomatic| replace:: ``second SLIDINGWINDOW`` option of Trimmomatic
-.. _second SLIDINGWINDOW option of Trimmomatic: http://www.usadellab.org/cms/?page=trimmomatic
-.. |--min_mean_q option of Filtlong| replace:: ``--min_mean_q`` option of Filtlong
-.. _--min_mean_q option of Filtlong: https://github.com/rrwick/Filtlong#full-usage
+Corresponds to the `--headcrop <https://github.com/wdecoster/nanofilt/#usage>`_
+option of NanoFilt for Nanopore reads.
 
 
 Illumina-Specific (Trimmomatic) Options
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
---trim_adapers
-""""""""""""""
+--trim_adapters
+"""""""""""""""
 
 ======== ======
 Type     String
@@ -313,10 +283,11 @@ option **must** be set to one of the following
 * TruSeq3-PE-2.fa
 * TruSeq3-PE.fa
 
-Corresponds to the |first ILLUMINACLIP option of Trimmomatic|_.
+If left blank (i.e. ``--trim_adapters ''``), then adapter trimming is disabled.
 
-.. |first ILLUMINACLIP option of Trimmomatic| replace:: first ``ILLUMINACLIP`` option of Trimmomatic
-.. _first ILLUMINACLIP option of Trimmomatic: http://www.usadellab.org/cms/?page=trimmomatic
+Corresponds to the first
+`ILLUMINACLIP <http://www.usadellab.org/cms/?page=trimmomatic>`_ option of
+Trimmomatic.
 
 --trim_mismatches
 """""""""""""""""
@@ -329,12 +300,11 @@ Default  2
 ======== ======
 
 The maximum mismatch count which will still allow a full adapter match to be
-performed.
+performed. If set to ``0``, then adapter trimming is disabled.
 
-Corresponds to the |second ILLUMINACLIP option of Trimmomatic|_.
-
-.. |second ILLUMINACLIP option of Trimmomatic| replace:: second ``ILLUMINACLIP`` option of Trimmomatic
-.. _second ILLUMINACLIP option of Trimmomatic: http://www.usadellab.org/cms/?page=trimmomatic
+Corresponds to the second
+`ILLUMINACLIP <http://www.usadellab.org/cms/?page=trimmomatic>`_ option of
+Trimmomatic.
 
 --trim_pclip
 """"""""""""
@@ -347,12 +317,12 @@ Default  30
 ======== ======
 
 ``pclip``: palindrome clip. How accurate the match between the two adapter
-ligated reads must be for paired-end palindrome read alignment.
+ligated reads must be for paired-end palindrome read alignment. If set to ``0``,
+then adapter trimming is disabled.
 
-Corresponds to the |third ILLUMINACLIP option of Trimmomatic|_.
-
-.. |third ILLUMINACLIP option of Trimmomatic| replace:: third ``ILLUMINACLIP`` option of Trimmomatic
-.. _third ILLUMINACLIP option of Trimmomatic: http://www.usadellab.org/cms/?page=trimmomatic
+Corresponds to the third
+`ILLUMINACLIP <http://www.usadellab.org/cms/?page=trimmomatic>`_ option of
+Trimmomatic.
 
 --trim_clip
 """""""""""
@@ -364,14 +334,31 @@ Required No
 Default  10
 ======== ======
 
-How accurate the match between any adapter sequence must be against a read.
+How accurate the match between any adapter sequence must be against a read. If
+set to ``0``, then adapter trimming is disabled.
 
-Corresponds to the |final ILLUMINACLIP option of Trimmomatic|_.
+Corresponds to the final
+`ILLUMINACLIP <http://www.usadellab.org/cms/?page=trimmomatic>`_ option of
+Trimmomatic.
 
-.. |final ILLUMINACLIP option of Trimmomatic| replace:: final ``ILLUMINACLIP`` option of Trimmomatic
-.. _final ILLUMINACLIP option of Trimmomatic: http://www.usadellab.org/cms/?page=trimmomatic
+--trim_winsize
+""""""""""""""
 
---trim_leading
+======== ======
+Type     Integer
+======== ======
+Required No
+Default  50
+======== ======
+
+The number of bases to average quality accross during sliding window trimming.
+If set to ``0``, then sliding window trimming is disabled.
+
+Corresponds to the first
+`SLIDINGWINDOW <http://www.usadellab.org/cms/?page=trimmomatic>`_ option of
+Trimmomatic.
+
+--trim_winqual
 """"""""""""""
 
 ======== ======
@@ -381,13 +368,29 @@ Required No
 Default  15
 ======== ======
 
+The minimum average quality within the sliding window to keep a read. If set to
+``0``, then sliding window trimming is disabled.
+
+Corresponds to the second
+`SLIDINGWINDOW <http://www.usadellab.org/cms/?page=trimmomatic>`_ option of
+Trimmomatic.
+
+--trim_leading
+""""""""""""""
+
+======== ======
+Type     Integer
+======== ======
+Required NoFloat
+Default  15
+======== ======
+
 The minimum quality to keep a base in the leading end of a read. If set to
 ``0``, LEADING trimming is disabled.
 
-Corresponds to the |LEADING option of Trimmomatic|_.
-
-.. |LEADING option of Trimmomatic| replace:: ``LEADING:`` option of Trimmomatic
-.. _LEADING option of Trimmomatic: http://www.usadellab.org/cms/?page=trimmomatic
+Corresponds to the
+`LEADING <http://www.usadellab.org/cms/?page=trimmomatic>`_ option of
+Trimmomatic.
 
 --trim_trailing
 """""""""""""""
@@ -402,10 +405,9 @@ Default  15
 The minimum quality to keep a base in the trailing end of a read. If set to
 ``0``, TRAILING trimming is disabled.
 
-Corresponds to the |TRAILING option of Trimmomatic|_.
-
-.. |TRAILING option of Trimmomatic| replace:: ``TRAILING:`` option of Trimmomatic
-.. _TRAILING option of Trimmomatic: http://www.usadellab.org/cms/?page=trimmomatic
+Corresponds to the
+`TRAILING <http://www.usadellab.org/cms/?page=trimmomatic>`_ option of
+Trimmomatic.
 
 --trim_crop
 """""""""""
@@ -420,12 +422,75 @@ Default  0
 The number of bases to keep from the start of the read. If set to ``0``, CROP
 trimming is disabled.
 
-Corresponds to the |CROP option of Trimmomatic|_.
+Corresponds to the
+`CROP <http://www.usadellab.org/cms/?page=trimmomatic>`_ option of Trimmomatic.
 
-.. |CROP option of Trimmomatic| replace:: ``CROP:`` option of Trimmomatic
-.. _CROP option of Trimmomatic: http://www.usadellab.org/cms/?page=trimmomatic
+Nanopore-Specific (NanoFilt) Options
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
---trim_headcrop
+--trim_maxlen
+"""""""""""""
+
+======== ======
+Type     Integer
+======== ======
+Required No
+Default  0
+======== ======
+
+Remove reads that are longer than this number of bases.
+
+Corresponds to the
+`--maxlength <https://github.com/wdecoster/nanofilt/#usage>`_ option of
+NanoFilt.
+
+--trim_meanqual
+"""""""""""""""
+
+======== ======
+Type     Integer
+======== ======
+Required No
+Default  7
+======== ======
+
+Remove reads where the average basecall quality is lower than this.
+
+Corresponds to the
+`--quality <https://github.com/wdecoster/nanofilt/#usage>`_ option of NanoFilt.
+
+--trim_mingc
+"""""""""""""""
+
+======== ======
+Type     Float
+======== ======
+Required No
+Default  0
+======== ======
+
+Remove reads that don't have at least this fraction of GC content.
+
+Corresponds to the
+`--minGC <https://github.com/wdecoster/nanofilt/#usage>`_ option of NanoFilt.
+
+--trim_maxgc
+"""""""""""""""
+
+======== ======
+Type     Float
+======== ======
+Required No
+Default  0
+======== ======
+
+Remove reads that have more than this fraction of GC content. If set to ``0``,
+then there is no upper limit of GC content.
+
+Corresponds to the
+`--maxGC <https://github.com/wdecoster/nanofilt/#usage>`_ option of NanoFilt.
+
+--trim_tailcrop
 """""""""""""""
 
 ======== ======
@@ -435,53 +500,10 @@ Required No
 Default  0
 ======== ======
 
-The number of bases to remove from the start of the read. If set to ``0``,
-HEADCROP trimming is disabled.
+Remove this many bases from the end of each read.
 
-Corresponds to the |HEADCROP option of Trimmomatic|_.
-
-.. |HEADCROP option of Trimmomatic| replace:: ``HEADCROP:`` option of Trimmomatic
-.. _HEADCROP option of Trimmomatic: http://www.usadellab.org/cms/?page=trimmomatic
-
-Nanopore-Specific (Filtlong) Options
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
---trim_keep_percent
-"""""""""""""""""""
-
-======== ======
-Type     Float
-======== ======
-Required No
-Default  0.9
-======== ======
-
-The number of reads to keep as a percentage of the total reads, discarding the
-lowest-quality reads.
-
-Corresponds to the |--keep_percent option of Filtlong|_.
-
-.. |--keep_percent option of Filtlong| replace:: ``--keep_percent`` option of Filtlong
-.. _--keep_percent option of Filtlong: https://github.com/rrwick/Filtlong#full-usage
-
---trim_target_bases
-"""""""""""""""""""
-
-======== ======
-Type     Integer
-======== ======
-Required No
-Default  500,000,000
-======== ======
-
-The maximum number of bases to keep, discarding the lowest quality reads until
-this threshold is met. Can be effectively disabled by using a very high number
-of bases.
-
-Corresponds to the |--target_bases option of Filtlong|_.
-
-.. |--target_bases option of Filtlong| replace:: ``--target_bases`` option of Filtlong
-.. _--target_bases option of Filtlong: https://github.com/rrwick/Filtlong#full-usage
+Corresponds to the
+`--tailcrop <https://github.com/wdecoster/nanofilt/#usage>`_ option of NanoFilt.
 
 *de novo* Assembly Options
 --------------------------
