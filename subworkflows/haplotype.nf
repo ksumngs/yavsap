@@ -212,7 +212,7 @@ process phylogenetic_tree {
     tuple val(sampleName), file(alignedHaplotypes)
 
     output:
-    tuple val(sampleName), file("${sampleName}.tree")
+    tuple val(sampleName), file("${sampleName}.nwk")
 
     script:
     """
