@@ -1,3 +1,10 @@
 fn_clean_exts:
   - "_R1"
   - "kreport"
+  - ".fastq.gz"
+top_modules:
+  - "fastqc"
+module_order:
+  - fastqc
+  - trimmomatic
+  - kraken

@@ -104,6 +104,17 @@ workflow {
     }
 
     RawReads | sample_rename | trimming
+
+    if (params.ont) {
+        InterleavedReads = sample_rename.out
+    }
+    else {
+        interleave(sample_rename.out)
+        InterleavedReads = interleave.out
+    }
+
+    fastqc(InterleavedReads)
+
     read_filtering(trimming.out.trimmedreads)
     KrakenReports = read_filtering.out.KrakenReports
     FilteredReads = read_filtering.out.FilteredReads
@@ -135,6 +146,7 @@ workflow {
 
     multiqc(KrakenReports
         .concat(trimming.out.report)
+        .concat(fastqc.out)
         .collect())
 
     // Put a pretty bow on everything
@@ -165,6 +177,38 @@ process sample_rename {
         mv ${readsFiles[1]} out/${sampleName}_R2.fastq.gz
         """
     }
+}
+
+process interleave {
+    label 'seqtk'
+    label 'process_low'
+
+    input:
+    tuple val(sampleName), path(readsFiles)
+
+    output:
+    tuple val(sampleName), path("${sampleName}.fastq.gz")
+
+    script:
+    """
+    seqtk mergepe ${readsFiles} | gzip -9 > ${sampleName}.fastq.gz
+    """
+}
+
+process fastqc {
+    label 'fastqc'
+    label 'process_medium'
+
+    input:
+    tuple val(sampleName), file(readsFiles)
+
+    output:
+    path("${sampleName}_fastqc.zip")
+
+    script:
+    """
+    fastqc -t ${task.cpus} ${readsFiles}
+    """
 }
 
 process reads_realign_to_reference {
