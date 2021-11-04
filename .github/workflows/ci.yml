@@ -105,4 +105,4 @@ jobs:
         env:
           NCBI_API_KEY: ${{ secrets.NCBI_API_KEY }}
         run: |
-          nextflow run ${GITHUB_WORKSPACE} -profile test${RUN_READTYPE},${RUN_CONTAINER} $RUN_SKIPPING --kraken2_db /kraken2-db
+          nextflow run ${GITHUB_WORKSPACE} -profile test,${RUN_READTYPE},${RUN_CONTAINER} $RUN_SKIPPING --kraken2_db /kraken2-db

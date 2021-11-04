@@ -24,7 +24,7 @@ workflow trimming {
 
 
 process read_trimming_ont {
-    label 'filtlong'
+    label 'nanofilt'
     label 'process_low'
 
     input:
@@ -32,16 +32,29 @@ process read_trimming_ont {
 
     output:
     tuple val(sampleName), path("${sampleName}_trimmed.fastq.gz"), emit: trimmedreads
-    path("${sampleName}.filtlong.log"), emit: report
+    path("${sampleName}.nanofilt.log"), optional: true, emit: report
 
     script:
+    minlenflag = ( params.trim_minlen > 0 )   ? "--length ${params.trim_minlen}"     : ''
+    maxlenflag = ( params.trim_maxlen > 0 )   ? "--maxlength ${params.trim_maxlen}"  : ''
+    qualflag   = ( params.trim_meanqual > 0 ) ? "--quality ${params.trim_meanqual}"  : ''
+    mingcflag  = ( params.trim_mingc > 0 )    ? "--minGC ${params.trim_mingc}"       : ''
+    maxgcflag  = ( params.trim_maxgc > 0 )    ? "--maxGC ${params.trim_maxgc}"       : ''
+    headflag   = ( params.trim_headcrop > 0 ) ? "--headcrop ${params.trim_headcrop}" : ''
+    tailflag   = ( params.trim_tailcrop > 0 ) ? "--tailcrop ${params.trim_tailcrop}" : ''
+    optionflags = [
+        minlenflag,
+        maxlenflag,
+        qualflag,
+        mingcflag,
+        maxgcflag,
+        headflag,
+        tailflag
+    ].join(' ')
     """
-    filtlong --min_length ${params.trim_minlen} \
-        --keep_percent ${params.trim_keep_percent} \
-        --target_bases ${params.trim_target_bases} \
-        --window_size  ${params.trim_winsize} \
-        --min_mean_q   ${params.trim_winqual} \
-        ${readsFiles} 2> ${sampleName}.filtlong.log | gzip > ${sampleName}_trimmed.fastq.gz
+    gunzip < ${readsFiles} | \
+        NanoFilt --logfile ${sampleName}.nanofilt.log ${optionflags} | \
+        gzip -9 > ${sampleName}_trimmed.fastq.gz
     """
 }
 
@@ -59,14 +72,31 @@ process read_trimming_pe {
 
     script:
     // Put together the trimmomatic parameters
-    ILLUMINACLIP = "ILLUMINACLIP:/Trimmomatic-0.39/adapters/${params.trim_adapters}:${params.trim_mismatches}:${params.trim_pclip}:${params.trim_clip}"
-    SLIDINGWINDOW = ( params.trim_winsize > 0 && params.trim_winqual > 0 ) ? "SLIDINGWINDOW:${params.trim_winsize}:${params.trim_winqual}" : ""
-    LEADING = ( params.trim_leading > 0 ) ? "LEADING:${params.trim_leading}" : ""
-    TRAILING = ( params.trim_trailing > 0 ) ? "TRAILING:${params.trim_trailing}" : ""
-    CROP = ( params.trim_crop > 0 ) ? "CROP:${params.trim_crop}" : ""
-    HEADCROP = ( params.trim_headcrop > 0 ) ? "HEADCROP:${params.trim_headcrop}" : ""
-    MINLEN = ( params.trim_minlen > 0 ) ? "MINLEN:${params.trim_minlen}" : ""
-    trimsteps = ILLUMINACLIP + ' ' + SLIDINGWINDOW + ' ' + LEADING + ' ' + TRAILING + ' ' + CROP + ' ' + HEADCROP + ' ' + MINLEN
+    clipflag =
+        ( !(params.trim_adapters.getClass() == Boolean || params.trim_adapters.allWhitespace) &&
+        params.trim_mismatches > 0 && params.trim_pclip > 0 && params.trim_clip) ?
+        "ILLUMINACLIP:/Trimmomatic-0.39/adapters/${params.trim_adapters}:${params.trim_mismatches}:${params.trim_pclip}:${params.trim_clip}" : ''
+    winflag =
+        ( params.trim_winsize > 0 && params.trim_winqual > 0 ) ? "SLIDINGWINDOW:${params.trim_winsize}:${params.trim_winqual}" : ""
+    leadflag =
+        ( params.trim_leading > 0 ) ? "LEADING:${params.trim_leading}" : ""
+    trailflag =
+        ( params.trim_trailing > 0 ) ? "TRAILING:${params.trim_trailing}" : ""
+    cropflag =
+        ( params.trim_tailcrop > 0 ) ? "CROP:${params.trim_crop}" : ""
+    headflag =
+        ( params.trim_headcrop > 0 ) ? "HEADCROP:${params.trim_headcrop}" : ""
+    minlenflag =
+        ( params.trim_minlen > 0 ) ? "MINLEN:${params.trim_minlen}" : ""
+    trimsteps = [
+        clipflag,
+        winflag,
+        leadflag,
+        trailflag,
+        cropflag,
+        headflag,
+        minlenflag
+    ].join(' ')
     """
     trimmomatic PE -threads ${task.cpus} \
         ${readsFiles} \

@@ -51,7 +51,7 @@ hap_sig = args["significance"]
 hap_min = args["min_occurrences"]
 
 # Bring in the function definitions
-include("jev-function-lib.jl")
+include("yavsap-function-lib.jl")
 
 # Check if there are any variants
 if length(readlines(varfile)) < 2

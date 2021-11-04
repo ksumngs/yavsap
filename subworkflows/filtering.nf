@@ -30,6 +30,7 @@ workflow read_filtering {
 process classification {
     label 'kraken'
     label 'process_high_memory'
+    publishDir "${params.outdir}/classification", mode: "${params.publish_dir_mode}"
 
     input:
     tuple val(sampleName), file(readsFile)

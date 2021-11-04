@@ -7,15 +7,16 @@ if (params.help) {
     cowsay(
     """\
 ====================================================================================
-                                JEV Analysis Pipeline
+                                     YAVSAP
+                (Yet Another Viral Subspecies Analysis Pipeline)
 ====================================================================================
 
-    jev-analysis-pipeline - Intra-sample viral population analysis targeted at
-    Japanese Encephalitis
+    YAVSAP (Yet Another Viral Subspecies Analysis Pipeline) - Intra-sample viral
+    population analysis
 
     Usage:
 
-        nextflow run millironx/jev-analysis-pipeline
+        nextflow run ksumngs/yavsap
 
     Options:
 
@@ -44,7 +45,7 @@ if (params.help) {
         --help              Print this message and exit
 
     For more information on usage and parameters, visit the website at
-        https://github.com/MillironX/jev-analysis-pipeline
+        https://ksumngs.github.io/yavsap
 """
 )
 exit 0
@@ -65,7 +66,8 @@ include { simulated_reads }       from './test/test.nf'
 cowsay(
 """\
 ====================================================================================
-                                JEV Analysis Pipeline
+                                     YAVSAP
+                (Yet Another Viral Subspecies Analysis Pipeline)
 ====================================================================================
 
 Input folder:           ${params.input}
@@ -104,6 +106,17 @@ workflow {
     }
 
     RawReads | sample_rename | trimming
+
+    if (params.ont) {
+        InterleavedReads = sample_rename.out
+    }
+    else {
+        interleave(sample_rename.out)
+        InterleavedReads = interleave.out
+    }
+
+    fastqc(InterleavedReads)
+
     read_filtering(trimming.out.trimmedreads)
     KrakenReports = read_filtering.out.KrakenReports
     FilteredReads = read_filtering.out.FilteredReads
@@ -135,6 +148,7 @@ workflow {
 
     multiqc(KrakenReports
         .concat(trimming.out.report)
+        .concat(fastqc.out)
         .collect())
 
     // Put a pretty bow on everything
@@ -167,9 +181,41 @@ process sample_rename {
     }
 }
 
+process interleave {
+    label 'seqtk'
+    label 'process_low'
+
+    input:
+    tuple val(sampleName), path(readsFiles)
+
+    output:
+    tuple val(sampleName), path("${sampleName}.fastq.gz")
+
+    script:
+    """
+    seqtk mergepe ${readsFiles} | gzip -9 > ${sampleName}.fastq.gz
+    """
+}
+
+process fastqc {
+    label 'fastqc'
+    label 'process_medium'
+
+    input:
+    tuple val(sampleName), file(readsFiles)
+
+    output:
+    path("${sampleName}_fastqc.zip")
+
+    script:
+    """
+    fastqc -t ${task.cpus} ${readsFiles}
+    """
+}
+
 process reads_realign_to_reference {
     label 'minimap'
-    publishDir "${params.outdir}/data", mode: "${params.publish_dir_mode}"
+    publishDir "${params.outdir}/alignment", mode: "${params.publish_dir_mode}"
 
     input:
     tuple val(sampleName), file(readsFile)
@@ -213,14 +259,15 @@ process presentation_generator {
 
     output:
 
+    file '_css/*.css'
+    file '_views/*.pug'
     file 'index.js'
     file 'package.json'
+    file 'package-lock.json'
     file 'favicon.ico'
-    file 'views/*.pug'
-    file 'css/*.css'
 
     script:
     """
-    cp -r ${workflow.projectDir}/visualizer/{index.js,package.json,favicon.ico,views,css} .
+    cp -r ${workflow.projectDir}/visualizer/{_css,_views,index.js,package.json,package-lock.json,favicon.ico} .
     """
 }

@@ -13,7 +13,7 @@ hfile = ARGS[1]
 rfile = ARGS[2]
 ffile = ARGS[3]
 
-include("jev-function-lib.jl")
+include("yavsap-function-lib.jl")
 
 haployaml = read(hfile, String)
 haplostrings = split(haployaml, "---\n")[2:end]
