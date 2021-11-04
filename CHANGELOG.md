@@ -11,6 +11,7 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 ### Changed
 
 - Dynamically calculate Kraken2's memory requirements
+- Processes using gzip sped up by removing `-9` flag
 
 ## [0.2.0-alpha] - 2021-11-04
 

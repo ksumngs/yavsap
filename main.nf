@@ -193,7 +193,7 @@ process interleave {
 
     script:
     """
-    seqtk mergepe ${readsFiles} | gzip -9 > ${sampleName}.fastq.gz
+    seqtk mergepe ${readsFiles} | gzip > ${sampleName}.fastq.gz
     """
 }
 

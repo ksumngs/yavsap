@@ -54,7 +54,7 @@ process read_trimming_ont {
     """
     gunzip < ${readsFiles} | \
         NanoFilt --logfile ${sampleName}.nanofilt.log ${optionflags} | \
-        gzip -9 > ${sampleName}_trimmed.fastq.gz
+        gzip > ${sampleName}_trimmed.fastq.gz
     """
 }
 
