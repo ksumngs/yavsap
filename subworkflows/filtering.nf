@@ -1,6 +1,12 @@
 #!/usr/bin/env nextflow
 nextflow.enable.dsl = 2
 
+import static java.lang.Math.sqrt
+import static java.lang.Math.round
+
+KrakenDbSize = file(params.kraken2_db).toFile().directorySize()
+KrakenAllocationSize = round(sqrt(KrakenDbSize) + KrakenDbSize)
+
 workflow read_filtering {
     take:
     InputReads
@@ -30,6 +36,7 @@ workflow read_filtering {
 process classification {
     label 'kraken'
     label 'process_high_memory'
+    memory "${KrakenAllocationSize} B"
     publishDir "${params.outdir}/classification", mode: "${params.publish_dir_mode}"
 
     input:
