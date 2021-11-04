@@ -1,7 +1,6 @@
 # Changelog
 
-All notable changes to the jev-analysis-pipeline will be documented in this
-file.
+All notable changes to YAVSAP will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic
@@ -9,9 +8,13 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.2.0-alpha] - 2021-11-04
+
 ### Added
 
 - Made a changelog (365b3f1)
+- Made a markdownlint config file (817f7e2)
+- FastQC analysis added to pipeline and visualizer (6fb498f)
 
 ### Changed
 
@@ -20,6 +23,12 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 - Visualizer switched to https://github.com/veg/phylotree.js for phylogenetic
   tree viewing (3d50edc)
 - Debug profile output increased (ee2b3d0)
+- Config files made more modular (f82aedc)
+- Pipeline rename to YAVSAP
+
+### Fixed
+
+- Trimming ONT reads no longer removes variant features (152eafe)
 
 ## [0.1.0-alpha] - 2021-10-12
 
@@ -59,9 +68,10 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 ## [0.0.1] - 2021-09-15
 
 > **Notice:** jev-analysis-pipeline is forked from another project,
-> viral-metagenomics-pipeline. While this was the first release, there are still
-> 'changes' and 'removals' from that pipeline that are addressed from the point
-> of the fork, and not from the complete beginning of the project.
+> viral-metagenomics-pipeline (now v-met). While this was the first release,
+> there are still 'changes' and 'removals' from that pipeline that are addressed
+> from the point of the fork, and not from the complete beginning of the
+> project.
 
 ### Added
 
@@ -85,7 +95,7 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 - Krona graphs of Kraken2 output
 - BLAST of assemblies and unclassified reads
 
-[Unreleased]:
-https://github.com/MillironX/jev-analysis-pipeline/compare/v0.1.0-alpha...HEAD
-[0.1.0-alpha]: https://github.com/MillironX/jev-analysis-pipeline/compare/v0.0.1...v0.1.0-alpha
-[0.0.1]: https://github.com/MillironX/jev-analysis-pipeline/releases/tag/v0.0.1
+[Unreleased]: https://github.com/ksumngs/yavsap/compare/v0.2.0-alpha...HEAD
+[0.2.0-alpha]: https://github.com/ksumngs/yavsap/compare/v0.1.0-alpha...v0.2.0-alpha
+[0.1.0-alpha]: https://github.com/ksumngs/yavsap/compare/v0.0.1...v0.1.0-alpha
+[0.0.1]: https://github.com/ksumngs/yavsap/releases/tag/v0.0.1
