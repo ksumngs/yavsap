@@ -1,9 +1,9 @@
 {
-  "name": "jev-analysis-pipeline",
-  "version": "0.1.0-alpha",
+  "name": "YAVSAP",
+  "version": "0.2.0-alpha",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/MillironX/jev-analysis-pipeline.git"
+    "url": "git+https://github.com/ksumngs/yavsap.git"
   },
   "description": "Lists all contigs and alignments for a metagenomics pipeline",
   "main": "index.js",

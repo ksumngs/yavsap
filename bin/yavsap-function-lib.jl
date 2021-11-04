@@ -1,6 +1,6 @@
-# JEV Functions Library
+# YAVSAP Functions Library
 # Usage:
-#    include("jev-function-lib.jl")
+#    include("yavsap-function-lib.jl")
 
 # Package imports
 using BioAlignments

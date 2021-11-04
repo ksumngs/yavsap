@@ -7,15 +7,16 @@ if (params.help) {
     cowsay(
     """\
 ====================================================================================
-                                JEV Analysis Pipeline
+                                     YAVSAP
+                (Yet Another Viral Subspecies Analysis Pipeline)
 ====================================================================================
 
-    jev-analysis-pipeline - Intra-sample viral population analysis targeted at
-    Japanese Encephalitis
+    YAVSAP (Yet Another Viral Subspecies Analysis Pipeline) - Intra-sample viral
+    population analysis
 
     Usage:
 
-        nextflow run millironx/jev-analysis-pipeline
+        nextflow run ksumngs/yavsap
 
     Options:
 
@@ -44,7 +45,7 @@ if (params.help) {
         --help              Print this message and exit
 
     For more information on usage and parameters, visit the website at
-        https://github.com/MillironX/jev-analysis-pipeline
+        https://ksumngs.github.io/yavsap
 """
 )
 exit 0
@@ -65,7 +66,8 @@ include { simulated_reads }       from './test/test.nf'
 cowsay(
 """\
 ====================================================================================
-                                JEV Analysis Pipeline
+                                     YAVSAP
+                (Yet Another Viral Subspecies Analysis Pipeline)
 ====================================================================================
 
 Input folder:           ${params.input}

@@ -3,7 +3,7 @@ Usage
 
 Basic jist::
 
-    nextflow run MillironX/jev-analysis-pipeline -profile <docker,podman,singularity> --platform <pe,ont> --kraken2_db <kraken2_db>
+    nextflow run ksumngs/yavsap -profile <docker,podman,singularity> --platform <pe,ont> --kraken2_db <kraken2_db>
 
 Input Preparation
 -----------------
@@ -131,10 +131,10 @@ Profile Selection
 -----------------
 
 Profiles allow for unique combinations of settings within a Nextflow pipeline.
-For the purposes of jev-analysis-pipeline, they reconfigure the pipeline to run
-on a particular container engine. Whichever engine you choose must be installed
-and available (e.g. ``module load``) on each node that pipeline processes are
-running on. The available options are
+For the purposes of YAVSAP, they reconfigure the pipeline to run on a particular
+container engine. Whichever engine you choose must be installed and available
+(e.g. ``module load``) on each node that pipeline processes are running on. The
+available options are
 
 (none)
   Don't use a container engine. Requires that every tool and the right version
@@ -196,10 +196,10 @@ them on the command-line is best.
 Setting up for HPC Job Schedulers
 ---------------------------------
 
-jev-analysis-pipeline comes preconfigured for local use only. Yes, that's about
-as ridiculous as it sounds. What's even more ridiculous is trying to make a
-configuration that can easily be adapted to multiple HPCs and job-scheduler
-frameworks. There is a compromise, however.
+YAVSAP comes preconfigured for local use only. Yes, that's about as ridiculous
+as it sounds. What's even more ridiculous is trying to make a configuration that
+can easily be adapted to multiple HPCs and job-scheduler frameworks. There is a
+compromise, however.
 
 Process Labels
 ^^^^^^^^^^^^^^

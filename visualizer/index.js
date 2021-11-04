@@ -242,5 +242,5 @@ app.use('/css/phylotree', express.static(__dirname + '/node_modules/phylotree/di
 // App startup
 const port = process.env.PORT || 3000;
 app.listen(port, function() {
-    console.log('jev-analysis-pipeline results visualizer running, available at http://localhost:' + port)
+    console.log('YAVSAP results visualizer running, available at http://localhost:' + port)
 })

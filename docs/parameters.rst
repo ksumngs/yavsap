@@ -523,7 +523,7 @@ Default  rnaviral
 
 If provided, this parameter is turned into a flag and passed as the 'mode' to
 the SPAdes assembly, e.g.
-``nextflow run jev-analysis-pipeline --spades_mode 'metaviral'`` will run SPAdes
+``nextflow run ksumngs/yavsap --spades_mode 'metaviral'`` will run SPAdes
 as ``spades.py --metaviral``. The available modes are
 
 * meta

@@ -33,25 +33,25 @@ The recommended way to run it is to pull and run at the same time
 
 .. code-block::
 
-    nextflow run MillironX/jev-analysis-pipeline -latest ...
+    nextflow run ksumngs/yavsap -latest ...
 
 If you need a specific version, use Nextflow's ``-v`` option with the version
 tag.
 
 .. code-block::
 
-    nextflow run MillironX/jev-analysis-pipeline -v v0.1.0-alpha ...
+    nextflow run ksumngs/yavsap -v v0.1.0-alpha ...
 
 If you *really* want to download the pipeline before use, you can run
 
 .. code-block::
 
-    nextflow pull MillironX/jev-analysis-pipeline
+    nextflow pull ksumngs/yavsap
 
 If you want to tweak the code and run it locally, you can clone the repo and run
 from the code itself.
 
 .. code-block::
 
-    git clone https://github.com/MillironX/jev-analysis-pipeline.git
-    ./jev-analysis-pipeline/main.nf ...
+    git clone https://github.com/ksumngs/yavsap.git
+    ./yavsap/main.nf ...
