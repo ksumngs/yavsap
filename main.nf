@@ -108,14 +108,13 @@ workflow {
     RawReads | sample_rename | trimming
 
     if (params.ont) {
-        InterleavedReads = sample_rename.out
+        sample_rename.out | nanostat
+        QcReports = nanostat.out
     }
     else {
-        interleave(sample_rename.out)
-        InterleavedReads = interleave.out
+        sample_rename.out | interleave | fastqc
+        QcReports = fastqc.out
     }
-
-    fastqc(InterleavedReads)
 
     read_filtering(trimming.out.trimmedreads)
     KrakenReports = read_filtering.out.KrakenReports
@@ -148,7 +147,7 @@ workflow {
 
     multiqc(KrakenReports
         .concat(trimming.out.report)
-        .concat(fastqc.out)
+        .concat(QcReports)
         .collect())
 
     // Put a pretty bow on everything
@@ -210,6 +209,22 @@ process fastqc {
     script:
     """
     fastqc -t ${task.cpus} ${readsFiles}
+    """
+}
+
+process nanostat {
+    label 'nanostat'
+    label 'process_medium'
+
+    input:
+    tuple val(sampleName), file(readsFile)
+
+    output:
+    path("${sampleName}_nanostat.log")
+
+    script:
+    """
+    NanoStat -t ${task.cpus} --fastq ${readsFile} > ${sampleName}_nanostat.log
     """
 }
 
