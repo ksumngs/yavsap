@@ -1,0 +1,3 @@
+[submodule "modules/HapLink.jl"]
+	path = modules/HapLink.jl
+	url = https://github.com/ksumngs/HapLink.jl
