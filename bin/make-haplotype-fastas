@@ -8,12 +8,33 @@ exec julia --project="$(realpath "$(dirname "${BASH_SOURCE[0]}")")" "${BASH_SOUR
 
 using FASTX
 using YAML
+using HapLink
+using BioSequences
+using BioSymbols
 
 hfile = ARGS[1]
 rfile = ARGS[2]
 ffile = ARGS[3]
 
-include("yavsap-function-lib.jl")
+function HapLink.Variant(vardict::Dict{String,Any})
+    region  = vardict["chromosome"]
+    pos     = vardict["position"]
+    id      = vardict["identifier"]
+    refbase = vardict["referencebase"]
+    altbase = vardict["alternatebase"]
+    qual    = vardict["quality"]
+    filter  = Symbol(vardict["filter"])
+
+    refseq = LongDNASeq(refbase)
+    altseq = LongDNASeq(altbase)
+
+    return HapLink.Variant(region, pos, id, refseq, altseq, qual, filter, Dict())
+end #function
+
+function HapLink.Haplotype(hapdict::Dict{String,Any})
+    v = HapLink.Variant.(hapdict["mutations"])
+    return HapLink.Haplotype(v)
+end
 
 haployaml = read(hfile, String)
 haplostrings = split(haployaml, "---\n")[2:end]
@@ -23,7 +44,7 @@ rreader = open(FASTA.Reader, rfile)
 refrec = collect(rreader)[1]
 close(rreader)
 
-newrecords = unique(mutaterecord.([refrec], haplotypes))
+newrecords = unique(mutate.([refrec], haplotypes))
 
 fwriter = open(FASTA.Writer, ffile)
 for r in newrecords
