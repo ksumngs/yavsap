@@ -1,6 +1,8 @@
 #!/bin/bash
 #=
-julia --project="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" -e 'using Pkg; Pkg.instantiate()'
+echo "Installing dependencies"
+julia --project="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" -g -E 'using Pkg; Pkg.instantiate()'
+echo "Running haplink"
 exec julia --project="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" "${BASH_SOURCE[0]}" "$@"
 =#
 
