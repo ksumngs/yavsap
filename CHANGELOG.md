@@ -12,6 +12,8 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 - Dynamically calculate Kraken2's memory requirements
 - Processes using gzip sped up by removing `-9` flag
+- ONT Haplotyping is now performed by the external library
+  https://github.com/ksumngs/HapLink.jl
 
 ## [0.2.0-alpha] - 2021-11-04
 

@@ -1,18 +1,24 @@
 ---
 reason: linkage
-mutations: 
+mutations:
   - chromosome: MH258848.1
     position: 1115
     referencebase: T
     alternatebase: C
     totaldepth: 742
     alternatedepth: 103
+    identifier: .
+    quality: 30
+    filter: PASS
   - chromosome: MH258848.1
     position: 2525
     referencebase: A
     alternatebase: G
     totaldepth: 927
     alternatedepth: 54
+    identifier: .
+    quality: 30
+    filter: PASS
 occurrences:
   ref_ref: 261
   alt_ref: 15
@@ -22,19 +28,25 @@ ldcofficient: 0.03981755424063116
 p_val: 1.851852005074761e-13
 ---
 reason: linkage
-mutations: 
+mutations:
   - chromosome: MH258848.1
     position: 1115
     referencebase: T
     alternatebase: C
     totaldepth: 742
     alternatedepth: 103
+    identifier: .
+    quality: 30
+    filter: PASS
   - chromosome: MH258848.1
     position: 2646
     referencebase: G
     alternatebase: A
     totaldepth: 886
     alternatedepth: 71
+    identifier: .
+    quality: 30
+    filter: PASS
 occurrences:
   ref_ref: 253
   alt_ref: 22
@@ -44,19 +56,25 @@ ldcofficient: 0.022652985476706466
 p_val: 4.085298654921132e-9
 ---
 reason: linkage
-mutations: 
+mutations:
   - chromosome: MH258848.1
     position: 1115
     referencebase: T
     alternatebase: C
     totaldepth: 742
     alternatedepth: 103
+    identifier: .
+    quality: 30
+    filter: PASS
   - chromosome: MH258848.1
     position: 3110
     referencebase: A
     alternatebase: G
     totaldepth: 1141
     alternatedepth: 200
+    identifier: .
+    quality: 30
+    filter: PASS
 occurrences:
   ref_ref: 125
   alt_ref: 18
@@ -66,19 +84,25 @@ ldcofficient: -0.011728395061728292
 p_val: 0.21534056108059263
 ---
 reason: linkage
-mutations: 
+mutations:
   - chromosome: MH258848.1
     position: 2243
     referencebase: C
     alternatebase: T
     totaldepth: 1029
     alternatedepth: 122
+    identifier: .
+    quality: 30
+    filter: PASS
   - chromosome: MH258848.1
     position: 2525
     referencebase: A
     alternatebase: G
     totaldepth: 927
     alternatedepth: 54
+    identifier: .
+    quality: 30
+    filter: PASS
 occurrences:
   ref_ref: 777
   alt_ref: 139
@@ -88,19 +112,25 @@ ldcofficient: -0.00518005087633322
 p_val: 0.13888474172071363
 ---
 reason: linkage
-mutations: 
+mutations:
   - chromosome: MH258848.1
     position: 2243
     referencebase: C
     alternatebase: T
     totaldepth: 1029
     alternatedepth: 122
+    identifier: .
+    quality: 30
+    filter: PASS
   - chromosome: MH258848.1
     position: 2646
     referencebase: G
     alternatebase: A
     totaldepth: 886
     alternatedepth: 71
+    identifier: .
+    quality: 30
+    filter: PASS
 occurrences:
   ref_ref: 781
   alt_ref: 139
@@ -110,19 +140,25 @@ ldcofficient: -0.003894461878742428
 p_val: 0.13058802406305947
 ---
 reason: linkage
-mutations: 
+mutations:
   - chromosome: MH258848.1
     position: 2243
     referencebase: C
     alternatebase: T
     totaldepth: 1029
     alternatedepth: 122
+    identifier: .
+    quality: 30
+    filter: PASS
   - chromosome: MH258848.1
     position: 3110
     referencebase: A
     alternatebase: G
     totaldepth: 1141
     alternatedepth: 200
+    identifier: .
+    quality: 30
+    filter: PASS
 occurrences:
   ref_ref: 404
   alt_ref: 90
@@ -132,19 +168,25 @@ ldcofficient: -0.027795895591791187
 p_val: 1.8744108234436396e-6
 ---
 reason: linkage
-mutations: 
+mutations:
   - chromosome: MH258848.1
     position: 2243
     referencebase: C
     alternatebase: T
     totaldepth: 1029
     alternatedepth: 122
+    identifier: .
+    quality: 30
+    filter: PASS
   - chromosome: MH258848.1
     position: 4931
     referencebase: C
     alternatebase: T
     totaldepth: 1530
     alternatedepth: 191
+    identifier: .
+    quality: 30
+    filter: PASS
 occurrences:
   ref_ref: 72
   alt_ref: 3
@@ -154,19 +196,25 @@ ldcofficient: 0.07889273356401383
 p_val: 1.7467582935637438e-11
 ---
 reason: linkage
-mutations: 
+mutations:
   - chromosome: MH258848.1
     position: 2525
     referencebase: A
     alternatebase: G
     totaldepth: 927
     alternatedepth: 54
+    identifier: .
+    quality: 30
+    filter: PASS
   - chromosome: MH258848.1
     position: 2646
     referencebase: G
     alternatebase: A
     totaldepth: 886
     alternatedepth: 71
+    identifier: .
+    quality: 30
+    filter: PASS
 occurrences:
   ref_ref: 1117
   alt_ref: 158
@@ -176,19 +224,25 @@ ldcofficient: -0.0007889546351085297
 p_val: 0.7206993180367272
 ---
 reason: linkage
-mutations: 
+mutations:
   - chromosome: MH258848.1
     position: 2525
     referencebase: A
     alternatebase: G
     totaldepth: 927
     alternatedepth: 54
+    identifier: .
+    quality: 30
+    filter: PASS
   - chromosome: MH258848.1
     position: 3110
     referencebase: A
     alternatebase: G
     totaldepth: 1141
     alternatedepth: 200
+    identifier: .
+    quality: 30
+    filter: PASS
 occurrences:
   ref_ref: 579
   alt_ref: 92
@@ -198,19 +252,25 @@ ldcofficient: -0.006985142857142912
 p_val: 0.14355636466292232
 ---
 reason: linkage
-mutations: 
+mutations:
   - chromosome: MH258848.1
     position: 2646
     referencebase: G
     alternatebase: A
     totaldepth: 886
     alternatedepth: 71
+    identifier: .
+    quality: 30
+    filter: PASS
   - chromosome: MH258848.1
     position: 3110
     referencebase: A
     alternatebase: G
     totaldepth: 1141
     alternatedepth: 200
+    identifier: .
+    quality: 30
+    filter: PASS
 occurrences:
   ref_ref: 765
   alt_ref: 52
@@ -220,25 +280,34 @@ ldcofficient: -0.0073506556405325
 p_val: 0.011453485919705186
 ---
 reason: linkage
-mutations: 
+mutations:
   - chromosome: MH258848.1
     position: 2243
     referencebase: C
     alternatebase: T
     totaldepth: 1029
     alternatedepth: 122
+    identifier: .
+    quality: 30
+    filter: PASS
   - chromosome: MH258848.1
     position: 2525
     referencebase: A
     alternatebase: G
     totaldepth: 927
     alternatedepth: 54
+    identifier: .
+    quality: 30
+    filter: PASS
   - chromosome: MH258848.1
     position: 2646
     referencebase: G
     alternatebase: A
     totaldepth: 886
     alternatedepth: 71
+    identifier: .
+    quality: 30
+    filter: PASS
 occurrences:
   ref_ref_ref: 664
   alt_ref_ref: 125
@@ -252,25 +321,34 @@ ldcofficient: -0.011864253875034092
 p_val: 3.064413347808603e-5
 ---
 reason: linkage
-mutations: 
+mutations:
   - chromosome: MH258848.1
     position: 2243
     referencebase: C
     alternatebase: T
     totaldepth: 1029
     alternatedepth: 122
+    identifier: .
+    quality: 30
+    filter: PASS
   - chromosome: MH258848.1
     position: 2525
     referencebase: A
     alternatebase: G
     totaldepth: 927
     alternatedepth: 54
+    identifier: .
+    quality: 30
+    filter: PASS
   - chromosome: MH258848.1
     position: 3110
     referencebase: A
     alternatebase: G
     totaldepth: 1141
     alternatedepth: 200
+    identifier: .
+    quality: 30
+    filter: PASS
 occurrences:
   ref_ref_ref: 335
   alt_ref_ref: 81
@@ -284,25 +362,34 @@ ldcofficient: -0.04207021556317936
 p_val: 3.219646771412954e-15
 ---
 reason: linkage
-mutations: 
+mutations:
   - chromosome: MH258848.1
     position: 2525
     referencebase: A
     alternatebase: G
     totaldepth: 927
     alternatedepth: 54
+    identifier: .
+    quality: 30
+    filter: PASS
   - chromosome: MH258848.1
     position: 2646
     referencebase: G
     alternatebase: A
     totaldepth: 886
     alternatedepth: 71
+    identifier: .
+    quality: 30
+    filter: PASS
   - chromosome: MH258848.1
     position: 3110
     referencebase: A
     alternatebase: G
     totaldepth: 1141
     alternatedepth: 200
+    identifier: .
+    quality: 30
+    filter: PASS
 occurrences:
   ref_ref_ref: 536
   alt_ref_ref: 88
@@ -316,19 +403,25 @@ ldcofficient: -0.01649622086776248
 p_val: 1.3271603365172524e-6
 ---
 reason: individual
-mutations: 
+mutations:
   - chromosome: MH258848.1
     position: 8452
     referencebase: A
     alternatebase: T
     totaldepth: 236
     alternatedepth: 16
+    identifier: .
+    quality: 30
+    filter: PASS
 ---
 reason: individual
-mutations: 
+mutations:
   - chromosome: MH258848.1
     position: 8714
     referencebase: T
     alternatebase: C
     totaldepth: 245
     alternatedepth: 41
+    identifier: .
+    quality: 30
+    filter: PASS
