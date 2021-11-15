@@ -59,7 +59,7 @@ function hasContigsAlignment(sample) {
 }
 
 function hasVariantCalls(sample) {
-    return hasOutputfile(sample, '/variants', '.variants.tsv');
+    return hasOutputfile(sample, '/variants', '.vcf');
 }
 
 function getTraceDocuments(prefix, suffix) {
