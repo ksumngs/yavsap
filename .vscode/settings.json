@@ -30,10 +30,8 @@
         "Δlinkage"
     ],
     "files.associations": {
-        "*haplotype-finder": "julia",
-        "*variantfilter": "julia",
-        "*remove-invalid-reads": "julia",
-        "*make-haplotype-fastas": "julia",
+        "haplink": "julia",
+        "make-haplotype-fastas": "julia",
         "*.config": "nextflow"
     }
 }
