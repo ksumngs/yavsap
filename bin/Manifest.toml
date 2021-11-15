@@ -154,9 +154,9 @@ uuid = "8ba89e20-285c-5b6f-9357-94700520ee1b"
 
 [[Distributions]]
 deps = ["ChainRulesCore", "DensityInterface", "FillArrays", "LinearAlgebra", "PDMats", "Printf", "QuadGK", "Random", "SparseArrays", "SpecialFunctions", "Statistics", "StatsBase", "StatsFuns", "Test"]
-git-tree-sha1 = "2ea02796c118368c3eda414fc11f5a39259fa3d9"
+git-tree-sha1 = "cce8159f0fee1281335a04bbf876572e46c921ba"
 uuid = "31c24e10-a181-5473-b8eb-7969acd0382f"
-version = "0.25.27"
+version = "0.25.29"
 
 [[DocStringExtensions]]
 deps = ["LibGit2"]
@@ -210,7 +210,7 @@ version = "2.0.4"
 
 [[HapLink]]
 deps = ["ArgParse", "BioAlignments", "BioSequences", "BioSymbols", "CSV", "Combinatorics", "DataFrames", "Dates", "Distributions", "FASTX", "FilePaths", "GenomicFeatures", "HypothesisTests", "SHA", "StructArrays", "XAM", "YAML"]
-git-tree-sha1 = "cdbd162fefaf82e9d9d36eb31042ee31de5c0df6"
+git-tree-sha1 = "afc90e9f22248cf7bd6d2b85afef0ea9dff560e9"
 repo-rev = "master"
 repo-url = "https://github.com/ksumngs/HapLink.jl"
 uuid = "8ca39d33-de0d-4205-9b21-13a80f2b7eed"
@@ -524,10 +524,10 @@ uuid = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
 version = "0.33.12"
 
 [[StatsFuns]]
-deps = ["ChainRulesCore", "IrrationalConstants", "LogExpFunctions", "Reexport", "Rmath", "SpecialFunctions"]
-git-tree-sha1 = "95072ef1a22b057b1e80f73c2a89ad238ae4cfff"
+deps = ["ChainRulesCore", "InverseFunctions", "IrrationalConstants", "LogExpFunctions", "Reexport", "Rmath", "SpecialFunctions"]
+git-tree-sha1 = "385ab64e64e79f0cd7cfcf897169b91ebbb2d6c8"
 uuid = "4c63d2b9-4356-54db-8cca-17b64c39e42c"
-version = "0.9.12"
+version = "0.9.13"
 
 [[StringEncodings]]
 deps = ["Libiconv_jll"]
