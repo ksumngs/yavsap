@@ -210,7 +210,7 @@ version = "2.0.4"
 
 [[HapLink]]
 deps = ["ArgParse", "BioAlignments", "BioSequences", "BioSymbols", "CSV", "Combinatorics", "DataFrames", "Dates", "Distributions", "FASTX", "FilePaths", "GenomicFeatures", "HypothesisTests", "SHA", "StructArrays", "XAM", "YAML"]
-git-tree-sha1 = "afc90e9f22248cf7bd6d2b85afef0ea9dff560e9"
+git-tree-sha1 = "c15a45d931a3b5d73b6199843924b1e5045680b8"
 repo-rev = "master"
 repo-url = "https://github.com/ksumngs/HapLink.jl"
 uuid = "8ca39d33-de0d-4205-9b21-13a80f2b7eed"
