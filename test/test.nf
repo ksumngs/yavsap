@@ -104,7 +104,7 @@ process simulate_ont_reads {
 
     script:
     """
-    curl -L https://github.com/bcgsc/NanoSim/raw/master/pre-trained_models/metagenome_ERR3152366_Log.tar.gz | tar xvz
+    wget -qO- https://raw.githubusercontent.com/bcgsc/NanoSim/v3.0.2/pre-trained_models/metagenome_ERR3152366_Log.tar.gz | tar xvz
     mv -v metagenome_ERR3152366_Log/* .
     cp -v ${workflow.projectDir}/test/*.tsv .
     simulator.py metagenome -gl genome_list.tsv -a abundances.tsv -dl dna_types.tsv --seed 42 -b guppy --fastq -t ${task.cpus}
