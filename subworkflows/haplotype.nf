@@ -67,6 +67,27 @@ process blast_db {
     """
 }
 
+process consensus {
+    label 'ivar'
+
+    input:
+    tuple val(sampleName), path(bamfile)
+
+    output:
+    tuple val(sampleName), path("${sampleName}.consensus.fasta")
+
+    script:
+    """
+    samtools mpileup -aa -A -d0 -Q 0 ${bamfile[0]} | \
+        ivar consensus \
+        -p ${sampleName} \
+        -q ${params.variant_quality} \
+        -t ${params.variant_frequency} \
+        -m ${params.variant_depth}
+    mv ${sampleName}.fa ${sampleName}.consensus.fasta
+    """
+}
+
 process calling_pe {
     label 'cliquesnv'
     label 'process_medium'
