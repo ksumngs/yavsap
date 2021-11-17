@@ -15,6 +15,10 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 - ONT Haplotyping is now performed by the external library
   https://github.com/ksumngs/HapLink.jl
 
+### Removed
+
+- All `conda`-dependent processes
+
 ## [0.2.0-alpha] - 2021-11-04
 
 ### Added
