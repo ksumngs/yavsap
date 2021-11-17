@@ -11,6 +11,7 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 ### Added
 
 - Kraken2 database download instructions to docs
+- Parameter option for number of phylogenetic bootstrap trees
 
 ### Changed
 

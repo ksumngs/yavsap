@@ -147,7 +147,7 @@ process phylogenetic_tree {
     """
     raxml-ng --threads ${task.cpus}{auto} --workers auto \
         --prefix ${sampleName} --outgroup ${params.genome} \
-        --all --model GTR+G --bs-trees 1000 \
+        --all --model GTR+G --bs-trees ${params.phylogenetic_bootstraps} \
         --msa ${alignedHaplotypes}
     cp ${sampleName}.raxml.support ${sampleName}.nwk
     """
