@@ -15,8 +15,6 @@ must be available on your ``PATH`` in bash (other shells don't count).
    * Docker v20.10.0 or higher (🌐)
    * Podman v3.0 or higher (🌐)
    * Singularity v3.7 or higher (🌐)
-* Conda v3.7 or higher (🌐/🍺)
-   * Full Anaconda and Miniconda both work
 
 Most of these programs can be installed without root privileges in your
 homedirectory using either `Homebrew <https://brew.sh>`_ or
