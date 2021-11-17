@@ -28,6 +28,31 @@ workflow haplotyping {
     trees
 }
 
+process pull_references {
+    label 'edirect'
+    label 'run_local'
+
+    output:
+    path('accession_genomes.fasta'), emit: accession_genomes
+    path('strain_genomes.fasta'), emit: strain_genomes
+
+    shell:
+    '''
+    cp !{workflow.projectDir}/genomes/jev.tsv .
+    while read -r LINE; do
+        echo "$LINE" | while IFS=$'\\t' read -r STRAIN ACCESSION; do
+            efetch -db nucleotide -id $ACCESSION -format fasta > $ACCESSION.fasta
+            sed "s%>.*%>$ACCESSION%" $ACCESSION.fasta >> accession_genomes.fasta
+            sed "s%>.*%>$STRAIN%" $ACCESSION.fasta >> strain_genomes.fasta
+            rm $ACCESSION.fasta
+            sleep 0.3
+        done
+    done < jev.tsv
+    '''
+}
+
+
+
 process calling_pe {
     label 'cliquesnv'
     label 'process_medium'
