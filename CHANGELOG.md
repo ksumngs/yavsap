@@ -8,6 +8,10 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- Kraken2 database download instructions to docs
+
 ### Changed
 
 - Dynamically calculate Kraken2's memory requirements
