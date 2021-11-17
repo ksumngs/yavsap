@@ -51,7 +51,21 @@ process pull_references {
     '''
 }
 
+process blast_db {
+    label 'blast'
 
+    input:
+    path(genomes)
+
+    output:
+    path("jev.fasta*")
+
+    script:
+    """
+    cp ${genomes} jev.fasta
+    makeblastdb -in jev.fasta -title jev -dbtype nucl
+    """
+}
 
 process calling_pe {
     label 'cliquesnv'
