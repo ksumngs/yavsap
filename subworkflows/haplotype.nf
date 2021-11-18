@@ -74,7 +74,7 @@ process blast_db {
     tuple val(dbname), path("jev.fasta*")
 
     script:
-    dbname = genomes.simpleName()
+    dbname = genomes.getFileName()
     """
     cp ${genomes} jev.fasta
     makeblastdb -in jev.fasta -title jev -dbtype nucl
