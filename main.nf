@@ -140,10 +140,10 @@ workflow {
 
     if (!params.skip_haplotype) {
         haplotyping(Alignments, Assemblies, IndexedReference, AnnotatedReference)
-        PhyloTrees = haplotyping.out
+        //PhyloTrees = haplotyping.out
     }
     else {
-        PhyloTrees = Channel.from([])
+        //PhyloTrees = Channel.from([])
     }
 
     multiqc(KrakenReports

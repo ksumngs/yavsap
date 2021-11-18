@@ -16,7 +16,7 @@ workflow haplotyping {
     consensus(Alignments)
     ConsensusSequences = consensus.out
 
-    blast_consensus(ConsensusSequences)
+    blast_consensus(ConsensusSequences, BlastDb)
     blast_consensus.out.view()
     /*
     if (params.pe) {
@@ -106,8 +106,8 @@ process blast_consensus {
     label 'blast'
 
     input:
-    tuple val(blastDbName), path(blastdb)
     tuple val(sampleName), path(consensusSequence)
+    tuple val(blastDbName), path(blastdb)
 
     output:
     tuple val(sampleName), env(TOPBLASTHIT)
