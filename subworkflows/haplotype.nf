@@ -58,9 +58,10 @@ process blast_db {
     path(genomes)
 
     output:
-    path("jev.fasta*")
+    tuple val(dbname), path("jev.fasta*")
 
     script:
+    dbname = genomes.simpleName()
     """
     cp ${genomes} jev.fasta
     makeblastdb -in jev.fasta -title jev -dbtype nucl
@@ -86,6 +87,26 @@ process consensus {
         -m ${params.variant_depth}
     mv ${sampleName}.fa ${sampleName}.consensus.fasta
     """
+}
+
+process blast_consensus {
+    label 'blast'
+
+    input:
+    tuple val(blastDbName), path(blastdb)
+    tuple val(sampleName), path(consensusSequence)
+
+    output:
+    tuple val(sampleName), env(TOPBLASTHIT)
+
+    shell:
+    '''
+    TOPBLASTHIT=$(blastn -query ${consensusSequence} \
+        -db ${blastDbName} \
+        -max_hsps 1 \
+        -outfmt "6 saccver" \
+        -num_threads !{task.cpus})
+    '''
 }
 
 process calling_pe {
