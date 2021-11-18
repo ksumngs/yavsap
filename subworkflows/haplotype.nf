@@ -9,6 +9,16 @@ workflow haplotyping {
     GenomeAnnotation
 
     main:
+    pull_references()
+    blast_db(pull_references.out.accession_genomes)
+    BlastDb = blast_db.out
+
+    consensus(Alignments)
+    ConsensusSequences = consensus.out
+
+    blast_consensus(ConsensusSequences)
+    blast_consensus.out.view()
+    /*
     if (params.pe) {
         calling_pe(Alignments)
         HaplotypeSequences = calling_pe.out.haplotypeSequences.join(Assemblies, remainder: true)
@@ -26,6 +36,7 @@ workflow haplotyping {
 
     emit:
     trees
+    */
 }
 
 process pull_references {
