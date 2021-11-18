@@ -116,7 +116,7 @@ process blast_consensus {
     '''
     TOPBLASTHIT=$(blastn -query !{consensusSequence} \
         -db !{blastDbName} \
-        -max_hsps 1 \
+        -num_alignments 1 \
         -outfmt "6 saccver" \
         -num_threads !{task.cpus})
     '''
