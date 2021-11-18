@@ -6,16 +6,23 @@ workflow trimming {
     reads
 
     main:
-    if (params.ont) {
-        read_trimming_ont(reads)
-        trimmedreads = read_trimming_ont.out.trimmedreads
-        tr_report = read_trimming_ont.out.report
+    if (params.skip_trimming) {
+        trimmedreads = reads
+        tr_report = Channel.from([])
     }
     else {
-        read_trimming_pe(reads)
-        trimmedreads = read_trimming_pe.out.trimmedreads
-        tr_report = read_trimming_pe.out.report
+        if (params.ont) {
+            read_trimming_ont(reads)
+            trimmedreads = read_trimming_ont.out.trimmedreads
+            tr_report = read_trimming_ont.out.report
+        }
+        else {
+            read_trimming_pe(reads)
+            trimmedreads = read_trimming_pe.out.trimmedreads
+            tr_report = read_trimming_pe.out.report
+        }
     }
+
 
     emit:
     trimmedreads = trimmedreads
