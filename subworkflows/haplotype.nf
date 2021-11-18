@@ -42,6 +42,8 @@ workflow haplotyping {
 process pull_references {
     label 'edirect'
     label 'run_local'
+    label 'process_low'
+    label 'error_backoff'
 
     output:
     path('accession_genomes.fasta'), emit: accession_genomes
