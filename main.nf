@@ -107,15 +107,22 @@ workflow {
 
     RawReads | sample_rename | trimming
 
-    if (params.ont) {
-        InterleavedReads = sample_rename.out
+    if (params.skip_qc) {
+        QcReport = Channel.from([])
     }
     else {
-        interleave(sample_rename.out)
-        InterleavedReads = interleave.out
+        if (params.ont) {
+            InterleavedReads = sample_rename.out
+        }
+        else {
+            interleave(sample_rename.out)
+            InterleavedReads = interleave.out
+        }
+
+        fastqc(InterleavedReads)
+        QcReport = fastqc.out
     }
 
-    fastqc(InterleavedReads)
 
     read_filtering(trimming.out.trimmedreads)
     KrakenReports = read_filtering.out.KrakenReports
@@ -148,7 +155,7 @@ workflow {
 
     multiqc(KrakenReports
         .concat(trimming.out.report)
-        .concat(fastqc.out)
+        .concat(QcReport)
         .collect())
 
     // Put a pretty bow on everything
