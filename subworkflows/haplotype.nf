@@ -74,7 +74,7 @@ process blast_db {
     tuple val(dbname), path("jev.fasta*")
 
     script:
-    dbname = genomes.getFileName()
+    dbname = 'jev.fasta'
     """
     cp ${genomes} jev.fasta
     makeblastdb -in jev.fasta -title jev -dbtype nucl
@@ -114,8 +114,8 @@ process blast_consensus {
 
     shell:
     '''
-    TOPBLASTHIT=$(blastn -query ${consensusSequence} \
-        -db ${blastDbName} \
+    TOPBLASTHIT=$(blastn -query !{consensusSequence} \
+        -db !{blastDbName} \
         -max_hsps 1 \
         -outfmt "6 saccver" \
         -num_threads !{task.cpus})
