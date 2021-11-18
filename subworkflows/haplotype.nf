@@ -118,7 +118,7 @@ process blast_consensus {
         -db !{blastDbName} \
         -num_alignments 1 \
         -outfmt "6 saccver" \
-        -num_threads !{task.cpus})
+        -num_threads !{task.cpus} | head -n1)
     '''
 }
 
