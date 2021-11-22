@@ -5,7 +5,6 @@ workflow haplotyping {
     take:
     Reads
     Alignments
-    Assemblies
     ReferenceGenome
     GenomeAnnotation
 
@@ -32,14 +31,16 @@ workflow haplotyping {
 
     realign_to_new_reference(ReadsAndGenomes)
 
-    /*
+    RealignedReads = realign_to_new_reference.alignment
+
     if (params.pe) {
-        calling_pe(Alignments)
-        HaplotypeSequences = calling_pe.out.haplotypeSequences.join(Assemblies, remainder: true)
+        calling_pe(RealignedReads = realign_to_new_reference.alignment
+)
+        HaplotypeSequences = calling_pe.out.haplotypeSequences
     }
     else {
-        calling_ont(Alignments, ReferenceGenome)
-        HaplotypeSequences = calling_ont.out.haplotype_fasta.join(Assemblies, remainder: true)
+        calling_ont(RealignedReads, ReferenceGenome)
+        HaplotypeSequences = calling_ont.out.haplotype_fasta
     }
 
     merge_fastas(HaplotypeSequences, ReferenceGenome) | \
@@ -50,7 +51,6 @@ workflow haplotyping {
 
     emit:
     trees
-    */
 }
 
 process pull_references {

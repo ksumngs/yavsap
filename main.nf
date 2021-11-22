@@ -146,7 +146,7 @@ workflow {
     AllAlignments = Alignments.join(AlignedContigs, remainder: true).flatMap{ n -> [n[1], n[2]] }.collect()
 
     if (!params.skip_haplotype) {
-        haplotyping(FilteredReads, Alignments, Assemblies, IndexedReference, AnnotatedReference)
+        haplotyping(FilteredReads, Alignments, IndexedReference, AnnotatedReference)
         //PhyloTrees = haplotyping.out
     }
     else {
