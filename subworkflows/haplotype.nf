@@ -10,14 +10,24 @@ workflow haplotyping {
 
     main:
     pull_references()
-    blast_db(pull_references.out.accession_genomes)
+    AccessionGenomes = pull_references.out.accession_genomes
+    blast_db(AccessionGenomes)
     BlastDb = blast_db.out
 
     consensus(Alignments)
     ConsensusSequences = consensus.out
 
     blast_consensus(ConsensusSequences, BlastDb)
-    blast_consensus.out.view()
+    BlastHits = blast_consensus.out
+
+    AccessionGenomesSequences = AccessionGenomes.splitFasta(record: [id: true, seqString: true]).map{ f -> [f.id, ">${f.id}\n${f.seqString}"] }
+
+    BlastGenomes = BlastHits
+        .map { h -> [h[1], h[0]] }
+        .combine(AccessionGenomesSequences, by: 0)
+        .map{ g -> g[1..2] }
+
+    BlastGenomes.view()
     /*
     if (params.pe) {
         calling_pe(Alignments)
