@@ -3,6 +3,7 @@ nextflow.enable.dsl = 2
 
 workflow haplotyping {
     take:
+    Reads
     Alignments
     Assemblies
     ReferenceGenome
@@ -27,7 +28,10 @@ workflow haplotyping {
         .combine(AccessionGenomesSequences, by: 0)
         .map{ g -> g[1..2] }
 
-    BlastGenomes.view()
+    ReadsAndGenomes = Reads.join(BlastGenomes)
+
+    realign_to_new_reference(ReadsAndGenomes)
+
     /*
     if (params.pe) {
         calling_pe(Alignments)
@@ -130,6 +134,31 @@ process blast_consensus {
         -outfmt "6 saccver" \
         -num_threads !{task.cpus} | head -n1)
     '''
+}
+
+process realign_to_new_reference {
+    label 'minimap2'
+    publishDir "${params.outdir}/alignment", mode: "${params.publish_dir_mode}"
+
+    input:
+    tuple val(sampleName), path(reads), file(referenceGenome)
+
+    output:
+    tuple val(sampleName), path("${sampleName}.bam{,.bai}"), emit: alignment
+    path("${sampleName}_REFERENCE.fasta{,.fai}"), emit: genome
+
+    script:
+    minimapMethod = (params.pe) ? 'sr' : 'map-ont'
+    """
+    cp ${referenceGenome} ${sampleName}_REFERENCE.fasta
+    samtools faidx ${sampleName}_REFERENCE.fasta
+    minimap2 -ax ${minimapMethod} \
+        -t ${task.cpus} \
+        --MD ${sampleName}_REFERENCE.fasta \
+        ${reads} | \
+        samtools sort > ${sampleName}.bam
+    samtools index ${sampleName}.bam
+    """
 }
 
 process calling_pe {

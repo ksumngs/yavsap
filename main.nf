@@ -146,7 +146,7 @@ workflow {
     AllAlignments = Alignments.join(AlignedContigs, remainder: true).flatMap{ n -> [n[1], n[2]] }.collect()
 
     if (!params.skip_haplotype) {
-        haplotyping(Alignments, Assemblies, IndexedReference, AnnotatedReference)
+        haplotyping(FilteredReads, Alignments, Assemblies, IndexedReference, AnnotatedReference)
         //PhyloTrees = haplotyping.out
     }
     else {
@@ -222,7 +222,6 @@ process fastqc {
 
 process reads_realign_to_reference {
     label 'minimap'
-    publishDir "${params.outdir}/alignment", mode: "${params.publish_dir_mode}"
 
     input:
     tuple val(sampleName), file(readsFile)
