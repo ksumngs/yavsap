@@ -11,6 +11,7 @@ workflow haplotyping {
     main:
     pull_references()
     AccessionGenomes = pull_references.out.accession_genomes
+    StrainGenomes = pull_references.out.strain_genomes
     blast_db(AccessionGenomes)
     BlastDb = blast_db.out
 
@@ -31,7 +32,7 @@ workflow haplotyping {
 
     realign_to_new_reference(ReadsAndGenomes)
 
-    RealignedReads = realign_to_new_reference.alignment
+    RealignedReads = realign_to_new_reference.out.alignment
 
     if (params.pe) {
         calling_pe(RealignedReads = realign_to_new_reference.alignment
@@ -39,12 +40,12 @@ workflow haplotyping {
         HaplotypeSequences = calling_pe.out.haplotypeSequences
     }
     else {
-        calling_ont(RealignedReads, ReferenceGenome)
+        AlignmentsAndGenomes = RealignedReads.join(BlastGenomes)
+        calling_ont(AlignmentsAndGenomes)
         HaplotypeSequences = calling_ont.out.haplotype_fasta
     }
 
-    merge_fastas(HaplotypeSequences, ReferenceGenome) | \
-        alignment | \
+    alignment(HaplotypeSequences, StrainGenomes) | \
         phylogenetic_tree
 
     trees = phylogenetic_tree.out
@@ -189,8 +190,7 @@ process calling_ont {
     publishDir "${params.outdir}", mode: "${params.publish_dir_mode}"
 
     input:
-    tuple val(prefix), file(bamfile)
-    file(reference)
+    tuple val(prefix), file(bamfile), file(reference)
 
     output:
     tuple val(prefix), path("variants/${prefix}.vcf"), emit: variants
@@ -253,16 +253,18 @@ process alignment {
 
     input:
     tuple val(sampleName), file(haploReads)
+    path(referenceStrains)
 
     output:
     tuple val(sampleName), file("${sampleName}.haplotypes.fas")
 
-    shell:
-    '''
-    mafft --thread !{task.cpus} --auto \
-        !{haploReads} > !{sampleName}.haplotypes.fas
-    sed -i "s/ .*$//" !{sampleName}.haplotypes.fas
-    '''
+    script:
+    """
+    cat ${haploReads} ${referenceStrains} > ${sampleName}.mafft.fasta
+    mafft --thread ${task.cpus} --auto \
+        ${sampleName}.mafft.fasta > ${sampleName}.haplotypes.fas
+    sed -i "s/ .*\$//" ${sampleName}.haplotypes.fas
+    """
 }
 
 process phylogenetic_tree {
@@ -279,7 +281,7 @@ process phylogenetic_tree {
     script:
     """
     raxml-ng --threads ${task.cpus}{auto} --workers auto \
-        --prefix ${sampleName} --outgroup ${params.genome} \
+        --prefix ${sampleName} \
         --all --model GTR+G --bs-trees ${params.phylogenetic_bootstraps} \
         --msa ${alignedHaplotypes}
     cp ${sampleName}.raxml.support ${sampleName}.nwk
