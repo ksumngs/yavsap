@@ -162,15 +162,6 @@ app.get('/alignments/:sample', function(req, res) {
             }
         ]
     };
-    if (hasContigsAlignment(sampleName)) {
-        igvOptions.tracks.push({
-            type: 'alignment',
-            format: 'bam',
-            url: '/assembly/alignment/' + sampleName + '.contigs.bam',
-            indexURL: '/assembly/alignment/' + sampleName + '.contigs.bam.bai',
-            name: sampleName + '.contigs'
-        })
-    }
     res.render('alignment',
         {
             title: req.params.sample + ' Alignments',
