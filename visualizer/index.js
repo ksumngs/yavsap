@@ -150,7 +150,7 @@ app.get('/alignments/:sample', function(req, res) {
     igvOptions = {
         reference: {
             id: getReferenceGenomeName(),
-            fastaURL: '/reference/' + getReferenceGenomeName() + '.fasta'
+            fastaURL: '/alignment/' + sampleName + '_REFERENCE.fasta'
         },
         tracks: [
             {
