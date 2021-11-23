@@ -177,6 +177,19 @@ against.
 Defaults to the accession number of the Japanese Encephalitis Virus RefSeq
 record.
 
+--genome_list
+^^^^^^^^^^^^^
+
+======== ======
+Type     String
+======== ======
+Required No
+Default  jev
+======== ======
+
+The name of the file that contains NCBI accession numbers of related strains for
+checking closest reference and constructing phylogenetic trees.
+
 Kraken2 Options
 ---------------
 
