@@ -8,6 +8,13 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.2.1-alpha] - 2021-11-23
+
+### Fixed
+
+- Kraken2 memory is now allocated correctly even when running under a `test`
+  profile (12aea9c)
+
 ## [0.2.0-alpha] - 2021-11-04
 
 ### Added
@@ -95,7 +102,8 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 - Krona graphs of Kraken2 output
 - BLAST of assemblies and unclassified reads
 
-[Unreleased]: https://github.com/ksumngs/yavsap/compare/v0.2.0-alpha...HEAD
+[Unreleased]: https://github.com/ksumngs/yavsap/compare/v0.2.1-alpha...HEAD
+[0.2.1-alpha]: https://github.com/ksumngs/yavsap/compare/v0.2.0-alpha...v0.2.1-alpha
 [0.2.0-alpha]: https://github.com/ksumngs/yavsap/compare/v0.1.0-alpha...v0.2.0-alpha
 [0.1.0-alpha]: https://github.com/ksumngs/yavsap/compare/v0.0.1...v0.1.0-alpha
 [0.0.1]: https://github.com/ksumngs/yavsap/releases/tag/v0.0.1
