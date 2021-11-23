@@ -13,6 +13,7 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 - Kraken2 database download instructions to docs
 - Parameter option for number of phylogenetic bootstrap trees
 - Options to skip read trimming (`--skip_trimming`) and read QC (`--skip_qc`)
+- Realignment to closest reference genome based on BLAST
 
 ### Changed
 
