@@ -69,7 +69,7 @@ process pull_references {
 
     shell:
     '''
-    cp !{workflow.projectDir}/genomes/jev.tsv .
+    cp !{workflow.projectDir}/genomes/!{params.genome_list}.tsv .
     while read -r LINE; do
         echo "$LINE" | while IFS=$'\\t' read -r STRAIN ACCESSION; do
             efetch -db nucleotide -id $ACCESSION -format fasta > $ACCESSION.fasta
@@ -78,7 +78,7 @@ process pull_references {
             rm $ACCESSION.fasta
             sleep 0.3
         done
-    done < jev.tsv
+    done < !{params.genome_list}.tsv
     '''
 }
 
@@ -89,13 +89,13 @@ process blast_db {
     path(genomes)
 
     output:
-    tuple val(dbname), path("jev.fasta*")
+    tuple val(dbname), path("${dbname}.fasta*")
 
     script:
-    dbname = 'jev.fasta'
+    dbname = "YAVSAP_${workflow.sessionId}"
     """
-    cp ${genomes} jev.fasta
-    makeblastdb -in jev.fasta -title jev -dbtype nucl
+    cp ${genomes} ${dbname}.fasta
+    makeblastdb -in ${dbname}.fasta -title ${dbname} -dbtype nucl
     """
 }
 
@@ -133,7 +133,7 @@ process blast_consensus {
     shell:
     '''
     TOPBLASTHIT=$(blastn -query !{consensusSequence} \
-        -db !{blastDbName} \
+        -db !{blastDbName}.fasta \
         -num_alignments 1 \
         -outfmt "6 saccver" \
         -num_threads !{task.cpus} | head -n1)
