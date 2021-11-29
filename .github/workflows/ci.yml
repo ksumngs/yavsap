@@ -92,17 +92,17 @@ jobs:
         id: kraken2db-cache
         uses: actions/cache@v2
         with:
-          path: /kraken2-db
-          key: kraken2db-${{ hashFiles('/kraken2-db/inspect.txt') }}
+          path: ~/kraken2-db
+          key: kraken2db-viral_20210517
 
       - name: Download Kraken2 database
         if: ${{ steps.kraken2db-cache.outputs.cache-hit != 'true' }}
         run: |
-          sudo mkdir /kraken2-db
-          wget -qO- https://genome-idx.s3.amazonaws.com/kraken/k2_viral_20210517.tar.gz | sudo tar xzv -C /kraken2-db
+          mkdir ~/kraken2-db
+          wget -qO- https://genome-idx.s3.amazonaws.com/kraken/k2_viral_20210517.tar.gz | tar xzv -C ~/kraken2-db
 
       - name: Run pipeline with test data
         env:
           NCBI_API_KEY: ${{ secrets.NCBI_API_KEY }}
         run: |
-          nextflow run ${GITHUB_WORKSPACE} -profile test,${RUN_READTYPE},${RUN_CONTAINER} $RUN_SKIPPING --kraken2_db /kraken2-db
+          nextflow run ${GITHUB_WORKSPACE} -profile test,${RUN_READTYPE},${RUN_CONTAINER} $RUN_SKIPPING --kraken2_db ~/kraken2-db
