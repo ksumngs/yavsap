@@ -74,6 +74,14 @@ jobs:
         with:
           singularity-version: 3.8
 
+      - name: Cache Singularity images
+        id: singularity-cache
+        if: ${{ env.RUN_CONTAINER == 'singularity' }}
+        uses: actions/cache@v2
+        with:
+          path: ~/.nxf-singularity-cache
+          key: singularity-${{ hashFiles('**/conf/containers.config') }}
+
       - name: Install Podman
         if: ${{ env.RUN_CONTAINER == 'podman' }}
         run: |
