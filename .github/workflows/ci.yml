@@ -72,7 +72,7 @@ jobs:
         if: ${{ env.RUN_CONTAINER == 'singularity' }}
         uses: eWaterCycle/setup-singularity@v6
         with:
-          singularity-version: 3.7.1
+          singularity-version: 3.8
 
       - name: Install Podman
         if: ${{ env.RUN_CONTAINER == 'podman' }}
@@ -105,4 +105,5 @@ jobs:
         env:
           NCBI_API_KEY: ${{ secrets.NCBI_API_KEY }}
         run: |
+          export NXF_SINGULARITY_CACHEDIR=$HOME/.nxf-singularity-cache
           nextflow run ${GITHUB_WORKSPACE} -profile test,${RUN_READTYPE},${RUN_CONTAINER} $RUN_SKIPPING --kraken2_db ~/kraken2-db
