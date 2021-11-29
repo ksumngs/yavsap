@@ -37,6 +37,26 @@ jobs:
           - nxf_ver: ''
             nxf_edge: ''
             container_env: docker
+            skipping:  '--skip_trimming'
+            read_type: pe
+          - nxf_ver: ''
+            nxf_edge: ''
+            container_env: docker
+            skipping: '--skip_trimming'
+            read_type: ont
+          - nxf_ver: ''
+            nxf_edge: ''
+            container_env: docker
+            skipping:  '--skip_qc'
+            read_type: pe
+          - nxf_ver: ''
+            nxf_edge: ''
+            container_env: docker
+            skipping: '--skip_qc'
+            read_type: ont
+          - nxf_ver: ''
+            nxf_edge: ''
+            container_env: docker
             skipping: '--skip_filtering'
             read_type: pe
           - nxf_ver: ''
