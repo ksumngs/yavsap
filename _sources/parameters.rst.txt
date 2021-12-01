@@ -177,6 +177,19 @@ against.
 Defaults to the accession number of the Japanese Encephalitis Virus RefSeq
 record.
 
+--genome_list
+^^^^^^^^^^^^^
+
+======== ======
+Type     String
+======== ======
+Required No
+Default  jev
+======== ======
+
+The name of the file that contains NCBI accession numbers of related strains for
+checking closest reference and constructing phylogenetic trees.
+
 Kraken2 Options
 ---------------
 
@@ -598,6 +611,70 @@ Lowest depth allowable for assembly to proceed.
 
 Corresponds to the :ref:`stopOnLowCoverage` option of Canu.
 
+Variant Calling Options
+-----------------------
+
+--variant_quality
+^^^^^^^^^^^^^^^^^
+
+======== ======
+Type     Integer
+======== ======
+Required No
+Default  30/21 (Illumina/Nanopore)
+======== ======
+
+Minimum average quality (PHRED score) of a basecall to consider it a variant.
+
+--variant_depth
+^^^^^^^^^^^^^^^
+
+======== ======
+Type     Integer
+======== ======
+Required No
+Default  10/15 (Illumina/Nanopore)
+======== ======
+
+Minimum depth to consider a variant
+
+--variant_position
+^^^^^^^^^^^^^^^^^^
+
+======== ======
+Type     Float
+======== ======
+Required No
+Default  0.1
+======== ======
+
+Remove variants that occur only in positions within this percentage of the end.
+
+--variant_frequency
+^^^^^^^^^^^^^^^^^^^
+
+======== ======
+Type     Float
+======== ======
+Required No
+Default  0.05
+======== ======
+
+Minimum frequency at which a variant must appear.
+
+--variant_significance
+^^^^^^^^^^^^^^^^^^^^^^
+
+======== ======
+Type     Float
+======== ======
+Required No
+Default  1e-3
+======== ======
+
+The highest p-value that will be considered a significant variant based on
+Fisher's Exact test.
+
 Haplotyping Options
 -------------------
 
@@ -612,10 +689,10 @@ Default  0.05
 ======== ======
 
 The highest p-value that will be considered a significant haplotype based on
-linkage disequilibrium and proportional equivalence.
+a Χ-squared test of linkage disequilibrium.
 
---haplotype_minimum
-^^^^^^^^^^^^^^^^^^^
+--haplotype_depth
+^^^^^^^^^^^^^^^^^
 
 ======== ======
 Type     Integer

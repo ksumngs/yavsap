@@ -148,14 +148,14 @@ Variant Calls
 
 Variant calls for each sample are output to the ``variants`` folder when
 analyzing Nanopore reads (no variant calls are output for Illumina reads). The
-filename is always ``<samplename>.variants.tsv``.
+filename is always ``<samplename>.vcf``.
 
 ::
 
     results
     └── 📁 variants
-        ├── 📝 pig-serum.variants.tsv
-        └── 📝 pig-feces.variants.tsv
+        ├── 📝 pig-serum.vcf
+        └── 📝 pig-feces.vcf
 
 Haplotypes
 ^^^^^^^^^^

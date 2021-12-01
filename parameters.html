@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Complete Parameter Reference &mdash; JEV Analysis Pipeline  documentation</title>
+  <title>Complete Parameter Reference &mdash; Yet Another Viral Subspecies Analysis Pipeline  documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -27,7 +27,7 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="index.html" class="icon icon-home"> JEV Analysis Pipeline
+            <a href="index.html" class="icon icon-home"> Yet Another Viral Subspecies Analysis Pipeline
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -59,6 +59,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#reference-genome-options">Reference Genome Options</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#genome">–genome</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#genome-list">–genome_list</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#kraken2-options">Kraken2 Options</a><ul>
@@ -108,9 +109,17 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#variant-calling-options">Variant Calling Options</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#variant-quality">–variant_quality</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#variant-depth">–variant_depth</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#variant-position">–variant_position</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#variant-frequency">–variant_frequency</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#variant-significance">–variant_significance</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#haplotyping-options">Haplotyping Options</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#haplotype-significance">–haplotype_significance</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#haplotype-minimum">–haplotype_minimum</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#haplotype-depth">–haplotype_depth</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#workflow-options">Workflow Options</a><ul>
@@ -132,7 +141,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">JEV Analysis Pipeline</a>
+          <a href="index.html">Yet Another Viral Subspecies Analysis Pipeline</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -436,6 +445,30 @@ does, which as of Nextflow 21.04, includes</p>
 against.</p>
 <p>Defaults to the accession number of the Japanese Encephalitis Virus RefSeq
 record.</p>
+</section>
+<section id="genome-list">
+<h3>–genome_list<a class="headerlink" href="#genome-list" title="Permalink to this headline"></a></h3>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 57%" />
+<col style="width: 43%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Type</p></th>
+<th class="head"><p>String</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Required</p></td>
+<td><p>No</p></td>
+</tr>
+<tr class="row-odd"><td><p>Default</p></td>
+<td><p>jev</p></td>
+</tr>
+</tbody>
+</table>
+<p>The name of the file that contains NCBI accession numbers of related strains for
+checking closest reference and constructing phylogenetic trees.</p>
 </section>
 </section>
 <section id="kraken2-options">
@@ -1085,6 +1118,125 @@ for more info on what each of these mean.</p>
 </section>
 </section>
 </section>
+<section id="variant-calling-options">
+<h2>Variant Calling Options<a class="headerlink" href="#variant-calling-options" title="Permalink to this headline"></a></h2>
+<section id="variant-quality">
+<h3>–variant_quality<a class="headerlink" href="#variant-quality" title="Permalink to this headline"></a></h3>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 24%" />
+<col style="width: 76%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Type</p></th>
+<th class="head"><p>Integer</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Required</p></td>
+<td><p>No</p></td>
+</tr>
+<tr class="row-odd"><td><p>Default</p></td>
+<td><p>30/21 (Illumina/Nanopore)</p></td>
+</tr>
+</tbody>
+</table>
+<p>Minimum average quality (PHRED score) of a basecall to consider it a variant.</p>
+</section>
+<section id="variant-depth">
+<h3>–variant_depth<a class="headerlink" href="#variant-depth" title="Permalink to this headline"></a></h3>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 24%" />
+<col style="width: 76%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Type</p></th>
+<th class="head"><p>Integer</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Required</p></td>
+<td><p>No</p></td>
+</tr>
+<tr class="row-odd"><td><p>Default</p></td>
+<td><p>10/15 (Illumina/Nanopore)</p></td>
+</tr>
+</tbody>
+</table>
+<p>Minimum depth to consider a variant</p>
+</section>
+<section id="variant-position">
+<h3>–variant_position<a class="headerlink" href="#variant-position" title="Permalink to this headline"></a></h3>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 57%" />
+<col style="width: 43%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Type</p></th>
+<th class="head"><p>Float</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Required</p></td>
+<td><p>No</p></td>
+</tr>
+<tr class="row-odd"><td><p>Default</p></td>
+<td><p>0.1</p></td>
+</tr>
+</tbody>
+</table>
+<p>Remove variants that occur only in positions within this percentage of the end.</p>
+</section>
+<section id="variant-frequency">
+<h3>–variant_frequency<a class="headerlink" href="#variant-frequency" title="Permalink to this headline"></a></h3>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 57%" />
+<col style="width: 43%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Type</p></th>
+<th class="head"><p>Float</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Required</p></td>
+<td><p>No</p></td>
+</tr>
+<tr class="row-odd"><td><p>Default</p></td>
+<td><p>0.05</p></td>
+</tr>
+</tbody>
+</table>
+<p>Minimum frequency at which a variant must appear.</p>
+</section>
+<section id="variant-significance">
+<h3>–variant_significance<a class="headerlink" href="#variant-significance" title="Permalink to this headline"></a></h3>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 57%" />
+<col style="width: 43%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Type</p></th>
+<th class="head"><p>Float</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Required</p></td>
+<td><p>No</p></td>
+</tr>
+<tr class="row-odd"><td><p>Default</p></td>
+<td><p>1e-3</p></td>
+</tr>
+</tbody>
+</table>
+<p>The highest p-value that will be considered a significant variant based on
+Fisher’s Exact test.</p>
+</section>
+</section>
 <section id="haplotyping-options">
 <h2>Haplotyping Options<a class="headerlink" href="#haplotyping-options" title="Permalink to this headline"></a></h2>
 <section id="haplotype-significance">
@@ -1109,10 +1261,10 @@ for more info on what each of these mean.</p>
 </tbody>
 </table>
 <p>The highest p-value that will be considered a significant haplotype based on
-linkage disequilibrium and proportional equivalence.</p>
+a Χ-squared test of linkage disequilibrium.</p>
 </section>
-<section id="haplotype-minimum">
-<h3>–haplotype_minimum<a class="headerlink" href="#haplotype-minimum" title="Permalink to this headline"></a></h3>
+<section id="haplotype-depth">
+<h3>–haplotype_depth<a class="headerlink" href="#haplotype-depth" title="Permalink to this headline"></a></h3>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 53%" />
