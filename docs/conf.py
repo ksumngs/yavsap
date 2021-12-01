@@ -17,7 +17,7 @@
 
 # -- Project information -----------------------------------------------------
 
-project = 'JEV Analysis Pipeline'
+project = 'Yet Another Viral Subspecies Analysis Pipeline'
 copyright = '2021, Thomas A. Christensen II'
 author = 'Thomas A. Christensen II'
 
