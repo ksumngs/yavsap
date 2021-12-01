@@ -107,15 +107,22 @@ workflow {
 
     RawReads | sample_rename | trimming
 
-    if (params.ont) {
-        InterleavedReads = sample_rename.out
+    if (params.skip_qc) {
+        QcReport = Channel.from([])
     }
     else {
-        interleave(sample_rename.out)
-        InterleavedReads = interleave.out
+        if (params.ont) {
+            InterleavedReads = sample_rename.out
+        }
+        else {
+            interleave(sample_rename.out)
+            InterleavedReads = interleave.out
+        }
+
+        fastqc(InterleavedReads)
+        QcReport = fastqc.out
     }
 
-    fastqc(InterleavedReads)
 
     read_filtering(trimming.out.trimmedreads)
     KrakenReports = read_filtering.out.KrakenReports
@@ -139,16 +146,16 @@ workflow {
     AllAlignments = Alignments.join(AlignedContigs, remainder: true).flatMap{ n -> [n[1], n[2]] }.collect()
 
     if (!params.skip_haplotype) {
-        haplotyping(Alignments, Assemblies, IndexedReference, AnnotatedReference)
-        PhyloTrees = haplotyping.out
+        haplotyping(FilteredReads, Alignments, IndexedReference, AnnotatedReference)
+        //PhyloTrees = haplotyping.out
     }
     else {
-        PhyloTrees = Channel.from([])
+        //PhyloTrees = Channel.from([])
     }
 
     multiqc(KrakenReports
         .concat(trimming.out.report)
-        .concat(fastqc.out)
+        .concat(QcReport)
         .collect())
 
     // Put a pretty bow on everything
@@ -193,7 +200,7 @@ process interleave {
 
     script:
     """
-    seqtk mergepe ${readsFiles} | gzip -9 > ${sampleName}.fastq.gz
+    seqtk mergepe ${readsFiles} | gzip > ${sampleName}.fastq.gz
     """
 }
 
@@ -215,7 +222,6 @@ process fastqc {
 
 process reads_realign_to_reference {
     label 'minimap'
-    publishDir "${params.outdir}/alignment", mode: "${params.publish_dir_mode}"
 
     input:
     tuple val(sampleName), file(readsFile)

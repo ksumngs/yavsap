@@ -1,17 +1,4 @@
-JEV SA14 37dedad4	haplotypes.1.fasta
-JEV SA14 c9206a26	haplotypes.2.fasta
-JEV SA14 fac52613	haplotypes.3.fasta
-JEV SA14 286670f7	haplotypes.4.fasta
-JEV SA14 79f60125	haplotypes.5.fasta
-JEV SA14 eb0ac145	haplotypes.6.fasta
-JEV SA14 1f7aff92	haplotypes.7.fasta
-JEV SA14 80334051	haplotypes.8.fasta
-JEV SA14 9fbce46d	haplotypes.9.fasta
-JEV SA14 fdd5a753	haplotypes.10.fasta
-JEV SA14 1582323d	haplotypes.11.fasta
-JEV SA14 575e1c36	haplotypes.12.fasta
-JEV SA14 1c0a1054	haplotypes.13.fasta
-JEV SA14 60a8248c	haplotypes.14.fasta
-JEV SA14 c70c1f26	haplotypes.15.fasta
-Sus scrofa (pig) mitochondria	NC_000845.1.fasta
-Culex quinquefasciatus (mosquito) mitochondria	NC_014574.1.fasta
+MH258848.1	REFERENCE.fasta
+cda90415	haplotypes.fasta
+063ccada	haplotypes.fasta
+ebde7a35	haplotypes.fasta

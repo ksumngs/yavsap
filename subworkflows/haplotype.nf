@@ -3,44 +3,166 @@ nextflow.enable.dsl = 2
 
 workflow haplotyping {
     take:
+    Reads
     Alignments
-    Assemblies
     ReferenceGenome
     GenomeAnnotation
 
     main:
+    pull_references()
+    AccessionGenomes = pull_references.out.accession_genomes
+    StrainGenomes = pull_references.out.strain_genomes
+    blast_db(AccessionGenomes)
+    BlastDb = blast_db.out
+
+    consensus(Alignments)
+    ConsensusSequences = consensus.out
+
+    blast_consensus(ConsensusSequences, BlastDb)
+    BlastHits = blast_consensus.out
+
+    AccessionGenomesSequences = AccessionGenomes
+        .splitFasta(record: [id: true, seqString: true])
+        .map{ f -> [f.id, ">${f.id}\n${f.seqString}"] }
+
+    BlastGenomes = BlastHits
+        .map { h -> [h[1], h[0]] }
+        .combine(AccessionGenomesSequences, by: 0)
+        .map{ g -> g[1..2] }
+
+    ReadsAndGenomes = Reads.join(BlastGenomes)
+
+    realign_to_new_reference(ReadsAndGenomes)
+
+    RealignedReads = realign_to_new_reference.out.alignment
+
     if (params.pe) {
-        calling_pe(Alignments)
-        HaplotypeSequences = calling_pe.out.haplotypeSequences.join(Assemblies, remainder: true)
+        calling_pe(RealignedReads)
+        HaplotypeSequences = calling_pe.out.haplotypeSequences
     }
     else {
-        variant_calling(Alignments, ReferenceGenome, GenomeAnnotation)
-        VariantCalls = variant_calling.out
-
-        AlignmentStats = Alignments.join(VariantCalls)
-
-        // Get variant stats
-        alignment_analysis(AlignmentStats, ReferenceGenome)
-        VariantStats = VariantCalls.join(alignment_analysis.out)
-
-        // Filter variants
-        variant_filter(VariantStats)
-        FilteredVariantCalls = Alignments.join(variant_filter.out)
-
-        // Sanity-check those variants
-        calling_ont(FilteredVariantCalls, ReferenceGenome)
-
-        HaplotypeSequences = calling_ont.out.haplotype_fasta.join(Assemblies, remainder: true)
+        AlignmentsAndGenomes = RealignedReads.join(BlastGenomes)
+        calling_ont(AlignmentsAndGenomes)
+        HaplotypeSequences = calling_ont.out.haplotype_fasta
     }
 
-    merge_fastas(HaplotypeSequences, ReferenceGenome) | \
-        alignment | \
+    AllHapSequences = HaplotypeSequences.join(ConsensusSequences)
+
+    alignment(AllHapSequences, StrainGenomes) | \
         phylogenetic_tree
 
     trees = phylogenetic_tree.out
 
     emit:
     trees
+}
+
+process pull_references {
+    label 'edirect'
+    label 'run_local'
+    label 'process_low'
+    label 'error_backoff'
+
+    output:
+    path('accession_genomes.fasta'), emit: accession_genomes
+    path('strain_genomes.fasta'), emit: strain_genomes
+
+    shell:
+    '''
+    cp !{workflow.projectDir}/genomes/!{params.genome_list}.tsv .
+    while read -r LINE; do
+        echo "$LINE" | while IFS=$'\\t' read -r STRAIN ACCESSION; do
+            efetch -db nucleotide -id $ACCESSION -format fasta > $ACCESSION.fasta
+            sed "s%>.*%>$ACCESSION%" $ACCESSION.fasta >> accession_genomes.fasta
+            sed "s%>.*%>$STRAIN%" $ACCESSION.fasta >> strain_genomes.fasta
+            rm $ACCESSION.fasta
+            sleep 0.3
+        done
+    done < !{params.genome_list}.tsv
+    '''
+}
+
+process blast_db {
+    label 'blast'
+
+    input:
+    path(genomes)
+
+    output:
+    tuple val(dbname), path("${dbname}.fasta*")
+
+    script:
+    dbname = "YAVSAP_${workflow.sessionId}"
+    """
+    cp ${genomes} ${dbname}.fasta
+    makeblastdb -in ${dbname}.fasta -title ${dbname} -dbtype nucl
+    """
+}
+
+process consensus {
+    label 'ivar'
+
+    input:
+    tuple val(sampleName), path(bamfile)
+
+    output:
+    tuple val(sampleName), path("${sampleName}.consensus.fasta")
+
+    script:
+    """
+    samtools mpileup -aa -A -d0 -Q 0 ${bamfile[0]} | \
+        ivar consensus \
+        -p ${sampleName} \
+        -q ${params.variant_quality} \
+        -t ${params.variant_frequency} \
+        -m ${params.variant_depth}
+    mv ${sampleName}.fa ${sampleName}.consensus.fasta
+    """
+}
+
+process blast_consensus {
+    label 'blast'
+
+    input:
+    tuple val(sampleName), path(consensusSequence)
+    tuple val(blastDbName), path(blastdb)
+
+    output:
+    tuple val(sampleName), env(TOPBLASTHIT)
+
+    shell:
+    '''
+    TOPBLASTHIT=$(blastn -query !{consensusSequence} \
+        -db !{blastDbName}.fasta \
+        -num_alignments 1 \
+        -outfmt "6 saccver" \
+        -num_threads !{task.cpus} | head -n1)
+    '''
+}
+
+process realign_to_new_reference {
+    label 'minimap2'
+    publishDir "${params.outdir}/alignment", mode: "${params.publish_dir_mode}"
+
+    input:
+    tuple val(sampleName), path(reads), file(referenceGenome)
+
+    output:
+    tuple val(sampleName), path("${sampleName}.bam{,.bai}"), emit: alignment
+    path("${sampleName}_REFERENCE.fasta{,.fai}"), emit: genome
+
+    script:
+    minimapMethod = (params.pe) ? 'sr' : 'map-ont'
+    """
+    cp ${referenceGenome} ${sampleName}_REFERENCE.fasta
+    samtools faidx ${sampleName}_REFERENCE.fasta
+    minimap2 -ax ${minimapMethod} \
+        -t ${task.cpus} \
+        --MD ${sampleName}_REFERENCE.fasta \
+        ${reads} | \
+        samtools sort > ${sampleName}.bam
+    samtools index ${sampleName}.bam
+    """
 }
 
 process calling_pe {
@@ -65,120 +187,39 @@ process calling_pe {
     """
 }
 
-process variant_calling {
-    label 'ivar'
-    label 'process_low'
-
-    input:
-    tuple val(sampleName), file(bamfile)
-    file(reference)
-    file(annotations)
-
-    output:
-    tuple val(sampleName), file("*.ivar.tsv")
-
-    script:
-    // Crank up the quality metrics (just do it less if we're working with nanopore reads)
-    qualFlags = (params.pe) ? '-q30 -t 0.05 -m 1000' : '-q 21 -t 0.05 -m 1500'
-    """
-    samtools mpileup -aa -A -B -Q 0 --reference ${reference[0]} ${bamfile[0]} | \
-        ivar variants -p ${sampleName}.ivar -r ${reference[0]} -g ${annotations} ${qualFlags}
-    """
-}
-
-// Get stats on the called variants
-process alignment_analysis {
-    label 'bam_readcount'
-    label 'process_low'
-
-    input:
-    tuple val(prefix), file(bamfile), file(variantCalls)
-    file(reference)
-
-    output:
-    tuple val(prefix), file("*.counts.tsv")
-
-    shell:
-    '''
-    touch !{prefix}.counts.tsv
-    while read -r LINE; do
-        echo "$LINE" | while IFS=$'\\t' read -r -a CELLS; do
-            REGION="${CELLS[0]}"
-            POS="${CELLS[1]}"
-            if [[ $POS != "POS" ]]; then
-                bam-readcount -f !{reference[0]} !{bamfile[0]} "${REGION}:${POS}-${POS}" >> \
-                    !{prefix}.counts.tsv
-            fi
-        done
-    done < !{variantCalls}
-    '''
-}
-
-// More strictly filter the variants based on strand bias and read position
-process variant_filter {
-    label 'julia'
-    label 'error_retry'
-    publishDir "${params.outdir}/variants", mode: "${params.publish_dir_mode}"
-
-    input:
-    tuple val(prefix), file(variantCalls), file(variantStats)
-
-    output:
-    tuple val(prefix), file("*.variants.tsv")
-
-    script:
-    """
-    export JULIA_NUM_THREADS=${task.cpus}
-    variantfilter ${variantCalls[0]} ${variantStats[0]} ${prefix}.variants.tsv
-    """
-}
-
-// At some point, we will need to use long reads to find if mutations are linked within
-// a single viral genome. To start, we will look to see if there are reads that contain more
-// than one mutation in them as called by ivar
 process calling_ont {
     label 'julia'
-    label 'error_retry'
-    publishDir "${params.outdir}/haplotypes", mode: "${params.publish_dir_mode}"
+    label 'process_high'
+    publishDir "${params.outdir}", mode: "${params.publish_dir_mode}"
 
     input:
-    tuple val(prefix), file(bamfile), file(variants)
-    file(reference)
+    tuple val(prefix), file(bamfile), file(reference)
 
     output:
-    tuple val(prefix), path("${prefix}.haplotypes.yaml"), emit: haplotype_yaml
-    tuple val(prefix), path("${prefix}.haplotypes.fasta"), emit: haplotype_fasta
+    tuple val(prefix), path("variants/${prefix}.vcf"), emit: variants
+    tuple val(prefix), path("haplotypes/${prefix}.haplotypes.yaml"), emit: haplotype_yaml
+    tuple val(prefix), path("haplotypes/${prefix}.haplotypes.fasta"), emit: haplotype_fasta
 
     script:
     """
     export JULIA_NUM_THREADS=${task.cpus}
-    haplotype-finder -p ${params.haplotype_significance} -m ${params.haplotype_minimum} \
-        ${bamfile[0]} ${variants[0]} ${prefix}.haplotypes.yaml
-    make-haplotype-fastas ${prefix}.haplotypes.yaml ${reference[0]} ${prefix}.haplotypes.fasta
-    """
-}
-
-process merge_fastas {
-    label 'process_low'
-
-    input:
-    tuple val(sampleName), file(haplotypes), file(assembly)
-    file(reference)
-
-    output:
-    tuple val(sampleName), file("${sampleName}.population.fasta")
-
-    script:
-    """
-    # Create an editable copy of the assembly
-    cp ${assembly} assembly.fasta
-
-    # Ensure the records have unique names by prepending the sample name
-    # This work for contigs generated by SPAdes and Canu
-    sed -i "s/>/>${sampleName}./g" assembly.fasta
-
-    # cat them togther
-    cat ${reference[0]} assembly.fasta ${haplotypes} > ${sampleName}.population.fasta
+    haplink ${bamfile[0]} \
+        --reference ${reference[0]} \
+        --variants ${prefix}.vcf \
+        --prefix ${prefix} \
+        --quality ${params.variant_quality} \
+        --frequency ${params.variant_frequency} \
+        --position ${params.variant_position} \
+        --variant-significance ${params.variant_significance} \
+        --variant-depth ${params.variant_depth} \
+        --haplotype-significance ${params.haplotype_significance} \
+        --haplotype-depth ${params.haplotype_depth}
+    rm -rf variants haplotypes
+    mkdir variants
+    mv ${prefix}.vcf variants
+    mkdir haplotypes
+    mv ${prefix}.yaml haplotypes/${prefix}.haplotypes.yaml
+    mv ${prefix}.fasta haplotypes/${prefix}.haplotypes.fasta
     """
 }
 
@@ -190,17 +231,19 @@ process alignment {
     cpus 1
 
     input:
-    tuple val(sampleName), file(haploReads)
+    tuple val(sampleName), file(haploReads), file(consensus)
+    path(referenceStrains)
 
     output:
     tuple val(sampleName), file("${sampleName}.haplotypes.fas")
 
-    shell:
-    '''
-    mafft --thread !{task.cpus} --auto \
-        !{haploReads} > !{sampleName}.haplotypes.fas
-    sed -i "s/ .*$//" !{sampleName}.haplotypes.fas
-    '''
+    script:
+    """
+    cat ${consensus} ${haploReads} ${referenceStrains} > ${sampleName}.mafft.fasta
+    mafft --thread ${task.cpus} --auto \
+        ${sampleName}.mafft.fasta > ${sampleName}.haplotypes.fas
+    sed -i "s/ .*\$//" ${sampleName}.haplotypes.fas
+    """
 }
 
 process phylogenetic_tree {
@@ -217,8 +260,8 @@ process phylogenetic_tree {
     script:
     """
     raxml-ng --threads ${task.cpus}{auto} --workers auto \
-        --prefix ${sampleName} --outgroup ${params.genome} \
-        --all --model GTR+G --bs-trees 1000 \
+        --prefix ${sampleName} \
+        --all --model GTR+G --bs-trees ${params.phylogenetic_bootstraps} \
         --msa ${alignedHaplotypes}
     cp ${sampleName}.raxml.support ${sampleName}.nwk
     """

@@ -8,6 +8,27 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.3.0-alpha] - 2021-12-01
+
+### Added
+
+- Kraken2 database download instructions to docs (547f67b)
+- Parameter option for number of phylogenetic bootstrap trees (474652f)
+- Options to skip read trimming (`--skip_trimming`) and read QC (`--skip_qc`) (#5)
+- Realignment to closest reference genome based on BLAST (#6)
+
+### Changed
+
+- Dynamically calculate Kraken2's memory requirements (5d9a873)
+- Processes using gzip sped up by removing `-9` flag (e3c2a13)
+- ONT Haplotyping is now performed by the external library
+  https://github.com/ksumngs/HapLink.jl (#2)
+- Test suite updated to more predicable haplotypes (3a3f30b)
+
+### Removed
+
+- All `conda`-dependent processes (#3)
+
 ## [0.2.1-alpha] - 2021-11-23
 
 ### Fixed
@@ -102,7 +123,8 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 - Krona graphs of Kraken2 output
 - BLAST of assemblies and unclassified reads
 
-[Unreleased]: https://github.com/ksumngs/yavsap/compare/v0.2.1-alpha...HEAD
+[Unreleased]: https://github.com/ksumngs/yavsap/compare/v0.3.0-alpha...HEAD
+[0.3.0-alpha]: https://github.com/ksumngs/yavsap/compare/v0.2.1-alpha...v0.3.0-alpha
 [0.2.1-alpha]: https://github.com/ksumngs/yavsap/compare/v0.2.0-alpha...v0.2.1-alpha
 [0.2.0-alpha]: https://github.com/ksumngs/yavsap/compare/v0.1.0-alpha...v0.2.0-alpha
 [0.1.0-alpha]: https://github.com/ksumngs/yavsap/compare/v0.0.1...v0.1.0-alpha
