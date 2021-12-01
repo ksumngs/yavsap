@@ -130,7 +130,7 @@ jobs:
           wget -qO- https://genome-idx.s3.amazonaws.com/kraken/k2_viral_20210517.tar.gz | tar xzv -C ~/kraken2-db
 
       - name: Pull Singularity images
-        if: ${{ env.RUN_CONTAINER == 'singularity' }}
+        if: ${{ env.RUN_CONTAINER == 'singularity' && steps.singularity-cache.outputs.cache-hit != 'true' }}
         run: |
           grep 'container =' ${GITHUB_WORKSPACE}/conf/containers.config | awk '{print $3}' | xargs -I {} -n1 singularity pull docker://{}
 
