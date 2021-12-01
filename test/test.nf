@@ -29,8 +29,7 @@ workflow simulated_reads {
 }
 
 process VARIANT_SIMULATE {
-    label 'julia'
-    label 'error_retry'
+    label 'haplink'
 
     input:
     file(reference)
