@@ -34,56 +34,6 @@ jobs:
             container_env: docker
             skipping: ''
             read_type: pe
-          - nxf_ver: ''
-            nxf_edge: ''
-            container_env: docker
-            skipping:  '--skip_trimming'
-            read_type: pe
-          - nxf_ver: ''
-            nxf_edge: ''
-            container_env: docker
-            skipping: '--skip_trimming'
-            read_type: ont
-          - nxf_ver: ''
-            nxf_edge: ''
-            container_env: docker
-            skipping:  '--skip_qc'
-            read_type: pe
-          - nxf_ver: ''
-            nxf_edge: ''
-            container_env: docker
-            skipping: '--skip_qc'
-            read_type: ont
-          - nxf_ver: ''
-            nxf_edge: ''
-            container_env: docker
-            skipping: '--skip_filtering'
-            read_type: pe
-          - nxf_ver: ''
-            nxf_edge: ''
-            container_env: docker
-            skipping: '--skip_filtering'
-            read_type: ont
-          - nxf_ver: ''
-            nxf_edge: ''
-            container_env: docker
-            skipping: '--skip_assembly'
-            read_type: pe
-          - nxf_ver: ''
-            nxf_edge: ''
-            container_env: docker
-            skipping: '--skip_assembly'
-            read_type: ont
-          - nxf_ver: ''
-            nxf_edge: ''
-            container_env: docker
-            skipping:  '--skip_haplotype'
-            read_type: pe
-          - nxf_ver: ''
-            nxf_edge: ''
-            container_env: docker
-            skipping: '--skip_haplotype'
-            read_type: ont
     steps:
       - name: Check out pipeline code
         uses: actions/checkout@v2
