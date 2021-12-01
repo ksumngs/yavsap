@@ -21,6 +21,7 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 - Processes using gzip sped up by removing `-9` flag
 - ONT Haplotyping is now performed by the external library
   https://github.com/ksumngs/HapLink.jl
+- Test suite updated to more predicable haplotypes
 
 ### Removed
 
