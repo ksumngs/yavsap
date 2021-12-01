@@ -20,7 +20,7 @@ jobs:
       matrix:
         nxf_ver: ['20.10.0', '']
         nxf_edge: [ '' ]
-        container_env: ['docker', 'singularity', 'podman']
+        container_env: ['docker', 'singularity']
         read_type: ['ont', 'pe']
         skipping: [ '' ]
         include:
