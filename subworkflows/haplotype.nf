@@ -188,7 +188,7 @@ process calling_pe {
 }
 
 process calling_ont {
-    label 'julia'
+    label 'haplink'
     label 'process_high'
     publishDir "${params.outdir}", mode: "${params.publish_dir_mode}"
 
