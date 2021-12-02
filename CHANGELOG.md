@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic
 Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+## [0.3.2-alpha] - 2021-12-02
+
+### Fixed
+
+- File copy no longer fails under Podman profile/container engine (#8)
+
 ## [0.3.1-alpha] - 2021-12-01
 
 ### Changed
@@ -127,7 +135,8 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 - Krona graphs of Kraken2 output
 - BLAST of assemblies and unclassified reads
 
-[Unreleased]: https://github.com/ksumngs/yavsap/compare/v0.3.1-alpha...HEAD
+[Unreleased]: https://github.com/ksumngs/yavsap/compare/v0.3.2-alpha...HEAD
+[0.3.2-alpha]: https://github.com/ksumngs/yavsap/compare/v0.3.1-alpha...v0.3.2-alpha
 [0.3.1-alpha]: https://github.com/ksumngs/yavsap/compare/v0.3.0-alpha...v0.3.1-alpha
 [0.3.0-alpha]: https://github.com/ksumngs/yavsap/compare/v0.2.1-alpha...v0.3.0-alpha
 [0.2.1-alpha]: https://github.com/ksumngs/yavsap/compare/v0.2.0-alpha...v0.2.1-alpha

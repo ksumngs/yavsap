@@ -9,7 +9,9 @@ workflow haplotyping {
     GenomeAnnotation
 
     main:
-    pull_references()
+    GenomeList = file("${workflow.projectDir}/genomes/${params.genome_list}.tsv")
+
+    pull_references(GenomeList)
     AccessionGenomes = pull_references.out.accession_genomes
     StrainGenomes = pull_references.out.strain_genomes
     blast_db(AccessionGenomes)
@@ -63,13 +65,15 @@ process pull_references {
     label 'process_low'
     label 'error_backoff'
 
+    input:
+    file(genomeList)
+
     output:
     path('accession_genomes.fasta'), emit: accession_genomes
     path('strain_genomes.fasta'), emit: strain_genomes
 
     shell:
     '''
-    cp !{workflow.projectDir}/genomes/!{params.genome_list}.tsv .
     while read -r LINE; do
         echo "$LINE" | while IFS=$'\\t' read -r STRAIN ACCESSION; do
             efetch -db nucleotide -id $ACCESSION -format fasta > $ACCESSION.fasta
@@ -78,7 +82,7 @@ process pull_references {
             rm $ACCESSION.fasta
             sleep 0.3
         done
-    done < !{params.genome_list}.tsv
+    done < !{genomeList}
     '''
 }
 
