@@ -8,7 +8,9 @@ workflow simulated_reads {
     reference_genome_pull()
     ReferenceGenome = reference_genome_pull.out.indexedreference
 
-    VARIANT_SIMULATE(ReferenceGenome)
+    HaplotypeYaml = file("${workflow.projectDir}/test/test.haplotypes.yaml")
+
+    VARIANT_SIMULATE(ReferenceGenome, HaplotypeYaml)
     HaplotypeGenomes = VARIANT_SIMULATE.out
 
     if (params.pe) {
@@ -33,14 +35,14 @@ process VARIANT_SIMULATE {
 
     input:
     file(reference)
+    file(haplotypeYaml)
 
     output:
     path "haplotypes.fasta"
 
     script:
     """
-    cp ${workflow.projectDir}/test/test.haplotypes.yaml .
-    make-haplotype-fastas test.haplotypes.yaml ${reference[0]} haplotypes.fasta
+    make-haplotype-fastas ${haplotypeYaml} ${reference[0]} haplotypes.fasta
     """
 }
 

@@ -153,7 +153,10 @@ workflow {
         //PhyloTrees = Channel.from([])
     }
 
-    multiqc(KrakenReports
+    MultiQCConfig = file("${workflow.projectDir}/multiqc_config.yaml")
+
+    multiqc(MultiQCConfig,
+        KrakenReports
         .concat(trimming.out.report)
         .concat(QcReport)
         .collect())
@@ -245,6 +248,7 @@ process multiqc {
     publishDir "${params.outdir}", mode: "${params.publish_dir_mode}"
 
     input:
+    file(configFile)
     file '*'
 
     output:
@@ -253,7 +257,6 @@ process multiqc {
 
     script:
     """
-    cp ${workflow.projectDir}/multiqc_config.yaml .
     multiqc .
     """
 }
