@@ -145,7 +145,7 @@ process blast_consensus {
 }
 
 process realign_to_new_reference {
-    label 'minimap2'
+    label 'minimap'
     publishDir "${params.outdir}/alignment", mode: "${params.publish_dir_mode}"
 
     input:
