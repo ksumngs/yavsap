@@ -1,6 +1,6 @@
 ---
 name: Bug Report
-description: Something isn't working like it's supposed to
+about: Something isn't working like it's supposed to
 title: "[Bug]: "
 labels: ["bug"]
 ---

@@ -1,6 +1,6 @@
 ---
 name: Feature Request
-description: A new idea to make YAVSAP even more robust
+about: A new idea to make YAVSAP even more robust
 title: "[Feature]: "
 labels: ["enhancement"]
 ---
