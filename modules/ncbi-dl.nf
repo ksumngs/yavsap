@@ -20,6 +20,10 @@ process NCBI_DOWNLOAD {
     label 'process_low'
     label 'error_backoff'
 
+    // Prevent NCBI database timeouts by preventing this process from being run in
+    // parallel. Trust me: this is actually faster than erroring out
+    maxForks 1
+
     input:
     val(accessionNumber)
 
@@ -34,16 +38,11 @@ process NCBI_DOWNLOAD {
             -id ${accessionNumber} \
             -format fasta \
         > ${accessionNumber}.fasta
-
-    # Avoid NCBI timeouts
-    sleep 0.3
-
     efetch \
             -db nucleotide \
             -id ${accessionNumber} \
             -format gb \
         > ${accessionNumber}.gb
-    sleep 0.3
 
     # Fail on empty files, as efetch does not return failed exit codes for errors
     grep -q '[^[:space:]]' ${accessionNumber}.fasta || exit 1
