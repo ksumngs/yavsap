@@ -40,7 +40,7 @@ workflow GENOME_DOWNLOAD {
 
     emit:
     indexedFasta = IndexedReference
-    annotatedreference = AnnotatedReference
+    referenceAnnotations = AnnotatedReference
     genomesize = GenomeSize
 }
 
