@@ -41,7 +41,7 @@ workflow GENOME_DOWNLOAD {
     emit:
     indexedFasta = IndexedReference
     referenceAnnotations = AnnotatedReference
-    genomesize = GenomeSize
+    genomeSize = GenomeSize
 }
 
 // Index the reference genome for use with Samtools

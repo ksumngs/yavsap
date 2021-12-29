@@ -86,7 +86,7 @@ workflow {
     GENOME_DOWNLOAD()
     IndexedReference = GENOME_DOWNLOAD.out.indexedFasta
     AnnotatedReference = GENOME_DOWNLOAD.out.referenceAnnotations
-    GenomeSize = GENOME_DOWNLOAD.out.genomesize
+    GenomeSize = GENOME_DOWNLOAD.out.genomeSize
 
     // Bring in the reads files
     if (params.sra) {
