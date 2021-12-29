@@ -2,7 +2,18 @@
 nextflow.enable.dsl = 2
 
 /// summary: |
-///   Downloads
+///   Downloads a genome in fasta and genbank format from the NCBI databases
+/// input:
+///   - name: accessionNumber
+///     type: val(String)
+///     description: The accession number or gid to download from NCBI
+/// output:
+///   - name: fasta
+///     type: path
+///     description: The requested genome in fasta format
+///   - name: genbank
+///     type: path
+///     description: The requested genome in GenBank format
 process NCBI_DOWNLOAD {
     label 'edirect'
     label 'run_local'
