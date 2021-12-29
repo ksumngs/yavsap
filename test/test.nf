@@ -1,12 +1,12 @@
 #!/usr/bin/env nextflow
 nextflow.enable.dsl = 2
 
-include { reference_genome_pull } from '../subworkflows/reference.nf'
+include { GENOME_DOWNLOAD } from '../subworkflows/reference.nf'
 
 workflow simulated_reads {
     main:
-    reference_genome_pull()
-    ReferenceGenome = reference_genome_pull.out.indexedreference
+    GENOME_DOWNLOAD()
+    ReferenceGenome = GENOME_DOWNLOAD.out.indexedreference
 
     HaplotypeYaml = file("${workflow.projectDir}/test/test.haplotypes.yaml")
 
