@@ -234,7 +234,7 @@ process HAPLINK_VARIANTS {
     script:
     """
     haplink variants \
-        --bam ${bamfile} \
+        --bam ${bamfile[0]} \
         --reference ${reference} \
         --output ${prefix}.haplotypes.yaml \
         --quality ${params.variant_quality} \
@@ -278,7 +278,7 @@ process HAPLINK_HAPLOTYPES {
     script:
     """
     haplink haplotypes \
-        --bam ${bamfile} \
+        --bam ${bamfile[0]} \
         --variants ${variants} \
         --output ${prefix}.haplotypes.yaml \
         --significance ${params.haplotype_significance} \
