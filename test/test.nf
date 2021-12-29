@@ -10,8 +10,8 @@ workflow simulated_reads {
 
     HaplotypeYaml = file("${workflow.projectDir}/test/test.haplotypes.yaml")
 
-    VARIANT_SIMULATE(ReferenceGenome, HaplotypeYaml)
-    HaplotypeGenomes = VARIANT_SIMULATE.out
+    VARIANT_SIMULATOR(ReferenceGenome, HaplotypeYaml)
+    HaplotypeGenomes = VARIANT_SIMULATOR.out
 
     if (params.pe) {
         AllGenomes = ReferenceGenome
@@ -30,7 +30,7 @@ workflow simulated_reads {
     OutputReads
 }
 
-process VARIANT_SIMULATE {
+process VARIANT_SIMULATOR {
     label 'haplink'
 
     input:
