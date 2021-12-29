@@ -284,8 +284,8 @@ process HAPLINK_HAPLOTYPES {
         --significance ${params.haplotype_significance} \
         --depth ${params.haplotype_depth} \
         --method ${params.haplotype_method} \
-        --overlap_min ${params.haplotype_overlap_min} \
-        --overlap_max ${params.haplotype_overlap_max} \
+        --overlap-min ${params.haplotype_overlap_min} \
+        --overlap-max ${params.haplotype_overlap_max} \
         --iterations ${params.haplotype_iterations} \
         --julia-args -t${task.cpus}
     """
