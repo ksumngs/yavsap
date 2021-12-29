@@ -6,7 +6,7 @@ include { GENOME_DOWNLOAD } from '../subworkflows/reference.nf'
 workflow simulated_reads {
     main:
     GENOME_DOWNLOAD()
-    ReferenceGenome = GENOME_DOWNLOAD.out.indexedreference
+    ReferenceGenome = GENOME_DOWNLOAD.out.indexedFasta
 
     HaplotypeYaml = file("${workflow.projectDir}/test/test.haplotypes.yaml")
 
