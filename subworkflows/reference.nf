@@ -43,23 +43,6 @@ workflow reference_genome_pull {
     genomesize = gensize
 }
 
-// Get the reference genome in FASTA format
-process download_fasta {
-    label 'edirect'
-    label 'run_local'
-    label 'process_low'
-    label 'error_backoff'
-
-    output:
-    file '*'
-
-    script:
-    """
-    efetch -db nucleotide -id ${params.genome} -format fasta > reference.fasta
-    grep -q '[^[:space:]]' reference.fasta || exit 1
-    """
-}
-
 // Get the reference genome in GenBank format
 process download_genbank {
     label 'edirect'
