@@ -56,7 +56,7 @@ if (!params.ont && !params.pe) {
     exit 1
 }
 
-include { reference_genome_pull } from './subworkflows/reference.nf'
+include { GENOME_DOWNLOAD } from './subworkflows/reference.nf'
 include { trimming }              from './subworkflows/trimming.nf'
 include { assembly }              from './subworkflows/assembly.nf'
 include { read_filtering }        from './subworkflows/filtering.nf'
@@ -83,10 +83,10 @@ Diagnostics folder:     ${params.tracedir}
 )
 
 workflow {
-    reference_genome_pull()
-    IndexedReference = reference_genome_pull.out.indexedreference
-    AnnotatedReference = reference_genome_pull.out.annotatedreference
-    GenomeSize = reference_genome_pull.out.genomesize
+    GENOME_DOWNLOAD()
+    IndexedReference = GENOME_DOWNLOAD.out.indexedreference
+    AnnotatedReference = GENOME_DOWNLOAD.out.annotatedreference
+    GenomeSize = GENOME_DOWNLOAD.out.genomesize
 
     // Bring in the reads files
     if (params.sra) {

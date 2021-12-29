@@ -3,7 +3,7 @@ nextflow.enable.dsl = 2
 
 include { NCBI_DOWNLOAD } from '../modules/ncbi-dl.nf'
 
-workflow reference_genome_pull {
+workflow GENOME_DOWNLOAD {
     main:
     // Download the files
     NCBI_DOWNLOAD(params.genome)
