@@ -43,6 +43,7 @@ process NCBI_DOWNLOAD {
             -id ${accessionNumber} \
             -format gb \
         > ${accessionNumber}.gb
+    sleep 0.3
 
     # Fail on empty files, as efetch does not return failed exit codes for errors
     grep -q '[^[:space:]]' ${accessionNumber}.fasta || exit 1
