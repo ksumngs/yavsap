@@ -33,8 +33,8 @@ workflow reference_genome_pull {
         .map{ s -> s.trim() }
 
     // Process the files
-    indexing(ReferenceFasta, ReferenceName)
-    IndexedReference = indexing.out
+    INDEXING(ReferenceFasta, ReferenceName)
+    IndexedReference = INDEXING.out
     annotation(ReferenceGenbank, ReferenceName)
     AnnotatedReference = annotation.out
 
@@ -45,7 +45,7 @@ workflow reference_genome_pull {
 }
 
 // Index the reference genome for use with Samtools
-process indexing {
+process INDEXING {
     label 'samtools'
     label 'process_low'
     publishDir "${params.outdir}/reference", mode: "${params.publish_dir_mode}"
