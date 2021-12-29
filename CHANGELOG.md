@@ -8,6 +8,10 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Fixed
+
+- It is now nearly impossible to receive cooldown timeouts from NCBI (#15)
+
 ## [0.3.3-alpha] - 2021-12-02
 
 ### Fixed
