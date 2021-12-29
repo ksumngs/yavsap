@@ -8,6 +8,10 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Changes
+
+- HapLink.jl updated to 0.4.1 (#16)
+
 ### Fixed
 
 - It is now nearly impossible to receive cooldown timeouts from NCBI (#15)

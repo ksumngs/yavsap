@@ -55,8 +55,15 @@ workflow haplotyping {
     }
     else {
         AlignmentsAndGenomes = RealignedReads.join(BlastGenomes)
-        calling_ont(AlignmentsAndGenomes)
-        HaplotypeSequences = calling_ont.out.haplotype_fasta
+        HAPLINK_VARIANTS(AlignmentsAndGenomes)
+
+        AlignmentsAndVariants = RealignedReads.join(HAPLINK_VARIANTS.out)
+        HAPLINK_HAPLOTYPES(AlignmentsAndVariants)
+
+        HaplotypesAndGenomes = HAPLINK_HAPLOTYPES.out.join(BlastGenomes)
+        HAPLINK_FASTA(HaplotypesAndGenomes)
+
+        HaplotypeSequences = HAPLINK_FASTA.out
     }
 
     AllHapSequences = HaplotypeSequences.join(ConsensusSequences)
@@ -193,6 +200,134 @@ process calling_pe {
     java -Xmx${jmemstring} -jar /usr/local/share/cliquesnv/clique-snv.jar \
         -m ${mode} -threads ${task.cpus} -in ${bamfile[0]} -tf 0.01 -fdf extended -rm -log
     mv snv_output/* .
+    """
+}
+
+/// summary: Call variants for Oxford Nanopore reads using HapLink.jl
+/// input:
+///   - tuple:
+///       - name: prefix
+///         type: val(String)
+///         description: The identifier for this sample as used in the output filename
+///       - name: bamfile
+///         type: file
+///         description: File for the alignment to call variants from
+///       - name: reference
+///         type: file
+///         description: Reference genome to call variants from in fasta format
+/// output:
+///   - tuple:
+///       - type: val(String)
+///         description: The identifier as passed though `prefix`
+///       - type: path
+///         description: The variants found in the reads in VCF format
+process HAPLINK_VARIANTS {
+    label 'haplink'
+    publishDir "${params.outdir}/variants", mode: "${params.publish_dir_mode}"
+
+    input:
+    tuple val(prefix), file(bamfile), file(reference)
+
+    output:
+    tuple val(prefix), path("${prefix}.vcf")
+
+    script:
+    """
+    haplink variants \
+        --bam ${bamfile[0]} \
+        --reference ${reference} \
+        --output ${prefix}.vcf \
+        --quality ${params.variant_quality} \
+        --frequency ${params.variant_frequency} \
+        --position ${params.variant_position} \
+        --significance ${params.variant_significance} \
+        --depth ${params.variant_depth} \
+        --julia-args -t${task.cpus}
+    """
+}
+
+/// summary: Call haplotypes from long reads using HapLink.jl
+/// input:
+///   - tuple:
+///       - name: prefix
+///         type: val(String)
+///         description: The identifier for this sample as used in the output filename
+///       - name: bamfile
+///         type: file
+///         description: File for the alignment to call haplotypes from
+///       - name: variants
+///         type: file
+///         description: File containing variants to consider haplotypes make of
+/// output:
+///   - tuple:
+///       - type: val(String)
+///         description: The identifier as passed though `prefix`
+///       - type: path
+///         description: The found haplotypes described in YAML format
+process HAPLINK_HAPLOTYPES {
+    label 'haplink'
+    label 'process_high'
+    publishDir "${params.outdir}/haplotypes", mode: "${params.publish_dir_mode}"
+
+    input:
+    tuple val(prefix), file(bamfile), file(variants)
+
+    output:
+    tuple val(prefix), path("${prefix}.haplotypes.yaml")
+
+    script:
+    """
+    haplink haplotypes \
+        --bam ${bamfile[0]} \
+        --variants ${variants} \
+        --output ${prefix}.haplotypes.yaml \
+        --significance ${params.haplotype_significance} \
+        --depth ${params.haplotype_depth} \
+        --method ${params.haplotype_method} \
+        --overlap-min ${params.haplotype_overlap_min} \
+        --overlap-max ${params.haplotype_overlap_max} \
+        --iterations ${params.haplotype_iterations} \
+        --julia-args -t${task.cpus}
+    """
+}
+
+/// summary: |
+///   Convert a YAML describing haplotypes into a fasta file with the sequences
+///   of those haplotypes
+/// input:
+///   - tuple:
+///       - name: prefix
+///         type: val(String)
+///         description: The identifier for this sample as used in the output filename
+///       - name: haplotypes
+///         type: file
+///         description: The YAML file describing the SNPs in each haplotype
+///       - name: reference
+///         type: file
+///         description: Reference genome to mutate sequences in to create the haplotype sequences
+/// output:
+///   - tuple:
+///       - type: val(String)
+///         description: The identifier as passed though `prefix`
+///       - type: path
+///         description: The mutated sequences in fasta format
+process HAPLINK_FASTA {
+    label 'haplink'
+    label 'process_low'
+    publishDir "${params.outdir}/haplotypes", mode: "${params.publish_dir_mode}"
+
+    input:
+    tuple val(prefix), file(haplotypes), file(reference)
+
+    output:
+    tuple val(prefix), path("${prefix}.haplotypes.fasta")
+
+    script:
+    """
+    haplink sequences \
+        --haplotypes ${haplotypes} \
+        --reference ${reference} \
+        --output ${prefix}.haplotypes.fasta
     """
 }
 
