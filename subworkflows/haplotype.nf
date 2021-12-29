@@ -236,7 +236,7 @@ process HAPLINK_VARIANTS {
     haplink variants \
         --bam ${bamfile[0]} \
         --reference ${reference} \
-        --output ${prefix}.haplotypes.yaml \
+        --output ${prefix}.vcf \
         --quality ${params.variant_quality} \
         --frequency ${params.variant_frequency} \
         --position ${params.variant_position} \
