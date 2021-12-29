@@ -42,7 +42,10 @@ process VARIANT_SIMULATOR {
 
     script:
     """
-    make-haplotype-fastas ${haplotypeYaml} ${reference[0]} haplotypes.fasta
+    haplink sequences \
+        --haplotypes ${haplotypeYaml} \
+        --reference ${reference[0]} \
+        --output haplotypes.fasta
     """
 }
 
