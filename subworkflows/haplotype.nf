@@ -55,8 +55,15 @@ workflow haplotyping {
     }
     else {
         AlignmentsAndGenomes = RealignedReads.join(BlastGenomes)
-        calling_ont(AlignmentsAndGenomes)
-        HaplotypeSequences = calling_ont.out.haplotype_fasta
+        HAPLINK_VARIANTS(AlignmentsAndGenomes)
+
+        AlignmentsAndVariants = RealignedReads.join(HAPLINK_VARIANTS.out)
+        HAPLINK_HAPLOTYPES(AlignmentsAndVariants)
+
+        HaplotypesAndGenomes = HAPLINK_HAPLOTYPES.out.join(BlastGenomes)
+        HAPLINK_FASTA(HaplotypesAndGenomes)
+
+        HaplotypeSequences = HAPLINK_FASTA.out
     }
 
     AllHapSequences = HaplotypeSequences.join(ConsensusSequences)
@@ -203,10 +210,10 @@ process calling_pe {
 ///         type: val(String)
 ///         description: The identifier for this sample as used in the output filename
 ///       - name: bamfile
-///         type: path
+///         type: file
 ///         description: File for the alignment to call variants from
 ///       - name: reference
-///         type: path
+///         type: file
 ///         description: Reference genome to call variants from in fasta format
 /// output:
 ///   - tuple:
@@ -219,7 +226,7 @@ process HAPLINK_VARIANTS {
     publishDir "${params.outdir}/variants", mode: "${params.publish_dir_mode}"
 
     input:
-    tuple val(prefix), path(bamfile), path(reference)
+    tuple val(prefix), file(bamfile), file(reference)
 
     output:
     tuple val(prefix), path("${prefix}.vcf")
@@ -246,10 +253,10 @@ process HAPLINK_VARIANTS {
 ///         type: val(String)
 ///         description: The identifier for this sample as used in the output filename
 ///       - name: bamfile
-///         type: path
+///         type: file
 ///         description: File for the alignment to call haplotypes from
 ///       - name: variants
-///         type: path
+///         type: file
 ///         description: File containing variants to consider haplotypes make of
 /// output:
 ///   - tuple:
@@ -263,7 +270,7 @@ process HAPLINK_HAPLOTYPES {
     publishDir "${params.outdir}/haplotypes", mode: "${params.publish_dir_mode}"
 
     input:
-    tuple val(prefix), path(bamfile), path(variants)
+    tuple val(prefix), file(bamfile), file(variants)
 
     output:
     tuple val(prefix), path("${prefix}.haplotypes.yaml")
@@ -293,10 +300,10 @@ process HAPLINK_HAPLOTYPES {
 ///         type: val(String)
 ///         description: The identifier for this sample as used in the output filename
 ///       - name: haplotypes
-///         type: path
+///         type: file
 ///         description: The YAML file describing the SNPs in each haplotype
 ///       - name: reference
-///         type: path
+///         type: file
 ///         description: Reference genome to mutate sequences in to create the haplotype sequences
 /// output:
 ///   - tuple:
@@ -310,7 +317,7 @@ process HAPLINK_FASTA {
     publishDir "${params.outdir}/haplotypes", mode: "${params.publish_dir_mode}"
 
     input:
-    tuple val(prefix), path(haplotypes), path(reference)
+    tuple val(prefix), file(haplotypes), file(reference)
 
     output:
     tuple val(prefix), path("${prefix}.haplotypes.fasta")
