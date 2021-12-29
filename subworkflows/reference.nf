@@ -43,25 +43,6 @@ workflow reference_genome_pull {
     genomesize = gensize
 }
 
-// Get the reference genome in GenBank format
-process download_genbank {
-    label 'edirect'
-    label 'run_local'
-    label 'process_low'
-    label 'error_backoff'
-
-    cpus 1
-
-    output:
-    file '*'
-
-    script:
-    """
-    efetch -db nucleotide -id ${params.genome} -format gb > reference.gb
-    grep -q '[^[:space:]]' reference.gb || exit 1
-    """
-}
-
 // Index the reference genome for use with Samtools
 process indexing {
     label 'samtools'
