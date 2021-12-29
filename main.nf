@@ -84,7 +84,7 @@ Diagnostics folder:     ${params.tracedir}
 
 workflow {
     GENOME_DOWNLOAD()
-    IndexedReference = GENOME_DOWNLOAD.out.indexedreference
+    IndexedReference = GENOME_DOWNLOAD.out.indexedFasta
     AnnotatedReference = GENOME_DOWNLOAD.out.annotatedreference
     GenomeSize = GENOME_DOWNLOAD.out.genomesize
 
