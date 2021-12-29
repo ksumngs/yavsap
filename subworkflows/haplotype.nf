@@ -196,6 +196,49 @@ process calling_pe {
     """
 }
 
+/// summary: Call variants for Oxford Nanopore reads using HapLink.jl
+/// input:
+///   - tuple:
+///       - name: prefix
+///         type: val(String)
+///         description: The identifier for this sample as used in the output filename
+///       - name: bamfile
+///         type: path
+///         description: File for the alignment to call variants from
+///       - name: reference
+///         type: path
+///         description: Reference genome to call variants from in fasta format
+/// output:
+///   - tuple:
+///       - type: val(String)
+///         description: The identifier as passed though `prefix`
+///       - type: path
+///         description: The variants found in the reads in VCF format
+process HAPLINK_VARIANTS {
+    label 'haplink'
+    publishDir "${params.outdir}/variants", mode: "${params.publish_dir_mode}"
+
+    input:
+    tuple val(prefix), path(bamfile), path(reference)
+
+    output:
+    tuple val(prefix), path("${prefix}.vcf")
+
+    script:
+    """
+    haplink variants \
+        --bam ${bamfile} \
+        --reference ${reference} \
+        --output ${prefix}.haplotypes.yaml \
+        --quality ${params.variant_quality} \
+        --frequency ${params.variant_frequency} \
+        --position ${params.variant_position} \
+        --significance ${params.variant_significance} \
+        --depth ${params.variant_depth} \
+        --julia-args -t${task.cpus}
+    """
+}
+
 process calling_ont {
     label 'haplink'
     label 'process_high'
