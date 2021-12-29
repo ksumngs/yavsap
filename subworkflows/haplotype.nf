@@ -1,6 +1,8 @@
 #!/usr/bin/env nextflow
 nextflow.enable.dsl = 2
 
+include { NCBI_DOWNLOAD } from '../modules/ncbi-dl.nf'
+
 workflow haplotyping {
     take:
     Reads
@@ -9,11 +11,20 @@ workflow haplotyping {
     GenomeAnnotation
 
     main:
-    GenomeList = file("${workflow.projectDir}/genomes/${params.genome_list}.tsv")
+    GenomePath = "${workflow.projectDir}/genomes/${params.genome_list}.tsv"
+    GenomeFile = file(GenomePath)
+    GenomeList = Channel
+        .fromPath(GenomePath)
+        .splitCsv(sep: '\t')
+        .map{ n -> "${n[1]}"}
 
-    pull_references(GenomeList)
-    AccessionGenomes = pull_references.out.accession_genomes
-    StrainGenomes = pull_references.out.strain_genomes
+    NCBI_DOWNLOAD(GenomeList)
+    GenomeFastas = NCBI_DOWNLOAD.out.fasta.collect()
+
+    GENOME_LABELING(GenomeFile, GenomeFastas)
+    AccessionGenomes = GENOME_LABELING.out.accessionGenomes
+    StrainGenomes = GENOME_LABELING.out.strainGenomes
+
     blast_db(AccessionGenomes)
     BlastDb = blast_db.out
 
