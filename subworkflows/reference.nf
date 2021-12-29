@@ -1,16 +1,17 @@
 #!/usr/bin/env nextflow
 nextflow.enable.dsl = 2
 
+include { NCBI_DOWNLOAD } from '../modules/ncbi-dl.nf'
+
 workflow reference_genome_pull {
     main:
     // Download the files
-    download_fasta()
-    download_genbank()
-    fastaref   = download_fasta.out
-    genbankref = download_genbank.out
+    NCBI_DOWNLOAD(params.genome)
+    ReferenceFasta = NCBI_DOWNLOAD.out.fasta
+    ReferenceGenbank = NCBI_DOWNLOAD.out.genbank
 
     // Measure the size of the genome based on the genbank record
-    gensize = genbankref
+    GenomeSize = ReferenceGenbank
         .splitText()
         .first()
         .map{ l -> l.replaceAll(/\s+/, ',') }
@@ -20,7 +21,7 @@ workflow reference_genome_pull {
         .last()
 
     // Get the name of the reference genome
-    refname = genbankref
+    ReferenceName = ReferenceGenbank
         .splitText()
         .take(2)
         .last()
@@ -32,15 +33,15 @@ workflow reference_genome_pull {
         .map{ s -> s.trim() }
 
     // Process the files
-    indexing(fastaref, refname)
-    indexedreference = indexing.out
-    annotation(genbankref, refname)
-    annotatedreference = annotation.out
+    indexing(ReferenceFasta, ReferenceName)
+    IndexedReference = indexing.out
+    annotation(ReferenceGenbank, ReferenceName)
+    AnnotatedReference = annotation.out
 
     emit:
-    indexedreference = indexedreference
-    annotatedreference = annotatedreference
-    genomesize = gensize
+    indexedreference = IndexedReference
+    annotatedreference = AnnotatedReference
+    genomesize = GenomeSize
 }
 
 // Index the reference genome for use with Samtools
