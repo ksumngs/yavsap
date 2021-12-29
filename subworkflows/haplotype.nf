@@ -284,6 +284,46 @@ process HAPLINK_HAPLOTYPES {
     """
 }
 
+/// summary: |
+///   Convert a YAML describing haplotypes into a fasta file with the sequences
+///   of those haplotypes
+/// input:
+///   - tuple:
+///       - name: prefix
+///         type: val(String)
+///         description: The identifier for this sample as used in the output filename
+///       - name: haplotypes
+///         type: path
+///         description: The YAML file describing the SNPs in each haplotype
+///       - name: reference
+///         type: path
+///         description: Reference genome to mutate sequences in to create the haplotype sequences
+/// output:
+///   - tuple:
+///       - type: val(String)
+///         description: The identifier as passed though `prefix`
+///       - type: path
+///         description: The mutated sequences in fasta format
+process HAPLINK_FASTA {
+    label 'haplink'
+    label 'process_low'
+    publishDir "${params.outdir}/haplotypes", mode: "${params.publish_dir_mode}"
+
+    input:
+    tuple val(prefix), path(haplotypes), path(reference)
+
+    output:
+    tuple val(prefix), path("${prefix}.haplotypes.fasta")
+
+    script:
+    """
+    haplink sequences \
+        --haplotypes ${haplotypes} \
+        --reference ${reference} \
+        --output ${prefix}.haplotypes.fasta
+    """
+}
+
 process calling_ont {
     label 'haplink'
     label 'process_high'
