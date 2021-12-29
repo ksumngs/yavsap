@@ -35,8 +35,8 @@ workflow reference_genome_pull {
     // Process the files
     INDEXING(ReferenceFasta, ReferenceName)
     IndexedReference = INDEXING.out
-    annotation(ReferenceGenbank, ReferenceName)
-    AnnotatedReference = annotation.out
+    ANNOTATION(ReferenceGenbank, ReferenceName)
+    AnnotatedReference = ANNOTATION.out
 
     emit:
     indexedreference = IndexedReference
@@ -66,7 +66,7 @@ process INDEXING {
 }
 
 // Process the reference genome's feature table into GFF format
-process annotation {
+process ANNOTATION {
     label 'seqret'
     label 'process_low'
         publishDir "${params.outdir}/reference", mode: "${params.publish_dir_mode}"
