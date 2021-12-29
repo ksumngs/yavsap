@@ -59,6 +59,27 @@ workflow haplotyping {
     trees
 }
 
+process GENOME_LABELING {
+    label 'process_low'
+
+    input:
+    file(genomeList)
+    path(genomeFastas)
+
+    output:
+    path('accession_genomes.fasta'), emit: accessionGenomes
+    path('strain_genomes.fasta'), emit: strainGenomes
+
+    script:
+    """
+    labelstrains \
+        ${genomeList} \
+        accession_genomes.fasta \
+        strain_genomes.fasta \
+        ${genomeFastas}
+    """
+}
+
 process pull_references {
     label 'edirect'
     label 'run_local'
