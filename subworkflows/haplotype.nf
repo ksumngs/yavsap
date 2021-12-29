@@ -91,33 +91,6 @@ process GENOME_LABELING {
     """
 }
 
-process pull_references {
-    label 'edirect'
-    label 'run_local'
-    label 'process_low'
-    label 'error_backoff'
-
-    input:
-    file(genomeList)
-
-    output:
-    path('accession_genomes.fasta'), emit: accession_genomes
-    path('strain_genomes.fasta'), emit: strain_genomes
-
-    shell:
-    '''
-    while read -r LINE; do
-        echo "$LINE" | while IFS=$'\\t' read -r STRAIN ACCESSION; do
-            efetch -db nucleotide -id $ACCESSION -format fasta > $ACCESSION.fasta
-            sed "s%>.*%>$ACCESSION%" $ACCESSION.fasta >> accession_genomes.fasta
-            sed "s%>.*%>$STRAIN%" $ACCESSION.fasta >> strain_genomes.fasta
-            rm $ACCESSION.fasta
-            sleep 0.3
-        done
-    done < !{genomeList}
-    '''
-}
-
 process blast_db {
     label 'blast'
 
