@@ -239,6 +239,51 @@ process HAPLINK_VARIANTS {
     """
 }
 
+/// summary: Call haplotypes from long reads using HapLink.jl
+/// input:
+///   - tuple:
+///       - name: prefix
+///         type: val(String)
+///         description: The identifier for this sample as used in the output filename
+///       - name: bamfile
+///         type: path
+///         description: File for the alignment to call haplotypes from
+///       - name: variants
+///         type: path
+///         description: File containing variants to consider haplotypes make of
+/// output:
+///   - tuple:
+///       - type: val(String)
+///         description: The identifier as passed though `prefix`
+///       - type: path
+///         description: The found haplotypes described in YAML format
+process HAPLINK_HAPLOTYPES {
+    label 'haplink'
+    label 'process_high'
+    publishDir "${params.outdir}/haplotypes", mode: "${params.publish_dir_mode}"
+
+    input:
+    tuple val(prefix), path(bamfile), path(variants)
+
+    output:
+    tuple val(prefix), path("${prefix}.haplotypes.yaml")
+
+    script:
+    """
+    haplink haplotypes \
+        --bam ${bamfile} \
+        --variants ${variants} \
+        --output ${prefix}.haplotypes.yaml \
+        --significance ${params.haplotype_significance} \
+        --depth ${params.haplotype_depth} \
+        --method ${params.haplotype_method} \
+        --overlap_min ${params.haplotype_overlap_min} \
+        --overlap_max ${params.haplotype_overlap_max} \
+        --iterations ${params.haplotype_iterations} \
+        --julia-args -t${task.cpus}
+    """
+}
+
 process calling_ont {
     label 'haplink'
     label 'process_high'
