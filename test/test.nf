@@ -5,25 +5,35 @@ include { GENOME_DOWNLOAD } from '../subworkflows/reference.nf'
 
 workflow simulated_reads {
     main:
+    // Get the reference genome
     GENOME_DOWNLOAD()
     ReferenceGenome = GENOME_DOWNLOAD.out.indexedFasta
 
-    HaplotypeYaml = file("${workflow.projectDir}/test/test.haplotypes.yaml")
+    // Get the haplotype descriptions as a name-file pair channel
+    HaplotypeYamls = Channel
+        .fromPath("${workflow.projectDir}/test/haplotypes/*.yaml")
+        .map{ file -> tuple(file.simpleName, file) }
 
-    VARIANT_SIMULATOR(ReferenceGenome, HaplotypeYaml)
-    HaplotypeGenomes = VARIANT_SIMULATOR.out
+    // Add muations to the reference genome
+    VARIANT_SIMULATOR(HaplotypeYamls, ReferenceGenome)
 
+    // Calculate the requested depth of each haplotype
+    HAPLOTYPE_DEPTH(HaplotypeYamls)
+
+    // Create a channel with the mutated genome and the depth
+    HaplotypeGenomes = VARIANT_SIMULATOR.out.join(HAPLOTYPE_DEPTH.out)
+
+    // Simulate the reads and return a samplename/fastq tuple
     if (params.pe) {
-        AllGenomes = ReferenceGenome
-            .concat(HaplotypeGenomes)
-            .collect()
-        KRAKEN_READ_SIMULATE(AllGenomes)
-        OutputReads = KRAKEN_READ_SIMULATE.out
+        HaplotypeGenomes | KRAKEN_READ_SIMULATE
+        READ_CONCAT(KRAKEN_READ_SIMULATE.out.collect())
+        OutputReads = READ_CONCAT.out
     }
     else {
-        NANOSIM_MODEL_DOWNLOAD()
-        NANOSIM_SIMULATE(ReferenceGenome, HaplotypeGenomes, NANOSIM_MODEL_DOWNLOAD.out)
-        OutputReads = NANOSIM_SIMULATE.out
+        PBSIM_MODEL_DOWNLOAD()
+        PBSIM_SIMULATE(HaplotypeGenomes, PBSIM_MODEL_DOWNLOAD.out)
+        READ_CONCAT(PBSIM_SIMULATE.out.collect())
+        OutputReads = READ_CONCAT.out
     }
 
     emit:
