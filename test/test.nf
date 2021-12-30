@@ -67,22 +67,40 @@ process HAPLOTYPE_DEPTH {
     """
 }
 
+/// summary: Simulate the genome of a haplotype using HapLink.jl
+/// input:
+///   - tuple:
+///       - name: prefix
+///         type: val(String)
+///         description: The unique id for this mutation pattern
+///       - name: haplotypeYaml
+///         type: file
+///         description: YAML file describing the mutations that make up the haplotype
+///   - name: reference
+///     type: file
+///     description: The reference genome being mutated in fasta format
+/// output:
+///   - tuple:
+///       - type: val(String)
+///         description: The identifier as passed through `prefix`
+///       - type: path
+///         description: The mutated sequence in fasta format
 process VARIANT_SIMULATOR {
     label 'haplink'
 
     input:
+    tuple val(prefix), file(haplotypeYaml)
     file(reference)
-    file(haplotypeYaml)
 
     output:
-    path "haplotypes.fasta"
+    tuple val(prefix), path("${prefix}.fasta")
 
     script:
     """
     haplink sequences \
         --haplotypes ${haplotypeYaml} \
         --reference ${reference[0]} \
-        --output haplotypes.fasta
+        --output ${prefix}.fasta
     """
 }
 
