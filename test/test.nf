@@ -170,7 +170,6 @@ process NANOSIM_SIMULATE {
 ///   - type: path
 ///     description: The model file
 process PBSIM_MODEL_DOWNLOAD {
-    label 'pbsim'
     label 'run_local'
     label 'process_low'
 
