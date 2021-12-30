@@ -10,7 +10,8 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changes
 
-- HapLink.jl updated to 0.4.1 (#16)
+- HapLink.jl updated to 0.4 (#16)
+- ONT reads now simulated using https://github.com/yukiteruono/pbsim2 (#17)
 
 ### Fixed
 
