@@ -3,7 +3,7 @@ nextflow.enable.dsl = 2
 
 include { GENOME_DOWNLOAD } from '../subworkflows/reference.nf'
 
-workflow simulated_reads {
+workflow SIMULATED_READS {
     main:
     // Get the reference genome
     GENOME_DOWNLOAD()
