@@ -182,3 +182,38 @@ process PBSIM_MODEL_DOWNLOAD {
     wget https://raw.githubusercontent.com/yukiteruono/pbsim2/eaae5b1313e453e5738c591772070ed529b0fad3/data/R95.model
     """
 }
+
+/// summary: Simulate ONT long reads using pbsim
+/// input:
+///   - tuple:
+///       - name: prefix
+///         type: val(String)
+///         description: The unique id for this mutation pattern
+///       - name: genome
+///         type: file
+///         description: Fasta file containing the sequence to simulate reads of
+///       - name: depth
+///         type: val(Int)
+///         description: The number of reads to simulate
+///   - name: model
+///     type: file
+///     description: The HMM model file to simulate with
+/// output:
+///   - type: path
+///     description: The fastq files containing the simulated reads
+process PBSIM_SIMULATE {
+    label 'pbsim'
+
+    input:
+    tuple val(prefix), file(genome), val(depth)
+    file(model)
+
+    output:
+    path("${prefix}.fastq")
+
+    script:
+    """
+    pbsim --depth ${depth} --hmm_model ${model} ${genome}
+    mv sd_0001.fastq ${prefix}.fastq
+    """
+}
