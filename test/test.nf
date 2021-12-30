@@ -30,6 +30,43 @@ workflow simulated_reads {
     OutputReads
 }
 
+/// summary: |
+///   Convert the `frequency` key in a HapLink.jl output file to a valid (integer)
+///   read depth
+/// input:
+///   - tuple:
+///       - name: prefix
+///         type: val(String)
+///         description: The identifier for this sample
+///       - name: haplotypes
+///         type: file
+///         description: |
+///           A HapLink.jl file containing a single haplotype definition. If the
+///           file contains more than one haplotype, then the process will only
+///           return results for the first haplotype.
+/// output:
+///   - tuple:
+///      - type: val(String)
+///        description: The identifier as passed through `prefix`
+///      - type: env
+///        description: The read depth of the haplotype as an integer
+process HAPLOTYPE_DEPTH {
+    label 'process_low'
+
+    input:
+    tuple val(prefix), file(haplotypes)
+
+    output:
+    tuple val(prefix), env(DEPTH)
+
+    script:
+    """
+    depthof ${haplotypes} > DEPTH
+    mapfile DEPTH < DEPTH
+    export DEPTH
+    """
+}
+
 process VARIANT_SIMULATOR {
     label 'haplink'
 
