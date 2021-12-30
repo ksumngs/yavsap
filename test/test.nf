@@ -86,22 +86,39 @@ process VARIANT_SIMULATOR {
     """
 }
 
+/// summary: Simulate Illumina paired-end reads using Kraken2's perl script
+/// input:
+///   - tuple:
+///       - name: prefix
+///         type: val(String)
+///         description: The unique id for this mutation pattern
+///       - name: genome
+///         type: file
+///         description: Fasta file containing the sequence to simulate reads of
+///       - name: depth
+///         type: val(Int)
+///         description: The number of reads to simulate
+/// output:
+///   - type: path
+///     description: The fastq files containing the simulated reads
 process KRAKEN_READ_SIMULATE {
     label 'kraken'
 
     input:
-    file(genomes)
+    tuple val(prefix), file(genomes), val(depth)
 
     output:
-    tuple val('simulatedsample'), file("simulatedreads*.fastq.gz")
+    path("${prefix}*.fastq")
 
     script:
     """
-    /kraken2-2.1.2/data/simulator.pl --num-frags 4000 \
-        --output-format 'simulatedreads_R#.fastq' --read-length 150 \
-        --frag-dist-params '500,50' --error_rate 0.01 \
-        *.fasta
-    gzip *.fastq
+    /kraken2-2.1.2/data/simulator.pl \
+        --num-frags ${depth} \
+        --output-format '${prefix}_R#.fastq' \
+        --read-length 150 \
+        --frag-dist-params '500,50' \
+        --error_rate 0.01 \
+        ${genomes}
     """
 }
 
