@@ -132,7 +132,7 @@ process KRAKEN_READ_SIMULATE {
     """
     /kraken2-2.1.2/data/simulator.pl \
         --num-frags ${depth} \
-        --output-format '${prefix}_R#.fastq' \
+        --output-format '${prefix}#.fastq' \
         --read-length 150 \
         --frag-dist-params '500,50' \
         --error_rate 0.01 \
@@ -260,8 +260,8 @@ process READ_CONCAT {
     script:
     if (params.pe) {
         """
-        cat *_R1.fastq > SIM_R1.fastq
-        cat *_R2.fastq > SIM_R2.fastq
+        cat *_1.fastq > SIM_R1.fastq
+        cat *_2.fastq > SIM_R2.fastq
         gzip SIM_R?.fastq
         """
     }
