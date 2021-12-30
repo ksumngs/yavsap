@@ -150,35 +150,6 @@ process KRAKEN_READ_SIMULATE {
     """
 }
 
-process NANOSIM_SIMULATE {
-    label 'nanosim'
-
-    input:
-    file(reference)
-    file('haplotypes.fasta')
-    path(model)
-
-    output:
-    tuple val('simulatedsample'), file("simulatedsample.fastq.gz")
-
-    script:
-    """
-    cp ${reference[0]} REFERENCE.fasta
-    cp -v ${workflow.projectDir}/test/{genome_list,abundances,dna_types}.tsv .
-    simulator.py metagenome \
-        -t ${task.cpus} \
-        -c ${model}/training \
-        -gl genome_list.tsv \
-        -a abundances.tsv \
-        -dl dna_types.tsv \
-        --seed 42 \
-        -b guppy \
-        --fastq
-    cat *.fastq > simulatedsample.fastq
-    gzip simulatedsample.fastq
-    """
-}
-
 /// summary: Download the PBSim model for ONT 9.5 chemistry
 /// output:
 ///   - type: path
