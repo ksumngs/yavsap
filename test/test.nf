@@ -150,20 +150,6 @@ process KRAKEN_READ_SIMULATE {
     """
 }
 
-process NANOSIM_MODEL_DOWNLOAD {
-    label 'run_local'
-
-    output:
-    path('metagenome_ERR3152366_Log')
-
-    script:
-    """
-    wget -qO- \
-        https://raw.githubusercontent.com/bcgsc/NanoSim/v3.0.2/pre-trained_models/metagenome_ERR3152366_Log.tar.gz | \
-        tar xvz
-    """
-}
-
 process NANOSIM_SIMULATE {
     label 'nanosim'
 
