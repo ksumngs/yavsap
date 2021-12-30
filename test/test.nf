@@ -164,3 +164,21 @@ process NANOSIM_SIMULATE {
     gzip simulatedsample.fastq
     """
 }
+
+/// summary: Download the PBSim model for ONT 9.5 chemistry
+/// output:
+///   - type: path
+///     description: The model file
+process PBSIM_MODEL_DOWNLOAD {
+    label 'pbsim'
+    label 'run_local'
+    label 'process_low'
+
+    output:
+    path('R95.model')
+
+    script:
+    """
+    wget https://raw.githubusercontent.com/yukiteruono/pbsim2/eaae5b1313e453e5738c591772070ed529b0fad3/data/R95.model
+    """
+}
