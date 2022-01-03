@@ -222,6 +222,28 @@ process CLIQUESNV_VARIANTS {
     """
 }
 
+/// summary: Call haplotypes for Illumina reads using CliqueSNV
+/// input:
+///   - tuple:
+///       - name: sampleName
+///         type: val(String)
+///         description: Unique identifier for this sample
+///       - name: bamfile
+///         type: file
+///         description: Alignment file to call variants from
+/// output:
+///   - name: haplotypeSequences
+///     tuple:
+///       - type: val(String)
+///         description: The sample identifier passed through `sampleName`
+///       - type: path
+///         description: The sequences of the found haplotypes in FASTA format
+///    - name: haplotypeData
+///      tuple:
+///        - type: val(String)
+///          description: The sample identifier passed through `sampleName`
+///        - type: path
+///          description: Descriptions of the found haplotypes in JSON format
 process CLIQUESNV_HAPLOTYPES {
     label 'cliquesnv'
     label 'process_medium'
@@ -238,9 +260,15 @@ process CLIQUESNV_HAPLOTYPES {
     mode = (params.ont) ? 'snv-pacbio' : 'snv-illumina'
     jmemstring = task.memory.toMega() + 'M'
     """
-    java -Xmx${jmemstring} -jar /usr/local/share/cliquesnv/clique-snv.jar \
-        -m ${mode} -threads ${task.cpus} -in ${bamfile[0]} -tf 0.01 -fdf extended -rm -log
-    mv snv_output/* .
+    java -Xmx${jmemstring} -jar /usr/local/share/cliquesnv/clique-snv.jar \\
+        -m snv-illumina \\
+        -in ${bamfile[0]} \\
+        -t ${params.haplotype_depth} \\
+        -tf ${params.haplotype_frequency} \\
+        -log \\
+        -threads ${task.cpus} \\
+        -outDir . \\
+        -fdf extended
     """
 }
 
