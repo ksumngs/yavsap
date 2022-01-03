@@ -704,6 +704,21 @@ Default  10
 The minimum number of times a particular haplotype has to occur for it to be
 considered real and processed downstream and output.
 
+--haplotype_frequency
+^^^^^^^^^^^^^^^^^^^^^
+
+======== ======
+Type     Integer
+======== ======
+Required No
+Default  10
+======== ======
+
+**The minimum haplotype frequency**
+
+Only applies to Illumina/PE reads. Corresponds to the
+`-tf <https://github.com/vtsyvina/CliqueSNV#parameters>`_ option of CliqueSNV.
+
 Workflow Options
 ----------------
 
