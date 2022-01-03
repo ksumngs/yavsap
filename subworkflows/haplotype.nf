@@ -50,8 +50,8 @@ workflow haplotyping {
     RealignedReads = realign_to_new_reference.out.alignment
 
     if (params.pe) {
-        calling_pe(RealignedReads)
-        HaplotypeSequences = calling_pe.out.haplotypeSequences
+        CLIQUESNV_HAPLOTYPES(RealignedReads)
+        HaplotypeSequences = CLIQUESNV_HAPLOTYPES.out.haplotypeSequences
     }
     else {
         AlignmentsAndGenomes = RealignedReads.join(BlastGenomes)
@@ -181,7 +181,7 @@ process realign_to_new_reference {
     """
 }
 
-process calling_pe {
+process CLIQUESNV_HAPLOTYPES {
     label 'cliquesnv'
     label 'process_medium'
     publishDir "${params.outdir}/haplotypes", mode: "${params.publish_dir_mode}"
