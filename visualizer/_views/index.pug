@@ -70,8 +70,7 @@ block layout-content
                 th Classification
                 th Alignment
                 th Assemblies
-                if platform == 'ont'
-                  th Variant Calls
+                th Variant Calls
                 th Haplotypes
                 th Multiple Alignments
                 th Phylogenetics
@@ -131,18 +130,17 @@ block layout-content
                         | &nbsp;
                         i de novo
                         |  assembly failed
-                  if platform == 'ont'
-                      if sample.hasvariants
-                        td
-                          ul
-                            li
-                              a(href=`/variants/${sample.samplename}.vcf`)
-                                i.fas.fa-download
-                                | &nbsp; Variant VCF
-                      else
-                        td.table-warning
-                          i.fas.fa-exclamation
-                          | &nbsp; No variants table
+                    if sample.hasvariants
+                      td
+                        ul
+                          li
+                            a(href=`/variants/${sample.samplename}.vcf`)
+                              i.fas.fa-download
+                              | &nbsp; Variant VCF
+                    else
+                      td.table-warning
+                        i.fas.fa-exclamation
+                        | &nbsp; No variants table
                   td
                     ul
                       li

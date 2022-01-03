@@ -8,6 +8,10 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- VCF output for Illumina reads via CliqueSNV (#18)
+
 ### Changes
 
 - HapLink.jl updated to 0.4 (#16)
