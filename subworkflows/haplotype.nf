@@ -181,6 +181,46 @@ process realign_to_new_reference {
     """
 }
 
+/// summary: Call variants on Illumina reads using CliqueSNV
+/// input:
+///   - tuple:
+///       - name: sampleName
+///         type: val(String)
+///         description: Unique identifier for this sample
+///       - name: bamfile
+///         type: file
+///         description: Alignment file to call variants from
+/// output:
+///   - tuple:
+///       - type: val(String)
+///         description: The sample identifier passed through `sampleName`
+///       - type: path
+///         description: Variant calls in VCF format
+process CLIQUESNV_VARIANTS {
+    label 'cliquesnv'
+    label 'process_high'
+    publishDir "${params.outdir}/variants", mode: "${params.publish_dir_mode}"
+
+    input:
+    tuple val(sampleName), file(bamfile)
+
+    output:
+    tuple val(sampleName), path("${sampleName}.vcf")
+
+    script:
+    jmemstring = task.memory.toMega() + 'M'
+    """
+    java -Xmx${jmemstring} -jar /usr/local/share/cliquesnv/clique-snv.jar \\
+        -m snv-illumina-vc \\
+        -in ${bamfile[0]} \\
+        -t ${params.haplotype_depth} \\
+        -tf ${params.haplotype_frequency} \\
+        -log \\
+        -threads ${task.cpus} \\
+        -outDir .
+    """
+}
+
 process CLIQUESNV_HAPLOTYPES {
     label 'cliquesnv'
     label 'process_medium'
