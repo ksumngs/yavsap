@@ -56,5 +56,5 @@ html_static_path = ['_static']
 intersphinx_mapping = {
     'nextflow': ('https://nextflow.io/docs/latest/', None),
     'canu': ('https://canu.readthedocs.io/en/latest', None),
-    'singularity': ('https://singularity.hpcng.org/user-docs/3.8', None)
+    'singularity': ('https://apptainer.org/user-docs/master', None)
 }
