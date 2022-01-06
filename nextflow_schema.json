@@ -1,0 +1,420 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "https://raw.githubusercontent.com/yavsap/master/nextflow_schema.json",
+    "title": "yavsap pipeline parameters",
+    "description": "Intra-sample viral population analysis",
+    "type": "object",
+    "definitions": {
+        "input_output_options": {
+            "title": "Input/output options",
+            "type": "object",
+            "fa_icon": "fas fa-terminal",
+            "description": "Define where the pipeline should find input data and save output data.",
+            "properties": {
+                "input": {
+                    "type": "string",
+                    "format": "file-path",
+                    "description": "Path the folder containing input reads.",
+                    "help_text": "For Illumina (paired-end) reads, the file names must be identical until the ending underscore with a read number, e.g. 'sample1_S10_L001_R1_001.fastq.gz' and 'sample1_S10_L001_R2_001.fastq.gz'. The read number must be designated using either '_1' and '_2' or '_R1' and '_R2'. For Nanopore reads, each fastq file is assumed to be a unique sample, so, e.g. 'FAP01234_pass_barcode05_abcd01234_0.fastq.gz' and 'FAP01234_pass_barcode05_abcd01234_1.fastq.gz' are assumed to be different samples even though they are from the same barcode. All read files must be gzipped, and have the extension '.fastq.gz' or '.fq.gz'.",
+                    "fa_icon": "fas fa-file-csv",
+                    "default": "."
+                },
+                "sra": {
+                    "type": "boolean",
+                    "hidden": true,
+                    "description": "Pull input reads from NCBI SRA",
+                    "fa_icon": "fas fa-cloud-download-alt",
+                    "help_text": "This flag switches the meaning of `--input` to mean an NCBI Short Read Archive (SRA) accession number, then pulls the associated files directly from NCBI and runs the pipeline on them. To use this flag, you **must** have an [NCBI API key](https://ncbiinsights.ncbi.nlm.nih.gov/2017/11/02/new-api-keys-for-the-e-utilities/) and it **must** be exported in the shell environment as `NCBI_API_KEY`, e.g. `NCBI_API_KEY=0123456789abcdef`. This feature is currenly broken due to an upstream issue in Nextflow, but should be fixed by Nextflow version 21.10.0."
+                },
+                "platform": {
+                    "type": "string",
+                    "fa_icon": "fas fa-tram",
+                    "description": "NGS platform used to sequence the samples",
+                    "enum": [
+                        "illumina",
+                        "nanopore"
+                    ]
+                },
+                "pe": {
+                    "type": "boolean",
+                    "fa_icon": "fas fa-exclamation-circle",
+                    "hidden": true,
+                    "description": "INTERNAL USE ONLY!!!"
+                },
+                "ont": {
+                    "type": "boolean",
+                    "fa_icon": "fas fa-exclamation-circle",
+                    "description": "INTERNAL USE ONLY!!!",
+                    "hidden": true
+                },
+                "outdir": {
+                    "type": "string",
+                    "description": "Path to the output directory where the results will be saved.",
+                    "default": "./results",
+                    "fa_icon": "fas fa-folder-open"
+                },
+                "publish_dir_mode": {
+                    "type": "string",
+                    "default": "copy",
+                    "fa_icon": "fab fa-leanpub",
+                    "description": "How to create results files",
+                    "enum": [
+                        "symlink",
+                        "relink",
+                        "link",
+                        "copy",
+                        "copyNoFollow",
+                        "move"
+                    ],
+                    "hidden": true
+                },
+                "tracedir": {
+                    "type": "string",
+                    "description": "Directory to keep pipeline Nextflow logs and reports.",
+                    "default": "${params.outdir}/pipeline_info",
+                    "fa_icon": "fas fa-cogs",
+                    "hidden": true
+                }
+            },
+            "required": [
+                "platform"
+            ]
+        },
+        "reference_genome_options": {
+            "title": "Reference genome options",
+            "type": "object",
+            "fa_icon": "fas fa-dna",
+            "description": "Reference genome related files and options required for the workflow.",
+            "properties": {
+                "genome": {
+                    "type": "string",
+                    "description": "NCBI accession number of reference genome",
+                    "fa_icon": "fas fa-book",
+                    "help_text": "If using a reference genome configured in the pipeline using iGenomes, use this parameter to give the ID for the reference. This is then used to build the full paths for all required reference genome files e.g. `--genome GRCh38`. \n\nSee the [nf-core website docs](https://nf-co.re/usage/reference_genomes) for more details.",
+                    "default": "NC_001437.1"
+                },
+                "genome_list": {
+                    "type": "string",
+                    "default": "jev",
+                    "fa_icon": "far fa-list-alt",
+                    "description": "Path to TSV file containing NCBI accession numbers of strains for constructing phylogenetic trees."
+                }
+            }
+        },
+        "kraken2_options": {
+            "title": "Kraken2 Options",
+            "type": "object",
+            "description": "Control how Kraken2 filters out host reads",
+            "default": "",
+            "properties": {
+                "kraken2_db": {
+                    "type": "string",
+                    "description": "Path to a Kraken2 database",
+                    "help_text": "The path to a [Kraken2 database](https://github.com/DerrickWood/kraken2/wiki/Manual#custom-databases) that will be used to filter out host reads in the pipeline. This path will be automatically mounted into the container environments if a containerized profile is used.\n\nCorresponds to the [--db](https://github.com/DerrickWood/kraken2/wiki/Manual#classification) option of Kraken2.",
+                    "fa_icon": "fas fa-database"
+                },
+                "keep_taxid": {
+                    "type": "string",
+                    "default": "0 10239",
+                    "fa_icon": "fas fa-dog",
+                    "description": "Taxonomic IDs to keep and analyze",
+                    "help_text": "A space-separated list (use quotes on the command line), of the taxonomic ids to keep based on Kraken2's classification.\n\nDefaults to keeping all unclassified reads and all viral reads. Note that this requires the host to be present in the Kraken2 database. When dealing with animals and the databases available from `kraken2-build`, this is not the case, and this parameter should be modified."
+                }
+            },
+            "required": [
+                "kraken2_db"
+            ],
+            "fa_icon": "fab fa-gitkraken"
+        },
+        "max_job_request_options": {
+            "title": "Max job request options",
+            "type": "object",
+            "fa_icon": "fab fa-acquisitions-incorporated",
+            "description": "Set the top limit for requested resources for any single job.",
+            "help_text": "If you are running on a smaller system, a pipeline step requesting more resources than are available may cause the Nextflow to stop the run with an error. These options allow you to cap the maximum resources requested by any single job so that the pipeline will run on your system.\n\nNote that you can not _increase_ the resources requested by any job using these options. For that you will need your own configuration file. See [the nf-core website](https://nf-co.re/usage/configuration) for details.",
+            "properties": {
+                "max_cpus": {
+                    "type": "integer",
+                    "description": "Maximum number of CPUs that can be requested for any single job.",
+                    "default": 16,
+                    "fa_icon": "fas fa-microchip",
+                    "hidden": true,
+                    "help_text": "Use to set an upper-limit for the CPU requirement for each process. Should be an integer e.g. `--max_cpus 1`"
+                },
+                "max_memory": {
+                    "type": "string",
+                    "description": "Maximum amount of memory that can be requested for any single job.",
+                    "default": "128.GB",
+                    "fa_icon": "fas fa-memory",
+                    "pattern": "^\\d+(\\.\\d+)?\\.?\\s*(K|M|G|T)?B$",
+                    "hidden": true,
+                    "help_text": "Use to set an upper-limit for the memory requirement for each process. Should be a string in the format integer-unit e.g. `--max_memory '8.GB'`"
+                },
+                "max_time": {
+                    "type": "string",
+                    "description": "Maximum amount of time that can be requested for any single job.",
+                    "default": "240.h",
+                    "fa_icon": "far fa-clock",
+                    "pattern": "^(\\d+\\.?\\s*(s|m|h|day)\\s*)+$",
+                    "hidden": true,
+                    "help_text": "Use to set an upper-limit for the time requirement for each process. Should be a string in the format integer-unit e.g. `--max_time '2.h'`"
+                }
+            }
+        },
+        "generic_options": {
+            "title": "Generic options",
+            "type": "object",
+            "fa_icon": "fas fa-file-import",
+            "description": "Less common options for the pipeline, typically set in a config file.",
+            "help_text": "These options are common to all nf-core pipelines and allow you to customise some of the core preferences for how the pipeline runs.\n\nTypically these options would be set in a Nextflow config file loaded for all pipeline runs, such as `~/.nextflow/config`.",
+            "properties": {
+                "help": {
+                    "type": "boolean",
+                    "description": "Display help text.",
+                    "fa_icon": "fas fa-question-circle",
+                    "hidden": true
+                }
+            }
+        },
+        "read_trimming_options": {
+            "title": "Read trimming options",
+            "type": "object",
+            "description": "Options for how strictly to quality control NGS reads",
+            "default": "",
+            "fa_icon": "fas fa-cut",
+            "properties": {
+                "trim_minlen": {
+                    "type": "integer",
+                    "default": 300
+                },
+                "trim_headcrop": {
+                    "type": "integer",
+                    "default": 0
+                },
+                "trim_adapters": {
+                    "type": "string",
+                    "default": "NexteraPE-PE.fa"
+                },
+                "trim_mismatches": {
+                    "type": "integer",
+                    "default": 2
+                },
+                "trim_pclip": {
+                    "type": "integer",
+                    "default": 30
+                },
+                "trim_clip": {
+                    "type": "integer",
+                    "default": 10
+                },
+                "trim_winsize": {
+                    "type": "integer",
+                    "default": 50
+                },
+                "trim_winqual": {
+                    "type": "integer",
+                    "default": 15
+                },
+                "trim_leading": {
+                    "type": "integer",
+                    "default": 15
+                },
+                "trim_trailing": {
+                    "type": "integer",
+                    "default": 15
+                },
+                "trim_crop": {
+                    "type": "integer",
+                    "default": 0
+                },
+                "trim_maxlen": {
+                    "type": "integer",
+                    "default": 0
+                },
+                "trim_meanqual": {
+                    "type": "integer",
+                    "default": 7
+                },
+                "trim_mingc": {
+                    "type": "integer",
+                    "default": 0
+                },
+                "trim_maxgc": {
+                    "type": "integer",
+                    "default": 0
+                },
+                "trim_tailcrop": {
+                    "type": "integer",
+                    "default": 0
+                }
+            }
+        },
+        "de_novo_assembly_options": {
+            "title": "de novo assembly options",
+            "type": "object",
+            "description": "Options for how to construct contigs",
+            "default": "",
+            "fa_icon": "fas fa-industry",
+            "properties": {
+                "canu_corrected_error_rate": {
+                    "type": "number",
+                    "default": 0.144
+                },
+                "canu_min_read_length": {
+                    "type": "integer",
+                    "default": 1000
+                },
+                "canu_stop_on_low_coverage": {
+                    "type": "integer",
+                    "default": 10
+                },
+                "canu_min_overlap_length": {
+                    "type": "integer",
+                    "default": 500
+                },
+                "spades_mode": {
+                    "type": "string",
+                    "default": "rnaviral"
+                }
+            }
+        },
+        "variant_calling_options": {
+            "title": "Variant calling options",
+            "type": "object",
+            "description": "Options for how strict to call variants",
+            "default": "",
+            "fa_icon": "fas fa-virus",
+            "properties": {
+                "variant_quality": {
+                    "type": "integer",
+                    "default": 12
+                },
+                "variant_depth": {
+                    "type": "integer",
+                    "default": 15
+                },
+                "variant_position": {
+                    "type": "number",
+                    "default": 0.1
+                },
+                "variant_frequency": {
+                    "type": "number",
+                    "default": 0.05
+                },
+                "variant_significance": {
+                    "type": "number",
+                    "default": 0.001
+                }
+            }
+        },
+        "haplotype_calling_options": {
+            "title": "Haplotype calling options",
+            "type": "object",
+            "description": "Options for how strictly to call haplotypes",
+            "default": "",
+            "fa_icon": "fas fa-viruses",
+            "properties": {
+                "haplotype_significance": {
+                    "type": "number",
+                    "default": 0.05
+                },
+                "haplotype_depth": {
+                    "type": "integer",
+                    "default": 10
+                },
+                "haplotype_frequency": {
+                    "type": "number",
+                    "default": 0.05
+                },
+                "haplotype_method": {
+                    "type": "string",
+                    "default": "ml-template"
+                },
+                "haplotype_overlap_min": {
+                    "type": "integer",
+                    "default": 0
+                },
+                "haplotype_overlap_max": {
+                    "type": "integer",
+                    "default": 100
+                },
+                "haplotype_iterations": {
+                    "type": "integer",
+                    "default": 1000
+                }
+            }
+        },
+        "phylogenetic_tree_options": {
+            "title": "Phylogenetic tree options",
+            "type": "object",
+            "description": "Options to control how the phylogenetic trees are generated",
+            "default": "",
+            "fa_icon": "fas fa-tree",
+            "properties": {
+                "phylogenetic_bootstraps": {
+                    "type": "integer",
+                    "default": 1000
+                }
+            }
+        },
+        "workflow_options": {
+            "title": "Workflow options",
+            "type": "object",
+            "description": "Options to skip portions of the workflow",
+            "default": "",
+            "fa_icon": "fas fa-directions",
+            "properties": {
+                "skip_trimming": {
+                    "type": "boolean"
+                },
+                "skip_qc": {
+                    "type": "boolean"
+                },
+                "skip_filtering": {
+                    "type": "boolean"
+                },
+                "skip_assembly": {
+                    "type": "boolean"
+                },
+                "skip_haplotype": {
+                    "type": "boolean"
+                }
+            }
+        }
+    },
+    "allOf": [
+        {
+            "$ref": "#/definitions/input_output_options"
+        },
+        {
+            "$ref": "#/definitions/reference_genome_options"
+        },
+        {
+            "$ref": "#/definitions/kraken2_options"
+        },
+        {
+            "$ref": "#/definitions/max_job_request_options"
+        },
+        {
+            "$ref": "#/definitions/generic_options"
+        },
+        {
+            "$ref": "#/definitions/read_trimming_options"
+        },
+        {
+            "$ref": "#/definitions/de_novo_assembly_options"
+        },
+        {
+            "$ref": "#/definitions/variant_calling_options"
+        },
+        {
+            "$ref": "#/definitions/haplotype_calling_options"
+        },
+        {
+            "$ref": "#/definitions/phylogenetic_tree_options"
+        },
+        {
+            "$ref": "#/definitions/workflow_options"
+        }
+    ]
+}
