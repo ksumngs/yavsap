@@ -25,12 +25,12 @@ jobs:
           echo "Every single parameter in the entire pipeline is described here. If you need to" >> docs/parameters.md
           echo "tweak every little detail of how your JEV samples are analyzed, you've come to" >> docs/parameters.md
           echo "the right place! Note that *every* parameter is described here, even those that" >> docs/parameters.md
-          echo "shouldn't be used, so proceed with caution!"
-          nf-core schema docs nextflow_schema.json | tail -n+3 >> docs/parameters.md
+          echo "shouldn't be used, so proceed with caution!" >> docs/parameters.md
+          nf-core schema docs nextflow_schema.json | tail -n+4 >> docs/parameters.md
       - name: Build docs 📝
         run: |
           sphinx-build -b html docs docs/_build
-      - name: Collect
+      - name: Collect 🧺
         uses: actions/upload-artifact@v2
         with:
           name: documentation
