@@ -611,3 +611,44 @@ process RAXML_BOOTSTRAP {
         --seed ${params.seed}
     """
 }
+
+/// summary: Infer the best phylogenetic tree of an alignment
+/// input:
+///   - tuple:
+///       - name: prefix
+///         type: val(String)
+///         description: Sample identifier
+///       - name: tree
+///         type: file
+///         description: Best inferred tree
+///       - name: bootstraps
+///         type: path
+///         description: Bootstrap iterations of the trees for this alignment
+/// output:
+///   - tuple:
+///       - type: val(String)
+///         description: Sample identifier
+///       - type: path
+///         description: Annotated support tree
+process RAXML_SUPPORT {
+    label 'raxml'
+    label 'process_low'
+    publishDir "${params.outdir}/phylogenetics", mode: "${params.publish_dir_mode}"
+
+    input:
+    tuple val(prefix), file(tree), file(bootstraps)
+
+    output:
+    tuple val(prefix), path("${prefix}.nwk")
+
+    script:
+    """
+    raxml-ng \\
+        --support \\
+        --threads ${task.cpus}{auto} \\
+        --tree "${tree}" \\
+        --bs-trees "${bootstraps}" \\
+        --prefix "${prefix}"
+    cp "${prefix}.raxml.support" "${prefix}.nwk"
+    """
+}
