@@ -47,6 +47,12 @@
                     "description": "INTERNAL USE ONLY!!!",
                     "hidden": true
                 },
+                "seed": {
+                    "type": "integer",
+                    "fa_icon": "fas fa-seedling",
+                    "description": "Set the random seed for all applicable processes",
+                    "default": 42
+                },
                 "outdir": {
                     "type": "string",
                     "description": "Path to the output directory where the results will be saved.",
@@ -418,6 +424,12 @@
                     "default": 1000,
                     "fa_icon": "fas fa-shoe-prints",
                     "description": "Number of iterations to create phylogenetic trees with"
+                },
+                "phylogenetic_bootstrap_cutoff": {
+                    "type": "number",
+                    "default": 0.03,
+                    "fa_icon": "fas fa-cut",
+                    "description": "Minimum quality for phylogenetic bootstraps"
                 }
             }
         },

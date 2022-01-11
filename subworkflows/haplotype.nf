@@ -2,6 +2,7 @@
 nextflow.enable.dsl = 2
 
 include { NCBI_DOWNLOAD } from '../modules/ncbi-dl.nf'
+include { PHYLOGENETIC_TREE } from './phylogenetics.nf'
 
 workflow haplotyping {
     take:
@@ -70,9 +71,9 @@ workflow haplotyping {
     AllHapSequences = HaplotypeSequences.join(ConsensusSequences)
 
     alignment(AllHapSequences, StrainGenomes) | \
-        phylogenetic_tree
+        PHYLOGENETIC_TREE
 
-    trees = phylogenetic_tree.out
+    trees = PHYLOGENETIC_TREE.out
 
     emit:
     trees
@@ -456,26 +457,5 @@ process alignment {
     mafft --thread ${task.cpus} --auto \
         ${sampleName}.mafft.fasta > ${sampleName}.haplotypes.fas
     sed -i "s/ .*\$//" ${sampleName}.haplotypes.fas
-    """
-}
-
-process phylogenetic_tree {
-    label 'raxml'
-    label 'error_ignore'
-    publishDir "${params.outdir}/phylogenetics", mode: "${params.publish_dir_mode}"
-
-    input:
-    tuple val(sampleName), file(alignedHaplotypes)
-
-    output:
-    tuple val(sampleName), file("${sampleName}.nwk")
-
-    script:
-    """
-    raxml-ng --threads ${task.cpus}{auto} --workers auto \
-        --prefix ${sampleName} \
-        --all --model GTR+G --bs-trees ${params.phylogenetic_bootstraps} \
-        --msa ${alignedHaplotypes}
-    cp ${sampleName}.raxml.support ${sampleName}.nwk
     """
 }
