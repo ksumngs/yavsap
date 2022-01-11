@@ -13,6 +13,7 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 - VCF output for Illumina reads via CliqueSNV (#18)
 - Parameter schema in [Nextflow
   schema](https://help.tower.nf/pipeline-schema/overview/) format (#19)
+- Phylogenetic tree quality cutoff parameter (#20)
 
 ### Changes
 
