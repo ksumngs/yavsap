@@ -42,7 +42,24 @@
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="parameters.html">Complete Parameter Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="output.html">Output</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Private API Reference</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Private API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#id13">Processes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id1">CLIQUESNV_HAPLOTYPES</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id2">CLIQUESNV_VARIANTS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id3">HAPLINK_FASTA</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id4">HAPLINK_HAPLOTYPES</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id5">HAPLINK_VARIANTS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id6">HAPLOTYPE_DEPTH</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id7">KRAKEN_READ_SIMULATE</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id8">NCBI_DOWNLOAD</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id9">PBSIM_MODEL_DOWNLOAD</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id10">PBSIM_SIMULATE</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id11">READ_CONCAT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id12">VARIANT_SIMULATOR</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 
         </div>
@@ -76,6 +93,622 @@
 <a class="reference external" href="https://nextflow.io/docs/latest/process.html" title="(in Nextflow v21.10)"><span class="xref std std-doc">process</span></a>, and
 <a class="reference external" href="https://nextflow.io/docs/latest/dsl2.html#function">function</a> within the
 pipeline.</p>
+<section id="id13">
+<h2>Processes<a class="headerlink" href="#id13" title="Permalink to this headline"></a></h2>
+<section id="id1">
+<h3>CLIQUESNV_HAPLOTYPES<a class="headerlink" href="#id1" title="Permalink to this headline"></a></h3>
+<p>Call haplotypes for Illumina reads using CliqueSNV</p>
+<table class="docutils align-default" id="id14">
+<caption><span class="caption-text">Input</span><a class="headerlink" href="#id14" title="Permalink to this table"></a></caption>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><strong>Tuple</strong></td>
+<td><table class="docutils align-default">
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><strong>sampleName</strong>(val(String))</td>
+<td><p>Unique identifier for this sample</p></td>
+</tr>
+<tr class="row-even"><td><strong>bamfile</strong>(file)</td>
+<td><p>Alignment file to call variants from</p></td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+<table class="docutils align-default" id="id15">
+<caption><span class="caption-text">Output</span><a class="headerlink" href="#id15" title="Permalink to this table"></a></caption>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><strong>Tuple</strong></td>
+<td><table class="docutils align-default">
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td>val(String)</td>
+<td><p>The sample identifier passed through `sampleName`</p></td>
+</tr>
+<tr class="row-even"><td>path</td>
+<td><p>The sequences of the found haplotypes in FASTA format</p></td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr class="row-even"><td><strong>Tuple</strong></td>
+<td><table class="docutils align-default">
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td>val(String)</td>
+<td><p>The sample identifier passed through `sampleName`</p></td>
+</tr>
+<tr class="row-even"><td>path</td>
+<td><p>Descriptions of the found haplotypes in JSON format</p></td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="id2">
+<h3>CLIQUESNV_VARIANTS<a class="headerlink" href="#id2" title="Permalink to this headline"></a></h3>
+<p>Call variants on Illumina reads using CliqueSNV</p>
+<table class="docutils align-default" id="id16">
+<caption><span class="caption-text">Input</span><a class="headerlink" href="#id16" title="Permalink to this table"></a></caption>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><strong>Tuple</strong></td>
+<td><table class="docutils align-default">
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><strong>sampleName</strong>(val(String))</td>
+<td><p>Unique identifier for this sample</p></td>
+</tr>
+<tr class="row-even"><td><strong>bamfile</strong>(file)</td>
+<td><p>Alignment file to call variants from</p></td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+<table class="docutils align-default" id="id17">
+<caption><span class="caption-text">Output</span><a class="headerlink" href="#id17" title="Permalink to this table"></a></caption>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><strong>Tuple</strong></td>
+<td><table class="docutils align-default">
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td>val(String)</td>
+<td><p>The sample identifier passed through `sampleName`</p></td>
+</tr>
+<tr class="row-even"><td>path</td>
+<td><p>Variant calls in VCF format</p></td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="id3">
+<h3>HAPLINK_FASTA<a class="headerlink" href="#id3" title="Permalink to this headline"></a></h3>
+<p>Convert a YAML describing haplotypes into a fasta file with the sequences
+of those haplotypes
+</p>
+<table class="docutils align-default" id="id18">
+<caption><span class="caption-text">Input</span><a class="headerlink" href="#id18" title="Permalink to this table"></a></caption>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><strong>Tuple</strong></td>
+<td><table class="docutils align-default">
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><strong>prefix</strong>(val(String))</td>
+<td><p>The identifier for this sample as used in the output filename</p></td>
+</tr>
+<tr class="row-even"><td><strong>haplotypes</strong>(file)</td>
+<td><p>The YAML file describing the SNPs in each haplotype</p></td>
+</tr>
+<tr class="row-odd"><td><strong>reference</strong>(file)</td>
+<td><p>Reference genome to mutate sequences in to create the haplotype sequences</p></td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+<table class="docutils align-default" id="id19">
+<caption><span class="caption-text">Output</span><a class="headerlink" href="#id19" title="Permalink to this table"></a></caption>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><strong>Tuple</strong></td>
+<td><table class="docutils align-default">
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td>val(String)</td>
+<td><p>The identifier as passed though `prefix`</p></td>
+</tr>
+<tr class="row-even"><td>path</td>
+<td><p>The mutated sequences in fasta format</p></td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="id4">
+<h3>HAPLINK_HAPLOTYPES<a class="headerlink" href="#id4" title="Permalink to this headline"></a></h3>
+<p>Call haplotypes from long reads using HapLink.jl</p>
+<table class="docutils align-default" id="id20">
+<caption><span class="caption-text">Input</span><a class="headerlink" href="#id20" title="Permalink to this table"></a></caption>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><strong>Tuple</strong></td>
+<td><table class="docutils align-default">
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><strong>prefix</strong>(val(String))</td>
+<td><p>The identifier for this sample as used in the output filename</p></td>
+</tr>
+<tr class="row-even"><td><strong>bamfile</strong>(file)</td>
+<td><p>File for the alignment to call haplotypes from</p></td>
+</tr>
+<tr class="row-odd"><td><strong>variants</strong>(file)</td>
+<td><p>File containing variants to consider haplotypes make of</p></td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+<table class="docutils align-default" id="id21">
+<caption><span class="caption-text">Output</span><a class="headerlink" href="#id21" title="Permalink to this table"></a></caption>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><strong>Tuple</strong></td>
+<td><table class="docutils align-default">
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td>val(String)</td>
+<td><p>The identifier as passed though `prefix`</p></td>
+</tr>
+<tr class="row-even"><td>path</td>
+<td><p>The found haplotypes described in YAML format</p></td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="id5">
+<h3>HAPLINK_VARIANTS<a class="headerlink" href="#id5" title="Permalink to this headline"></a></h3>
+<p>Call variants for Oxford Nanopore reads using HapLink.jl</p>
+<table class="docutils align-default" id="id22">
+<caption><span class="caption-text">Input</span><a class="headerlink" href="#id22" title="Permalink to this table"></a></caption>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><strong>Tuple</strong></td>
+<td><table class="docutils align-default">
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><strong>prefix</strong>(val(String))</td>
+<td><p>The identifier for this sample as used in the output filename</p></td>
+</tr>
+<tr class="row-even"><td><strong>bamfile</strong>(file)</td>
+<td><p>File for the alignment to call variants from</p></td>
+</tr>
+<tr class="row-odd"><td><strong>reference</strong>(file)</td>
+<td><p>Reference genome to call variants from in fasta format</p></td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+<table class="docutils align-default" id="id23">
+<caption><span class="caption-text">Output</span><a class="headerlink" href="#id23" title="Permalink to this table"></a></caption>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><strong>Tuple</strong></td>
+<td><table class="docutils align-default">
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td>val(String)</td>
+<td><p>The identifier as passed though `prefix`</p></td>
+</tr>
+<tr class="row-even"><td>path</td>
+<td><p>The variants found in the reads in VCF format</p></td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="id6">
+<h3>HAPLOTYPE_DEPTH<a class="headerlink" href="#id6" title="Permalink to this headline"></a></h3>
+<p>Convert the `frequency` key in a HapLink.jl output file to a valid (integer)
+read depth
+</p>
+<table class="docutils align-default" id="id24">
+<caption><span class="caption-text">Input</span><a class="headerlink" href="#id24" title="Permalink to this table"></a></caption>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><strong>Tuple</strong></td>
+<td><table class="docutils align-default">
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><strong>prefix</strong>(val(String))</td>
+<td><p>The identifier for this sample</p></td>
+</tr>
+<tr class="row-even"><td><strong>haplotypes</strong>(file)</td>
+<td><p>A HapLink.jl file containing a single haplotype definition. If the
+file contains more than one haplotype, then the process will only
+return results for the first haplotype.
+</p></td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+<table class="docutils align-default" id="id25">
+<caption><span class="caption-text">Output</span><a class="headerlink" href="#id25" title="Permalink to this table"></a></caption>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><strong>Tuple</strong></td>
+<td><table class="docutils align-default">
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td>val(String)</td>
+<td><p>The identifier as passed through `prefix`</p></td>
+</tr>
+<tr class="row-even"><td>env</td>
+<td><p>The read depth of the haplotype as an integer</p></td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="id7">
+<h3>KRAKEN_READ_SIMULATE<a class="headerlink" href="#id7" title="Permalink to this headline"></a></h3>
+<p>Simulate Illumina paired-end reads using Kraken2’s perl script</p>
+<table class="docutils align-default" id="id26">
+<caption><span class="caption-text">Input</span><a class="headerlink" href="#id26" title="Permalink to this table"></a></caption>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><strong>Tuple</strong></td>
+<td><table class="docutils align-default">
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><strong>prefix</strong>(val(String))</td>
+<td><p>The unique id for this mutation pattern</p></td>
+</tr>
+<tr class="row-even"><td><strong>genome</strong>(file)</td>
+<td><p>Fasta file containing the sequence to simulate reads of</p></td>
+</tr>
+<tr class="row-odd"><td><strong>depth</strong>(val(Int))</td>
+<td><p>The number of reads to simulate</p></td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+<table class="docutils align-default" id="id27">
+<caption><span class="caption-text">Output</span><a class="headerlink" href="#id27" title="Permalink to this table"></a></caption>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td>path</td>
+<td><p>The fastq files containing the simulated reads</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="id8">
+<h3>NCBI_DOWNLOAD<a class="headerlink" href="#id8" title="Permalink to this headline"></a></h3>
+<p>Downloads a genome in fasta and genbank format from the NCBI databases
+</p>
+<table class="docutils align-default" id="id28">
+<caption><span class="caption-text">Input</span><a class="headerlink" href="#id28" title="Permalink to this table"></a></caption>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><strong>accessionNumber</strong>(val(String))</td>
+<td><p>The accession number or gid to download from NCBI</p></td>
+</tr>
+</tbody>
+</table>
+<table class="docutils align-default" id="id29">
+<caption><span class="caption-text">Output</span><a class="headerlink" href="#id29" title="Permalink to this table"></a></caption>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><strong>fasta</strong>(path)</td>
+<td><p>The requested genome in fasta format</p></td>
+</tr>
+<tr class="row-even"><td><strong>genbank</strong>(path)</td>
+<td><p>The requested genome in GenBank format</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="id9">
+<h3>PBSIM_MODEL_DOWNLOAD<a class="headerlink" href="#id9" title="Permalink to this headline"></a></h3>
+<p>Download the PBSim model for ONT 9.5 chemistry</p>
+<table class="docutils align-default" id="id30">
+<caption><span class="caption-text">Output</span><a class="headerlink" href="#id30" title="Permalink to this table"></a></caption>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td>path</td>
+<td><p>The model file</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="id10">
+<h3>PBSIM_SIMULATE<a class="headerlink" href="#id10" title="Permalink to this headline"></a></h3>
+<p>Simulate ONT long reads using pbsim</p>
+<table class="docutils align-default" id="id31">
+<caption><span class="caption-text">Input</span><a class="headerlink" href="#id31" title="Permalink to this table"></a></caption>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><strong>Tuple</strong></td>
+<td><table class="docutils align-default">
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><strong>prefix</strong>(val(String))</td>
+<td><p>The unique id for this mutation pattern</p></td>
+</tr>
+<tr class="row-even"><td><strong>genome</strong>(file)</td>
+<td><p>Fasta file containing the sequence to simulate reads of</p></td>
+</tr>
+<tr class="row-odd"><td><strong>depth</strong>(val(Int))</td>
+<td><p>The number of reads to simulate</p></td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr class="row-even"><td><strong>model</strong>(file)</td>
+<td><p>The HMM model file to simulate with</p></td>
+</tr>
+</tbody>
+</table>
+<table class="docutils align-default" id="id32">
+<caption><span class="caption-text">Output</span><a class="headerlink" href="#id32" title="Permalink to this table"></a></caption>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td>path</td>
+<td><p>The fastq files containing the simulated reads</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="id11">
+<h3>READ_CONCAT<a class="headerlink" href="#id11" title="Permalink to this headline"></a></h3>
+<p>Concatenate and reformat simulated reads into the format generated by a file
+input read channel
+</p>
+<table class="docutils align-default" id="id33">
+<caption><span class="caption-text">Input</span><a class="headerlink" href="#id33" title="Permalink to this table"></a></caption>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><strong>NA</strong>(file)</td>
+<td><p>All of the reads files</p></td>
+</tr>
+</tbody>
+</table>
+<table class="docutils align-default" id="id34">
+<caption><span class="caption-text">Output</span><a class="headerlink" href="#id34" title="Permalink to this table"></a></caption>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><strong>Tuple</strong></td>
+<td><table class="docutils align-default">
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td>val(String)</td>
+<td><p>A unique id for this simulated sample</p></td>
+</tr>
+<tr class="row-even"><td>path</td>
+<td><p>The simulated reads files in gzipped fastq format</p></td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="id12">
+<h3>VARIANT_SIMULATOR<a class="headerlink" href="#id12" title="Permalink to this headline"></a></h3>
+<p>Simulate the genome of a haplotype using HapLink.jl</p>
+<table class="docutils align-default" id="id35">
+<caption><span class="caption-text">Input</span><a class="headerlink" href="#id35" title="Permalink to this table"></a></caption>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><strong>Tuple</strong></td>
+<td><table class="docutils align-default">
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><strong>prefix</strong>(val(String))</td>
+<td><p>The unique id for this mutation pattern</p></td>
+</tr>
+<tr class="row-even"><td><strong>haplotypeYaml</strong>(file)</td>
+<td><p>YAML file describing the mutations that make up the haplotype</p></td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr class="row-even"><td><strong>reference</strong>(file)</td>
+<td><p>The reference genome being mutated in fasta format</p></td>
+</tr>
+</tbody>
+</table>
+<table class="docutils align-default" id="id36">
+<caption><span class="caption-text">Output</span><a class="headerlink" href="#id36" title="Permalink to this table"></a></caption>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><strong>Tuple</strong></td>
+<td><table class="docutils align-default">
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td>val(String)</td>
+<td><p>The identifier as passed through `prefix`</p></td>
+</tr>
+<tr class="row-even"><td>path</td>
+<td><p>The mutated sequence in fasta format</p></td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
 </section>
 
 
