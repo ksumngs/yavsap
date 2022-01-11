@@ -571,3 +571,43 @@ process RAXML_SEARCH {
         --seed ${params.seed}
     """
 }
+
+/// summary: Perform phylogenetic tree bootstrapping on an alignment
+/// input:
+///   - tuple:
+///       - name: prefix
+///         type: val(String)
+///         description: Sample identifier
+///       - name: alignment
+///         type: file
+///         description: Multi-alignment file to perform bootstrapping on
+/// output:
+///   - tuple:
+///       - type: val(String)
+///         description: Sample identifier
+///       - type: path
+///         description: Bootstrap iterations of the trees for this alignment
+process RAXML_BOOTSTRAP {
+    label 'raxml'
+    label 'process_high'
+
+    input:
+    tuple val(prefix), file(alignment)
+
+    output:
+    tuple val(prefix), path("${prefix}.raxml.bootstraps")
+
+    script:
+    """
+    raxml-ng \\
+        --bootstrap \\
+        --threads ${task.cpus}{auto} \\
+        --workers auto \\
+        --msa "${alignment}" \\
+        --model GTR+G \\
+        --prefix "${prefix}" \\
+        --bs-trees ${params.phylogenetic_bootstraps} \\
+        --bs-cutoff ${params.phylogenetic_bootstrap_cutoff} \\
+        --seed ${params.seed}
+    """
+}
