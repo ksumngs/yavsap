@@ -89,4 +89,4 @@ jobs:
           NCBI_API_KEY: ${{ secrets.NCBI_API_KEY }}
         run: |
           export NXF_SINGULARITY_CACHEDIR=$HOME/.nxf-singularity-cache
-          nextflow run ${GITHUB_WORKSPACE} -profile test,${RUN_READTYPE},${RUN_CONTAINER} $RUN_SKIPPING --kraken2_db ~/kraken2-db
+          nextflow run ${GITHUB_WORKSPACE} -profile test,gh,${RUN_READTYPE},${RUN_CONTAINER} $RUN_SKIPPING --kraken2_db ~/kraken2-db

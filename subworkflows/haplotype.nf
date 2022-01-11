@@ -1,6 +1,9 @@
 #!/usr/bin/env nextflow
 nextflow.enable.dsl = 2
 
+include { NCBI_DOWNLOAD } from '../modules/ncbi-dl.nf'
+include { PHYLOGENETIC_TREE } from './phylogenetics.nf'
+
 workflow haplotyping {
     take:
     Reads
@@ -9,11 +12,20 @@ workflow haplotyping {
     GenomeAnnotation
 
     main:
-    GenomeList = file("${workflow.projectDir}/genomes/${params.genome_list}.tsv")
+    GenomePath = "${workflow.projectDir}/genomes/${params.genome_list}.tsv"
+    GenomeFile = file(GenomePath)
+    GenomeList = Channel
+        .fromPath(GenomePath)
+        .splitCsv(sep: '\t')
+        .map{ n -> "${n[1]}"}
 
-    pull_references(GenomeList)
-    AccessionGenomes = pull_references.out.accession_genomes
-    StrainGenomes = pull_references.out.strain_genomes
+    NCBI_DOWNLOAD(GenomeList)
+    GenomeFastas = NCBI_DOWNLOAD.out.fasta.collect()
+
+    GENOME_LABELING(GenomeFile, GenomeFastas)
+    AccessionGenomes = GENOME_LABELING.out.accessionGenomes
+    StrainGenomes = GENOME_LABELING.out.strainGenomes
+
     blast_db(AccessionGenomes)
     BlastDb = blast_db.out
 
@@ -39,51 +51,53 @@ workflow haplotyping {
     RealignedReads = realign_to_new_reference.out.alignment
 
     if (params.pe) {
-        calling_pe(RealignedReads)
-        HaplotypeSequences = calling_pe.out.haplotypeSequences
+        CLIQUESNV_VARIANTS(RealignedReads)
+        CLIQUESNV_HAPLOTYPES(RealignedReads)
+        HaplotypeSequences = CLIQUESNV_HAPLOTYPES.out.haplotypeSequences
     }
     else {
         AlignmentsAndGenomes = RealignedReads.join(BlastGenomes)
-        calling_ont(AlignmentsAndGenomes)
-        HaplotypeSequences = calling_ont.out.haplotype_fasta
+        HAPLINK_VARIANTS(AlignmentsAndGenomes)
+
+        AlignmentsAndVariants = RealignedReads.join(HAPLINK_VARIANTS.out)
+        HAPLINK_HAPLOTYPES(AlignmentsAndVariants)
+
+        HaplotypesAndGenomes = HAPLINK_HAPLOTYPES.out.join(BlastGenomes)
+        HAPLINK_FASTA(HaplotypesAndGenomes)
+
+        HaplotypeSequences = HAPLINK_FASTA.out
     }
 
     AllHapSequences = HaplotypeSequences.join(ConsensusSequences)
 
     alignment(AllHapSequences, StrainGenomes) | \
-        phylogenetic_tree
+        PHYLOGENETIC_TREE
 
-    trees = phylogenetic_tree.out
+    trees = PHYLOGENETIC_TREE.out
 
     emit:
     trees
 }
 
-process pull_references {
-    label 'edirect'
-    label 'run_local'
+process GENOME_LABELING {
     label 'process_low'
-    label 'error_backoff'
 
     input:
     file(genomeList)
+    path(genomeFastas)
 
     output:
-    path('accession_genomes.fasta'), emit: accession_genomes
-    path('strain_genomes.fasta'), emit: strain_genomes
+    path('accession_genomes.fasta'), emit: accessionGenomes
+    path('strain_genomes.fasta'), emit: strainGenomes
 
-    shell:
-    '''
-    while read -r LINE; do
-        echo "$LINE" | while IFS=$'\\t' read -r STRAIN ACCESSION; do
-            efetch -db nucleotide -id $ACCESSION -format fasta > $ACCESSION.fasta
-            sed "s%>.*%>$ACCESSION%" $ACCESSION.fasta >> accession_genomes.fasta
-            sed "s%>.*%>$STRAIN%" $ACCESSION.fasta >> strain_genomes.fasta
-            rm $ACCESSION.fasta
-            sleep 0.3
-        done
-    done < !{genomeList}
-    '''
+    script:
+    """
+    labelstrains \
+        ${genomeList} \
+        accession_genomes.fasta \
+        strain_genomes.fasta \
+        ${genomeFastas}
+    """
 }
 
 process blast_db {
@@ -169,7 +183,69 @@ process realign_to_new_reference {
     """
 }
 
-process calling_pe {
+/// summary: Call variants on Illumina reads using CliqueSNV
+/// input:
+///   - tuple:
+///       - name: sampleName
+///         type: val(String)
+///         description: Unique identifier for this sample
+///       - name: bamfile
+///         type: file
+///         description: Alignment file to call variants from
+/// output:
+///   - tuple:
+///       - type: val(String)
+///         description: The sample identifier passed through `sampleName`
+///       - type: path
+///         description: Variant calls in VCF format
+process CLIQUESNV_VARIANTS {
+    label 'cliquesnv'
+    label 'process_high'
+    publishDir "${params.outdir}/variants", mode: "${params.publish_dir_mode}"
+
+    input:
+    tuple val(sampleName), file(bamfile)
+
+    output:
+    tuple val(sampleName), path("${sampleName}.vcf")
+
+    script:
+    jmemstring = task.memory.toMega() + 'M'
+    """
+    java -Xmx${jmemstring} -jar /usr/local/share/cliquesnv/clique-snv.jar \\
+        -m snv-illumina-vc \\
+        -in ${bamfile[0]} \\
+        -t ${params.haplotype_depth} \\
+        -tf ${params.haplotype_frequency} \\
+        -log \\
+        -threads ${task.cpus} \\
+        -outDir .
+    """
+}
+
+/// summary: Call haplotypes for Illumina reads using CliqueSNV
+/// input:
+///   - tuple:
+///       - name: sampleName
+///         type: val(String)
+///         description: Unique identifier for this sample
+///       - name: bamfile
+///         type: file
+///         description: Alignment file to call variants from
+/// output:
+///   - name: haplotypeSequences
+///     tuple:
+///       - type: val(String)
+///         description: The sample identifier passed through `sampleName`
+///       - type: path
+///         description: The sequences of the found haplotypes in FASTA format
+///   - name: haplotypeData
+///     tuple:
+///       - type: val(String)
+///         description: The sample identifier passed through `sampleName`
+///       - type: path
+///         description: Descriptions of the found haplotypes in JSON format
+process CLIQUESNV_HAPLOTYPES {
     label 'cliquesnv'
     label 'process_medium'
     publishDir "${params.outdir}/haplotypes", mode: "${params.publish_dir_mode}"
@@ -185,9 +261,143 @@ process calling_pe {
     mode = (params.ont) ? 'snv-pacbio' : 'snv-illumina'
     jmemstring = task.memory.toMega() + 'M'
     """
-    java -Xmx${jmemstring} -jar /usr/local/share/cliquesnv/clique-snv.jar \
-        -m ${mode} -threads ${task.cpus} -in ${bamfile[0]} -tf 0.01 -fdf extended -rm -log
-    mv snv_output/* .
+    java -Xmx${jmemstring} -jar /usr/local/share/cliquesnv/clique-snv.jar \\
+        -m snv-illumina \\
+        -in ${bamfile[0]} \\
+        -t ${params.haplotype_depth} \\
+        -tf ${params.haplotype_frequency} \\
+        -log \\
+        -threads ${task.cpus} \\
+        -outDir . \\
+        -fdf extended
+    """
+}
+
+/// summary: Call variants for Oxford Nanopore reads using HapLink.jl
+/// input:
+///   - tuple:
+///       - name: prefix
+///         type: val(String)
+///         description: The identifier for this sample as used in the output filename
+///       - name: bamfile
+///         type: file
+///         description: File for the alignment to call variants from
+///       - name: reference
+///         type: file
+///         description: Reference genome to call variants from in fasta format
+/// output:
+///   - tuple:
+///       - type: val(String)
+///         description: The identifier as passed though `prefix`
+///       - type: path
+///         description: The variants found in the reads in VCF format
+process HAPLINK_VARIANTS {
+    label 'haplink'
+    publishDir "${params.outdir}/variants", mode: "${params.publish_dir_mode}"
+
+    input:
+    tuple val(prefix), file(bamfile), file(reference)
+
+    output:
+    tuple val(prefix), path("${prefix}.vcf")
+
+    script:
+    """
+    haplink variants \
+        --bam ${bamfile[0]} \
+        --reference ${reference} \
+        --output ${prefix}.vcf \
+        --quality ${params.variant_quality} \
+        --frequency ${params.variant_frequency} \
+        --position ${params.variant_position} \
+        --significance ${params.variant_significance} \
+        --depth ${params.variant_depth} \
+        --julia-args -t${task.cpus}
+    """
+}
+
+/// summary: Call haplotypes from long reads using HapLink.jl
+/// input:
+///   - tuple:
+///       - name: prefix
+///         type: val(String)
+///         description: The identifier for this sample as used in the output filename
+///       - name: bamfile
+///         type: file
+///         description: File for the alignment to call haplotypes from
+///       - name: variants
+///         type: file
+///         description: File containing variants to consider haplotypes make of
+/// output:
+///   - tuple:
+///       - type: val(String)
+///         description: The identifier as passed though `prefix`
+///       - type: path
+///         description: The found haplotypes described in YAML format
+process HAPLINK_HAPLOTYPES {
+    label 'haplink'
+    label 'process_high'
+    publishDir "${params.outdir}/haplotypes", mode: "${params.publish_dir_mode}"
+
+    input:
+    tuple val(prefix), file(bamfile), file(variants)
+
+    output:
+    tuple val(prefix), path("${prefix}.haplotypes.yaml")
+
+    script:
+    """
+    haplink haplotypes \
+        --bam ${bamfile[0]} \
+        --variants ${variants} \
+        --output ${prefix}.haplotypes.yaml \
+        --significance ${params.haplotype_significance} \
+        --depth ${params.haplotype_depth} \
+        --method ${params.haplotype_method} \
+        --overlap-min ${params.haplotype_overlap_min} \
+        --overlap-max ${params.haplotype_overlap_max} \
+        --iterations ${params.haplotype_iterations} \
+        --julia-args -t${task.cpus}
+    """
+}
+
+/// summary: |
+///   Convert a YAML describing haplotypes into a fasta file with the sequences
+///   of those haplotypes
+/// input:
+///   - tuple:
+///       - name: prefix
+///         type: val(String)
+///         description: The identifier for this sample as used in the output filename
+///       - name: haplotypes
+///         type: file
+///         description: The YAML file describing the SNPs in each haplotype
+///       - name: reference
+///         type: file
+///         description: Reference genome to mutate sequences in to create the haplotype sequences
+/// output:
+///   - tuple:
+///       - type: val(String)
+///         description: The identifier as passed though `prefix`
+///       - type: path
+///         description: The mutated sequences in fasta format
+process HAPLINK_FASTA {
+    label 'haplink'
+    label 'process_low'
+    publishDir "${params.outdir}/haplotypes", mode: "${params.publish_dir_mode}"
+
+    input:
+    tuple val(prefix), file(haplotypes), file(reference)
+
+    output:
+    tuple val(prefix), path("${prefix}.haplotypes.fasta")
+
+    script:
+    """
+    haplink sequences \
+        --haplotypes ${haplotypes} \
+        --reference ${reference} \
+        --output ${prefix}.haplotypes.fasta
     """
 }
 
@@ -247,26 +457,5 @@ process alignment {
     mafft --thread ${task.cpus} --auto \
         ${sampleName}.mafft.fasta > ${sampleName}.haplotypes.fas
     sed -i "s/ .*\$//" ${sampleName}.haplotypes.fas
-    """
-}
-
-process phylogenetic_tree {
-    label 'raxml'
-    label 'error_ignore'
-    publishDir "${params.outdir}/phylogenetics", mode: "${params.publish_dir_mode}"
-
-    input:
-    tuple val(sampleName), file(alignedHaplotypes)
-
-    output:
-    tuple val(sampleName), file("${sampleName}.nwk")
-
-    script:
-    """
-    raxml-ng --threads ${task.cpus}{auto} --workers auto \
-        --prefix ${sampleName} \
-        --all --model GTR+G --bs-trees ${params.phylogenetic_bootstraps} \
-        --msa ${alignedHaplotypes}
-    cp ${sampleName}.raxml.support ${sampleName}.nwk
     """
 }

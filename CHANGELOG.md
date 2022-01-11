@@ -8,6 +8,25 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.4.0-alpha] - 2022-01-11
+
+### Added
+
+- VCF output for Illumina reads via CliqueSNV (#18)
+- Parameter schema in [Nextflow
+  schema](https://help.tower.nf/pipeline-schema/overview/) format (#19)
+- Phylogenetic tree quality cutoff parameter (#20)
+
+### Changes
+
+- HapLink.jl updated to 0.4 (#16)
+- ONT reads now simulated using https://github.com/yukiteruono/pbsim2 (#17)
+- Docs now stay in sync with docstrings/`nextflow_schema.json` (#10)
+
+### Fixed
+
+- It is now nearly impossible to receive cooldown timeouts from NCBI (#15)
+
 ## [0.3.3-alpha] - 2021-12-02
 
 ### Fixed
@@ -141,7 +160,8 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 - Krona graphs of Kraken2 output
 - BLAST of assemblies and unclassified reads
 
-[Unreleased]: https://github.com/ksumngs/yavsap/compare/v0.3.3-alpha...HEAD
+[Unreleased]: https://github.com/ksumngs/yavsap/compare/v0.4.0-alpha...HEAD
+[0.4.0-alpha]: https://github.com/ksumngs/yavsap/compare/v0.3.3-alpha...v0.4.0-alpha
 [0.3.3-alpha]: https://github.com/ksumngs/yavsap/compare/v0.3.2-alpha...v0.3.3-alpha
 [0.3.2-alpha]: https://github.com/ksumngs/yavsap/compare/v0.3.1-alpha...v0.3.2-alpha
 [0.3.1-alpha]: https://github.com/ksumngs/yavsap/compare/v0.3.0-alpha...v0.3.1-alpha

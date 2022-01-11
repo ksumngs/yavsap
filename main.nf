@@ -56,12 +56,12 @@ if (!params.ont && !params.pe) {
     exit 1
 }
 
-include { reference_genome_pull } from './subworkflows/reference.nf'
+include { GENOME_DOWNLOAD } from './subworkflows/reference.nf'
 include { trimming }              from './subworkflows/trimming.nf'
 include { assembly }              from './subworkflows/assembly.nf'
 include { read_filtering }        from './subworkflows/filtering.nf'
 include { haplotyping }           from './subworkflows/haplotype.nf'
-include { simulated_reads }       from './test/test.nf'
+include { SIMULATED_READS }       from './test/test.nf'
 
 cowsay(
 """\
@@ -83,15 +83,15 @@ Diagnostics folder:     ${params.tracedir}
 )
 
 workflow {
-    reference_genome_pull()
-    IndexedReference = reference_genome_pull.out.indexedreference
-    AnnotatedReference = reference_genome_pull.out.annotatedreference
-    GenomeSize = reference_genome_pull.out.genomesize
+    GENOME_DOWNLOAD()
+    IndexedReference = GENOME_DOWNLOAD.out.indexedFasta
+    AnnotatedReference = GENOME_DOWNLOAD.out.referenceAnnotations
+    GenomeSize = GENOME_DOWNLOAD.out.genomeSize
 
     // Bring in the reads files
     if (params.sra) {
-        simulated_reads()
-        RawReads = simulated_reads.out
+        SIMULATED_READS()
+        RawReads = SIMULATED_READS.out
     }
     else {
         if (params.ont) {

@@ -123,7 +123,7 @@ function isOntResults() {
     else {
         yaml_extension = true;
     }
-    return fs.existsSync(__dirname + '/variants') || yaml_extension
+    return yaml_extension
 }
 
 // Server page rendering
