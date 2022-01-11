@@ -534,3 +534,40 @@ process RAXML_PARSE {
         --prefix "${prefix}"
     """
 }
+
+/// summary: Infer the best phylogenetic tree of an alignment
+/// input:
+///   - tuple:
+///       - name: prefix
+///         type: val(String)
+///         description: Sample identifier
+///       - name: alignment
+///         type: file
+///         description: Multi-alignment file to infer tree from
+/// output:
+///   - tuple:
+///       - type: val(String)
+///         description: Sample identifier
+///       - type: path
+///         description: Best inferred tree
+process RAXML_SEARCH {
+    label 'raxml'
+    label 'process_high'
+
+    input:
+    tuple val(prefix), file(alignment)
+
+    output:
+    tuple val(prefix), path("${prefix}.raxml.bestTree")
+
+    script:
+    """
+    raxml-ng \\
+        --threads ${task.cpus}{auto} \\
+        --workers auto \\
+        --msa "${alignment}" \\
+        --model GTR+G \\
+        --prefix "${prefix}" \\
+        --seed ${params.seed}
+    """
+}
