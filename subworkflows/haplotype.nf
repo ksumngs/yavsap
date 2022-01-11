@@ -238,12 +238,12 @@ process CLIQUESNV_VARIANTS {
 ///         description: The sample identifier passed through `sampleName`
 ///       - type: path
 ///         description: The sequences of the found haplotypes in FASTA format
-///    - name: haplotypeData
-///      tuple:
-///        - type: val(String)
-///          description: The sample identifier passed through `sampleName`
-///        - type: path
-///          description: Descriptions of the found haplotypes in JSON format
+///   - name: haplotypeData
+///     tuple:
+///       - type: val(String)
+///         description: The sample identifier passed through `sampleName`
+///       - type: path
+///         description: Descriptions of the found haplotypes in JSON format
 process CLIQUESNV_HAPLOTYPES {
     label 'cliquesnv'
     label 'process_medium'
