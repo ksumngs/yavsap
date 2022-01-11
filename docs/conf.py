@@ -30,6 +30,7 @@ author = 'Thomas A. Christensen II'
 extensions = [
     'sphinx.ext.intersphinx',
     'sphinx.ext.autosectionlabel',
+    'myst_parser',
     'nfdocs-parser.nfdocs-parser',
 ]
 
