@@ -494,3 +494,43 @@ process RAXMLNG_BOOTSTRAP {
     cp ${sampleName}.raxml.support ${sampleName}.nwk
     """
 }
+
+/// summary: |
+///   Convert a plain-text multi-alignment to RAxML-NG's binary alignment format
+/// input:
+///   - tuple:
+///       - name: prefix
+///         type: val(String)
+///         description: Sample identifier
+///       - name: Alignment
+///         type: file
+///         description: |
+///           Plain-text multi-alignment file. RAxML-NG supports FASTA, PHYLIP, and
+///           CATG formats
+/// output:
+///   -tuple:
+///     - type: val(String)
+///       description: Sample identifier
+///     - type: path
+///       description: Multi-alignment file in binary format
+process RAXML_PARSE {
+    label 'raxml'
+    label 'error_ignore'
+    label 'process_low'
+
+    input:
+    tuple val(prefix), file(alignment)
+
+    output:
+    tuple val(prefix), path("${prefix}.raxml.rba")
+
+    script:
+    """
+    raxml-ng \\
+        --parse \\
+        --threads ${task.cpus}{auto} \\
+        --msa "${alignment}" \\
+        --model GTR+G \\
+        --prefix "${prefix}"
+    """
+}
