@@ -459,39 +459,3 @@ process alignment {
     sed -i "s/ .*\$//" ${sampleName}.haplotypes.fas
     """
 }
-
-/// summmary: Generate a phylogenetic tree
-/// input:
-///   - tuple:
-///       - name: sampleName
-///         type: val(String)
-///         description: Sample identifier
-///       - name: alignedHaplotypes
-///         type: file
-///         description: Aligned FastA sequences to bootstrap a tree with
-/// output:
-///   - tuple:
-///       - type: val(String)
-///         description: Sample identifier
-///       - type: file
-///         description: Phylogenetic tree
-process RAXMLNG_BOOTSTRAP {
-    label 'raxml'
-    label 'error_ignore'
-    publishDir "${params.outdir}/phylogenetics", mode: "${params.publish_dir_mode}"
-
-    input:
-    tuple val(sampleName), file(alignedHaplotypes)
-
-    output:
-    tuple val(sampleName), file("${sampleName}.nwk")
-
-    script:
-    """
-    raxml-ng --threads ${task.cpus}{auto} --workers auto \
-        --prefix ${sampleName} \
-        --all --model GTR+G --bs-trees ${params.phylogenetic_bootstraps} \
-        --msa ${alignedHaplotypes}
-    cp ${sampleName}.raxml.support ${sampleName}.nwk
-    """
-}
