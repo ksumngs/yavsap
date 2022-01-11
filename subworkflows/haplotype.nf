@@ -459,6 +459,21 @@ process alignment {
     """
 }
 
+/// summmary: Generate a phylogenetic tree
+/// input:
+///   - tuple:
+///       - name: sampleName
+///         type: val(String)
+///         description: Sample identifier
+///       - name: alignedHaplotypes
+///         type: file
+///         description: Aligned FastA sequences to bootstrap a tree with
+/// output:
+///   - tuple:
+///       - type: val(String)
+///         description: Sample identifier
+///       - type: file
+///         description: Phylogenetic tree
 process RAXMLNG_BOOTSTRAP {
     label 'raxml'
     label 'error_ignore'
