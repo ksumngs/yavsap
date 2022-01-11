@@ -6,3 +6,5 @@ Describes the input/output of every
 :doc:`process <process>`, and
 `function <https://nextflow.io/docs/latest/dsl2.html#function>`_ within the
 pipeline.
+
+.. nfdocs:: .

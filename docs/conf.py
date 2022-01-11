@@ -10,9 +10,9 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-# import os
-# import sys
-# sys.path.insert(0, os.path.abspath('.'))
+import os
+import sys
+sys.path.append(os.path.abspath('./_ext'))
 
 
 # -- Project information -----------------------------------------------------
@@ -29,7 +29,9 @@ author = 'Thomas A. Christensen II'
 # ones.
 extensions = [
     'sphinx.ext.intersphinx',
-    'sphinx.ext.autosectionlabel'
+    'sphinx.ext.autosectionlabel',
+    'myst_parser',
+    'nfdocs-parser.nfdocs-parser',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
