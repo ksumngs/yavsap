@@ -70,9 +70,9 @@ workflow haplotyping {
     AllHapSequences = HaplotypeSequences.join(ConsensusSequences)
 
     alignment(AllHapSequences, StrainGenomes) | \
-        phylogenetic_tree
+        RAXMLNG_BOOTSTRAP
 
-    trees = phylogenetic_tree.out
+    trees = RAXMLNG_BOOTSTRAP.out
 
     emit:
     trees
@@ -459,7 +459,7 @@ process alignment {
     """
 }
 
-process phylogenetic_tree {
+process RAXMLNG_BOOTSTRAP {
     label 'raxml'
     label 'error_ignore'
     publishDir "${params.outdir}/phylogenetics", mode: "${params.publish_dir_mode}"
