@@ -11,11 +11,14 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 ### Added
 
 - VCF output for Illumina reads via CliqueSNV (#18)
+- Parameter schema in [Nextflow
+  schema](https://help.tower.nf/pipeline-schema/overview/) format (#19)
 
 ### Changes
 
 - HapLink.jl updated to 0.4 (#16)
 - ONT reads now simulated using https://github.com/yukiteruono/pbsim2 (#17)
+- Docs now stay in sync with docstrings/`nextflow_schema.json` (#10)
 
 ### Fixed
 
