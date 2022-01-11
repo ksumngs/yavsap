@@ -1,6 +1,45 @@
 #!/usr/bin/env nextflow
 nextflow.enable.dsl = 2
 
+/// summary: Create a phylogenetic tree
+/// input:
+///   - tuple:
+///       - name: prefix
+///         type: val(String)
+///         description: Sample identifier
+///       - name: Alignment
+///         type: file
+///         description: |
+///           Plain-text multi-alignment file. RAxML-NG supports FASTA, PHYLIP, and
+///           CATG formats
+/// output:
+///   - tuple:
+///       - type: val(String)
+///         description: Sample identifier
+///       - type: path
+///         description: Annotated support tree
+workflow PHYLOGENETIC_TREE {
+    take:
+    Alignments
+
+    main:
+    // Convert the alignments into snappier format and check for errors
+    RAXML_PARSE(Alignments)
+    RaxmlAlignments = RAXML_PARSE.out
+
+    // Perform all of the high-powered calculations
+    RAXML_SEARCH(RaxmlAlignments)
+    RAXML_BOOTSTRAP(RaxmlAlignments)
+    RaxmlResults = RAXML_SEARCH.out.join(RAXML_BOOTSTRAP.out)
+
+    // Convert the RAxML files into a usable tree
+    RAXML_SUPPORT(RaxmlResults)
+    SupportTrees = RAXML_SUPPORT.out
+
+    emit:
+    SupportTrees
+}
+
 /// summary: |
 ///   Convert a plain-text multi-alignment to RAxML-NG's binary alignment format
 /// input:
