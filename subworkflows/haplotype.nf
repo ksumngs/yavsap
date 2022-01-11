@@ -2,6 +2,7 @@
 nextflow.enable.dsl = 2
 
 include { NCBI_DOWNLOAD } from '../modules/ncbi-dl.nf'
+include { PHYLOGENETIC_TREE } from './phylogenetics.nf'
 
 workflow haplotyping {
     take:
@@ -70,9 +71,9 @@ workflow haplotyping {
     AllHapSequences = HaplotypeSequences.join(ConsensusSequences)
 
     alignment(AllHapSequences, StrainGenomes) | \
-        RAXMLNG_BOOTSTRAP
+        PHYLOGENETIC_TREE
 
-    trees = RAXMLNG_BOOTSTRAP.out
+    trees = PHYLOGENETIC_TREE.out
 
     emit:
     trees
