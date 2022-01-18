@@ -73,7 +73,7 @@ process RAXML_PARSE {
     """
     raxml-ng \\
         --parse \\
-        --threads ${task.cpus}{auto} \\
+        --threads auto{${task.cpus}} \\
         --msa "${alignment}" \\
         --model GTR+G \\
         --prefix "${prefix}"
@@ -108,7 +108,7 @@ process RAXML_SEARCH {
     script:
     """
     raxml-ng \\
-        --threads ${task.cpus}{auto} \\
+        --threads {${task.cpus}} \\
         --workers auto \\
         --msa "${alignment}" \\
         --model GTR+G \\
@@ -146,7 +146,7 @@ process RAXML_BOOTSTRAP {
     """
     raxml-ng \\
         --bootstrap \\
-        --threads ${task.cpus}{auto} \\
+        --threads auto{${task.cpus}} \\
         --workers auto \\
         --msa "${alignment}" \\
         --model GTR+G \\
@@ -190,7 +190,7 @@ process RAXML_SUPPORT {
     """
     raxml-ng \\
         --support \\
-        --threads ${task.cpus}{auto} \\
+        --threads auto{${task.cpus}} \\
         --tree "${tree}" \\
         --bs-trees "${bootstraps}" \\
         --prefix "${prefix}"

@@ -8,6 +8,10 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Fixed
+
+- Oversubscription error in RAxML-NG process
+
 ## [0.4.0-alpha] - 2022-01-11
 
 ### Added
