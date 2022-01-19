@@ -108,7 +108,7 @@ process RAXML_SEARCH {
     script:
     """
     raxml-ng \\
-        --threads {${task.cpus}} \\
+        --threads auto{${task.cpus}} \\
         --workers auto \\
         --msa "${alignment}" \\
         --model GTR+G \\
