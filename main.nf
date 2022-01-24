@@ -267,8 +267,8 @@ process presentation_generator {
     publishDir "${params.outdir}", mode: "${params.publish_dir_mode}"
 
     output:
-
     file '_css/*.css'
+    file '_js/*.js'
     file '_views/*.pug'
     file 'index.js'
     file 'package.json'
@@ -277,6 +277,6 @@ process presentation_generator {
 
     script:
     """
-    cp -r ${workflow.projectDir}/visualizer/{_css,_views,index.js,package.json,package-lock.json,favicon.ico} .
+    cp -r ${workflow.projectDir}/visualizer/{_css,_js,_views,index.js,package.json,package-lock.json,favicon.ico} .
     """
 }
