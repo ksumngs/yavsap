@@ -136,3 +136,10 @@ var datamonkey_save_image = function (type, container) {
 $("#save-image").on("click", function(e) {
   datamonkey_save_image("svg", "#phylotree");
 });
+
+$(".phylotree-layout-mode").on("click", function(e) {
+  if (tree.display.radial() != ($(this).data("mode") == "radial")) {
+    $(".phylotree-layout-mode").toggleClass("active");
+    tree.display.radial(!tree.display.radial()).update();
+  }
+});

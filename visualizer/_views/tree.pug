@@ -24,6 +24,11 @@ block layout-content
       div.btn-group(role="group").mx-1
         button(type="button", title="Save image")#save-image.btn.btn-primary
           i.fas.fa-file-image
+      div.btn-group(role="group").mx-1
+        button(type="button", title="Linear", data-mode="linear").btn.btn-primary.phylotree-layout-mode.active
+          i.fas.fa-align-left
+        button(type="button", title="Radial", data-mode="radial").btn.btn-primary.phylotree-layout-mode
+          i.fas.fa-circle-notch
   div.row
     div.col-12
       div#phylotree.my-2.p-3
