@@ -222,6 +222,7 @@ app.use('/js/d3', express.static(__dirname + '/node_modules/d3/dist'));
 app.use('/js/underscore', express.static(__dirname + '/node_modules/underscore'));
 app.use('/js/lodash', express.static(__dirname + '/node_modules/lodash'));
 app.use('/js/phylotree', express.static(__dirname + '/node_modules/phylotree/dist'));
+app.use('/js/local', express.static(__dirname + '/_js'));
 
 // CSS Serving, from node_modules and locally
 app.use('/css/twbs', express.static(__dirname + '/node_modules/bootstrap/dist/css'));

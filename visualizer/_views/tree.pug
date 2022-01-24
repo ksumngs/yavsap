@@ -16,6 +16,7 @@ block layout-scripts
   script(src="/js/d3/d3.js")
   script(src="/js/underscore/underscore-umd-min.js")
   script(src="/js/phylotree/phylotree.js")
+  script(src="/js/local/phylotree-utils.js")
   script.
     newick = "#{sampletree}";
     tree = new phylotree.phylotree(newick);
@@ -24,18 +25,3 @@ block layout-scripts
     });
     $(tree.display.container).empty();
     $(tree.display.container).html(tree.display.show());
-
-    function zoom(amount) {
-      xzoom = tree.display.spacing_x.bind(tree.display);
-      yzoom = tree.display.spacing_y.bind(tree.display);
-      xzoom(xzoom() + amount).update();
-      yzoom(yzoom() + amount).update();
-    }
-
-    function zoomin(e) {
-      zoom(1);
-    }
-
-    function zoomout(e) {
-      zoom(-1);
-    }
