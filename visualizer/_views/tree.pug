@@ -16,6 +16,10 @@ block layout-content
           i.fas.fa-arrows-alt-h
         button(type="button", data-direction="horizontal", data-amount="-1", title="Compress horizontal spacing").btn.btn-primary
           i(data-fa-transform="rotate-45").fas.fa-compress-alt
+        button(type="button", title="Sort deepest clades to the bottom")#sort-ascending.btn.btn-primary
+          i.fas.fa-sort-amount-down-alt
+        button(type="button", title="Sort deepest clades to the top")#sort-descending.btn.btn-primary
+          i.fas.fa-sort-amount-up-alt
   div.row
     div.col-12
       div#phylotree.my-2.p-3
