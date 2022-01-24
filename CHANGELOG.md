@@ -11,6 +11,7 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 ### Fixed
 
 - Oversubscription error in RAxML-NG process
+- Reroot functionality in phylogenetic tree viewer (#12/#29)
 
 ## [0.4.0-alpha] - 2022-01-11
 
