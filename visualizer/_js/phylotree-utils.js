@@ -1,3 +1,22 @@
+/*
+  phylotree-utils.js
+
+  Extra functions that make Phylotree.js more useful.
+  Ported from Phylotree.js's example document.
+  Copyright (c) 2016 iGEM/UCSD evolutionary biology and bioinformatics group
+  https://github.com/veg/phylotree.js/blob/93fdebb81503f83b3fffe0a56ad3c02c64535fea/index.html
+
+  Used under MIT License
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  SOFTWARE.
+*/
+
 $("[data-direction]").on("click", function (e) {
   var which_function =
     $(this).data("direction") == "vertical"
@@ -131,7 +150,6 @@ var datamonkey_save_image = function (type, container) {
     pom.remove();
   }
 };
-
 
 $("#save-image").on("click", function(e) {
   datamonkey_save_image("svg", "#phylotree");
