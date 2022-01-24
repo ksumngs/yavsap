@@ -198,7 +198,11 @@ process PBSIM_SIMULATE {
 
     script:
     """
-    pbsim --depth ${depth} --hmm_model ${model} ${genome}
+    pbsim \\
+        --depth ${depth} \\
+        --hmm_model ${model} \\
+        --seed ${params.seed} \\
+        ${genome}
     mv sd_0001.fastq ${prefix}.fastq
     """
 }
