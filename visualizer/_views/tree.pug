@@ -29,6 +29,11 @@ block layout-content
           i.fas.fa-align-left
         button(type="button", title="Radial", data-mode="radial").btn.btn-primary.phylotree-layout-mode
           i.fas.fa-circle-notch
+      div.btn-group(role="group").mx-1
+        button(type="button", title="Align left", data-align="left").btn.btn-primary.phylotree-align-toggler.active
+          i.fas.fa-outdent
+        button(type="button", title="Align right", data-align="right").btn.btn-primary.phylotree-align-toggler
+          i.fas.fa-indent
   div.row
     div.col-12
       div#phylotree.my-2.p-3

@@ -143,3 +143,14 @@ $(".phylotree-layout-mode").on("click", function(e) {
     tree.display.radial(!tree.display.radial()).update();
   }
 });
+
+$(".phylotree-align-toggler").on("click", function(e) {
+  var button_align = $(this).data("align");
+  var tree_align = tree.display.options.alignTips;
+
+  if (tree_align != button_align) {
+    tree.display.alignTips(button_align == "right");
+    $(".phylotree-align-toggler").toggleClass("active");
+    tree.display.update();
+  }
+});
