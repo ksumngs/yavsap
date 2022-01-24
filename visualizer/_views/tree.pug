@@ -8,10 +8,14 @@ block layout-content
   div.row
     div.col-12
       div.btn-group(role="group")
-        button(type="button", onClick="zoomin()").btn.btn-primary
-          i.fas.fa-search-plus
-        button(type="button" onClick="zoomout()").btn.btn-primary
-          i.fas.fa-search-minus
+        button(type="button", data-direction="vertical", data-amount="1", title="Expand vertical spacing").btn.btn-primary
+          i.fas.fa-arrows-alt-v
+        button(type="button", data-direction="vertical", data-amount="-1", title="Compress vertical spacing").btn.btn-primary
+          i(data-fa-transform="rotate-135").fas.fa-compress-alt
+        button(type="button", data-direction="horizontal", data-amount="1", title="Expand horizontal spacing").btn.btn-primary
+          i.fas.fa-arrows-alt-h
+        button(type="button", data-direction="horizontal", data-amount="-1", title="Compress horizontal spacing").btn.btn-primary
+          i(data-fa-transform="rotate-45").fas.fa-compress-alt
   div.row
     div.col-12
       div#phylotree.my-2.p-3

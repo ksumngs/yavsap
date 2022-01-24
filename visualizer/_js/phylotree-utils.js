@@ -1,14 +1,7 @@
-function zoom(amount) {
-    xzoom = tree.display.spacing_x.bind(tree.display);
-    yzoom = tree.display.spacing_y.bind(tree.display);
-    xzoom(xzoom() + amount).update();
-    yzoom(yzoom() + amount).update();
-}
-
-function zoomin(e) {
-    zoom(1);
-}
-
-function zoomout(e) {
-    zoom(-1);
-}
+$("[data-direction]").on("click", function(e) {
+    var which_function =
+      $(this).data("direction") == "vertical"
+        ? tree.display.spacing_x.bind(tree.display)
+        : tree.display.spacing_y.bind(tree.display);
+    which_function(which_function() + +$(this).data("amount")).update();
+  });
