@@ -1,6 +1,70 @@
 #!/usr/bin/env nextflow
 nextflow.enable.dsl = 2
 
+include { skipping_read } from '../lib/skipping-read.nf'
+
+/// summary: |
+///   Take reads from the input folder or a samplesheet and reformat them to be
+///   single files with clean names
+/// output:
+///   - tuple:
+///       - type: val(String)
+///         description: Sample identifier
+///       - type: path
+///         description: Reads files
+workflow READS_INGEST {
+    main:
+    if (params.samplesheet) {
+        SampleList = Channel
+            .from(file("${params.samplesheet}"))
+            .splitCsv(sep: "\t")
+            .filter { !(it[0] ==~ /^#.*/) }
+
+        if (params.pe) {
+            RawSamples = SampleList
+                .map {
+                    [
+                        it[0],
+                        skipping_read(it.drop(1), 2),
+                        skipping_read(it.drop(2), 2)
+                    ]
+                }
+        }
+        else {
+            RawSamples = SampleList
+                .map {
+                    [
+                        it[0],
+                        skipping_read(it.drop(1), 1)
+                    ]
+                }
+        }
+    }
+    else {
+        if (params.pe) {
+            RawSamples = Channel
+                .fromFilePairs("${params.input}/*{R1,R2,_1,_2}*.{fastq,fq,fastq.gz,fq.gz}")
+        }
+        else {
+            RawSamples = Channel
+                .fromPath("${params.input}/*.{fastq,fq,fastq.gz,fq.gz}")
+                .map{ file -> tuple(file.simpleName, file) }
+        }
+    }
+
+    if (params.pe) {
+        PAIRED_PREPROCESS(RawSamples)
+        CleanedSamples = PAIRED_PREPROCESS.out
+    }
+    else {
+        SINGLE_PREPROCESS(RawSamples)
+        CleanedSamples = SINGLE_PREPROCESS.out
+    }
+
+    emit:
+    CleanedSamples
+}
+
 /// summary: |
 ///   Takes a collection of single-end sequencing reads and converts them into a
 ///   single file with a safe sample and filename
