@@ -140,12 +140,13 @@ process KRAKEN_READ_SIMULATE {
 
     script:
     """
-    /kraken2-2.1.2/data/simulator.pl \
-        --num-frags ${depth} \
-        --output-format '${prefix}#.fastq' \
-        --read-length 150 \
-        --frag-dist-params '500,50' \
-        --error_rate 0.01 \
+    /kraken2-2.1.2/data/simulator.pl \\
+        --num-frags ${depth} \\
+        --output-format '${prefix}#.fastq' \\
+        --read-length 150 \\
+        --frag-dist-params '500,50' \\
+        --error_rate 0.01 \\
+        --random-seed ${params.seed} \\
         ${genomes}
     """
 }
@@ -197,7 +198,11 @@ process PBSIM_SIMULATE {
 
     script:
     """
-    pbsim --depth ${depth} --hmm_model ${model} ${genome}
+    pbsim \\
+        --depth ${depth} \\
+        --hmm_model ${model} \\
+        --seed ${params.seed} \\
+        ${genome}
     mv sd_0001.fastq ${prefix}.fastq
     """
 }
