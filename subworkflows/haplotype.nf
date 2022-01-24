@@ -347,16 +347,17 @@ process HAPLINK_HAPLOTYPES {
 
     script:
     """
-    haplink haplotypes \
-        --bam ${bamfile[0]} \
-        --variants ${variants} \
-        --output ${prefix}.haplotypes.yaml \
-        --significance ${params.haplotype_significance} \
-        --depth ${params.haplotype_depth} \
-        --method ${params.haplotype_method} \
-        --overlap-min ${params.haplotype_overlap_min} \
-        --overlap-max ${params.haplotype_overlap_max} \
-        --iterations ${params.haplotype_iterations} \
+    haplink haplotypes \\
+        --bam "${bamfile[0]}" \\
+        --variants "${variants}" \\
+        --output "${prefix}.haplotypes.yaml" \\
+        --significance ${params.haplotype_significance} \\
+        --depth ${params.haplotype_depth} \\
+        --method ${params.haplotype_method} \\
+        --overlap-min ${params.haplotype_overlap_min} \\
+        --overlap-max ${params.haplotype_overlap_max} \\
+        --iterations ${params.haplotype_iterations} \\
+        --seed ${params.seed} \\
         --julia-args -t${task.cpus}
     """
 }
