@@ -401,42 +401,6 @@ process HAPLINK_FASTA {
     """
 }
 
-process calling_ont {
-    label 'haplink'
-    label 'process_high'
-    publishDir "${params.outdir}", mode: "${params.publish_dir_mode}"
-
-    input:
-    tuple val(prefix), file(bamfile), file(reference)
-
-    output:
-    tuple val(prefix), path("variants/${prefix}.vcf"), emit: variants
-    tuple val(prefix), path("haplotypes/${prefix}.haplotypes.yaml"), emit: haplotype_yaml
-    tuple val(prefix), path("haplotypes/${prefix}.haplotypes.fasta"), emit: haplotype_fasta
-
-    script:
-    """
-    export JULIA_NUM_THREADS=${task.cpus}
-    haplink ${bamfile[0]} \
-        --reference ${reference[0]} \
-        --variants ${prefix}.vcf \
-        --prefix ${prefix} \
-        --quality ${params.variant_quality} \
-        --frequency ${params.variant_frequency} \
-        --position ${params.variant_position} \
-        --variant-significance ${params.variant_significance} \
-        --variant-depth ${params.variant_depth} \
-        --haplotype-significance ${params.haplotype_significance} \
-        --haplotype-depth ${params.haplotype_depth}
-    rm -rf variants haplotypes
-    mkdir variants
-    mv ${prefix}.vcf variants
-    mkdir haplotypes
-    mv ${prefix}.yaml haplotypes/${prefix}.haplotypes.yaml
-    mv ${prefix}.fasta haplotypes/${prefix}.haplotypes.fasta
-    """
-}
-
 process alignment {
     label 'mafft'
     label 'process_medium'
