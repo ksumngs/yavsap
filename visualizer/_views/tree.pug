@@ -7,7 +7,7 @@ block layout-content
   h1 #{samplename}
   div.row
     div.col-12
-      div.btn-group(role="group")
+      div.btn-group(role="group").mx-1
         button(type="button", data-direction="vertical", data-amount="1", title="Expand vertical spacing").btn.btn-primary
           i.fas.fa-arrows-alt-v
         button(type="button", data-direction="vertical", data-amount="-1", title="Compress vertical spacing").btn.btn-primary
@@ -16,10 +16,14 @@ block layout-content
           i.fas.fa-arrows-alt-h
         button(type="button", data-direction="horizontal", data-amount="-1", title="Compress horizontal spacing").btn.btn-primary
           i(data-fa-transform="rotate-45").fas.fa-compress-alt
+      div.btn-group(role="group").mx-1
         button(type="button", title="Sort deepest clades to the bottom")#sort-ascending.btn.btn-primary
           i.fas.fa-sort-amount-down-alt
         button(type="button", title="Sort deepest clades to the top")#sort-descending.btn.btn-primary
           i.fas.fa-sort-amount-up-alt
+      div.btn-group(role="group").mx-1
+        button(type="button", title="Save image")#save-image.btn.btn-primary
+          i.fas.fa-file-image
   div.row
     div.col-12
       div#phylotree.my-2.p-3
