@@ -154,7 +154,7 @@ success with placing these parameters in a ``nextflow.config`` file, so keeping
 them on the command-line is best.
 
 --kraken2_db
-  The path to a Kraken2 database. See :ref:`--kraken2_db`.
+  The path to a Kraken2 database. See :ref:`--kraken2_db <Kraken2 Options>`.
 --platform
   Must be set to ``ont`` or ``pe``, depending on the type of reads you are
   analyzing. See :ref:`--platform`.
