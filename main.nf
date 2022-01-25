@@ -57,6 +57,7 @@ if (!params.ont && !params.pe) {
 }
 
 include { GENOME_DOWNLOAD } from './subworkflows/reference.nf'
+include { READS_INGEST } from './modules/ingest.nf'
 include { trimming }              from './subworkflows/trimming.nf'
 include { assembly }              from './subworkflows/assembly.nf'
 include { read_filtering }        from './subworkflows/filtering.nf'
@@ -94,28 +95,21 @@ workflow {
         RawReads = SIMULATED_READS.out
     }
     else {
-        if (params.ont) {
-            RawReads = Channel
-                .fromPath("${params.input}/*.{fastq,fq}.gz")
-                .map{ file -> tuple(file.simpleName, file) }
-        }
-        else {
-            RawReads = Channel
-                .fromFilePairs("${params.input}/*{R1,R2,_1,_2}*.{fastq,fq}.gz")
-        }
+        READS_INGEST()
+        RawReads = READS_INGEST.out
     }
 
-    RawReads | sample_rename | trimming
+    trimming(RawReads)
 
     if (params.skip_qc) {
         QcReport = Channel.from([])
     }
     else {
         if (params.ont) {
-            InterleavedReads = sample_rename.out
+            InterleavedReads = RawReads
         }
         else {
-            interleave(sample_rename.out)
+            interleave(RawReads)
             InterleavedReads = interleave.out
         }
 
@@ -163,32 +157,6 @@ workflow {
 
     // Put a pretty bow on everything
     presentation_generator()
-}
-
-process sample_rename {
-    label 'process_low'
-
-    input:
-    tuple val(givenName), file(readsFiles)
-
-    output:
-    tuple val(sampleName), file("out/*.fastq.gz")
-
-    script:
-    sampleName = givenName.split('_')[0]
-    if (params.ont) {
-        """
-        mkdir out
-        mv ${readsFiles[0]} out/${sampleName}.fastq.gz
-        """
-    }
-    else {
-        """
-        mkdir out
-        mv ${readsFiles[0]} out/${sampleName}_R1.fastq.gz
-        mv ${readsFiles[1]} out/${sampleName}_R2.fastq.gz
-        """
-    }
 }
 
 process interleave {
