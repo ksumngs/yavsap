@@ -8,6 +8,10 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- Samplesheet compatability (#21/#31)
+
 ### Fixed
 
 - Oversubscription error in RAxML-NG process
