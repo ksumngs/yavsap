@@ -8,13 +8,23 @@ Basic jist::
 Input Preparation
 -----------------
 
-Input is made up of raw NGS reads in gzipped fastq format. There must be only
-one file per sample for Nanopore reads, and one pair of files (two files) for
-Illumina paired-end reads. Paired-end files must have either the characters
-``_1`` and ``_2`` or ``_R1`` and ``_R2`` in the filename to be idenfied as a
-pair. Note that this pipeline does not support Illumina single-end reads. The
-sample name is taken as the all the characters *before* the first underscore in
-the file name.
+Using a Directory as Input
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+When running YAVSAP within a directory, Reads files must have one of one of the
+following extensions:
+
+* .fastq
+* .fq
+* .fastq.gz
+* .fq.gz
+
+There must be only one file per sample for single-end reads, and one pair of
+files (two files) for paired-end reads. Interleaved paired-end reads files are
+not supported at this time. Paired-end files must have either the characters
+``_1`` and ``_2`` or ``_R1`` and ``_R2`` in the filename to be identified as a
+pair. The sample name is taken as the all the characters *before* the first
+underscore in the file name.
 
 For example, a folder with the following files
 
@@ -37,95 +47,54 @@ will produce a sample list of
 * mosquito1
 * mosquito2
 
-This file naming system is very common for Illumina output, however the default
-Oxford Nanopore naming scheme breaks this in several ways:
+This file naming system is very common for Illumina output, however for Oxford
+Nanopore reads, the default file structure breaks this in several ways, and it is
+often better to use a samplesheet.
 
-1. The fastq files are (often) not gzipped
-2. The fastq files are stored in separate directories per sample
-3. The fastq files start with the flowcell id as the beginning of the filename
-4. There are often many fastq files per sample
+Using a Samplesheet as Input
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-For example, MinION output folders often are structured like the following
+A samplesheet is optional, but it allows you to pass multiple reads files in as
+a single sample, which can be useful for e.g. Oxford Nanopore reads. A
+samplesheet header is optional, and must be delineated by beginning with the
+pound (``#``) symbol. The first column contains sample names, and each
+subsequent column contains a path to reads files. All sample names will be
+cleaned of any shell metacharacters, and will be truncated at the first
+underscore. Paths are resolved relative to the :ref:`--input
+<input-output-options>` directory. Path names can contain wildcard characters,
+and will resolve as glob patterns identical to how they would in Nextflow's
+:ref:`Channel.fromPath <channel-fromlist>` constructor. For paired-end reads,
+forward reads should be specified in the even-number columns (``2,4,6``), and
+reverse reads should be specified in the odd-number columns (``3,5,7``).
+Interleaved reads are not supported at this time.
 
-::
+Single-end example
+++++++++++++++++++
 
-    .
-    ├── fastq_fail
-    │   ├── barcode04
-    |   |   ├── FAP01234_fail_barcode04_abcd1234_0.fastq
-    |   |   └── FAP01234_fail_barcode04_abcd1234_1.fastq
-    |   ├── barcode05
-    |   |   ├── FAP01234_fail_barcode05_abcd1234_0.fastq
-    |   |   └── FAP01234_fail_barcode05_abcd1234_1.fastq
-    │   ├── barcode06
-    |   |   └── FAP01234_fail_barcode06_abcd1234_0.fastq
-    |   └── barcode07
-    |       ├── FAP01234_fail_barcode07_abcd1234_0.fastq
-    |       └── FAP01234_fail_barcode07_abcd1234_1.fastq
-    └── fastq_pass
-        ├── barcode04
-        |   ├── FAP01234_pass_barcode04_abcd1234_0.fastq
-        |   └── FAP01234_pass_barcode04_abcd1234_1.fastq
-        ├── barcode05
-        |   ├── FAP01234_pass_barcode05_abcd1234_0.fastq
-        |   └── FAP01234_pass_barcode05_abcd1234_1.fastq
-        ├── barcode06
-        |   └── FAP01234_pass_barcode06_abcd1234_0.fastq
-        └── barcode07
-            ├── FAP01234_pass_barcode07_abcd1234_0.fastq
-            └── FAP01234_pass_barcode07_abcd1234_1.fastq
+=========== ======================================================================================== =========================================================================================
+#samplename
+=========== ======================================================================================== =========================================================================================
+pig-serum   ``/data/run/fastq{pass,fail}/barcode01/FAP01234_{pass,fail}_barcode01_abcde01_*.fastq*`` ``/data/run2/fastq{pass,fail}/barcode07/FAP01234_{pass,fail}_barcode07_abcde01_*.fastq*``
+pig-feces   ``/data/run/fastq{pass,fail}/barcode02/FAP01234_{pass,fail}_barcode02_abcde01_*.fastq*``
+mosquito1   ``/data/run/fastq{pass,fail}/barcode03/FAP01234_{pass,fail}_barcode03_abcde01_*.fastq*``
+mosquito2   ``./seq-results/mosquito2/*.fastq*```
+=========== ======================================================================================== =========================================================================================
 
+Paired-end example
+++++++++++++++++++
 
-(Non-fastq files and directories excluded for brevity.)
+========= ========================================== ========================================== ======================================= =======================================
+#Sample   Forward1                                   Reverse1                                   Forward2                                Reverse2
+========= ========================================== ========================================== ======================================= =======================================
+pig-serum ``/basespace/run/PIG-SERUM*_R1*.fastq.gz`` ``/basespace/run/PIG-SERUM*_R2*.fastq.gz`` ``/dragen/run/PIG-SERUM*_R1*.fastq.gz`` ``/dragen/run/PIG-SERUM*_R2*.fastq.gz``
+pig-feces ``/basespace/run/PIG-FECES*_R1*.fastq.gz`` ``/basespace/run/PIG-FECES*_R2*.fastq.gz``
+mosquito1 ``/basespace/run/MOSQUITO1*_R1*.fastq.gz`` ``/basespace/run/MOSQUITO1*_R1*.fastq.gz``
+mosquito2 ``./seq-results/mosquito2/*_R1*.fastq.gz`` ``./seq-results/mosquito2/*_R2*.fastq.gz``
+========= ========================================== ========================================== ======================================= =======================================
 
-One way of remedying these difficulties is to create a tab-separated file with
-the sample ID and the barcode (with leading zeros), such as
+Once the samplesheet is constructed, pass it on the command line as::
 
-========= =======
-sample    barcode
-========= =======
-pig-serum 04
-pig-feces 05
-mosquito1 06
-mosquito2 07
-========= =======
-
-Then the following bash script can restructure the files into the correct
-format using GNU Parallel and pigz, and can handle a mix of gzipped and
-uncompressed reads. Replace ``fastq*`` with ``fastq_pass`` in line 8 if you
-wish to only consider those reads that passed Guppy's quality checks.
-
-.. code-block:: bash
-
-    #!/bin/bash
-    SAMPLESHEET=/path/to/samplesheet
-    MINION_DIR=/path/to/minion/output
-    while read -r LINE; do
-      echo "$LINE" | while IFS=$'\t' read -r SAMPLE BARCODE; do
-        if [[ $SAMPLE != "sample" ]]; then
-          mkdir $SAMPLE
-          cp ${MINION_DIR}/fastq*/barcode${BARCODE}/*.fastq* $SAMPLE
-          parallel gunzip ::: $SAMPLE/*.fastq.gz
-          cat $SAMPLE/*.fastq > $SAMPLE.fastq
-          pigz --best -p $(nproc) $SAMPLE.fastq
-          rm -rf $SAMPLE
-        fi
-      done
-    done < $SAMPLESHEET
-
-Running this script on the example directory and sample sheet will yield the
-following files
-
-::
-
-    .
-    ├── pig-serum.fastq.gz
-    ├── pig-feces.fastq.gz
-    ├── mosquito1.fastq.gz
-    └── mosquito2.fastq.gz
-
-and will give the same sample names as given above for the Illumina files. Note
-that fast5 files are not needed for Nanopore reads.
+    nextflow run ksumngs/yavsap ... --samplesheet /path/to/sheet.tsv
 
 Profile Selection
 -----------------
