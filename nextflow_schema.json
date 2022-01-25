@@ -16,7 +16,7 @@
                     "format": "file-path",
                     "description": "Path the folder containing input reads.",
                     "help_text": "For Illumina (paired-end) reads, the file names must be identical until the ending underscore with a read number, e.g. 'sample1_S10_L001_R1_001.fastq.gz' and 'sample1_S10_L001_R2_001.fastq.gz'. The read number must be designated using either '_1' and '_2' or '_R1' and '_R2'. For Nanopore reads, each fastq file is assumed to be a unique sample, so, e.g. 'FAP01234_pass_barcode05_abcd01234_0.fastq.gz' and 'FAP01234_pass_barcode05_abcd01234_1.fastq.gz' are assumed to be different samples even though they are from the same barcode. All read files must be gzipped, and have the extension '.fastq.gz' or '.fq.gz'.",
-                    "fa_icon": "fas fa-file-csv",
+                    "fa_icon": "fas fa-folder",
                     "default": "."
                 },
                 "sra": {
