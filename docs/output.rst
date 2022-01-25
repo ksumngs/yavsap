@@ -207,8 +207,8 @@ Diagnostics
 ^^^^^^^^^^^
 
 Pipeline runtime reports can be found in the ``.trace`` folder by default, but
-this can be modified using the :ref:`--tracedir` parameter. Four types of
-Nextflow traces are output.
+this can be modified using the :ref:`--tracedir <Input/Output Options>`
+parameter. Four types of Nextflow traces are output.
 
 * :ref:`Execution reports <execution-report>`
 * :ref:`Execution timelines <timeline-report>`
