@@ -116,7 +116,7 @@
                     "type": "string",
                     "default": "jev",
                     "fa_icon": "far fa-list-alt",
-                    "description": "Path to TSV file containing NCBI accession numbers of strains for constructing phylogenetic trees."
+                    "description": "Path to TSV file containing NCBI accession numbers of strains for constructing phylogenetic trees. Preset genome lists can be specified by name"
                 }
             }
         },

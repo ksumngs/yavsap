@@ -12,8 +12,12 @@ workflow haplotyping {
     GenomeAnnotation
 
     main:
-    GenomePath = "${workflow.projectDir}/genomes/${params.genome_list}.tsv"
+    GenomePath = params.genome_list
     GenomeFile = file(GenomePath)
+    if (!GenomeFile.toFile().exists()) {
+        GenomePath = "${workflow.projectDir}/genomes/${params.genome_list}*"
+        GenomeFile = file(GenomePath, checkIfExists: true)
+    }
     GenomeList = Channel
         .fromPath(GenomePath)
         .splitCsv(sep: '\t')

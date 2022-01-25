@@ -11,6 +11,7 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 ### Added
 
 - Samplesheet compatability (#21/#31)
+- Ability to use user-created genome lists (#23)
 
 ### Fixed
 
