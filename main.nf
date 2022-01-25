@@ -57,6 +57,7 @@ if (!params.ont && !params.pe) {
 }
 
 include { GENOME_DOWNLOAD } from './subworkflows/reference.nf'
+include { READS_INGEST } from './modules/ingest.nf'
 include { trimming }              from './subworkflows/trimming.nf'
 include { assembly }              from './subworkflows/assembly.nf'
 include { read_filtering }        from './subworkflows/filtering.nf'
@@ -94,15 +95,8 @@ workflow {
         RawReads = SIMULATED_READS.out
     }
     else {
-        if (params.ont) {
-            RawReads = Channel
-                .fromPath("${params.input}/*.{fastq,fq}.gz")
-                .map{ file -> tuple(file.simpleName, file) }
-        }
-        else {
-            RawReads = Channel
-                .fromFilePairs("${params.input}/*{R1,R2,_1,_2}*.{fastq,fq}.gz")
-        }
+        READS_INGEST()
+        RawReads = READS_INGEST.out
     }
 
     RawReads | sample_rename | trimming
