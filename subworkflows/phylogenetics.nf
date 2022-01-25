@@ -53,11 +53,11 @@ workflow PHYLOGENETIC_TREE {
 ///           Plain-text multi-alignment file. RAxML-NG supports FASTA, PHYLIP, and
 ///           CATG formats
 /// output:
-///   -tuple:
-///     - type: val(String)
-///       description: Sample identifier
-///     - type: path
-///       description: Multi-alignment file in binary format
+///   - tuple:
+///       - type: val(String)
+///         description: Sample identifier
+///       - type: path
+///         description: Multi-alignment file in binary format
 process RAXML_PARSE {
     label 'raxml'
     label 'error_ignore'
