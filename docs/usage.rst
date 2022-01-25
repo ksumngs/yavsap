@@ -60,10 +60,10 @@ samplesheet header is optional, and must be delineated by beginning with the
 pound (``#``) symbol. The first column contains sample names, and each
 subsequent column contains a path to reads files. All sample names will be
 cleaned of any shell metacharacters, and will be truncated at the first
-underscore. Paths are resolved relative to the :ref:`--input
-<input-output-options>` directory. Path names can contain wildcard characters,
-and will resolve as glob patterns identical to how they would in Nextflow's
-:ref:`Channel.fromPath <channel-fromlist>` constructor. For paired-end reads,
+underscore. Paths are resolved relative to the :ref:`--input <Input/Output
+Options>` directory. Path names can contain wildcard characters, and will
+resolve as glob patterns identical to how they would in Nextflow's
+:ref:`Channel.fromPath <channel-path>` constructor. For paired-end reads,
 forward reads should be specified in the even-number columns (``2,4,6``), and
 reverse reads should be specified in the odd-number columns (``3,5,7``).
 Interleaved reads are not supported at this time.
