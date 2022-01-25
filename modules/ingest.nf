@@ -44,6 +44,7 @@ workflow READS_INGEST {
         if (params.pe) {
             RawSamples = Channel
                 .fromFilePairs("${params.input}/*{R1,R2,_1,_2}*.{fastq,fq,fastq.gz,fq.gz}")
+                .map { [ it[0], it[1][0], it[1][1] ] }
         }
         else {
             RawSamples = Channel
