@@ -159,32 +159,6 @@ workflow {
     presentation_generator()
 }
 
-process sample_rename {
-    label 'process_low'
-
-    input:
-    tuple val(givenName), file(readsFiles)
-
-    output:
-    tuple val(sampleName), file("out/*.fastq.gz")
-
-    script:
-    sampleName = givenName.split('_')[0]
-    if (params.ont) {
-        """
-        mkdir out
-        mv ${readsFiles[0]} out/${sampleName}.fastq.gz
-        """
-    }
-    else {
-        """
-        mkdir out
-        mv ${readsFiles[0]} out/${sampleName}_R1.fastq.gz
-        mv ${readsFiles[1]} out/${sampleName}_R2.fastq.gz
-        """
-    }
-}
-
 process interleave {
     label 'seqtk'
     label 'process_low'
