@@ -99,17 +99,17 @@ workflow {
         RawReads = READS_INGEST.out
     }
 
-    RawReads | sample_rename | trimming
+    trimming(RawReads)
 
     if (params.skip_qc) {
         QcReport = Channel.from([])
     }
     else {
         if (params.ont) {
-            InterleavedReads = sample_rename.out
+            InterleavedReads = RawReads
         }
         else {
-            interleave(sample_rename.out)
+            interleave(RawReads)
             InterleavedReads = interleave.out
         }
 
