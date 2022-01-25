@@ -47,6 +47,12 @@
                     "description": "INTERNAL USE ONLY!!!",
                     "hidden": true
                 },
+                "samplesheet": {
+                    "type": "string",
+                    "default": null,
+                    "fa_icon": "fas fa-file-csv",
+                    "help_text": "A samplesheet is optional, but it allows you to pass multiple reads files in as a single sample, which can be useful for e.g. Oxford Nanopore reads. A samplesheet header is optional, and must be delineated by beginning with the pound (`#`) symbol. The first column contains sample names, and each subsequent column contains a path to reads files. All sample names will be cleaned of any shell metacharacters, and will be truncated at the first underscore. Paths are resolved relative to the `--input` directory. Path names can contain wildcard characters, and will resolve as glob patterns identical to how they would in Nextflow's {ref}`Channel.fromPath <frompath>` constructor. For paired-end reads, forward reads should be specified in the even-number columns (`2,4,6`), and reverse reads should be specified in the odd-number columns (`3,5,7`). Interleaved reads are not supported at this time.\n\n### Single-end example\n\n| #samplename | | |\n| --- | --- | --- |\n| pig-serum | `/data/run/fastq{pass,fail}/barcode01/FAP01234_{pass,fail}_barcode01_abcde01_*.fastq*` |  `/data/run2/fastq{pass,fail}/barcode07/FAP01234_{pass,fail}_barcode07_abcde01_*.fastq*` |\n| pig-feces | `/data/run/fastq{pass,fail}/barcode02/FAP01234_{pass,fail}_barcode02_abcde01_*.fastq*` | |\n| mosquito1 | `/data/run/fastq{pass,fail}/barcode03/FAP01234_{pass,fail}_barcode03_abcde01_*.fastq*` | |\n| mosquito2 |` ./seq-results/mosquito2/*.fastq*` | |\n\n### Paired-end example\n\n| #Sample | Forward1 | Reverse1 | Forward2 | Reverse2 |\n| --- | --- | --- | --- | --- |\n| pig-serum | `/basespace/run/PIG-SERUM*_R1*.fastq.gz` | `/basespace/run/PIG-SERUM*_R2*.fastq.gz` | `/dragen/run/PIG-SERUM*_R1*.fastq.gz` | `/dragen/run/PIG-SERUM*_R2*.fastq.gz` |\n| pig-feces | `/basespace/run/PIG-FECES*_R1*.fastq.gz` | `/basespace/run/PIG-FECES*_R2*.fastq.gz` | | |\n| mosquito1 | `/basespace/run/MOSQUITO1*_R1*.fastq.gz` | `/basespace/run/MOSQUITO1*_R1*.fastq.gz` | | |\n| mosquito2 | `./seq-results/mosquito2/*_R1*.fastq.gz` | `./seq-results/mosquito2/*_R2*.fastq.gz` | | |"
+                },
                 "seed": {
                     "type": "integer",
                     "fa_icon": "fas fa-seedling",
