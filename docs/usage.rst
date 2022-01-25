@@ -157,7 +157,7 @@ them on the command-line is best.
   The path to a Kraken2 database. See :ref:`--kraken2_db <Kraken2 Options>`.
 --platform
   Must be set to ``ont`` or ``pe``, depending on the type of reads you are
-  analyzing. See :ref:`--platform`.
+  analyzing. See :ref:`--platform <Input/Output Options>`.
 -profile
   So, this isn't really a parameter, but the container enginer needs to be set
   using Nextflow's ``-profile`` flag. See :ref:`Profile Selection`.
