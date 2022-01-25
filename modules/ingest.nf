@@ -95,8 +95,8 @@ process SINGLE_PREPROCESS {
     script:
     sampleName = givenName.split('_')[0]
     """
-    parallel -j${task.cpus} gunzip -f ::: *.gz
-    cat *.f*q > "${sampleName}.fastq"
+    parallel -j${task.cpus} gunzip -f ::: ./*.gz
+    cat ./*.f*q > "${sampleName}.fastq"
     pigz -p${task.cpus} "${sampleName}.fastq"
     """
 }
@@ -133,9 +133,9 @@ process PAIRED_PREPROCESS {
     script:
     sampleName = givenName.split('_')[0]
     """
-    parallel -j${task.cpus} gunzip -f ::: *.gz
-    cat *_*1*.f*q > "${sampleName}_R1.fastq"
-    cat *_*2*.f*q > "${sampleName}_R2.fastq"
+    parallel -j${task.cpus} gunzip -f ::: ./*.gz
+    cat ./*_*1*.f*q > "${sampleName}_R1.fastq"
+    cat ./*_*2*.f*q > "${sampleName}_R2.fastq"
     parallel -j2 pigz -p${task.cpus / 2} ::: "${sampleName}"_R*.fastq
     """
 }
