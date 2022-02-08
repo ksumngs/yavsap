@@ -2,6 +2,29 @@
 nextflow.enable.dsl = 2
 
 /// summary: |
+///   Perform context-sensitive QC on fastq reads
+workflow QC {
+    take:
+    Reads
+
+    main:
+    if (params.pe) {
+        Reads \
+            | SEQTK_INTERLEAVE \
+            | FASTQC
+        QcReport = FASTQC.out
+    }
+    else {
+        Reads \
+            | NANOSTAT
+        QcReport = NANOSTAT.out
+    }
+
+    emit:
+    QcReport
+}
+
+/// summary: |
 ///   Merge paired-end fastq reads files into a single file
 /// input:
 ///   - tuple:
