@@ -148,14 +148,14 @@ Variant Calls
 
 Variant calls for each sample are output to the ``variants`` folder when
 analyzing Nanopore reads (no variant calls are output for Illumina reads). The
-filename is always ``<samplename>.variants.tsv``.
+filename is always ``<samplename>.vcf``.
 
 ::
 
     results
     └── 📁 variants
-        ├── 📝 pig-serum.variants.tsv
-        └── 📝 pig-feces.variants.tsv
+        ├── 📝 pig-serum.vcf
+        └── 📝 pig-feces.vcf
 
 Haplotypes
 ^^^^^^^^^^
@@ -207,8 +207,8 @@ Diagnostics
 ^^^^^^^^^^^
 
 Pipeline runtime reports can be found in the ``.trace`` folder by default, but
-this can be modified using the :ref:`--tracedir` parameter. Four types of
-Nextflow traces are output.
+this can be modified using the :ref:`--tracedir <Input/Output Options>`
+parameter. Four types of Nextflow traces are output.
 
 * :ref:`Execution reports <execution-report>`
 * :ref:`Execution timelines <timeline-report>`

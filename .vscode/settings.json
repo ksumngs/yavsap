@@ -29,13 +29,9 @@
         "pvalue",
         "Δlinkage"
     ],
-    "julia.environmentPath": "/home/tchristensen/src/jev-analysis-pipeline/bin",
-    "python.pythonPath": "/home/tchristensen/miniconda3/envs/jev-analysis-pipeline/bin/python",
     "files.associations": {
-        "*haplotype-finder": "julia",
-        "*variantfilter": "julia",
-        "*remove-invalid-reads": "julia",
-        "*make-haplotype-fastas": "julia",
+        "haplink": "julia",
+        "make-haplotype-fastas": "julia",
         "*.config": "nextflow"
     }
 }

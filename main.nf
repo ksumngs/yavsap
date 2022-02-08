@@ -56,12 +56,13 @@ if (!params.ont && !params.pe) {
     exit 1
 }
 
-include { reference_genome_pull } from './subworkflows/reference.nf'
+include { GENOME_DOWNLOAD } from './subworkflows/reference.nf'
+include { READS_INGEST } from './modules/ingest.nf'
 include { trimming }              from './subworkflows/trimming.nf'
 include { assembly }              from './subworkflows/assembly.nf'
 include { read_filtering }        from './subworkflows/filtering.nf'
 include { haplotyping }           from './subworkflows/haplotype.nf'
-include { simulated_reads }       from './test/test.nf'
+include { SIMULATED_READS }       from './test/test.nf'
 
 cowsay(
 """\
@@ -83,38 +84,39 @@ Diagnostics folder:     ${params.tracedir}
 )
 
 workflow {
-    reference_genome_pull()
-    IndexedReference = reference_genome_pull.out.indexedreference
-    AnnotatedReference = reference_genome_pull.out.annotatedreference
-    GenomeSize = reference_genome_pull.out.genomesize
+    GENOME_DOWNLOAD()
+    IndexedReference = GENOME_DOWNLOAD.out.indexedFasta
+    AnnotatedReference = GENOME_DOWNLOAD.out.referenceAnnotations
+    GenomeSize = GENOME_DOWNLOAD.out.genomeSize
 
     // Bring in the reads files
     if (params.sra) {
-        simulated_reads()
-        RawReads = simulated_reads.out
+        SIMULATED_READS()
+        RawReads = SIMULATED_READS.out
+    }
+    else {
+        READS_INGEST()
+        RawReads = READS_INGEST.out
+    }
+
+    trimming(RawReads)
+
+    if (params.skip_qc) {
+        QcReport = Channel.from([])
     }
     else {
         if (params.ont) {
-            RawReads = Channel
-                .fromPath("${params.input}/*.{fastq,fq}.gz")
-                .map{ file -> tuple(file.simpleName, file) }
+            InterleavedReads = RawReads
         }
         else {
-            RawReads = Channel
-                .fromFilePairs("${params.input}/*{R1,R2,_1,_2}*.{fastq,fq}.gz")
+            interleave(RawReads)
+            InterleavedReads = interleave.out
         }
+
+        fastqc(InterleavedReads)
+        QcReport = fastqc.out
     }
 
-    RawReads | sample_rename | trimming
-
-    if (params.ont) {
-        sample_rename.out | nanostat
-        QcReports = nanostat.out
-    }
-    else {
-        sample_rename.out | interleave | fastqc
-        QcReports = fastqc.out
-    }
 
     read_filtering(trimming.out.trimmedreads)
     KrakenReports = read_filtering.out.KrakenReports
@@ -138,46 +140,23 @@ workflow {
     AllAlignments = Alignments.join(AlignedContigs, remainder: true).flatMap{ n -> [n[1], n[2]] }.collect()
 
     if (!params.skip_haplotype) {
-        haplotyping(Alignments, Assemblies, IndexedReference, AnnotatedReference)
-        PhyloTrees = haplotyping.out
+        haplotyping(FilteredReads, Alignments, IndexedReference, AnnotatedReference)
+        //PhyloTrees = haplotyping.out
     }
     else {
-        PhyloTrees = Channel.from([])
+        //PhyloTrees = Channel.from([])
     }
 
-    multiqc(KrakenReports
+    MultiQCConfig = file("${workflow.projectDir}/multiqc_config.yaml")
+
+    multiqc(MultiQCConfig,
+        KrakenReports
         .concat(trimming.out.report)
-        .concat(QcReports)
+        .concat(QcReport)
         .collect())
 
     // Put a pretty bow on everything
     presentation_generator()
-}
-
-process sample_rename {
-    label 'process_low'
-
-    input:
-    tuple val(givenName), file(readsFiles)
-
-    output:
-    tuple val(sampleName), file("out/*.fastq.gz")
-
-    script:
-    sampleName = givenName.split('_')[0]
-    if (params.ont) {
-        """
-        mkdir out
-        mv ${readsFiles[0]} out/${sampleName}.fastq.gz
-        """
-    }
-    else {
-        """
-        mkdir out
-        mv ${readsFiles[0]} out/${sampleName}_R1.fastq.gz
-        mv ${readsFiles[1]} out/${sampleName}_R2.fastq.gz
-        """
-    }
 }
 
 process interleave {
@@ -230,7 +209,6 @@ process nanostat {
 
 process reads_realign_to_reference {
     label 'minimap'
-    publishDir "${params.outdir}/alignment", mode: "${params.publish_dir_mode}"
 
     input:
     tuple val(sampleName), file(readsFile)
@@ -254,6 +232,7 @@ process multiqc {
     publishDir "${params.outdir}", mode: "${params.publish_dir_mode}"
 
     input:
+    file(configFile)
     file '*'
 
     output:
@@ -262,7 +241,6 @@ process multiqc {
 
     script:
     """
-    cp ${workflow.projectDir}/multiqc_config.yaml .
     multiqc .
     """
 }
@@ -273,8 +251,8 @@ process presentation_generator {
     publishDir "${params.outdir}", mode: "${params.publish_dir_mode}"
 
     output:
-
     file '_css/*.css'
+    file '_js/*.js'
     file '_views/*.pug'
     file 'index.js'
     file 'package.json'
@@ -283,6 +261,6 @@ process presentation_generator {
 
     script:
     """
-    cp -r ${workflow.projectDir}/visualizer/{_css,_views,index.js,package.json,package-lock.json,favicon.ico} .
+    cp -r ${workflow.projectDir}/visualizer/{_css,_js,_views,index.js,package.json,package-lock.json,favicon.ico} .
     """
 }

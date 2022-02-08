@@ -59,7 +59,7 @@ function hasContigsAlignment(sample) {
 }
 
 function hasVariantCalls(sample) {
-    return hasOutputfile(sample, '/variants', '.variants.tsv');
+    return hasOutputfile(sample, '/variants', '.vcf');
 }
 
 function getTraceDocuments(prefix, suffix) {
@@ -123,7 +123,7 @@ function isOntResults() {
     else {
         yaml_extension = true;
     }
-    return fs.existsSync(__dirname + '/variants') || yaml_extension
+    return yaml_extension
 }
 
 // Server page rendering
@@ -150,7 +150,7 @@ app.get('/alignments/:sample', function(req, res) {
     igvOptions = {
         reference: {
             id: getReferenceGenomeName(),
-            fastaURL: '/reference/' + getReferenceGenomeName() + '.fasta'
+            fastaURL: '/alignment/' + sampleName + '_REFERENCE.fasta'
         },
         tracks: [
             {
@@ -162,15 +162,6 @@ app.get('/alignments/:sample', function(req, res) {
             }
         ]
     };
-    if (hasContigsAlignment(sampleName)) {
-        igvOptions.tracks.push({
-            type: 'alignment',
-            format: 'bam',
-            url: '/assembly/alignment/' + sampleName + '.contigs.bam',
-            indexURL: '/assembly/alignment/' + sampleName + '.contigs.bam.bai',
-            name: sampleName + '.contigs'
-        })
-    }
     res.render('alignment',
         {
             title: req.params.sample + ' Alignments',
@@ -231,6 +222,7 @@ app.use('/js/d3', express.static(__dirname + '/node_modules/d3/dist'));
 app.use('/js/underscore', express.static(__dirname + '/node_modules/underscore'));
 app.use('/js/lodash', express.static(__dirname + '/node_modules/lodash'));
 app.use('/js/phylotree', express.static(__dirname + '/node_modules/phylotree/dist'));
+app.use('/js/local', express.static(__dirname + '/_js'));
 
 // CSS Serving, from node_modules and locally
 app.use('/css/twbs', express.static(__dirname + '/node_modules/bootstrap/dist/css'));

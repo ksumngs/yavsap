@@ -10,14 +10,14 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-# import os
-# import sys
-# sys.path.insert(0, os.path.abspath('.'))
+import os
+import sys
+sys.path.append(os.path.abspath('./_ext'))
 
 
 # -- Project information -----------------------------------------------------
 
-project = 'JEV Analysis Pipeline'
+project = 'Yet Another Viral Subspecies Analysis Pipeline'
 copyright = '2021, Thomas A. Christensen II'
 author = 'Thomas A. Christensen II'
 
@@ -29,7 +29,9 @@ author = 'Thomas A. Christensen II'
 # ones.
 extensions = [
     'sphinx.ext.intersphinx',
-    'sphinx.ext.autosectionlabel'
+    'sphinx.ext.autosectionlabel',
+    'myst_parser',
+    'nfdocs-parser.nfdocs-parser',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -38,7 +40,7 @@ templates_path = ['_templates']
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
+exclude_patterns = ['_build', '_ext', 'Thumbs.db', '.DS_Store']
 
 
 # -- Options for HTML output -------------------------------------------------
@@ -56,5 +58,5 @@ html_static_path = ['_static']
 intersphinx_mapping = {
     'nextflow': ('https://nextflow.io/docs/latest/', None),
     'canu': ('https://canu.readthedocs.io/en/latest', None),
-    'singularity': ('https://singularity.hpcng.org/user-docs/3.8', None)
+    'singularity': ('https://apptainer.org/user-docs/master', None)
 }

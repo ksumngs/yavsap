@@ -1,0 +1,12 @@
+haplotypes:
+  - name: ebde7a35
+    frequency: 0.2
+    snps:
+    - chromosome: MH258848.1
+      position: 7172
+      referencebase: T
+      alternatebase: C
+      identifier: .
+      quality: 30
+      filter: PASS
+      info:
