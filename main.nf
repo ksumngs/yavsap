@@ -106,15 +106,15 @@ workflow {
     }
     else {
         if (params.ont) {
-            InterleavedReads = RawReads
+            nanostat(RawReads)
+            QcReport = nanostat.out
         }
         else {
             interleave(RawReads)
             InterleavedReads = interleave.out
+            fastqc(InterleavedReads)
+            QcReport = fastqc.out
         }
-
-        fastqc(InterleavedReads)
-        QcReport = fastqc.out
     }
 
 
