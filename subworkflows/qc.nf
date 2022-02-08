@@ -32,3 +32,36 @@ process SEQTK_INTERLEAVE {
     seqtk mergepe "${reads}" | gzip > "${sampleName}.fastq.gz"
     """
 }
+
+/// summary: |
+///   Collect some base stats on the quality of reads
+/// input:
+///   - tuple:
+///       - name: sampleName
+///         type: val(String)
+///         description: Sample identifier
+///       - name: reads
+///         type: file
+///         description: |
+///           A single file (SE or interleaved) containing Illumina reads in fastq
+///           format
+/// output:
+///   - tuple:
+///       - type: val(String)
+///         description: Sample identifier
+///       - type: path
+///         description: FastQC report file
+process FASTQC {
+    label 'fastqc'
+
+    input:
+    tuple val(sampleName), file(reads)
+
+    output:
+    path("${sampleName}_fastqc.zip")
+
+    script:
+    """
+    fastqc -t ${task.cpus} "${reads}"
+    """
+}
