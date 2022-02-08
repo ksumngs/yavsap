@@ -65,3 +65,34 @@ process FASTQC {
     fastqc -t ${task.cpus} "${reads}"
     """
 }
+
+/// summary: |
+///   Collect some base stats on the quality of reads
+/// input:
+///   - tuple:
+///       - name: sampleName
+///         type: val(String)
+///         description: Sample identifier
+///       - name: reads
+///         type: file
+///         description: File containing Nanopore reads in fastq format
+/// output:
+///   - tuple:
+///       - type: val(String)
+///         description: Sample identifier
+///       - type: path
+///         description: NanoStat report file
+process NANOSTAT {
+    label 'nanostat'
+
+    input:
+    tuple val(sampleName), file(reads)
+
+    output:
+    path("${sampleName}_nanostat.log")
+
+    script:
+    """
+    NanoStat -t ${task.cpus} --fastq "${reads}" > "${sampleName}_nanostat.log"
+    """
+}
