@@ -62,6 +62,7 @@ include { trimming }              from './subworkflows/trimming.nf'
 include { assembly }              from './subworkflows/assembly.nf'
 include { read_filtering }        from './subworkflows/filtering.nf'
 include { haplotyping }           from './subworkflows/haplotype.nf'
+include { QC }                    from './subworkflows/qc.nf'
 include { SIMULATED_READS }       from './test/test.nf'
 
 cowsay(
@@ -105,16 +106,8 @@ workflow {
         QcReport = Channel.from([])
     }
     else {
-        if (params.ont) {
-            nanostat(RawReads)
-            QcReport = nanostat.out
-        }
-        else {
-            interleave(RawReads)
-            InterleavedReads = interleave.out
-            fastqc(InterleavedReads)
-            QcReport = fastqc.out
-        }
+        QC(RawReads)
+        QcReport = QC.out.QcReport
     }
 
 
