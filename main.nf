@@ -152,54 +152,6 @@ workflow {
     presentation_generator()
 }
 
-process interleave {
-    label 'seqtk'
-    label 'process_low'
-
-    input:
-    tuple val(sampleName), path(readsFiles)
-
-    output:
-    tuple val(sampleName), path("${sampleName}.fastq.gz")
-
-    script:
-    """
-    seqtk mergepe ${readsFiles} | gzip > ${sampleName}.fastq.gz
-    """
-}
-
-process fastqc {
-    label 'fastqc'
-    label 'process_medium'
-
-    input:
-    tuple val(sampleName), file(readsFiles)
-
-    output:
-    path("${sampleName}_fastqc.zip")
-
-    script:
-    """
-    fastqc -t ${task.cpus} ${readsFiles}
-    """
-}
-
-process nanostat {
-    label 'nanostat'
-    label 'process_medium'
-
-    input:
-    tuple val(sampleName), file(readsFile)
-
-    output:
-    path("${sampleName}_nanostat.log")
-
-    script:
-    """
-    NanoStat -t ${task.cpus} --fastq ${readsFile} > ${sampleName}_nanostat.log
-    """
-}
-
 process reads_realign_to_reference {
     label 'minimap'
 
