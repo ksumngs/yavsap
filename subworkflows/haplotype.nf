@@ -12,8 +12,12 @@ workflow haplotyping {
     GenomeAnnotation
 
     main:
-    GenomePath = "${workflow.projectDir}/genomes/${params.genome_list}.tsv"
+    GenomePath = params.genome_list
     GenomeFile = file(GenomePath)
+    if (!GenomeFile.toFile().exists()) {
+        GenomePath = "${workflow.projectDir}/genomes/${params.genome_list}*"
+        GenomeFile = file(GenomePath, checkIfExists: true)
+    }
     GenomeList = Channel
         .fromPath(GenomePath)
         .splitCsv(sep: '\t')
@@ -347,16 +351,17 @@ process HAPLINK_HAPLOTYPES {
 
     script:
     """
-    haplink haplotypes \
-        --bam ${bamfile[0]} \
-        --variants ${variants} \
-        --output ${prefix}.haplotypes.yaml \
-        --significance ${params.haplotype_significance} \
-        --depth ${params.haplotype_depth} \
-        --method ${params.haplotype_method} \
-        --overlap-min ${params.haplotype_overlap_min} \
-        --overlap-max ${params.haplotype_overlap_max} \
-        --iterations ${params.haplotype_iterations} \
+    haplink haplotypes \\
+        --bam "${bamfile[0]}" \\
+        --variants "${variants}" \\
+        --output "${prefix}.haplotypes.yaml" \\
+        --significance ${params.haplotype_significance} \\
+        --depth ${params.haplotype_depth} \\
+        --method ${params.haplotype_method} \\
+        --overlap-min ${params.haplotype_overlap_min} \\
+        --overlap-max ${params.haplotype_overlap_max} \\
+        --iterations ${params.haplotype_iterations} \\
+        --seed ${params.seed} \\
         --julia-args -t${task.cpus}
     """
 }
@@ -398,42 +403,6 @@ process HAPLINK_FASTA {
         --haplotypes ${haplotypes} \
         --reference ${reference} \
         --output ${prefix}.haplotypes.fasta
-    """
-}
-
-process calling_ont {
-    label 'haplink'
-    label 'process_high'
-    publishDir "${params.outdir}", mode: "${params.publish_dir_mode}"
-
-    input:
-    tuple val(prefix), file(bamfile), file(reference)
-
-    output:
-    tuple val(prefix), path("variants/${prefix}.vcf"), emit: variants
-    tuple val(prefix), path("haplotypes/${prefix}.haplotypes.yaml"), emit: haplotype_yaml
-    tuple val(prefix), path("haplotypes/${prefix}.haplotypes.fasta"), emit: haplotype_fasta
-
-    script:
-    """
-    export JULIA_NUM_THREADS=${task.cpus}
-    haplink ${bamfile[0]} \
-        --reference ${reference[0]} \
-        --variants ${prefix}.vcf \
-        --prefix ${prefix} \
-        --quality ${params.variant_quality} \
-        --frequency ${params.variant_frequency} \
-        --position ${params.variant_position} \
-        --variant-significance ${params.variant_significance} \
-        --variant-depth ${params.variant_depth} \
-        --haplotype-significance ${params.haplotype_significance} \
-        --haplotype-depth ${params.haplotype_depth}
-    rm -rf variants haplotypes
-    mkdir variants
-    mv ${prefix}.vcf variants
-    mkdir haplotypes
-    mv ${prefix}.yaml haplotypes/${prefix}.haplotypes.yaml
-    mv ${prefix}.fasta haplotypes/${prefix}.haplotypes.fasta
     """
 }
 

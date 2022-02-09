@@ -57,10 +57,12 @@ if (!params.ont && !params.pe) {
 }
 
 include { GENOME_DOWNLOAD } from './subworkflows/reference.nf'
+include { READS_INGEST } from './modules/ingest.nf'
 include { trimming }              from './subworkflows/trimming.nf'
 include { assembly }              from './subworkflows/assembly.nf'
 include { read_filtering }        from './subworkflows/filtering.nf'
 include { haplotyping }           from './subworkflows/haplotype.nf'
+include { QC }                    from './subworkflows/qc.nf'
 include { SIMULATED_READS }       from './test/test.nf'
 
 cowsay(
@@ -94,33 +96,18 @@ workflow {
         RawReads = SIMULATED_READS.out
     }
     else {
-        if (params.ont) {
-            RawReads = Channel
-                .fromPath("${params.input}/*.{fastq,fq}.gz")
-                .map{ file -> tuple(file.simpleName, file) }
-        }
-        else {
-            RawReads = Channel
-                .fromFilePairs("${params.input}/*{R1,R2,_1,_2}*.{fastq,fq}.gz")
-        }
+        READS_INGEST()
+        RawReads = READS_INGEST.out
     }
 
-    RawReads | sample_rename | trimming
+    trimming(RawReads)
 
     if (params.skip_qc) {
         QcReport = Channel.from([])
     }
     else {
-        if (params.ont) {
-            InterleavedReads = sample_rename.out
-        }
-        else {
-            interleave(sample_rename.out)
-            InterleavedReads = interleave.out
-        }
-
-        fastqc(InterleavedReads)
-        QcReport = fastqc.out
+        QC(RawReads)
+        QcReport = QC.out.QcReport
     }
 
 
@@ -163,64 +150,6 @@ workflow {
 
     // Put a pretty bow on everything
     presentation_generator()
-}
-
-process sample_rename {
-    label 'process_low'
-
-    input:
-    tuple val(givenName), file(readsFiles)
-
-    output:
-    tuple val(sampleName), file("out/*.fastq.gz")
-
-    script:
-    sampleName = givenName.split('_')[0]
-    if (params.ont) {
-        """
-        mkdir out
-        mv ${readsFiles[0]} out/${sampleName}.fastq.gz
-        """
-    }
-    else {
-        """
-        mkdir out
-        mv ${readsFiles[0]} out/${sampleName}_R1.fastq.gz
-        mv ${readsFiles[1]} out/${sampleName}_R2.fastq.gz
-        """
-    }
-}
-
-process interleave {
-    label 'seqtk'
-    label 'process_low'
-
-    input:
-    tuple val(sampleName), path(readsFiles)
-
-    output:
-    tuple val(sampleName), path("${sampleName}.fastq.gz")
-
-    script:
-    """
-    seqtk mergepe ${readsFiles} | gzip > ${sampleName}.fastq.gz
-    """
-}
-
-process fastqc {
-    label 'fastqc'
-    label 'process_medium'
-
-    input:
-    tuple val(sampleName), file(readsFiles)
-
-    output:
-    path("${sampleName}_fastqc.zip")
-
-    script:
-    """
-    fastqc -t ${task.cpus} ${readsFiles}
-    """
 }
 
 process reads_realign_to_reference {
@@ -267,8 +196,8 @@ process presentation_generator {
     publishDir "${params.outdir}", mode: "${params.publish_dir_mode}"
 
     output:
-
     file '_css/*.css'
+    file '_js/*.js'
     file '_views/*.pug'
     file 'index.js'
     file 'package.json'
@@ -277,6 +206,6 @@ process presentation_generator {
 
     script:
     """
-    cp -r ${workflow.projectDir}/visualizer/{_css,_views,index.js,package.json,package-lock.json,favicon.ico} .
+    cp -r ${workflow.projectDir}/visualizer/{_css,_js,_views,index.js,package.json,package-lock.json,favicon.ico} .
     """
 }

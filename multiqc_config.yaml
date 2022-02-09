@@ -2,9 +2,12 @@ fn_clean_exts:
   - "_R1"
   - "kreport"
   - ".fastq.gz"
+  - "_nanostat.log"
 top_modules:
   - "fastqc"
+  - "nanostat"
 module_order:
   - fastqc
+  - nanostat
   - trimmomatic
   - kraken
