@@ -52,7 +52,7 @@ process SEQTK_INTERLEAVE {
 
     script:
     """
-    seqtk mergepe "${reads}" | gzip > "${sampleName}.fastq.gz"
+    seqtk mergepe "${reads[0]}" "${reads[1]}" | gzip > "${sampleName}.fastq.gz"
     """
 }
 
