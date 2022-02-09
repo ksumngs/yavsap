@@ -62,6 +62,7 @@ include { trimming }              from './subworkflows/trimming.nf'
 include { assembly }              from './subworkflows/assembly.nf'
 include { read_filtering }        from './subworkflows/filtering.nf'
 include { haplotyping }           from './subworkflows/haplotype.nf'
+include { QC }                    from './subworkflows/qc.nf'
 include { SIMULATED_READS }       from './test/test.nf'
 
 cowsay(
@@ -105,16 +106,8 @@ workflow {
         QcReport = Channel.from([])
     }
     else {
-        if (params.ont) {
-            InterleavedReads = RawReads
-        }
-        else {
-            interleave(RawReads)
-            InterleavedReads = interleave.out
-        }
-
-        fastqc(InterleavedReads)
-        QcReport = fastqc.out
+        QC(RawReads)
+        QcReport = QC.out.QcReport
     }
 
 
@@ -157,38 +150,6 @@ workflow {
 
     // Put a pretty bow on everything
     presentation_generator()
-}
-
-process interleave {
-    label 'seqtk'
-    label 'process_low'
-
-    input:
-    tuple val(sampleName), path(readsFiles)
-
-    output:
-    tuple val(sampleName), path("${sampleName}.fastq.gz")
-
-    script:
-    """
-    seqtk mergepe ${readsFiles} | gzip > ${sampleName}.fastq.gz
-    """
-}
-
-process fastqc {
-    label 'fastqc'
-    label 'process_medium'
-
-    input:
-    tuple val(sampleName), file(readsFiles)
-
-    output:
-    path("${sampleName}_fastqc.zip")
-
-    script:
-    """
-    fastqc -t ${task.cpus} ${readsFiles}
-    """
 }
 
 process reads_realign_to_reference {

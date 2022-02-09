@@ -12,6 +12,7 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 - Samplesheet compatability (#21/#31)
 - Ability to use user-created genome lists (#23)
+- Nanopore read QC via NanoStat and MultiQC (#33)
 
 ### Fixed
 
