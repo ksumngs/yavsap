@@ -21,7 +21,7 @@ jobs:
         nxf_ver: ['20.10.0', '']
         nxf_edge: [ '' ]
         container_env: ['docker', 'singularity']
-        read_type: ['ont', 'pe']
+        read_type: ['nanopore', 'illumina']
         skipping: [ '' ]
         include:
           - nxf_ver: ''
@@ -89,4 +89,4 @@ jobs:
           NCBI_API_KEY: ${{ secrets.NCBI_API_KEY }}
         run: |
           export NXF_SINGULARITY_CACHEDIR=$HOME/.nxf-singularity-cache
-          nextflow run ${GITHUB_WORKSPACE} -profile test,gh,${RUN_READTYPE},${RUN_CONTAINER} $RUN_SKIPPING --kraken2_db ~/kraken2-db
+          nextflow run ${GITHUB_WORKSPACE} -profile test,gh,${RUN_CONTAINER} $RUN_SKIPPING --kraken2_db ~/kraken2-db --platform ${RUN_READTYPE}
