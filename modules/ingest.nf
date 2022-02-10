@@ -26,7 +26,7 @@ workflow READS_INGEST {
             .splitCsv(sep: "\t")
             .filter { !(it[0] ==~ /^#.*/) }
 
-        if (params.paired) {
+        if (params.paired && !params.interleaved) {
             RawSamples = SampleList
                 .map {
                     [
@@ -47,7 +47,7 @@ workflow READS_INGEST {
         }
     }
     else {
-        if (params.paired) {
+        if (params.paired && !params.interleaved) {
             RawSamples = Channel
                 .fromFilePairs("${params.input}/*{R1,R2,_1,_2}*.{fastq,fq,fastq.gz,fq.gz}")
                 .map { [ it[0], it[1][0], it[1][1] ] }
@@ -59,7 +59,12 @@ workflow READS_INGEST {
         }
     }
 
-    if (params.paired) {
+    if (params.interleaved) {
+        SEQKIT_SPLIT(RawSamples.transpose())
+        PAIRED_PREPROCESS(SEQKIT_SPLIT.out.groupTuple())
+        CleanedSamples = PAIRED_PREPROCESS.out
+    }
+    else if (params.paired) {
         PAIRED_PREPROCESS(RawSamples)
         CleanedSamples = PAIRED_PREPROCESS.out
     }
