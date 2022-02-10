@@ -41,6 +41,11 @@
                     "hidden": true,
                     "description": "Flag to indicate whether the reads files are paired-end or not"
                 },
+                "interleaved": {
+                    "type": "boolean",
+                    "fa_icon": "fas fa-random",
+                    "description": "Whether paired-end reads interleaved into a single fastq file"
+                },
                 "samplesheet": {
                     "type": "string",
                     "default": null,
