@@ -54,7 +54,7 @@ workflow haplotyping {
 
     RealignedReads = realign_to_new_reference.out.alignment
 
-    if (params.pe) {
+    if (params.platform == 'illumina') {
         CLIQUESNV_VARIANTS(RealignedReads)
         CLIQUESNV_HAPLOTYPES(RealignedReads)
         HaplotypeSequences = CLIQUESNV_HAPLOTYPES.out.haplotypeSequences
