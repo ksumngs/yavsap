@@ -161,7 +161,7 @@ process reads_realign_to_reference {
     tuple val(sampleName), file("${sampleName}.{bam,bam.bai}")
 
     script:
-    minimapMethod = (params.pe) ? 'sr' : 'map-ont'
+    minimapMethod = (params.platform == 'illumina') ? 'sr' : 'map-ont'
     """
     minimap2 -ax ${minimapMethod} -t ${task.cpus} --MD ${reference[0]} ${readsFile} | \
         samtools sort > ${sampleName}.bam
