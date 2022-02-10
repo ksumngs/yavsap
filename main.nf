@@ -51,7 +51,7 @@ if (params.help) {
 exit 0
 }
 
-if (!params.ont && !params.pe) {
+if (params.platform != 'illumina' || params.platform != 'nanopore') {
     log.error "ERROR: --platform <illumina,nanopore> must be specified"
     exit 1
 }
