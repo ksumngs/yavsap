@@ -174,7 +174,7 @@ process realign_to_new_reference {
     path("${sampleName}_REFERENCE.fasta{,.fai}"), emit: genome
 
     script:
-    minimapMethod = (params.pe) ? 'sr' : 'map-ont'
+    minimapMethod = (params.platform == 'illumina') ? 'sr' : 'map-ont'
     """
     cp ${referenceGenome} ${sampleName}_REFERENCE.fasta
     samtools faidx ${sampleName}_REFERENCE.fasta
