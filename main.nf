@@ -74,8 +74,6 @@ cowsay(
 
 Input folder:           ${params.input}
 Sequencing platform:    ${params.platform}
-    Illumina?:          ${params.pe}
-    Nanopore?:          ${params.ont}
 Reference genome:       ${params.genome}
 Kraken2 Database:       ${params.kraken2_db}
 Taxonomic Ids:          '${params.keep_taxid}'
