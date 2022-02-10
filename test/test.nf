@@ -230,7 +230,7 @@ process READ_CONCAT {
     tuple val('SIM'), path("SIM*.fastq.gz")
 
     script:
-    if (params.pe) {
+    if (params.paired) {
         """
         cat *_1.fastq > SIM_R1.fastq
         cat *_2.fastq > SIM_R2.fastq
