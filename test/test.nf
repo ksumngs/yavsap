@@ -24,7 +24,7 @@ workflow SIMULATED_READS {
     HaplotypeGenomes = VARIANT_SIMULATOR.out.join(HAPLOTYPE_DEPTH.out)
 
     // Simulate the reads and return a samplename/fastq tuple
-    if (params.pe) {
+    if (params.platform == 'illumina') {
         HaplotypeGenomes | KRAKEN_READ_SIMULATE
         READ_CONCAT(KRAKEN_READ_SIMULATE.out.collect())
         OutputReads = READ_CONCAT.out
