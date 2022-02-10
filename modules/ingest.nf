@@ -67,6 +67,39 @@ workflow READS_INGEST {
 }
 
 /// summary: |
+///   Takes an interleaved paired-end read file and splits it into two
+/// input:
+///   - tuple:
+///       - name: prefix
+///         type: val(String)
+///         description: Sample identifier
+///       - name: reads
+///         type: file
+///         description: The interleaved fastq reads file
+/// output:
+///   - tuple:
+///       - type: val(String)
+///         description: Sample identifier
+///       - type: path
+///         description: The forward reads file
+///       - type: path
+///         description: The reverse reads file
+process SEQKIT_SPLIT {
+    label 'seqkit'
+
+    input:
+    tuple val(prefix), file(reads)
+
+    output:
+    tuple val(prefix), path("*.part_001.*"), path("*.part_002.*")
+
+    script:
+    """
+    seqkit split2 "${reads}" -p2 -O . -f
+    """
+}
+
+/// summary: |
 ///   Takes a collection of single-end sequencing reads and converts them into a
 ///   single file with a safe sample and filename
 /// input:
