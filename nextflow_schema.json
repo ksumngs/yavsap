@@ -35,11 +35,11 @@
                         "nanopore"
                     ]
                 },
-                "pe": {
+                "paired": {
                     "type": "boolean",
-                    "fa_icon": "fas fa-exclamation-circle",
+                    "fa_icon": "fas fa-sort",
                     "hidden": true,
-                    "description": "INTERNAL USE ONLY!!!"
+                    "description": "Flag to indicate whether the reads files are paired-end or not"
                 },
                 "ont": {
                     "type": "boolean",
