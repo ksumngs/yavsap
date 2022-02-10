@@ -14,6 +14,12 @@ include { skipping_read } from '../lib/skipping-read.nf'
 ///         description: Reads files
 workflow READS_INGEST {
     main:
+    // Sanity check: interleaved reads cannot be single-end
+    if (params.interleaved && !params.paired) {
+        log.error "ERROR: --interleaved cannot be specified if --paired is false"
+        exit 1
+    }
+
     if (params.samplesheet) {
         SampleList = Channel
             .from(file("${params.samplesheet}"))
