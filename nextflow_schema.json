@@ -41,12 +41,6 @@
                     "hidden": true,
                     "description": "Flag to indicate whether the reads files are paired-end or not"
                 },
-                "ont": {
-                    "type": "boolean",
-                    "fa_icon": "fas fa-exclamation-circle",
-                    "description": "INTERNAL USE ONLY!!!",
-                    "hidden": true
-                },
                 "samplesheet": {
                     "type": "string",
                     "default": null,
