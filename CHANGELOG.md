@@ -8,6 +8,14 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- Interleaved and Single-end Illumina read support (#34)
+
+### Removed
+
+- `--pe` and `--ont` parameters (#34)
+
 ## [0.5.0-alpha] - 2022-02-09
 
 ### Added
