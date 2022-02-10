@@ -262,7 +262,7 @@ process CLIQUESNV_HAPLOTYPES {
     tuple val(sampleName), path("${sampleName}.json"), emit: haplotypeData
 
     script:
-    mode = (params.ont) ? 'snv-pacbio' : 'snv-illumina'
+    mode = (params.platform == 'illumina') ? 'snv-illumina' : 'snv-pacbio'
     jmemstring = task.memory.toMega() + 'M'
     """
     java -Xmx${jmemstring} -jar /usr/local/share/cliquesnv/clique-snv.jar \\
