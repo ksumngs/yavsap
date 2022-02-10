@@ -54,7 +54,7 @@ workflow haplotyping {
 
     RealignedReads = realign_to_new_reference.out.alignment
 
-    if (params.pe) {
+    if (params.platform == 'illumina') {
         CLIQUESNV_VARIANTS(RealignedReads)
         CLIQUESNV_HAPLOTYPES(RealignedReads)
         HaplotypeSequences = CLIQUESNV_HAPLOTYPES.out.haplotypeSequences
@@ -174,7 +174,7 @@ process realign_to_new_reference {
     path("${sampleName}_REFERENCE.fasta{,.fai}"), emit: genome
 
     script:
-    minimapMethod = (params.pe) ? 'sr' : 'map-ont'
+    minimapMethod = (params.platform == 'illumina') ? 'sr' : 'map-ont'
     """
     cp ${referenceGenome} ${sampleName}_REFERENCE.fasta
     samtools faidx ${sampleName}_REFERENCE.fasta
@@ -262,7 +262,7 @@ process CLIQUESNV_HAPLOTYPES {
     tuple val(sampleName), path("${sampleName}.json"), emit: haplotypeData
 
     script:
-    mode = (params.ont) ? 'snv-pacbio' : 'snv-illumina'
+    mode = (params.platform == 'illumina') ? 'snv-illumina' : 'snv-pacbio'
     jmemstring = task.memory.toMega() + 'M'
     """
     java -Xmx${jmemstring} -jar /usr/local/share/cliquesnv/clique-snv.jar \\

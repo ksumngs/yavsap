@@ -14,13 +14,19 @@ include { skipping_read } from '../lib/skipping-read.nf'
 ///         description: Reads files
 workflow READS_INGEST {
     main:
+    // Sanity check: interleaved reads cannot be single-end
+    if (params.interleaved && !params.paired) {
+        log.error "ERROR: --interleaved cannot be specified if --paired is false"
+        exit 1
+    }
+
     if (params.samplesheet) {
         SampleList = Channel
             .from(file("${params.samplesheet}"))
             .splitCsv(sep: "\t")
             .filter { !(it[0] ==~ /^#.*/) }
 
-        if (params.pe) {
+        if (params.paired && !params.interleaved) {
             RawSamples = SampleList
                 .map {
                     [
@@ -41,7 +47,7 @@ workflow READS_INGEST {
         }
     }
     else {
-        if (params.pe) {
+        if (params.paired && !params.interleaved) {
             RawSamples = Channel
                 .fromFilePairs("${params.input}/*{R1,R2,_1,_2}*.{fastq,fq,fastq.gz,fq.gz}")
                 .map { [ it[0], it[1][0], it[1][1] ] }
@@ -53,7 +59,12 @@ workflow READS_INGEST {
         }
     }
 
-    if (params.pe) {
+    if (params.interleaved) {
+        SEQKIT_SPLIT(RawSamples.transpose())
+        PAIRED_PREPROCESS(SEQKIT_SPLIT.out.groupTuple())
+        CleanedSamples = PAIRED_PREPROCESS.out
+    }
+    else if (params.paired) {
         PAIRED_PREPROCESS(RawSamples)
         CleanedSamples = PAIRED_PREPROCESS.out
     }
@@ -64,6 +75,39 @@ workflow READS_INGEST {
 
     emit:
     CleanedSamples
+}
+
+/// summary: |
+///   Takes an interleaved paired-end read file and splits it into two
+/// input:
+///   - tuple:
+///       - name: prefix
+///         type: val(String)
+///         description: Sample identifier
+///       - name: reads
+///         type: file
+///         description: The interleaved fastq reads file
+/// output:
+///   - tuple:
+///       - type: val(String)
+///         description: Sample identifier
+///       - type: path
+///         description: The forward reads file
+///       - type: path
+///         description: The reverse reads file
+process SEQKIT_SPLIT {
+    label 'seqkit'
+
+    input:
+    tuple val(prefix), file(reads)
+
+    output:
+    tuple val(prefix), path("*.part_001.*"), path("*.part_002.*")
+
+    script:
+    """
+    seqkit split2 "${reads}" -p2 -O . -f
+    """
 }
 
 /// summary: |

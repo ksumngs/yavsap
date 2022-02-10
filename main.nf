@@ -51,7 +51,7 @@ if (params.help) {
 exit 0
 }
 
-if (!params.ont && !params.pe) {
+if (params.platform != 'illumina' && params.platform != 'nanopore') {
     log.error "ERROR: --platform <illumina,nanopore> must be specified"
     exit 1
 }
@@ -74,8 +74,6 @@ cowsay(
 
 Input folder:           ${params.input}
 Sequencing platform:    ${params.platform}
-    Illumina?:          ${params.pe}
-    Nanopore?:          ${params.ont}
 Reference genome:       ${params.genome}
 Kraken2 Database:       ${params.kraken2_db}
 Taxonomic Ids:          '${params.keep_taxid}'
@@ -163,7 +161,7 @@ process reads_realign_to_reference {
     tuple val(sampleName), file("${sampleName}.{bam,bam.bai}")
 
     script:
-    minimapMethod = (params.pe) ? 'sr' : 'map-ont'
+    minimapMethod = (params.platform == 'illumina') ? 'sr' : 'map-ont'
     """
     minimap2 -ax ${minimapMethod} -t ${task.cpus} --MD ${reference[0]} ${readsFile} | \
         samtools sort > ${sampleName}.bam

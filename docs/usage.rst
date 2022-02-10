@@ -19,12 +19,16 @@ following extensions:
 * .fastq.gz
 * .fq.gz
 
-There must be only one file per sample for single-end reads, and one pair of
-files (two files) for paired-end reads. Interleaved paired-end reads files are
-not supported at this time. Paired-end files must have either the characters
-``_1`` and ``_2`` or ``_R1`` and ``_R2`` in the filename to be identified as a
-pair. The sample name is taken as the all the characters *before* the first
-underscore in the file name.
+There must be only one file per sample for single-end and inteleaved paired-end
+reads, and one pair of files (two files) for regular paired-end reads. Regular
+paired-end files must have either the characters ``_1`` and ``_2`` or ``_R1``
+and ``_R2`` in the filename to be identified as a pair. The sample name is taken
+as the all the characters *before* the first underscore in the file name.
+Paired-endedness is determined based on the :ref:`--paired <Input/Output
+Options>` flag. By default ``--paired`` is ``true`` when :ref:`--platform
+<Input/Output Options>` is ``illumina`` and ``false`` for ``nanopore``, but this
+can be overridden. To use interleaved paired-end reads, use the
+:ref:`--interleaved <Input/Output Options>` flag.
 
 For example, a folder with the following files
 

@@ -8,13 +8,13 @@ workflow assembly {
     GenomeSize
 
     main:
-    if (params.ont) {
-        denovo_canu(InputReads, GenomeSize)
-        Contigs = denovo_canu.out
-    }
-    else {
+    if (params.platform == 'illumina') {
         denovo_spades(InputReads)
         Contigs = denovo_spades.out
+    }
+    else {
+        denovo_canu(InputReads, GenomeSize)
+        Contigs = denovo_canu.out
     }
     align_to_reference(Contigs, ReferenceGenome)
     AlignedContigs = align_to_reference.out

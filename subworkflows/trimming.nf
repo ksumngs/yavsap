@@ -11,15 +11,15 @@ workflow trimming {
         tr_report = Channel.from([])
     }
     else {
-        if (params.ont) {
-            read_trimming_ont(reads)
-            trimmedreads = read_trimming_ont.out.trimmedreads
-            tr_report = read_trimming_ont.out.report
-        }
-        else {
+        if (params.platform == 'illumina') {
             read_trimming_pe(reads)
             trimmedreads = read_trimming_pe.out.trimmedreads
             tr_report = read_trimming_pe.out.report
+        }
+        else {
+            read_trimming_ont(reads)
+            trimmedreads = read_trimming_ont.out.trimmedreads
+            tr_report = read_trimming_ont.out.report
         }
     }
 

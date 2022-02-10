@@ -46,7 +46,7 @@ process classification {
     tuple val(sampleName), file("${sampleName}.kraken"), file("${sampleName}.kreport")
 
     script:
-    pairedflag = params.pe ? '--paired' : ''
+    pairedflag = params.paired ? '--paired' : ''
     """
     kraken2 --db ${params.kraken2_db} --threads ${task.cpus} \
         --report "${sampleName}.kreport" \
@@ -69,9 +69,9 @@ process filtering {
     tuple val(sampleName), file("${sampleName}_filtered*.fastq.gz")
 
     script:
-    read2flagin  = (params.pe) ? "-s2 ${readsFile[1]}" : ''
-    read1flagout = (params.pe) ? "-o ${sampleName}_filtered_R1.fastq" : " -o ${sampleName}_filtered.fastq"
-    read2flagout = (params.pe) ? "-o2 ${sampleName}_filtered_R2.fastq" : ''
+    read2flagin  = (params.paired) ? "-s2 ${readsFile[1]}" : ''
+    read1flagout = (params.paired) ? "-o ${sampleName}_filtered_R1.fastq" : " -o ${sampleName}_filtered.fastq"
+    read2flagout = (params.paired) ? "-o2 ${sampleName}_filtered_R2.fastq" : ''
     """
     extract_kraken_reads.py -k ${krakenFile} \
         -s ${readsFile[0]} ${read2flagin} \

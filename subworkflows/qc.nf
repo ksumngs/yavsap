@@ -8,7 +8,7 @@ workflow QC {
     Reads
 
     main:
-    if (params.pe) {
+    if (params.platform == 'illumina') {
         Reads \
             | SEQTK_INTERLEAVE \
             | FASTQC
