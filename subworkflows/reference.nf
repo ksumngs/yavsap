@@ -1,7 +1,7 @@
 #!/usr/bin/env nextflow
 nextflow.enable.dsl = 2
 
-include { NCBI_DOWNLOAD } from '../modules/ncbi-dl.nf'
+include { NCBI_DOWNLOAD } from '../modules/local/ncbi-dl.nf'
 
 workflow GENOME_DOWNLOAD {
     main:
