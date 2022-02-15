@@ -57,7 +57,7 @@ if (params.platform != 'illumina' && params.platform != 'nanopore') {
 }
 
 include { GENOME_DOWNLOAD } from './subworkflows/reference.nf'
-include { READS_INGEST } from './modules/ingest.nf'
+include { READS_INGEST } from './subworkflows/ingest.nf'
 include { trimming }              from './subworkflows/trimming.nf'
 include { assembly }              from './subworkflows/assembly.nf'
 include { read_filtering }        from './subworkflows/filtering.nf'
