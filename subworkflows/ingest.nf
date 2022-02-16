@@ -2,6 +2,7 @@
 nextflow.enable.dsl = 2
 
 include { skipping_read } from '../lib/skipping-read.nf'
+include { SEQKIT_SPLIT2 } from '../modules/nf-core/modules/seqkit/split2/main.nf'
 
 /// summary: |
 ///   Take reads from the input folder or a samplesheet and reformat them to be
@@ -56,33 +57,38 @@ workflow READS_INGEST {
     }
     else if (file(params.input).isDirectory()) {
         if (params.paired && !params.interleaved) {
-            RawSamples = Channel
+            Channel
                 .fromFilePairs("${params.input}/*{R1,R2,_1,_2}*.{fastq,fq,fastq.gz,fq.gz}")
-                .map { [ it[0], it[1][0], it[1][1] ] }
+                .map { [
+                        [ 'id': it[0].split('_')[0], 'single_end': false, 'strandedness': null ],
+                        it[1]
+                        ]
+                    }
+                .set { sample_info }
         }
         else {
-            RawSamples = Channel
+            Channel
                 .fromPath("${params.input}/*.{fastq,fq,fastq.gz,fq.gz}")
                 .map{ file -> tuple(file.simpleName, file) }
+                .map{ [
+                    [ 'id': it[0].split('_')[0], 'single_end': true, 'strandedness': null ],
+                    it[1]
+                ] }
+                .set { InterleavedSamples }
+            if (params.interleaved) {
+                SEQKIT_SPLIT2(InterleavedSamples)
+                SEQKIT_SPLIT2.out.reads
+                    .map { ['id': it[0]['id'], 'single_end': false, 'strandedness': null ] }
+                    .set { sample_info }
+            }
+            else {
+                InterleavedSamples.set { sample_info }
+            }
         }
-    }
-
-    if (params.interleaved) {
-        SEQKIT_SPLIT(RawSamples.transpose())
-        PAIRED_PREPROCESS(SEQKIT_SPLIT.out.groupTuple())
-        CleanedSamples = PAIRED_PREPROCESS.out
-    }
-    else if (params.paired) {
-        PAIRED_PREPROCESS(RawSamples)
-        CleanedSamples = PAIRED_PREPROCESS.out
-    }
-    else {
-        SINGLE_PREPROCESS(RawSamples)
-        CleanedSamples = SINGLE_PREPROCESS.out
     }
 
     emit:
-    CleanedSamples
+    sample_info
 }
 
 /// summary: |
