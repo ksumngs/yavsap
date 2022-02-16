@@ -39,7 +39,7 @@ workflow READS_INGEST {
             .map {
                 [
                     ['id': it[0], 'single_end': !(params.paired && !params.interleaved), 'strandedness': null],
-                    skipping_read(it.drop(1), 1)
+                    skipping_read(it.drop(1))
                 ]
             }
             .set { SampleList }
