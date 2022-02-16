@@ -26,12 +26,14 @@ workflow READS_INGEST {
         exit 1
     }
 
-    if (params.samplesheet) {
-        SampleList = Channel
-            .from(file("${params.samplesheet}"))
+    if (file(params.input).isFile()) {
+        Channel
+            .of(file("${params.samplesheet}"))
             .splitCsv(sep: "\t")
             .filter { !(it[0] ==~ /^#.*/) }
+            .set { SampleList }
 
+        SampleList.view()
         if (params.paired && !params.interleaved) {
             RawSamples = SampleList
                 .map {
@@ -52,7 +54,7 @@ workflow READS_INGEST {
                 }
         }
     }
-    else {
+    else if (file(params.input).isDirectory()) {
         if (params.paired && !params.interleaved) {
             RawSamples = Channel
                 .fromFilePairs("${params.input}/*{R1,R2,_1,_2}*.{fastq,fq,fastq.gz,fq.gz}")
