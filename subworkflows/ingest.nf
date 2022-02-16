@@ -1,7 +1,6 @@
 #!/usr/bin/env nextflow
 nextflow.enable.dsl = 2
 
-include { skipping_read } from '../lib/skipping-read.nf'
 include { CAT_FASTQ } from '../modules/nf-core/modules/cat/fastq/main.nf'
 include { SEQKIT_SPLIT2 } from '../modules/nf-core/modules/seqkit/split2/main.nf'
 
@@ -39,7 +38,7 @@ workflow READS_INGEST {
             .map {
                 [
                     ['id': it[0], 'single_end': !(params.paired && !params.interleaved), 'strandedness': null],
-                    skipping_read(it.drop(1))
+                    files_transform(it.drop(1))
                 ]
             }
             .set { SampleList }
@@ -108,4 +107,22 @@ workflow READS_INGEST {
 
     emit:
     sample_info
+}
+
+/// summary: |
+///   Takes a list of reads files, and returns a new list of file objects
+def files_transform(List files) {
+    readFiles = [];
+    for (int i = 0; i <= files.size(); i+=1) {
+        if (files[i]?.trim()) {
+            filepath = file(files[i])
+            if ( filepath instanceof List ) {
+                filepath.each { readFiles.add(it) }
+            }
+            else {
+                readFiles.add(filepath)
+            }
+        }
+    }
+    return readFiles
 }
