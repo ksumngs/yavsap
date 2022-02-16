@@ -1,47 +1,42 @@
 #!/usr/bin/env nextflow
 nextflow.enable.dsl = 2
 
-include { NCBI_DOWNLOAD } from '../modules/local/ncbi-dl.nf'
+include { EFETCH } from '../modules/local/modules/efetch/main.nf'
+include { ESEARCH } from '../modules/local/modules/esearch/main.nf'
+include { SAMTOOLS_FAIDX } from '../modules/nf-core/modules/samtools/faidx/main.nf'
 
 workflow GENOME_DOWNLOAD {
     main:
-    // Download the files
-    NCBI_DOWNLOAD(params.genome)
-    ReferenceFasta = NCBI_DOWNLOAD.out.fasta
-    ReferenceGenbank = NCBI_DOWNLOAD.out.genbank
+    Channel
+        .of([
+                ['id': 'reference', 'single_end': null, 'strandedness': null],
+                'nucleotide',
+                params.genome
+            ])
+        .set{ SearchParameters }
 
-    // Measure the size of the genome based on the genbank record
-    GenomeSize = ReferenceGenbank
-        .splitText()
-        .first()
-        .map{ l -> l.replaceAll(/\s+/, ',') }
-        .splitCsv()
-        .flatten()
-        .take(3)
-        .last()
+    ESEARCH(SearchParameters)
 
-    // Get the name of the reference genome
-    ReferenceName = ReferenceGenbank
-        .splitText()
-        .take(2)
-        .last()
-        .map{ s -> s.replace('DEFINITION  ', '') }
-        .map{ s -> s.replace(',', '') }
-        .map{ s -> s.replace('.', '') }
-        .map{ s -> s.replace(' ', '_') }
-        .map{ s -> s.replace('/', '_') }
-        .map{ s -> s.trim() }
+    ESEARCH.out.xml
+        .combine(
+            Channel.of(
+                ['fasta', null]
+            )
+        )
+        .set{ FetchParameters }
 
-    // Process the files
-    INDEXING(ReferenceFasta, ReferenceName)
-    IndexedReference = INDEXING.out
-    ANNOTATION(ReferenceGenbank, ReferenceName)
-    AnnotatedReference = ANNOTATION.out
+    EFETCH(FetchParameters)
+
+    SAMTOOLS_FAIDX(
+        EFETCH.out.txt
+    )
+
+    EFETCH.out.txt
+        .join(SAMTOOLS_FAIDX.out.fai)
+        .set{ fasta }
 
     emit:
-    indexedFasta = IndexedReference
-    referenceAnnotations = AnnotatedReference
-    genomeSize = GenomeSize
+    fasta
 }
 
 // Index the reference genome for use with Samtools
