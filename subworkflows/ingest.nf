@@ -14,6 +14,12 @@ include { skipping_read } from '../lib/skipping-read.nf'
 ///         description: Reads files
 workflow READS_INGEST {
     main:
+    // First sanity check: --input must exist
+    if (!file(params.input).exists()) {
+        log.error "ERROR: file or directory '${params.input}' does not exist!"
+        exit 1
+    }
+
     // Sanity check: interleaved reads cannot be single-end
     if (params.interleaved && !params.paired) {
         log.error "ERROR: --interleaved cannot be specified if --paired is false"
