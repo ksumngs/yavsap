@@ -2,6 +2,7 @@
 nextflow.enable.dsl = 2
 
 include { skipping_read } from '../lib/skipping-read.nf'
+include { CAT_FASTQ } from '../modules/nf-core/modules/cat/fastq/main.nf'
 include { SEQKIT_SPLIT2 } from '../modules/nf-core/modules/seqkit/split2/main.nf'
 
 /// summary: |
@@ -28,35 +29,46 @@ workflow READS_INGEST {
     }
 
     if (file(params.input).isFile()) {
+        // --input represents a samplesheet
+
+        // Parse the samplesheet to nf-core sample channel
         Channel
-            .of(file("${params.samplesheet}"))
+            .of(file("${params.input}"))
             .splitCsv(sep: "\t")
             .filter { !(it[0] ==~ /^#.*/) }
+            .map {
+                [
+                    ['id': it[0], 'single_end': !(params.paired && !params.interleaved), 'strandedness': null],
+                    skipping_read(it.drop(1), 1)
+                ]
+            }
             .set { SampleList }
 
-        SampleList.view()
-        if (params.paired && !params.interleaved) {
-            RawSamples = SampleList
-                .map {
-                    [
-                        it[0],
-                        skipping_read(it.drop(1), 2),
-                        skipping_read(it.drop(2), 2)
-                    ]
-                }
-        }
-        else {
-            RawSamples = SampleList
-                .map {
-                    [
-                        it[0],
-                        skipping_read(it.drop(1), 1)
-                    ]
-                }
-        }
+        // Calculate how many reads can be in a sample channel before it needs to be
+        // `cat`ed together
+        def maxSamples = (params.paired && !params.interleaved) ? 2 : 1
+
+        // Separate the cat-requiring reads from the regular reads
+        SampleList
+            .branch {
+                meta, fastq ->
+                    single: fastq.size() == maxSamples
+                        return [ meta, fastq.flatten() ]
+                    multiple: fastq.size() > maxSamples
+                        return [ meta, fastq.flatten() ]
+            }
+            .set { CountedSamples }
+
+        // Concatenate the reads together
+        CAT_FASTQ(CountedSamples.multiple)
+            .reads
+            .mix(CountedSamples.single)
+            .set { InterleavedSamples }
     }
     else if (file(params.input).isDirectory()) {
+        // --input represents a directory of reads
         if (params.paired && !params.interleaved) {
+            // Paired reads can be directly sent to interleaved jail
             Channel
                 .fromFilePairs("${params.input}/*{R1,R2,_1,_2}*.{fastq,fq,fastq.gz,fq.gz}")
                 .map { [
@@ -64,9 +76,10 @@ workflow READS_INGEST {
                         it[1]
                         ]
                     }
-                .set { sample_info }
+                .set { InterleavedSamples }
         }
         else {
+            // Reformat single-end/interleaved reads
             Channel
                 .fromPath("${params.input}/*.{fastq,fq,fastq.gz,fq.gz}")
                 .map{ file -> tuple(file.simpleName, file) }
@@ -75,16 +88,22 @@ workflow READS_INGEST {
                     it[1]
                 ] }
                 .set { InterleavedSamples }
-            if (params.interleaved) {
-                SEQKIT_SPLIT2(InterleavedSamples)
-                SEQKIT_SPLIT2.out.reads
-                    .map { ['id': it[0]['id'], 'single_end': false, 'strandedness': null ] }
-                    .set { sample_info }
-            }
-            else {
-                InterleavedSamples.set { sample_info }
-            }
         }
+    }
+
+    if (params.interleaved) {
+        // Deinterleave any interleaved reads
+        SEQKIT_SPLIT2(InterleavedSamples)
+        SEQKIT_SPLIT2.out.reads
+            .map { [
+                ['id': it[0]['id'], 'single_end': false, 'strandedness': null ],
+                it[1]
+            ] }
+            .set { sample_info }
+    }
+    else {
+        // Transfer reads out of interleaved jail and output them
+        InterleavedSamples.set { sample_info }
     }
 
     emit:
