@@ -8,7 +8,7 @@ def skipping_read(List files, Integer skip) {
     readFiles = [];
     for (int i = 0; i <= files.size(); i = i+skip) {
         if (files[i]?.trim()) {
-            filepath = (files[i] ==~ /^\/.*/) ? file(files[i]) : file("${params.input}/${files[i]}")
+            filepath = file(files[i])
             if ( filepath instanceof List ) {
                 filepath.each { readFiles.add(it) }
             }
