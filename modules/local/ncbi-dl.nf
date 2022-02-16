@@ -15,37 +15,49 @@ nextflow.enable.dsl = 2
 ///     type: path
 ///     description: The requested genome in GenBank format
 process NCBI_DOWNLOAD {
-    label 'edirect'
+    tag "$accessionNumber"
     label 'run_local'
     label 'process_low'
     label 'error_backoff'
+
+    conda (params.enable_conda ? 'bioconda::entrez-direct=16.2' : null)
+    container 'docker.io/ncbi/edirect:12.5'
 
     // Prevent NCBI database timeouts by preventing this process from being run in
     // parallel. Trust me: this is actually faster than erroring out
     maxForks 1
 
     input:
-    val(accessionNumber)
+    tuple val(meta), val(accessionNumber)
 
     output:
-    path("${accessionNumber}.fasta"), emit: fasta
-    path("${accessionNumber}.gb"), emit: genbank
+    tuple val(meta), path("${accessionNumber}.fasta"), emit: fasta
+    tuple val(meta), path("${accessionNumber}.gb"), emit: genbank
+    path "versions.yml", emit: versions
 
     script:
     """
-    efetch \
-            -db nucleotide \
-            -id ${accessionNumber} \
-            -format fasta \
+    esearch \\
+            -db nucleotide \\
+            -query "${accessionNumber}" \\
+        | efetch \\
+            -format fasta \\
         > ${accessionNumber}.fasta
-    efetch \
-            -db nucleotide \
-            -id ${accessionNumber} \
-            -format gb \
-        > ${accessionNumber}.gb
+    esearch \\
+            -db nucleotide \\
+            -query "${accessionNumber}" \\
+        | efetch \\
+            -format gb \\
+        > "${accessionNumber}.gb"
 
     # Fail on empty files, as efetch does not return failed exit codes for errors
     grep -q '[^[:space:]]' ${accessionNumber}.fasta || exit 1
     grep -q '[^[:space:]]' ${accessionNumber}.gb || exit 1
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        esearch: \$(esearch -version)
+        efetch: \$(efetch -version)
+    END_VERSIONS
     """
 }
