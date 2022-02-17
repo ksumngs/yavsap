@@ -59,7 +59,6 @@ if (params.platform != 'illumina' && params.platform != 'nanopore') {
 include { GENOME_DOWNLOAD } from './subworkflows/reference.nf'
 include { READS_INGEST } from './subworkflows/ingest.nf'
 include { TRIMMING }              from './subworkflows/trimming.nf'
-include { assembly }              from './subworkflows/assembly.nf'
 include { FILTERING }        from './subworkflows/filtering.nf'
 include { haplotyping }           from './subworkflows/haplotype.nf'
 include { QC }                    from './subworkflows/qc.nf'
@@ -126,22 +125,9 @@ workflow {
         TrimmedReads.set { FilteredReads }
     }
 
-    if (!params.skip_assembly) {
-        // _de novo_ assemble the viral reads
-        assembly(FilteredReads, IndexedReference, GenomeSize)
-        Assemblies = assembly.out.Contigs
-        AlignedContigs = assembly.out.AlignedContigs
-    }
-    else {
-        Assemblies = Channel.from([])
-        AlignedContigs = Channel.from([])
-    }
-
     // Realign reads to the reference genome
     reads_realign_to_reference(FilteredReads, IndexedReference)
     Alignments = reads_realign_to_reference.out
-
-    AllAlignments = Alignments.join(AlignedContigs, remainder: true).flatMap{ n -> [n[1], n[2]] }.collect()
 
     if (!params.skip_haplotype) {
         haplotyping(FilteredReads, Alignments, IndexedReference, AnnotatedReference)
