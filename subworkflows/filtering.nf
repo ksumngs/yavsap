@@ -7,29 +7,39 @@ import static java.lang.Math.round
 KrakenDbSize = file(params.kraken2_db).toFile().directorySize()
 KrakenAllocationSize = round(sqrt(KrakenDbSize) + KrakenDbSize)
 
-workflow read_filtering {
+include { KRAKEN2 } from '../modules/local/modules/kraken2/main.nf'
+include { KRAKENTOOLS_EXTRACT } from '../modules/local/modules/krakentools/extract/main.nf'
+
+workflow FILTERING {
     take:
-    InputReads
+    reads
+    kraken2_db
+    filter
 
     main:
-    if (params.skip_filtering) {
-        FilteredReads = InputReads
-        KrakenReports = Channel.from([])
+    KRAKEN2(reads, kraken2_db)
+
+    KRAKEN2.out.kreport.set{ log_out }
+
+    if (filter == 'classified') {
+        KRAKEN2.out.classified.set{ filtered }
+    }
+    else if ( filter == 'unclassified') {
+        KRAKEN2.out.unclassified.set{ filtered }
     }
     else {
-        classification(InputReads)
-        KrakenReports = classification.out
-
-        KrakenReads = InputReads.join(KrakenReports)
-
-        // Filter out the non-viral reads
-        filtering(KrakenReads)
-        FilteredReads = filtering.out
+        KRAKENTOOLS_EXTRACT(
+            reads
+                .join(KRAKEN2.out.kraken)
+                .join(KRAKEN2.out.kreport),
+            filter
+        )
+        KRAKENTOOLS_EXTRACT.out.fastq.set{ filtered }
     }
 
     emit:
-    FilteredReads
-    KrakenReports
+    filtered
+    log_out
 }
 
 // Classify reads using Kraken

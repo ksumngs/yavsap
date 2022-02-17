@@ -60,7 +60,7 @@ include { GENOME_DOWNLOAD } from './subworkflows/reference.nf'
 include { READS_INGEST } from './subworkflows/ingest.nf'
 include { TRIMMING }              from './subworkflows/trimming.nf'
 include { assembly }              from './subworkflows/assembly.nf'
-include { read_filtering }        from './subworkflows/filtering.nf'
+include { FILTERING }        from './subworkflows/filtering.nf'
 include { haplotyping }           from './subworkflows/haplotype.nf'
 include { QC }                    from './subworkflows/qc.nf'
 include { SIMULATED_READS }       from './test/test.nf'
@@ -113,10 +113,18 @@ workflow {
         RawReads.set { TrimmedReads }
     }
 
-
-    read_filtering(trimming.out.trimmedreads)
-    KrakenReports = read_filtering.out.KrakenReports
-    FilteredReads = read_filtering.out.FilteredReads
+    if (!params.skip_filtering) {
+        FILTERING(
+            TrimmedReads,
+            file("${params.kraken2_db}", type: 'dir', checkIfExists: true),
+            "${params.keep_taxid}"
+        )
+        FILTERING.out.filtered.set { FilteredReads }
+        LogFiles = LogFiles.mix(FILTERING.out.log_out)
+    }
+    else {
+        TrimmedReads.set { FilteredReads }
+    }
 
     if (!params.skip_assembly) {
         // _de novo_ assemble the viral reads
