@@ -58,7 +58,7 @@ if (params.platform != 'illumina' && params.platform != 'nanopore') {
 
 include { GENOME_DOWNLOAD } from './subworkflows/reference.nf'
 include { READS_INGEST } from './subworkflows/ingest.nf'
-include { trimming }              from './subworkflows/trimming.nf'
+include { TRIMMING }              from './subworkflows/trimming.nf'
 include { assembly }              from './subworkflows/assembly.nf'
 include { read_filtering }        from './subworkflows/filtering.nf'
 include { haplotyping }           from './subworkflows/haplotype.nf'
@@ -83,10 +83,11 @@ Diagnostics folder:     ${params.tracedir}
 )
 
 workflow {
+    LogFiles = Channel.empty()
+    VersionFiles = Channel.empty()
+
     GENOME_DOWNLOAD()
-    IndexedReference = GENOME_DOWNLOAD.out.indexedFasta
-    AnnotatedReference = GENOME_DOWNLOAD.out.referenceAnnotations
-    GenomeSize = GENOME_DOWNLOAD.out.genomeSize
+    IndexedReference = GENOME_DOWNLOAD.out.fasta
 
     // Bring in the reads files
     if (params.sra) {
@@ -98,7 +99,14 @@ workflow {
         RawReads = READS_INGEST.out
     }
 
-    trimming(RawReads)
+    if (!params.skip_trimming) {
+        TRIMMING(RawReads)
+        TRIMMING.out.fastq.set{ TrimmedReads }
+        LogFiles = LogFiles.mix(TRIMMING.out.log_out)
+    }
+    else {
+        RawReads.set { TrimmedReads }
+    }
 
     if (params.skip_qc) {
         QcReport = Channel.from([])

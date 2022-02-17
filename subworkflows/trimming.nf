@@ -1,32 +1,28 @@
 #!/usr/bin/env nextflow
 nextflow.enable.dsl = 2
 
-workflow trimming {
+include { NANOFILT } from '../modules/local/modules/nanofilt/main.nf'
+include { TRIMMOMATIC } from '../modules/local/modules/trimmomatic/main.nf'
+
+workflow TRIMMING {
     take:
     reads
 
     main:
-    if (params.skip_trimming) {
-        trimmedreads = reads
-        tr_report = Channel.from([])
+    if (params.platform == 'illumina') {
+        TRIMMOMATIC(reads)
+        TRIMMOMATIC.out.fastq.set{ fastq }
+        TRIMMOMATIC.out.log.set{ log_out }
     }
-    else {
-        if (params.platform == 'illumina') {
-            read_trimming_pe(reads)
-            trimmedreads = read_trimming_pe.out.trimmedreads
-            tr_report = read_trimming_pe.out.report
-        }
-        else {
-            read_trimming_ont(reads)
-            trimmedreads = read_trimming_ont.out.trimmedreads
-            tr_report = read_trimming_ont.out.report
-        }
+    else if (params.platform == 'nanopore') {
+        NANOFILT(reads)
+        NANOFILT.out.fastq.set{ fastq }
+        NANOFILT.out.log.set{ log_out }
     }
-
 
     emit:
-    trimmedreads = trimmedreads
-    report = tr_report
+    fastq
+    log_out
 }
 
 
