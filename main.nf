@@ -63,6 +63,7 @@ include { FILTERING }        from './subworkflows/filtering.nf'
 include { haplotyping }           from './subworkflows/haplotype.nf'
 include { QC }                    from './subworkflows/qc.nf'
 include { SIMULATED_READS }       from './test/test.nf'
+include { ALIGNMENT } from './subworkflows/alignment.nf'
 
 cowsay(
 """\
@@ -125,9 +126,10 @@ workflow {
         TrimmedReads.set { FilteredReads }
     }
 
-    // Realign reads to the reference genome
-    reads_realign_to_reference(FilteredReads, IndexedReference)
-    Alignments = reads_realign_to_reference.out
+    ALIGNMENT(FilteredReads, IndexedReference.map{ it[1] }.first())
+    ALIGNMENT.out.bam
+        .join(ALIGNMENT.out.bai)
+        .set { AlignedReads }
 
     if (!params.skip_haplotype) {
         haplotyping(FilteredReads, Alignments, IndexedReference, AnnotatedReference)
