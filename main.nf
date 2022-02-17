@@ -99,6 +99,11 @@ workflow {
         RawReads = READS_INGEST.out
     }
 
+    if (!params.skip_qc) {
+        QC(RawReads)
+        LogFiles = LogFiles.mix(QC.out.report)
+    }
+
     if (!params.skip_trimming) {
         TRIMMING(RawReads)
         TRIMMING.out.fastq.set{ TrimmedReads }
@@ -106,14 +111,6 @@ workflow {
     }
     else {
         RawReads.set { TrimmedReads }
-    }
-
-    if (params.skip_qc) {
-        QcReport = Channel.from([])
-    }
-    else {
-        QC(RawReads)
-        QcReport = QC.out.QcReport
     }
 
 
