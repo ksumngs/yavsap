@@ -1,3 +1,5 @@
+include { cleanSpecial } from '../../../../lib/clean-special.nf'
+
 process EFETCH {
     tag "$meta.id"
     label 'run_local'
@@ -20,7 +22,7 @@ process EFETCH {
 
     script:
     def args = task.ext.args ?: ''
-    def prefix = task.ext.prefix ?: "${meta.id}"
+    def prefix = task.ext.prefix ?: cleanSpecial("${meta.id}")
     def ext = mode ?: format ?: 'txt'
     def format_flag = format ? "-format ${format}" : ''
     def mode_flag = mode ? "-mode ${mode}" : ''
