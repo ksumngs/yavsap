@@ -1,3 +1,5 @@
+include { cleanSpecial } from '../../../../lib/clean-special.nf'
+
 process ESEARCH {
     tag "$meta.id"
     label 'run_local'
@@ -20,7 +22,7 @@ process ESEARCH {
 
     script:
     def args = task.ext.args ?: ''
-    def prefix = task.ext.prefix ?: "${meta.id}"
+    def prefix = task.ext.prefix ?: cleanSpecial("${meta.id}")
     """
     esearch \\
             -db "${db}" \\
