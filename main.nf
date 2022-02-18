@@ -64,6 +64,7 @@ include { haplotyping }           from './subworkflows/haplotype.nf'
 include { QC }                    from './subworkflows/qc.nf'
 include { SIMULATED_READS }       from './test/test.nf'
 include { ALIGNMENT } from './subworkflows/alignment.nf'
+include { CLOSEST_REFERENCE } from './subworkflows/closest-reference.nf'
 
 cowsay(
 """\
@@ -131,6 +132,22 @@ workflow {
         .join(ALIGNMENT.out.bai)
         .set { AlignedReads }
 
+    // Find the strain genomes list
+    genomePath = params.genome_list
+    genomeFile = file(genomePath)
+    if (!genomeFile.toFile().exists()) {
+        genomePath = "${workflow.projectDir}/genomes/${params.genome_list}*"
+        genomeFile = file(genomePath, checkIfExists: true)
+    }
+
+    // Realign reads to their closest strain
+    CLOSEST_REFERENCE(
+        ALIGNMENT.out.bam,
+        IndexedReference.map{ it[1] }.first(),
+        genomeFile
+    )
+
+    /*
     if (!params.skip_haplotype) {
         haplotyping(FilteredReads, Alignments, IndexedReference, AnnotatedReference)
         //PhyloTrees = haplotyping.out
@@ -149,6 +166,7 @@ workflow {
 
     // Put a pretty bow on everything
     presentation_generator()
+    */
 }
 
 process reads_realign_to_reference {
