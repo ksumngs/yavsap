@@ -1,63 +1,34 @@
 #!/usr/bin/env nextflow
 nextflow.enable.dsl = 2
 
-include { NCBI_DOWNLOAD } from '../modules/local/ncbi-dl.nf'
 include { PHYLOGENETIC_TREE } from './phylogenetics.nf'
+include { CLIQUESNV_ILLUMINA_VC } from '../modules/local/modules/cliquesnv/illumina-vc/main.nf'
+include { CLIQUESNV_ILLUMINA } from '../modules/local/modules/cliquesnv/illumina/main.nf'
+include { JSON2YAML } from '../modules/local/json2yaml.nf'
 
-workflow haplotyping {
+workflow HAPLOTYPING {
     take:
-    Reads
-    Alignments
-    ReferenceGenome
-    GenomeAnnotation
+    alignments
+    references
 
     main:
-    GenomePath = params.genome_list
-    GenomeFile = file(GenomePath)
-    if (!GenomeFile.toFile().exists()) {
-        GenomePath = "${workflow.projectDir}/genomes/${params.genome_list}*"
-        GenomeFile = file(GenomePath, checkIfExists: true)
-    }
-    GenomeList = Channel
-        .fromPath(GenomePath)
-        .splitCsv(sep: '\t')
-        .map{ n -> "${n[1]}"}
-
-    NCBI_DOWNLOAD(GenomeList)
-    GenomeFastas = NCBI_DOWNLOAD.out.fasta.collect()
-
-    GENOME_LABELING(GenomeFile, GenomeFastas)
-    AccessionGenomes = GENOME_LABELING.out.accessionGenomes
-    StrainGenomes = GENOME_LABELING.out.strainGenomes
-
-    blast_db(AccessionGenomes)
-    BlastDb = blast_db.out
-
-    consensus(Alignments)
-    ConsensusSequences = consensus.out
-
-    blast_consensus(ConsensusSequences, BlastDb)
-    BlastHits = blast_consensus.out
-
-    AccessionGenomesSequences = AccessionGenomes
-        .splitFasta(record: [id: true, seqString: true])
-        .map{ f -> [f.id, ">${f.id}\n${f.seqString}"] }
-
-    BlastGenomes = BlastHits
-        .map { h -> [h[1], h[0]] }
-        .combine(AccessionGenomesSequences, by: 0)
-        .map{ g -> g[1..2] }
-
-    ReadsAndGenomes = Reads.join(BlastGenomes)
-
-    realign_to_new_reference(ReadsAndGenomes)
-
-    RealignedReads = realign_to_new_reference.out.alignment
-
     if (params.platform == 'illumina') {
-        CLIQUESNV_VARIANTS(RealignedReads)
-        CLIQUESNV_HAPLOTYPES(RealignedReads)
-        HaplotypeSequences = CLIQUESNV_HAPLOTYPES.out.haplotypeSequences
+        // Drop the BAM index: CliqueSNV doesn't need it
+        alignments
+            .map{ it.dropRight(1) }
+            .set{ UnindexedAlignments }
+
+        // Do variant calling
+        CLIQUESNV_ILLUMINA_VC(UnindexedAlignments)
+        CLIQUESNV_ILLUMINA_VC.out.vcf.set{ vcf }
+
+        // Do haplotype calling
+        CLIQUESNV_ILLUMINA(UnindexedAlignments)
+        CLIQUESNV_ILLUMINA.out.fasta.set{ fasta }
+
+        // Convert haplotyp JSON to YAML
+        JSON2YAML(CLIQUESNV_ILLUMINA.out.json)
+        JSON2YAML.out.yaml.set{ yaml }
     }
     else {
         AlignmentsAndGenomes = RealignedReads.join(BlastGenomes)
@@ -72,119 +43,17 @@ workflow haplotyping {
         HaplotypeSequences = HAPLINK_FASTA.out
     }
 
-    AllHapSequences = HaplotypeSequences.join(ConsensusSequences)
+    // AllHapSequences = HaplotypeSequences.join(ConsensusSequences)
 
-    alignment(AllHapSequences, StrainGenomes) | \
-        PHYLOGENETIC_TREE
+    // alignment(AllHapSequences, StrainGenomes) | \
+    //     PHYLOGENETIC_TREE
 
-    trees = PHYLOGENETIC_TREE.out
+    // trees = PHYLOGENETIC_TREE.out
 
     emit:
-    trees
-}
-
-process GENOME_LABELING {
-    label 'process_low'
-
-    input:
-    file(genomeList)
-    path(genomeFastas)
-
-    output:
-    path('accession_genomes.fasta'), emit: accessionGenomes
-    path('strain_genomes.fasta'), emit: strainGenomes
-
-    script:
-    """
-    labelstrains \
-        ${genomeList} \
-        accession_genomes.fasta \
-        strain_genomes.fasta \
-        ${genomeFastas}
-    """
-}
-
-process blast_db {
-    label 'blast'
-
-    input:
-    path(genomes)
-
-    output:
-    tuple val(dbname), path("${dbname}.fasta*")
-
-    script:
-    dbname = "YAVSAP_${workflow.sessionId}"
-    """
-    cp ${genomes} ${dbname}.fasta
-    makeblastdb -in ${dbname}.fasta -title ${dbname} -dbtype nucl
-    """
-}
-
-process consensus {
-    label 'ivar'
-
-    input:
-    tuple val(sampleName), path(bamfile)
-
-    output:
-    tuple val(sampleName), path("${sampleName}.consensus.fasta")
-
-    script:
-    """
-    samtools mpileup -aa -A -d0 -Q 0 ${bamfile[0]} | \
-        ivar consensus \
-        -p ${sampleName} \
-        -q ${params.variant_quality} \
-        -t ${params.variant_frequency} \
-        -m ${params.variant_depth}
-    mv ${sampleName}.fa ${sampleName}.consensus.fasta
-    """
-}
-
-process blast_consensus {
-    label 'blast'
-
-    input:
-    tuple val(sampleName), path(consensusSequence)
-    tuple val(blastDbName), path(blastdb)
-
-    output:
-    tuple val(sampleName), env(TOPBLASTHIT)
-
-    shell:
-    '''
-    TOPBLASTHIT=$(blastn -query !{consensusSequence} \
-        -db !{blastDbName}.fasta \
-        -num_alignments 1 \
-        -outfmt "6 saccver" \
-        -num_threads !{task.cpus} | head -n1)
-    '''
-}
-
-process realign_to_new_reference {
-    label 'minimap'
-    publishDir "${params.outdir}/alignment", mode: "${params.publish_dir_mode}"
-
-    input:
-    tuple val(sampleName), path(reads), file(referenceGenome)
-
-    output:
-    tuple val(sampleName), path("${sampleName}.bam{,.bai}"), emit: alignment
-    path("${sampleName}_REFERENCE.fasta{,.fai}"), emit: genome
-
-    script:
-    minimapMethod = (params.platform == 'illumina') ? 'sr' : 'map-ont'
-    """
-    cp ${referenceGenome} ${sampleName}_REFERENCE.fasta
-    samtools faidx ${sampleName}_REFERENCE.fasta
-    minimap2 -ax ${minimapMethod} \
-        -t ${task.cpus} \
-        --MD ${sampleName}_REFERENCE.fasta \
-        ${reads} | \
-        samtools sort > ${sampleName}.bam
-    samtools index ${sampleName}.bam
-    """
+    vcf
+    yaml
+    fasta
 }
 
 /// summary: Call variants on Illumina reads using CliqueSNV
