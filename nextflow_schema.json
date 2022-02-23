@@ -470,6 +470,11 @@
                     "type": "boolean",
                     "fa_icon": "fas fa-viruses",
                     "description": "Skip haplotyping (CliqueSNV/HapLink)"
+                },
+                "skip_phylogenetics": {
+                    "type": "boolean",
+                    "fa_icon": "fas fa-tree",
+                    "description": "Skip phylogenetic tree generation (RAxML-NG)"
                 }
             }
         },
