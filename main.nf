@@ -60,7 +60,7 @@ include { GENOME_DOWNLOAD } from './subworkflows/reference.nf'
 include { READS_INGEST } from './subworkflows/ingest.nf'
 include { TRIMMING }              from './subworkflows/trimming.nf'
 include { FILTERING }        from './subworkflows/filtering.nf'
-include { haplotyping }           from './subworkflows/haplotype.nf'
+include { HAPLOTYPING }           from './subworkflows/haplotype.nf'
 include { QC }                    from './subworkflows/qc.nf'
 include { SIMULATED_READS }       from './test/test.nf'
 include { ALIGNMENT } from './subworkflows/alignment.nf'
@@ -147,13 +147,14 @@ workflow {
         genomeFile
     )
 
-    /*
     if (!params.skip_haplotype) {
-        haplotyping(FilteredReads, Alignments, IndexedReference, AnnotatedReference)
-        //PhyloTrees = haplotyping.out
-    }
-    else {
-        //PhyloTrees = Channel.from([])
+        HAPLOTYPING(
+            CLOSEST_REFERENCE.out.bam
+                .join(
+                    CLOSEST_REFERENCE.out.bai
+                ),
+            CLOSEST_REFERENCE.out.fasta
+        )
     }
 
     MultiQCConfig = file("${workflow.projectDir}/multiqc_config.yaml")
