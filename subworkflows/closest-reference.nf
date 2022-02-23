@@ -73,10 +73,11 @@ workflow CLOSEST_REFERENCE {
 
     // Get the consensus sequence of each sample
     IVAR_CONSENSUS(reads, reference, false)
+    IVAR_CONSENSUS.out.fasta.set{ consensus_fasta }
 
     // BLAST the consensus sequence against all of the reference genomes
     BLAST_BLASTN(
-        IVAR_CONSENSUS.out.fasta,
+        consensus_fasta,
         BLAST_MAKEBLASTDB.out.db.map{ it[1] }
     )
 
@@ -119,4 +120,5 @@ workflow CLOSEST_REFERENCE {
     bam
     bai
     genome_fasta
+    consensus_fasta
 }
