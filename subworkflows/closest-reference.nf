@@ -59,10 +59,11 @@ workflow CLOSEST_REFERENCE {
             .collect(),
         "genomes.fasta"
     )
+    CAT_CAT.out.file_out.set{ genome_fasta }
 
     // Make a BLAST database out of the strain reference genomes
     BLAST_MAKEBLASTDB(
-        CAT_CAT.out.file_out
+        genome_fasta
             .map {[
                 ['id': 'yavsap-genomes', 'single_end': null, 'strandedness': null],
                 it
@@ -117,4 +118,5 @@ workflow CLOSEST_REFERENCE {
     fasta
     bam
     bai
+    genome_fasta
 }
