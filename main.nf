@@ -65,6 +65,7 @@ include { QC }                    from './subworkflows/qc.nf'
 include { SIMULATED_READS }       from './test/test.nf'
 include { ALIGNMENT } from './subworkflows/alignment.nf'
 include { CLOSEST_REFERENCE } from './subworkflows/closest-reference.nf'
+include { PHYLOGENETIC_TREE } from './subworkflows/phylogenetics.nf'
 
 cowsay(
 """\
@@ -155,6 +156,15 @@ workflow {
                 ),
             CLOSEST_REFERENCE.out.fasta
         )
+
+        if (!params.skip_phylogenetics) {
+            PHYLOGENETIC_TREE(
+                HAPLOTYPING.out.fasta,
+                CLOSEST_REFERENCE.out.consensus_fasta,
+                CLOSEST_REFERENCE.out.genome_fasta,
+                genomeFile
+            )
+        }
     }
 
     MultiQCConfig = file("${workflow.projectDir}/multiqc_config.yaml")
@@ -167,7 +177,6 @@ workflow {
 
     // Put a pretty bow on everything
     presentation_generator()
-    */
 }
 
 process reads_realign_to_reference {
