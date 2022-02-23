@@ -436,6 +436,12 @@
                     "default": 0.03,
                     "fa_icon": "fas fa-cut",
                     "description": "Minimum quality for phylogenetic bootstraps"
+                },
+                "phylogenetic_model": {
+                    "type": "string",
+                    "default": "GTR+G",
+                    "fa_icon": "fas fa-box-full",
+                    "description": "Evolutionary model to use for phylogenetic distance calculation"
                 }
             }
         },
