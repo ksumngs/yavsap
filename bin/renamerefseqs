@@ -1,0 +1,35 @@
+#!/usr/bin/env Rscript
+
+# Import libraries
+library(phylotools)
+
+# Read in the cli arguments
+args <- commandArgs(trailingOnly = TRUE)
+fasta_in <- args[1]
+genomes_file <- args[2]
+fasta_out <- args[3]
+
+# Remove the descriptions from the fasta records
+fasta <- read.fasta(fasta_in)
+fasta[1]$seq.name <- sapply(strsplit(fasta[1]$seq.name, " "), "[[", 1)
+dat2fasta(fasta, outfile = "cleaned.fasta")
+
+# Read in the genome list
+genome_table <- read.delim(genomes_file, header = FALSE, row.names = NULL)
+
+# Swap the order of the accession numbers and strain names
+genome_table$old <- genome_table$V2
+genome_table$new <- genome_table$V1
+genome_table$V1 <- NULL # nolint
+genome_table$V2 <- NULL # nolint
+
+# Remove the descriptor from the tree root
+if (sum(startsWith(genome_table$new, "ROOT") > 0)) {
+    genome_table[startsWith(genome_table$new, "ROOT"), ]$new <- "ROOT"
+}
+
+rename.fasta(
+    infile = "cleaned.fasta",
+    ref_table = genome_table,
+    outfile = fasta_out
+)
