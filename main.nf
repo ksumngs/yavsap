@@ -167,16 +167,16 @@ workflow {
         }
     }
 
-    MultiQCConfig = file("${workflow.projectDir}/multiqc_config.yaml")
+    // MultiQCConfig = file("${workflow.projectDir}/multiqc_config.yaml")
 
-    multiqc(MultiQCConfig,
-        KrakenReports
-        .concat(trimming.out.report)
-        .concat(QcReport)
-        .collect())
+    // multiqc(MultiQCConfig,
+    //     KrakenReports
+    //     .concat(trimming.out.report)
+    //     .concat(QcReport)
+    //     .collect())
 
-    // Put a pretty bow on everything
-    presentation_generator()
+    // // Put a pretty bow on everything
+    // presentation_generator()
 }
 
 process reads_realign_to_reference {

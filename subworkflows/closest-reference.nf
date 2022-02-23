@@ -1,5 +1,5 @@
 include { BLAST_BLASTN } from '../modules/nf-core/modules/blast/blastn/main.nf'
-include { BLAST_MAKEBLASTDB } from '../modules/local/modules/blast/makeblastdb/main.nf'
+include { BLAST_MAKEBLASTDB } from '../modules/nf-core/modules/blast/makeblastdb/main.nf'
 include { CAT_CAT } from '../modules/nf-core/modules/cat/cat/main.nf'
 include { CUSTOM_ALIGNMENT } from './custom-alignment.nf'
 include { EFETCH } from '../modules/local/modules/efetch/main.nf'
@@ -62,14 +62,7 @@ workflow CLOSEST_REFERENCE {
     CAT_CAT.out.file_out.set{ genome_fasta }
 
     // Make a BLAST database out of the strain reference genomes
-    BLAST_MAKEBLASTDB(
-        genome_fasta
-            .map {[
-                ['id': 'yavsap-genomes', 'single_end': null, 'strandedness': null],
-                it
-            ]},
-        'nucl'
-    )
+    BLAST_MAKEBLASTDB(genome_fasta)
 
     // Get the consensus sequence of each sample
     IVAR_CONSENSUS(reads, reference, false)
@@ -78,7 +71,7 @@ workflow CLOSEST_REFERENCE {
     // BLAST the consensus sequence against all of the reference genomes
     BLAST_BLASTN(
         consensus_fasta,
-        BLAST_MAKEBLASTDB.out.db.map{ it[1] }
+        BLAST_MAKEBLASTDB.out.db
     )
 
     BLAST_BLASTN.out.txt
