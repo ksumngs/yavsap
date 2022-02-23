@@ -1,7 +1,5 @@
 {
     "cSpell.words": [
-        "FASTX",
-        "Nanopore",
         "allhaplotypes",
         "baifile",
         "bamcounts",
@@ -13,6 +11,7 @@
         "bamref",
         "delim",
         "equalhaplotypes",
+        "FASTX",
         "haplotype",
         "haplotypecounts",
         "haplotypedata",
@@ -23,8 +22,11 @@
         "ivar",
         "ivarfile",
         "linkage",
+        "Nanopore",
+        "nolint",
         "outtsv",
         "outyaml",
+        "phylotools",
         "possiblehaplotypes",
         "pvalue",
         "Δlinkage"
