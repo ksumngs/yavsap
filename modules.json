@@ -44,6 +44,9 @@
             },
             "raxmlng/support": {
                 "git_sha": "a22f05d0d8f92bc8a546c27bb7145fb94c2dea8b"
+            },
+            "trimmomatic": {
+                "git_sha": "830852bd8d4b5eafde5c9bd64dda140b28aa0c00"
             }
         },
         "nf-core/modules": {
