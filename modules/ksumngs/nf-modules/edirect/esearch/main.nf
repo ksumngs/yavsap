@@ -1,5 +1,5 @@
 process EDIRECT_ESEARCH {
-    tag "$query"
+    tag "${ (query.length() > 100) ? query.substring(0, 100) + '...' : query }"
     label 'run_local'
     label 'process_low'
     label 'error_backoff'
