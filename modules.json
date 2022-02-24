@@ -8,6 +8,9 @@
             },
             "cliquesnv/illuminavc": {
                 "git_sha": "0c47a6672c68c47a15d2ef3255b63f95b7bc1758"
+            },
+            "edirect/efetch": {
+                "git_sha": "21873b5c2ed4c2defea089d6070a0f2c032aa11d"
             }
         },
         "nf-core/modules": {
