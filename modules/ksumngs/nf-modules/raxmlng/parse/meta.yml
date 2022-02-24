@@ -1,0 +1,35 @@
+name: raxmlng_parse
+description: |
+  Check a multiple sequence alignment for errors and convert it to a binary
+  format for use with RAxML-NG
+keywords:
+  - phylogeny
+  - newick
+  - maximum likelihood
+tools:
+  - raxmlng:
+      description: 'RAxML Next Generation: faster, easier-to-use and more flexible'
+      homepage: https://github.com/amkozlov/raxml-ng
+      documentation: https://github.com/amkozlov/raxml-ng/wiki
+      tool_dev_url: https://github.com/amkozlov/raxml-ng
+      doi: doi.org/10.1093/bioinformatics/btz305
+      licence: ["GPL v2-or-later"]
+
+input:
+  - msa:
+      type: file
+      description: A FASTA format multiple sequence aligment file
+      pattern: "*.{fasta,fas,fa,mfa}"
+
+output:
+  - versions:
+      type: file
+      description: File containing software versions
+      pattern: "versions.yml"
+  - rba:
+      type: file
+      description: MSA file in RAxML-NG's binary format
+      pattern: "*.{raxml.rba}"
+
+authors:
+  - "@MillironX"

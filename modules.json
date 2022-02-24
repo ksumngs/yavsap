@@ -32,6 +32,9 @@
             },
             "nanostat": {
                 "git_sha": "02e9fc52eb0c57550c2820a62b865313ab764a85"
+            },
+            "raxmlng/parse": {
+                "git_sha": "3ad9561f34733ce646bb3149b1928c81eb052960"
             }
         },
         "nf-core/modules": {
