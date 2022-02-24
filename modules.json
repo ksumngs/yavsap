@@ -29,6 +29,9 @@
             },
             "nanofilt": {
                 "git_sha": "8e2140d607a9bbbf82ddf1604609f22e7371f9fb"
+            },
+            "nanostat": {
+                "git_sha": "02e9fc52eb0c57550c2820a62b865313ab764a85"
             }
         },
         "nf-core/modules": {
