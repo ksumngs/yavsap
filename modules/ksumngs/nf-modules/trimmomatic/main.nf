@@ -11,7 +11,7 @@ process TRIMMOMATIC {
     tuple val(meta), path(reads)
 
     output:
-    tuple val(meta), path("*.fastq.gz"), emit: bam
+    tuple val(meta), path("*.fastq.gz"), emit: fastq
     tuple val(meta), path("*.log")     , emit: log
     path "versions.yml"                , emit: versions
 
