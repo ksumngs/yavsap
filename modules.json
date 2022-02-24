@@ -20,6 +20,9 @@
             },
             "krakentools/extract": {
                 "git_sha": "181a04778a81494dc71b1d68b514b43cfef1512c"
+            },
+            "mafft": {
+                "git_sha": "67b820ac3c3f8cb6a445171132469776ecf36235"
             }
         },
         "nf-core/modules": {
