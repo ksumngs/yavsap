@@ -12,7 +12,7 @@ process RAXMLNG_SUPPORT {
     path bootstraps
 
     output:
-    path "*.raxml.support", emit: bam
+    path "*.raxml.support", emit: support
     path "versions.yml"   , emit: versions
 
     script:
