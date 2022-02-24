@@ -14,6 +14,9 @@
             },
             "edirect/esearch": {
                 "git_sha": "39a746b7614acdee1e720ed809836cdaaaeac94e"
+            },
+            "kraken2": {
+                "git_sha": "21873b5c2ed4c2defea089d6070a0f2c032aa11d"
             }
         },
         "nf-core/modules": {
