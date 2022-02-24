@@ -89,7 +89,7 @@ workflow {
     VersionFiles = Channel.empty()
 
     GENOME_DOWNLOAD()
-    IndexedReference = GENOME_DOWNLOAD.out.fasta
+    ReferenceGenome = GENOME_DOWNLOAD.out.fasta
 
     // Bring in the reads files
     if (params.sra) {
@@ -128,7 +128,7 @@ workflow {
         TrimmedReads.set { FilteredReads }
     }
 
-    ALIGNMENT(FilteredReads, IndexedReference.map{ it[1] }.first())
+    ALIGNMENT(FilteredReads, ReferenceGenome)
     ALIGNMENT.out.bam
         .join(ALIGNMENT.out.bai)
         .set { AlignedReads }
@@ -144,7 +144,7 @@ workflow {
     // Realign reads to their closest strain
     CLOSEST_REFERENCE(
         ALIGNMENT.out.bam,
-        IndexedReference.map{ it[1] }.first(),
+        ReferenceGenome,
         genomeFile
     )
 

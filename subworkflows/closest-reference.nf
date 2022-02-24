@@ -1,9 +1,8 @@
 include { BLAST_BLASTN } from '../modules/nf-core/modules/blast/blastn/main.nf'
 include { BLAST_MAKEBLASTDB } from '../modules/nf-core/modules/blast/makeblastdb/main.nf'
-include { CAT_CAT } from '../modules/nf-core/modules/cat/cat/main.nf'
 include { CUSTOM_ALIGNMENT } from './custom-alignment.nf'
-include { EFETCH } from '../modules/local/modules/efetch/main.nf'
-include { ESEARCH } from '../modules/local/modules/esearch/main.nf'
+include { EDIRECT_EFETCH } from '../modules/ksumngs/nf-modules/edirect/efetch/main.nf'
+include { EDIRECT_ESEARCH } from '../modules/ksumngs/nf-modules/edirect/esearch/main.nf'
 include { IVAR_CONSENSUS } from '../modules/nf-core/modules/ivar/consensus/main.nf'
 include { SAMTOOLS_BAM2FQ } from '../modules/nf-core/modules/samtools/bam2fq/main.nf'
 
@@ -14,52 +13,20 @@ workflow CLOSEST_REFERENCE {
     genome_list
 
     main:
-    // Transform the TSV genome list into a nf-core sample channel
-    Channel
-        .fromPath(genome_list)
-        .splitCsv(sep: '\t')
-        .map{ [
-            ['id': it[0], 'single_end': null, 'strandedness': null],
-            it[1]
-        ] }
-        .set{ GenomeTable }
-
-    // Transform the accession number into the search query
-    GenomeTable
-        .map{ [
-            it[0],
-            'nucleotide',
-            it[1]
-        ] }
-        .set{ GenomeSearchParameters }
+    println genome_list.first().getClass()
+    // Transform the TSV genome list into an edirect query
+    genomeQuery = genome_list
+        .first()
+        .readLines()
+        .collect{ it.split('\t')[1] }
+        .join(' OR ')
 
     // Search NCBI for the accession numbers
-    ESEARCH(GenomeSearchParameters)
+    EDIRECT_ESEARCH(genomeQuery, 'nucleotide')
 
     // Download the matching genomes in fasta format
-    ESEARCH.out.xml
-        .combine(
-            Channel.of(
-                ['fasta', null]
-            )
-        )
-        .set{ GenomeFetchParameters }
-    EFETCH(GenomeFetchParameters)
-
-    // Create a channel containing every strain's genome in fasta format
-    GenomeTable
-        .join(EFETCH.out.txt)
-        .map{ [it[1], it[2]] }
-        .set{ GenomeFastas }
-
-    // Combine all of the genomes together into a single fasta file
-    CAT_CAT(
-        EFETCH.out.txt
-            .map{ it[1] }
-            .collect(),
-        "genomes.fasta"
-    )
-    CAT_CAT.out.file_out.set{ genome_fasta }
+    EDIRECT_EFETCH(EDIRECT_ESEARCH.out.xml, 'fasta', '')
+    EDIRECT_EFETCH.out.txt.set{ genome_fasta }
 
     // Make a BLAST database out of the strain reference genomes
     BLAST_MAKEBLASTDB(genome_fasta)
@@ -81,16 +48,28 @@ workflow CLOSEST_REFERENCE {
         ]}
         .set{ accession }
 
+    // Create a channel with strain genome information
+    // [accession, strain]
+    Channel
+        .fromPath(genome_list)
+        .splitCsv(sep: '\t')
+        .map{ [ it[1], it[0] ] }
+        .set{ GenomeTable }
+
     // Get the strain name of each sample's closest BLAST hit
+    // [meta, strain name]
     accession
         .map{ [it[1], it[0]] }
-        .combine(
-            GenomeTable
-                .map{ [it[1], it[0].id] },
-                by: 0
-        )
+        .combine(GenomeTable, by: 0)
         .map{ [it[1], it[2]] }
         .set{ strain }
+
+    // Create a channel containing every strain's genome in fasta format
+    // [accession, fasta]
+    genome_fasta
+        .splitFasta(file: true)
+        .map{ [it.readLines()[0].split(' ')[0].replace('>', ''), it] }
+        .set{ GenomeFastas }
 
     // Get the genome of each sample's closest BLAST hit in fasta format
     accession
@@ -105,6 +84,14 @@ workflow CLOSEST_REFERENCE {
     CUSTOM_ALIGNMENT(SAMTOOLS_BAM2FQ.out.reads.join(fasta))
     CUSTOM_ALIGNMENT.out.bam.set{ bam }
     CUSTOM_ALIGNMENT.out.bai.set{ bai }
+
+    // Channel.empty().set{ accession }
+    // Channel.empty().set{ strain }
+    // Channel.empty().set{ fasta }
+    // Channel.empty().set{ bam }
+    // Channel.empty().set{ bai }
+    // Channel.empty().set{ genome_fasta }
+    // Channel.empty().set{ consensus_fasta }
 
     emit:
     accession
