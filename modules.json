@@ -41,6 +41,9 @@
             },
             "raxmlng/search": {
                 "git_sha": "c807ee98a0c789a2b45795e7ec9592167f477675"
+            },
+            "raxmlng/support": {
+                "git_sha": "a22f05d0d8f92bc8a546c27bb7145fb94c2dea8b"
             }
         },
         "nf-core/modules": {
