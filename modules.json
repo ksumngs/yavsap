@@ -35,6 +35,9 @@
             },
             "raxmlng/parse": {
                 "git_sha": "3ad9561f34733ce646bb3149b1928c81eb052960"
+            },
+            "raxmlng/search": {
+                "git_sha": "c807ee98a0c789a2b45795e7ec9592167f477675"
             }
         },
         "nf-core/modules": {
