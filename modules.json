@@ -2,6 +2,11 @@
     "name": "yavsap",
     "homePage": "https://ksumngs.github.io/yavsap",
     "repos": {
+        "ksumngs/nf-modules": {
+            "cliquesnv/illuminavc": {
+                "git_sha": "0c47a6672c68c47a15d2ef3255b63f95b7bc1758"
+            }
+        },
         "nf-core/modules": {
             "blast/blastn": {
                 "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
