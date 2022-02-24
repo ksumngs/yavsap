@@ -33,6 +33,9 @@
             "nanostat": {
                 "git_sha": "02e9fc52eb0c57550c2820a62b865313ab764a85"
             },
+            "raxmlng/bootstrap": {
+                "git_sha": "7bc0cad69ab9dc65cdd5dd389f85766cf189612c"
+            },
             "raxmlng/parse": {
                 "git_sha": "3ad9561f34733ce646bb3149b1928c81eb052960"
             },
