@@ -4,10 +4,10 @@ nextflow.enable.dsl = 2
 include { CAT_CAT } from '../modules/nf-core/modules/cat/cat/main.nf'
 include { CAT_FASTQ } from '../modules/nf-core/modules/cat/fastq/main.nf'
 include { MAFFT } from '../modules/ksumngs/nf-modules/mafft/main.nf'
-include { RAXMLNG_BOOTSTRAP } from '../modules/local/modules/raxmlng/bootstrap/main.nf'
-include { RAXMLNG_PARSE } from '../modules/local/modules/raxmlng/parse/main.nf'
-include { RAXMLNG_SEARCH } from '../modules/local/modules/raxmlng/search/main.nf'
-include { RAXMLNG_SUPPORT } from '../modules/local/modules/raxmlng/support/main.nf'
+include { RAXMLNG_BOOTSTRAP } from '../modules/ksumngs/nf-modules/raxmlng/bootstrap/main.nf'
+include { RAXMLNG_PARSE } from '../modules/ksumngs/nf-modules/raxmlng/parse/main.nf'
+include { RAXMLNG_SEARCH } from '../modules/ksumngs/nf-modules/raxmlng/search/main.nf'
+include { RAXMLNG_SUPPORT } from '../modules/ksumngs/nf-modules/raxmlng/support/main.nf'
 include { RENAME_HAPLOTYPES } from '../modules/local/rename-haplotypes.nf'
 include { RENAME_NCBI } from '../modules/local/rename-ncbi.nf'
 
@@ -63,14 +63,14 @@ workflow PHYLOGENETIC_TREE {
         ] }
     )
 
-    RAXMLNG_PARSE(MAFFT.out.fas)
+    RAXMLNG_PARSE(MAFFT.out.fas.map{ it[1] })
 
     RAXMLNG_SEARCH(RAXMLNG_PARSE.out.rba)
     RAXMLNG_BOOTSTRAP(RAXMLNG_PARSE.out.rba)
 
-    RAXMLNG_SUPPORT(RAXMLNG_SEARCH.out.best_tree.join(RAXMLNG_BOOTSTRAP.out.bootstraps))
+    RAXMLNG_SUPPORT(RAXMLNG_SEARCH.out.best_tree, RAXMLNG_BOOTSTRAP.out.bootstraps)
 
-    RAXMLNG_SUPPORT.out.support.set{ tree }
+    tree = RAXMLNG_SUPPORT.out.support
 
     emit:
     tree
