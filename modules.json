@@ -3,6 +3,9 @@
     "homePage": "https://ksumngs.github.io/yavsap",
     "repos": {
         "ksumngs/nf-modules": {
+            "cliquesnv/illumina": {
+                "git_sha": "3c4ecd5017df87d5224100ab87bc4879bf043473"
+            },
             "cliquesnv/illuminavc": {
                 "git_sha": "0c47a6672c68c47a15d2ef3255b63f95b7bc1758"
             }
