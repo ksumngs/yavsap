@@ -1,4 +1,4 @@
-include { MINIMAP2_ALIGN } from '../modules/local/modules/minimap2/align/main.nf'
+include { MINIMAP2_ALIGN } from '../modules/ksumngs/nf-modules/minimap2/align/main.nf'
 include { SAMTOOLS_SORT } from '../modules/nf-core/modules/samtools/sort/main.nf'
 include { SAMTOOLS_INDEX } from '../modules/nf-core/modules/samtools/index/main.nf'
 

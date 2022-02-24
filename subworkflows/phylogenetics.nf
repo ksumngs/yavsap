@@ -3,7 +3,7 @@ nextflow.enable.dsl = 2
 
 include { CAT_CAT } from '../modules/nf-core/modules/cat/cat/main.nf'
 include { CAT_FASTQ } from '../modules/nf-core/modules/cat/fastq/main.nf'
-include { MAFFT } from '../modules/local/modules/mafft/main.nf'
+include { MAFFT } from '../modules/ksumngs/nf-modules/mafft/main.nf'
 include { RAXMLNG_BOOTSTRAP } from '../modules/local/modules/raxmlng/bootstrap/main.nf'
 include { RAXMLNG_PARSE } from '../modules/local/modules/raxmlng/parse/main.nf'
 include { RAXMLNG_SEARCH } from '../modules/local/modules/raxmlng/search/main.nf'

@@ -1,8 +1,8 @@
 #!/usr/bin/env nextflow
 nextflow.enable.dsl = 2
 
-include { KRAKEN2 } from '../modules/local/modules/kraken2/main.nf'
-include { KRAKENTOOLS_EXTRACT } from '../modules/local/modules/krakentools/extract/main.nf'
+include { KRAKEN2 } from '../modules/ksumngs/nf-modules/kraken2/main.nf'
+include { KRAKENTOOLS_EXTRACT } from '../modules/ksumngs/nf-modules/krakentools/extract/main.nf'
 
 workflow FILTERING {
     take:

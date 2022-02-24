@@ -1,8 +1,8 @@
 #!/usr/bin/env nextflow
 nextflow.enable.dsl = 2
 
-include { CLIQUESNV_ILLUMINA } from '../modules/local/modules/cliquesnv/illumina/main.nf'
-include { CLIQUESNV_ILLUMINA_VC } from '../modules/local/modules/cliquesnv/illumina-vc/main.nf'
+include { CLIQUESNV_ILLUMINA } from '../modules/ksumngs/nf-modules/cliquesnv/illumina/main.nf'
+include { CLIQUESNV_ILLUMINAVC } from '../modules/ksumngs/nf-modules/cliquesnv/illuminavc/main.nf'
 include { HAPLINK_HAPLOTYPES } from '../modules/local/modules/haplink/haplotypes/main.nf'
 include { HAPLINK_SEQUENCES } from '../modules/local/modules/haplink/sequences/main.nf'
 include { HAPLINK_VARIANTS } from '../modules/local/modules/haplink/variants/main.nf'
@@ -22,8 +22,8 @@ workflow HAPLOTYPING {
             .set{ UnindexedAlignments }
 
         // Do variant calling
-        CLIQUESNV_ILLUMINA_VC(UnindexedAlignments)
-        CLIQUESNV_ILLUMINA_VC.out.vcf.set{ vcf }
+        CLIQUESNV_ILLUMINAVC(UnindexedAlignments)
+        CLIQUESNV_ILLUMINAVC.out.vcf.set{ vcf }
 
         // Do haplotype calling
         CLIQUESNV_ILLUMINA(UnindexedAlignments)

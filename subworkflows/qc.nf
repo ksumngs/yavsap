@@ -2,7 +2,7 @@
 nextflow.enable.dsl = 2
 
 include { FASTQC } from '../modules/nf-core/modules/fastqc/main.nf'
-include { NANOSTAT } from '../modules/local/modules/nanostat/main.nf'
+include { NANOSTAT } from '../modules/ksumngs/nf-modules/nanostat/main.nf'
 
 /// summary: |
 ///   Perform context-sensitive QC on fastq reads
