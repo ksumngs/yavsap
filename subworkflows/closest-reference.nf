@@ -13,7 +13,6 @@ workflow CLOSEST_REFERENCE {
     genome_list
 
     main:
-    println genome_list.first().getClass()
     // Transform the TSV genome list into an edirect query
     genomeQuery = genome_list
         .first()
