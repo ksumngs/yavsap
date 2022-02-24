@@ -26,6 +26,9 @@
             },
             "minimap2/align": {
                 "git_sha": "ae81650d918dd11707cd61d61a4f2c966739de21"
+            },
+            "nanofilt": {
+                "git_sha": "8e2140d607a9bbbf82ddf1604609f22e7371f9fb"
             }
         },
         "nf-core/modules": {
