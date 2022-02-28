@@ -11,6 +11,8 @@ workflow FILTERING {
     filter
 
     main:
+    versions = Channel.empty()
+
     KRAKEN2(reads, kraken2_db)
 
     KRAKEN2.out.kreport.set{ log_out }
@@ -29,9 +31,13 @@ workflow FILTERING {
             filter
         )
         KRAKENTOOLS_EXTRACT.out.fastq.set{ filtered }
+        versions = versions.mix(KRAKENTOOLS_EXTRACT.out.versions)
     }
+
+    versions = versions.mix(KRAKEN2.out.versions)
 
     emit:
     filtered
     log_out
+    versions
 }

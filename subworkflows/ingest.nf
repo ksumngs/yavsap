@@ -15,6 +15,8 @@ include { SEQKIT_SPLIT2 } from '../modules/nf-core/modules/seqkit/split2/main.nf
 ///         description: Reads files
 workflow READS_INGEST {
     main:
+    versions = Channel.empty()
+
     // First sanity check: --input must exist
     if (!file(params.input).exists()) {
         log.error "ERROR: file or directory '${params.input}' does not exist!"
@@ -63,6 +65,7 @@ workflow READS_INGEST {
             .reads
             .mix(CountedSamples.single)
             .set { InterleavedSamples }
+        versions = versions.mix(CAT_FASTQ.out.versions)
     }
     else if (file(params.input).isDirectory()) {
         // --input represents a directory of reads
@@ -99,6 +102,7 @@ workflow READS_INGEST {
                 it[1]
             ] }
             .set { sample_info }
+        versions = versions.mix(SEQKIT_SPLIT2.out.versions)
     }
     else {
         // Transfer reads out of interleaved jail and output them
@@ -107,6 +111,7 @@ workflow READS_INGEST {
 
     emit:
     sample_info
+    versions
 }
 
 /// summary: |

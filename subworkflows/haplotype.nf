@@ -15,6 +15,8 @@ workflow HAPLOTYPING {
     references
 
     main:
+    versions = Channel.empty()
+
     if (params.platform == 'illumina') {
         // Drop the BAM index: CliqueSNV doesn't need it
         alignments
@@ -32,6 +34,10 @@ workflow HAPLOTYPING {
         // Convert haplotyp JSON to YAML
         JSON2YAML(CLIQUESNV_ILLUMINA.out.json)
         JSON2YAML.out.yaml.set{ yaml }
+
+        versions = versions.mix(CLIQUESNV_ILLUMINAVC.out.versions)
+        versions = versions.mix(CLIQUESNV_ILLUMINA.out.versions)
+        versions = versions.mix(JSON2YAML.out.versions)
     }
     else {
         HAPLINK_VARIANTS(alignments.join(references))
@@ -49,17 +55,15 @@ workflow HAPLOTYPING {
                 .join(references)
         )
         HAPLINK_SEQUENCES.out.fasta.set{ fasta }
+
+        versions = versions.mix(HAPLINK_VARIANTS.out.versions)
+        versions = versions.mix(HAPLINK_HAPLOTYPES.out.versions)
+        versions = versions.mix(HAPLINK_SEQUENCES.out.versions)
     }
-
-    // AllHapSequences = HaplotypeSequences.join(ConsensusSequences)
-
-    // alignment(AllHapSequences, StrainGenomes) | \
-    //     PHYLOGENETIC_TREE
-
-    // trees = PHYLOGENETIC_TREE.out
 
     emit:
     vcf
     yaml
     fasta
+    versions
 }

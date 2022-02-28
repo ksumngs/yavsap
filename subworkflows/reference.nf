@@ -7,6 +7,8 @@ include { SAMTOOLS_FAIDX } from '../modules/nf-core/modules/samtools/faidx/main.
 
 workflow GENOME_DOWNLOAD {
     main:
+    versions = Channel.empty()
+
     EDIRECT_ESEARCH("${params.genome}", 'nucleotide')
     EDIRECT_EFETCH(EDIRECT_ESEARCH.out.xml, 'fasta', '')
     EDIRECT_EFETCH.out.txt.set{ fasta }
@@ -19,7 +21,12 @@ workflow GENOME_DOWNLOAD {
     )
     SAMTOOLS_FAIDX.out.fai.set{ fai }
 
+    versions = versions.mix(EDIRECT_ESEARCH.out.versions)
+    versions = versions.mix(EDIRECT_EFETCH.out.versions)
+    versions = versions.mix(SAMTOOLS_FAIDX.out.versions)
+
     emit:
     fasta
     fai
+    versions
 }

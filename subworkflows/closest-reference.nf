@@ -13,6 +13,8 @@ workflow CLOSEST_REFERENCE {
     genome_list
 
     main:
+    versions = Channel.empty()
+
     // Transform the TSV genome list into an edirect query
     genomeQuery = genome_list
         .first()
@@ -84,13 +86,13 @@ workflow CLOSEST_REFERENCE {
     CUSTOM_ALIGNMENT.out.bam.set{ bam }
     CUSTOM_ALIGNMENT.out.bai.set{ bai }
 
-    // Channel.empty().set{ accession }
-    // Channel.empty().set{ strain }
-    // Channel.empty().set{ fasta }
-    // Channel.empty().set{ bam }
-    // Channel.empty().set{ bai }
-    // Channel.empty().set{ genome_fasta }
-    // Channel.empty().set{ consensus_fasta }
+    versions = versions.mix(EDIRECT_ESEARCH.out.versions)
+    versions = versions.mix(EDIRECT_EFETCH.out.versions)
+    versions = versions.mix(BLAST_MAKEBLASTDB.out.versions)
+    versions = versions.mix(IVAR_CONSENSUS.out.versions)
+    versions = versions.mix(BLAST_BLASTN.out.versions)
+    versions = versions.mix(SAMTOOLS_BAM2FQ.out.versions)
+    versions = versions.mix(CUSTOM_ALIGNMENT.out.versions)
 
     emit:
     accession
@@ -100,4 +102,5 @@ workflow CLOSEST_REFERENCE {
     bai
     genome_fasta
     consensus_fasta
+    versions
 }

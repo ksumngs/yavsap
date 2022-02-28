@@ -67,6 +67,7 @@ include { ALIGNMENT } from './subworkflows/alignment.nf'
 include { CLOSEST_REFERENCE } from './subworkflows/closest-reference.nf'
 include { PHYLOGENETIC_TREE } from './subworkflows/phylogenetics.nf'
 include { MULTIQC } from './modules/nf-core/modules/multiqc/main.nf'
+include { CUSTOM_DUMPSOFTWAREVERSIONS } from './modules/nf-core/modules/custom/dumpsoftwareversions/main.nf'
 
 cowsay(
 """\
@@ -91,6 +92,7 @@ workflow {
 
     GENOME_DOWNLOAD()
     ReferenceGenome = GENOME_DOWNLOAD.out.fasta
+    VersionFiles = VersionFiles.mix(GENOME_DOWNLOAD.out.versions)
 
     // Bring in the reads files
     if (params.sra) {
@@ -99,18 +101,21 @@ workflow {
     }
     else {
         READS_INGEST()
-        RawReads = READS_INGEST.out
+        RawReads = READS_INGEST.out.sample_info
+        VersionFiles = VersionFiles.mix(READS_INGEST.out.versions)
     }
 
     if (!params.skip_qc) {
         QC(RawReads)
         LogFiles = LogFiles.mix(QC.out.report)
+        VersionFiles = VersionFiles.mix(QC.out.versions)
     }
 
     if (!params.skip_trimming) {
         TRIMMING(RawReads)
         TRIMMING.out.fastq.set{ TrimmedReads }
         LogFiles = LogFiles.mix(TRIMMING.out.log_out)
+        VersionFiles = VersionFiles.mix(TRIMMING.out.versions)
     }
     else {
         RawReads.set { TrimmedReads }
@@ -124,6 +129,7 @@ workflow {
         )
         FILTERING.out.filtered.set { FilteredReads }
         LogFiles = LogFiles.mix(FILTERING.out.log_out)
+        VersionFiles = VersionFiles.mix(FILTERING.out.versions)
     }
     else {
         TrimmedReads.set { FilteredReads }
@@ -133,6 +139,8 @@ workflow {
     ALIGNMENT.out.bam
         .join(ALIGNMENT.out.bai)
         .set { AlignedReads }
+
+    VersionFiles = VersionFiles.mix(ALIGNMENT.out.versions)
 
     // Find the strain genomes list
     genomePath = params.genome_list
@@ -149,6 +157,8 @@ workflow {
         genomeFile
     )
 
+    VersionFiles = VersionFiles.mix(CLOSEST_REFERENCE.out.versions)
+
     if (!params.skip_haplotype) {
         HAPLOTYPING(
             CLOSEST_REFERENCE.out.bam
@@ -158,6 +168,8 @@ workflow {
             CLOSEST_REFERENCE.out.fasta
         )
 
+        VersionFiles = VersionFiles.mix(HAPLOTYPING.out.versions)
+
         if (!params.skip_phylogenetics) {
             PHYLOGENETIC_TREE(
                 HAPLOTYPING.out.fasta,
@@ -165,6 +177,8 @@ workflow {
                 CLOSEST_REFERENCE.out.genome_fasta,
                 genomeFile
             )
+
+            VersionFiles = VersionFiles.mix(PHYLOGENETIC_TREE.out.versions)
         }
     }
 
@@ -175,6 +189,8 @@ workflow {
         .collect()
 
     MULTIQC(LogFiles)
+
+    CUSTOM_DUMPSOFTWAREVERSIONS(VersionFiles.unique().collectFile(name: 'collated_versions.yml'))
 
     // Put a pretty bow on everything
     PRESENTATION_GENERATOR()

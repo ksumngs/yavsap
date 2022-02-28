@@ -8,6 +8,8 @@ workflow ALIGNMENT {
     reference
 
     main:
+    versions = Channel.empty()
+
     // Realign reads to the reference genome
     // Note: Normally, minimap2 outputs paf, but we have forced it to output sam via
     // ext.args in modules.config
@@ -18,7 +20,12 @@ workflow ALIGNMENT {
     SAMTOOLS_SORT.out.bam.set{ bam }
     SAMTOOLS_INDEX.out.bai.set{ bai }
 
+    versions = versions.mix(MINIMAP2_ALIGN.out.versions)
+    versions = versions.mix(SAMTOOLS_SORT.out.versions)
+    versions = versions.mix(SAMTOOLS_INDEX.out.versions)
+
     emit:
     bam
     bai
+    versions
 }

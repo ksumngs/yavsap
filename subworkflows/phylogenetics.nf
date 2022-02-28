@@ -36,6 +36,8 @@ workflow PHYLOGENETIC_TREE {
     genome_table
 
     main:
+    versions = Channel.empty()
+
     RENAME_NCBI(genomes, genome_table)
 
     CAT_FASTQ(
@@ -72,6 +74,17 @@ workflow PHYLOGENETIC_TREE {
 
     tree = RAXMLNG_SUPPORT.out.support
 
+    versions = versions.mix(RENAME_NCBI.out.versions)
+    versions = versions.mix(CAT_FASTQ.out.versions)
+    versions = versions.mix(RENAME_HAPLOTYPES.out.versions)
+    versions = versions.mix(CAT_CAT.out.versions)
+    versions = versions.mix(MAFFT.out.versions)
+    versions = versions.mix(RAXMLNG_PARSE.out.versions)
+    versions = versions.mix(RAXMLNG_SEARCH.out.versions)
+    versions = versions.mix(RAXMLNG_BOOTSTRAP.out.versions)
+    versions = versions.mix(RAXMLNG_SUPPORT.out.versions)
+
     emit:
     tree
+    versions
 }

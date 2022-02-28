@@ -12,16 +12,24 @@ workflow QC {
     reads
 
     main:
+    versions = Channel.empty()
+
     if (params.platform == 'illumina') {
         SEQTK_MERGEPE(reads)
         FASTQC(SEQTK_MERGEPE.out.reads)
         FASTQC.out.zip.set{ report }
+
+        versions = versions.mix(SEQTK_MERGEPE.out.versions)
+        versions = versions.mix(FASTQC.out.versions)
     }
     else if (params.platform == 'nanopore') {
         NANOSTAT(reads)
         NANOSTAT.out.log.set{ report }
+
+        versions = versions.mix(NANOSTAT.out.versions)
     }
 
     emit:
     report
+    versions
 }
