@@ -3,6 +3,7 @@ nextflow.enable.dsl = 2
 
 include { FASTQC } from '../modules/nf-core/modules/fastqc/main.nf'
 include { NANOSTAT } from '../modules/ksumngs/nf-modules/nanostat/main.nf'
+include { SEQTK_MERGEPE } from '../modules/nf-core/modules/seqtk/mergepe/main.nf'
 
 /// summary: |
 ///   Perform context-sensitive QC on fastq reads
@@ -12,7 +13,8 @@ workflow QC {
 
     main:
     if (params.platform == 'illumina') {
-        FASTQC(reads)
+        SEQTK_MERGEPE(reads)
+        FASTQC(SEQTK_MERGEPE.out.reads)
         FASTQC.out.zip.set{ report }
     }
     else if (params.platform == 'nanopore') {

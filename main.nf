@@ -66,6 +66,7 @@ include { SIMULATED_READS }       from './test/test.nf'
 include { ALIGNMENT } from './subworkflows/alignment.nf'
 include { CLOSEST_REFERENCE } from './subworkflows/closest-reference.nf'
 include { PHYLOGENETIC_TREE } from './subworkflows/phylogenetics.nf'
+include { MULTIQC } from './modules/nf-core/modules/multiqc/main.nf'
 
 cowsay(
 """\
@@ -167,13 +168,13 @@ workflow {
         }
     }
 
-    // MultiQCConfig = file("${workflow.projectDir}/multiqc_config.yaml")
+    LogFiles = LogFiles
+        .map{ (it instanceof Path) ? it : it.drop(1) }
+        .mix(Channel.of(file("${workflow.projectDir}/multiqc_config.yaml")))
+        .flatten()
+        .collect()
 
-    // multiqc(MultiQCConfig,
-    //     KrakenReports
-    //     .concat(trimming.out.report)
-    //     .concat(QcReport)
-    //     .collect())
+    MULTIQC(LogFiles)
 
     // // Put a pretty bow on everything
     // presentation_generator()

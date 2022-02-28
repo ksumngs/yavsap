@@ -1,7 +1,9 @@
-fn_clean_exts:
-  - "_R1"
+extra_fn_clean_exts:
   - "kreport"
-  - ".fastq.gz"
+  - type: regex
+    pattern: "_S[0-9]+_L[0-9]{3}_R[1-2]_[0-9]{3}"
+  - type: regex
+    pattern: "_[0-9]"
   - "_nanostat.log"
 top_modules:
   - "fastqc"
