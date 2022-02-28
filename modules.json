@@ -21,9 +21,6 @@
             "krakentools/extract": {
                 "git_sha": "181a04778a81494dc71b1d68b514b43cfef1512c"
             },
-            "mafft": {
-                "git_sha": "67b820ac3c3f8cb6a445171132469776ecf36235"
-            },
             "minimap2/align": {
                 "git_sha": "ae81650d918dd11707cd61d61a4f2c966739de21"
             },
@@ -70,6 +67,9 @@
             },
             "ivar/consensus": {
                 "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
+            },
+            "mafft": {
+                "git_sha": "841c661cad7181a36fd20bb306258d17b750c873"
             },
             "minimap2/align": {
                 "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
