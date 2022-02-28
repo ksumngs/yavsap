@@ -176,12 +176,12 @@ workflow {
 
     MULTIQC(LogFiles)
 
-    // // Put a pretty bow on everything
-    // presentation_generator()
+    // Put a pretty bow on everything
+    PRESENTATION_GENERATOR()
 }
 
 // Create a viewer of all the assembly files
-process presentation_generator {
+process PRESENTATION_GENERATOR {
     label 'process_low'
     publishDir "${params.outdir}", mode: "${params.publish_dir_mode}"
 
