@@ -27,7 +27,6 @@ jobs:
         nxf_edge: [ '' ]
         read_type: ['nanopore', 'illumina']
         container_env: ['docker', 'singularity', 'podman']
-        skipping: [ '' ]
         include:
           - nxf_ver: ''
             nxf_edge: 1
@@ -55,7 +54,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.nxf-singularity-cache
-          key: singularity-${{ hashFiles('**/conf/containers.config') }}
+          key: singularity-${{ hashFiles('modules.json') }}
 
       - name: Install Podman
         if: ${{ env.RUN_CONTAINER == 'podman' }}
@@ -94,4 +93,10 @@ jobs:
           NCBI_API_KEY: ${{ secrets.NCBI_API_KEY }}
         run: |
           export NXF_SINGULARITY_CACHEDIR=$HOME/.nxf-singularity-cache
-          nextflow run ${GITHUB_WORKSPACE} -profile test,gh,${RUN_CONTAINER} $RUN_SKIPPING --kraken2_db ~/kraken2-db --platform ${RUN_READTYPE}
+          nextflow run ${GITHUB_WORKSPACE} \
+            -profile test,gh,${RUN_CONTAINER} \
+            --input ./test/samples-${RUN_READTYPE}.tsv \
+            --genome NC_045512.2 \
+            --genome_list sc2 \
+            --kraken2_db ~/kraken2-db \
+            --platform ${RUN_READTYPE}

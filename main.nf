@@ -95,15 +95,9 @@ workflow {
     VersionFiles = VersionFiles.mix(GENOME_DOWNLOAD.out.versions)
 
     // Bring in the reads files
-    if (params.sra) {
-        SIMULATED_READS()
-        RawReads = SIMULATED_READS.out
-    }
-    else {
-        READS_INGEST()
-        RawReads = READS_INGEST.out.sample_info
-        VersionFiles = VersionFiles.mix(READS_INGEST.out.versions)
-    }
+    READS_INGEST()
+    RawReads = READS_INGEST.out.sample_info
+    VersionFiles = VersionFiles.mix(READS_INGEST.out.versions)
 
     if (!params.skip_qc) {
         QC(RawReads)
