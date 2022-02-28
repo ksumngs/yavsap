@@ -1,54 +1,64 @@
 #!/usr/bin/env nextflow
 nextflow.enable.dsl = 2
 
+include { ALIGNMENT } from './subworkflows/alignment.nf'
+include { CLOSEST_REFERENCE } from './subworkflows/closest-reference.nf'
+include { CUSTOM_DUMPSOFTWAREVERSIONS } from './modules/nf-core/modules/custom/dumpsoftwareversions/main.nf'
+include { FILTERING } from './subworkflows/filtering.nf'
+include { GENOME_DOWNLOAD } from './subworkflows/reference.nf'
+include { HAPLOTYPING } from './subworkflows/haplotype.nf'
+include { MULTIQC } from './modules/nf-core/modules/multiqc/main.nf'
+include { PHYLOGENETIC_TREE } from './subworkflows/phylogenetics.nf'
+include { QC } from './subworkflows/qc.nf'
+include { READS_INGEST } from './subworkflows/ingest.nf'
+include { TRIMMING } from './subworkflows/trimming.nf'
 include { cowsay } from './lib/cowsay.nf'
+include { yavsap_logo } from './lib/logo.nf'
+
+cowsay(yavsap_logo())
 
 if (params.help) {
-    cowsay(
-    """\
-====================================================================================
-                                     YAVSAP
-                (Yet Another Viral Subspecies Analysis Pipeline)
-====================================================================================
+    log.info(
+        """\
+        YAVSAP (Yet Another Viral Subspecies Analysis Pipeline) - Intra-sample viral
+        population analysis
 
-    YAVSAP (Yet Another Viral Subspecies Analysis Pipeline) - Intra-sample viral
-    population analysis
+        Usage:
 
-    Usage:
+            nextflow run ksumngs/yavsap
 
-        nextflow run ksumngs/yavsap
+        Options:
 
-    Options:
+            --input             Relative or absolute path to directory containing
+                                gzipped fastq files
+                                    type: path, default: .
 
-        --input             Relative or absolute path to directory containing
-                            gzipped fastq files
-                                type: path, default: .
+            --platform          Type of reads to process. Options are 'illumina' and
+                                'nanopore'
+                                    type: string, default: none
 
-        --platform          Type of reads to process. Options are 'illumina' and
-                            'nanopore'
-                                type: string, default: none
+            --genome            NCBI accession number of the reference genome to
+                                align reads against
+                                    type: string, default: 'NC_001437.1'
 
-        --genome            NCBI accession number of the reference genome to align
-                            reads against
-                                type: string, default: 'NC_001437.1'
+            --kraken2_db        Kraken2-compatible database for classifying reads
+                                    type: path, default: none
 
-        --kraken2_db        Kraken2-compatible database for classifying reads
-                                type: path, default: none
+            --keep_taxid        Space-separated list of NCBI taxids to keep and
+                                process after classifying
+                                    type: string, default: '0 10239'
 
-        --keep_taxid        Space-separated list of NCBI taxids to keep and process
-                            after classifying
-                                type: string, default: '0 10239'
+            --outdir            Directory in which to place results
+                                    type: path, default: ./results
 
-        --outdir            Directory in which to place results
-                                type: path, default: ./results
+            --help              Print this message and exit
 
-        --help              Print this message and exit
+        For more information on usage and parameters, visit the website at
+            https://ksumngs.github.io/yavsap
+    """.stripIndent()
+    )
 
-    For more information on usage and parameters, visit the website at
-        https://ksumngs.github.io/yavsap
-"""
-)
-exit 0
+    exit 0
 }
 
 if (params.platform != 'illumina' && params.platform != 'nanopore') {
@@ -56,33 +66,16 @@ if (params.platform != 'illumina' && params.platform != 'nanopore') {
     exit 1
 }
 
-include { GENOME_DOWNLOAD } from './subworkflows/reference.nf'
-include { READS_INGEST } from './subworkflows/ingest.nf'
-include { TRIMMING }              from './subworkflows/trimming.nf'
-include { FILTERING }        from './subworkflows/filtering.nf'
-include { HAPLOTYPING }           from './subworkflows/haplotype.nf'
-include { QC }                    from './subworkflows/qc.nf'
-include { ALIGNMENT } from './subworkflows/alignment.nf'
-include { CLOSEST_REFERENCE } from './subworkflows/closest-reference.nf'
-include { PHYLOGENETIC_TREE } from './subworkflows/phylogenetics.nf'
-include { MULTIQC } from './modules/nf-core/modules/multiqc/main.nf'
-include { CUSTOM_DUMPSOFTWAREVERSIONS } from './modules/nf-core/modules/custom/dumpsoftwareversions/main.nf'
-
-cowsay(
-"""\
-====================================================================================
-                                     YAVSAP
-                (Yet Another Viral Subspecies Analysis Pipeline)
-====================================================================================
-
-Input folder:           ${params.input}
-Sequencing platform:    ${params.platform}
-Reference genome:       ${params.genome}
-Kraken2 Database:       ${params.kraken2_db}
-Taxonomic Ids:          '${params.keep_taxid}'
-Output folder           ${params.outdir}
-Diagnostics folder:     ${params.tracedir}
-"""
+log.info(
+    """\
+    Input folder:           ${params.input}
+    Sequencing platform:    ${params.platform}
+    Reference genome:       ${params.genome}
+    Kraken2 Database:       ${params.kraken2_db}
+    Taxonomic Ids:          '${params.keep_taxid}'
+    Output folder           ${params.outdir}
+    Diagnostics folder:     ${params.tracedir}
+    """.stripIndent()
 )
 
 workflow {
