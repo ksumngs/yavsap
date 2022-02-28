@@ -180,44 +180,6 @@ workflow {
     // presentation_generator()
 }
 
-process reads_realign_to_reference {
-    label 'minimap'
-
-    input:
-    tuple val(sampleName), file(readsFile)
-    file(reference)
-
-    output:
-    tuple val(sampleName), file("${sampleName}.{bam,bam.bai}")
-
-    script:
-    minimapMethod = (params.platform == 'illumina') ? 'sr' : 'map-ont'
-    """
-    minimap2 -ax ${minimapMethod} -t ${task.cpus} --MD ${reference[0]} ${readsFile} | \
-        samtools sort > ${sampleName}.bam
-    samtools index ${sampleName}.bam
-    """
-}
-
-process multiqc {
-    label 'process_low'
-    label 'multiqc'
-    publishDir "${params.outdir}", mode: "${params.publish_dir_mode}"
-
-    input:
-    file(configFile)
-    file '*'
-
-    output:
-    path 'multiqc_report.html' optional true
-    path 'multiqc_data'        optional true
-
-    script:
-    """
-    multiqc .
-    """
-}
-
 // Create a viewer of all the assembly files
 process presentation_generator {
     label 'process_low'
