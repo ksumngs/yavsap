@@ -63,26 +63,3 @@ workflow HAPLOTYPING {
     yaml
     fasta
 }
-
-process alignment {
-    label 'mafft'
-    label 'process_medium'
-    publishDir "${params.outdir}/multi_alignment", mode: "${params.publish_dir_mode}"
-
-    cpus 1
-
-    input:
-    tuple val(sampleName), file(haploReads), file(consensus)
-    path(referenceStrains)
-
-    output:
-    tuple val(sampleName), file("${sampleName}.haplotypes.fas")
-
-    script:
-    """
-    cat ${consensus} ${haploReads} ${referenceStrains} > ${sampleName}.mafft.fasta
-    mafft --thread ${task.cpus} --auto \
-        ${sampleName}.mafft.fasta > ${sampleName}.haplotypes.fas
-    sed -i "s/ .*\$//" ${sampleName}.haplotypes.fas
-    """
-}
