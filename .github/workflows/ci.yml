@@ -1,8 +1,13 @@
 name: Testing
 # This workflow runs the pipeline with the minimal test dataset to check that it completes without any syntax errors
 on:
-  - release
-  - workflow_dispatch
+  push:
+    branches:
+      - develop
+  pull_request:
+  release:
+    types: [published]
+  workflow_dispatch:
 
 jobs:
   test:

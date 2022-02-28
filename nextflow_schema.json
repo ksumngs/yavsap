@@ -48,7 +48,7 @@
                 },
                 "samplesheet": {
                     "type": "string",
-                    "default": null,
+                    "default": "None",
                     "fa_icon": "fas fa-file-csv",
                     "description": "Path to a tab-separated file containing a table of samplenames and reads files",
                     "help_text": "For more info, see {ref}`Using a Samplesheet as Input`"
@@ -92,6 +92,25 @@
                     "description": "Display help text.",
                     "fa_icon": "fas fa-question-circle",
                     "hidden": true
+                },
+                "show_hidden_params": {
+                    "type": "boolean",
+                    "default": false,
+                    "fa_icon": "fas fa-eye",
+                    "description": "Show all params when using `--help`",
+                    "hidden": true
+                },
+                "custom_config_version": {
+                    "type": "string",
+                    "description": "Git commit id for Institutional configs.",
+                    "default": "master",
+                    "fa_icon": "fas fa-history"
+                },
+                "custom_config_base": {
+                    "type": "string",
+                    "description": "Base directory for Institutional configs.",
+                    "default": "https://raw.githubusercontent.com/nf-core/configs/master",
+                    "fa_icon": "fas fa-globe"
                 }
             },
             "required": [
