@@ -535,6 +535,12 @@
                     "pattern": "^(\\d+\\.?\\s*(s|m|h|day)\\s*)+$",
                     "hidden": true,
                     "help_text": "Use to set an upper-limit for the time requirement for each process. Should be a string in the format integer-unit e.g. `--max_time '2.h'`"
+                },
+                "enable_conda": {
+                    "type": "boolean",
+                    "hidden": true,
+                    "description": "Run this workflow with Conda. You can also use '-profile conda' instead of providing this parameter.",
+                    "fa_icon": "fas fa-bacon"
                 }
             }
         }
