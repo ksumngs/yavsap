@@ -32,12 +32,12 @@ jobs:
             nxf_edge: 1
             container_env: docker
             skipping: ''
-            read_type: ont
+            read_type: nanopore
           - nxf_ver: ''
             nxf_edge: 1
             container_env: docker
             skipping: ''
-            read_type: pe
+            read_type: illumina
     steps:
       - name: Check out pipeline code
         uses: actions/checkout@v2
