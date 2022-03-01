@@ -19,6 +19,10 @@ input:
       type: list
       description: |
         List of input FastQ files to be concatenated.
+  - gzipped:
+    type: boolean
+    description: |
+      Whether the output should be gzipped or not
 output:
   - meta:
       type: map
@@ -37,3 +41,4 @@ output:
 authors:
   - "@joseespinosa"
   - "@drpatelh"
+  - "@MillironX"

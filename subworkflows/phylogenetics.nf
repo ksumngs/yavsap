@@ -2,7 +2,7 @@
 nextflow.enable.dsl = 2
 
 include { CAT_CAT } from '../modules/nf-core/modules/cat/cat/main.nf'
-include { CAT_FASTQ } from '../modules/nf-core/modules/cat/fastq/main.nf'
+include { CAT_FASTQ } from '../modules/ksumngs/nf-modules/cat/fastq/main.nf'
 include { MAFFT } from '../modules/nf-core/modules/mafft/main.nf'
 include { RAXMLNG_BOOTSTRAP } from '../modules/ksumngs/nf-modules/raxmlng/bootstrap/main.nf'
 include { RAXMLNG_PARSE } from '../modules/ksumngs/nf-modules/raxmlng/parse/main.nf'
@@ -46,7 +46,8 @@ workflow PHYLOGENETIC_TREE {
         .map{ [
             ['id':it[0].id, 'single_end': true, 'strandedness': null],
             [it[1], it[2]]
-        ] }
+        ] },
+        false
     )
 
     RENAME_HAPLOTYPES(CAT_FASTQ.out.reads)
