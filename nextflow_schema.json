@@ -453,6 +453,12 @@
             "default": "",
             "fa_icon": "fas fa-tree",
             "properties": {
+                "mafft_method": {
+                    "type": "string",
+                    "fa_icon": "fas fa-indent",
+                    "description": "Which method to use for the alignment process",
+                    "default": "--auto"
+                },
                 "phylogenetic_bootstraps": {
                     "type": "integer",
                     "default": 1000,
