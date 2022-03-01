@@ -95,7 +95,6 @@
                 },
                 "show_hidden_params": {
                     "type": "boolean",
-                    "default": false,
                     "fa_icon": "fas fa-eye",
                     "description": "Show all params when using `--help`",
                     "hidden": true
