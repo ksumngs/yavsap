@@ -434,6 +434,16 @@
                     "default": 1000,
                     "fa_icon": "fas fa-spinner",
                     "description": "Number of iterations to build pseudo-reads"
+                },
+                "cliquesnv_method": {
+                    "type": "string",
+                    "fa_icon": "fas fa-mouse",
+                    "description": "Method to call variants/haplotypes with CliqueSNV",
+                    "default": "accurate",
+                    "enum": [
+                        "fast",
+                        "accurate"
+                    ]
                 }
             }
         },
