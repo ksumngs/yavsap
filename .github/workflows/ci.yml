@@ -96,7 +96,5 @@ jobs:
           nextflow run ${GITHUB_WORKSPACE} \
             -profile test,gh,${RUN_CONTAINER} \
             --input ./test/samples-${RUN_READTYPE}.tsv \
-            --genome NC_045512.2 \
-            --genome_list sc2 \
             --kraken2_db ~/kraken2-db \
             --platform ${RUN_READTYPE}
