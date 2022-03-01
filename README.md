@@ -1,3 +1,4 @@
+<!-- markdownlint-disable -->
 <p align="center">
   <img src="assets/yavsap-logo.svg" alt="logo" width="270">
 </p>
@@ -10,6 +11,8 @@
 [![Nextflow](https://img.shields.io/badge/nextflow%20DSL2-%E2%89%A520.10.0-23aa62.svg?labelColor=000000)](https://www.nextflow.io/)
 [![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/ksumngs/yavsap?label=version)](https://github.com/ksumngs/yavsap/blob/master/CHANGELOG.md)
 [![GitHub license](https://img.shields.io/github/license/ksumngs/yavsap)](https://github.com/ksumngs/yavsap/blob/master/LICENSE)
+
+<!-- markdownlint-enable -->
 
 A [Nextflow] pipeline for studying viral populations within a single sample,
 tuned for [Japanese Encephalitis Virus]. :dna::computer::chart_with_upwards_trend:
