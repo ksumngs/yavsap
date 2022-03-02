@@ -43,29 +43,7 @@ workflow READS_INGEST {
                     files_transform(it.drop(1))
                 ]
             }
-            .set { SampleList }
-
-        // Calculate how many reads can be in a sample channel before it needs to be
-        // `cat`ed together
-        def maxSamples = (params.paired && !params.interleaved) ? 2 : 1
-
-        // Separate the cat-requiring reads from the regular reads
-        SampleList
-            .branch {
-                meta, fastq ->
-                    single: fastq.size() == maxSamples
-                        return [ meta, fastq.flatten() ]
-                    multiple: fastq.size() > maxSamples
-                        return [ meta, fastq.flatten() ]
-            }
-            .set { CountedSamples }
-
-        // Concatenate the reads together
-        CAT_FASTQ(CountedSamples.multiple)
-            .reads
-            .mix(CountedSamples.single)
-            .set { InterleavedSamples }
-        versions = versions.mix(CAT_FASTQ.out.versions)
+            .set { ListedSamples }
     }
     else if (file(params.input).isDirectory()) {
         // --input represents a directory of reads
@@ -78,7 +56,7 @@ workflow READS_INGEST {
                         it[1]
                         ]
                     }
-                .set { InterleavedSamples }
+                .set { ListedSamples }
         }
         else {
             // Reformat single-end/interleaved reads
@@ -89,9 +67,14 @@ workflow READS_INGEST {
                     [ 'id': it[0].split('_')[0], 'single_end': true, 'strandedness': null ],
                     it[1]
                 ] }
-                .set { InterleavedSamples }
+                .set { ListedSamples }
         }
     }
+
+    // Concatenate the reads together
+    CAT_FASTQ(ListedSamples, true)
+    CAT_FASTQ.out.reads.set { InterleavedSamples }
+    versions = versions.mix(CAT_FASTQ.out.versions)
 
     if (params.interleaved) {
         // Deinterleave any interleaved reads
