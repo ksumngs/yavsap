@@ -8,7 +8,7 @@
 [![Testing](https://github.com/ksumngs/yavsap/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/ksumngs/yavsap/actions/workflows/ci.yml)
 [![Documentation](https://img.shields.io/badge/docs-stable-blue.svg)](https://ksumngs.github.io/yavsap)
 [![Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
-[![Nextflow](https://img.shields.io/badge/nextflow%20DSL2-%E2%89%A520.10.0-23aa62.svg?labelColor=000000)](https://www.nextflow.io/)
+[![Nextflow](https://img.shields.io/badge/nextflow%20DSL2-%E2%89%A521.10.6-23aa62.svg?labelColor=000000)](https://www.nextflow.io/)
 [![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/ksumngs/yavsap?label=version)](https://github.com/ksumngs/yavsap/blob/master/CHANGELOG.md)
 [![GitHub license](https://img.shields.io/github/license/ksumngs/yavsap)](https://github.com/ksumngs/yavsap/blob/master/LICENSE)
 
@@ -23,7 +23,7 @@ Yeah, we're still looking for a better name. :shrug:
 
 ## Installation
 
-1. Install [Nextflow] (>= 20.10.0)
+1. Install [Nextflow] (>= 21.10.6)
 2. Install [Conda]
 3. Install one or more of
    - [Singularity] (**Recommended**)
