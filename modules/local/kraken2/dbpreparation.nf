@@ -23,7 +23,7 @@ process KRAKEN2_DBPREPARATION {
     """
     find . -name "*.tar.gz" -exec tar -xvf {} \\;
     find . -name "*.tgz" -exec tar -xvf {} \\;
-    mkdir ${dbname}
+    mkdir -p ${dbname}
     find . -name "*.k2d" -exec mv {} ${dbname} \\;
 
     cat <<-END_VERSIONS > versions.yml
