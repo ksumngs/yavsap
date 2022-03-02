@@ -2,10 +2,10 @@ process KRAKEN2_DBPREPARATION {
     tag "$db"
     label 'process_low'
 
-    conda (params.enable_conda ? "bioconda::sed=4.7" : null)
+    conda (params.enable_conda ? "conda-forge::pyaml=15.8.2" : null)
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'https://containers.biocontainers.pro/s3/SingImgsRepo/biocontainers/v1.2.0_cv1/biocontainers_v1.2.0_cv1.img':
-        'quay.io/biocontainers/biocontainers:v1.2.0_cv1' }"
+        'https://depot.galaxyproject.org/singularity/pyaml:15.8.2--py36_0' :
+        'quay.io/biocontainers/pyaml:15.8.2--py36_0' }"
 
     input:
     path db
