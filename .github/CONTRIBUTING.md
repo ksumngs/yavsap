@@ -68,9 +68,9 @@ more documentation.
 
 ### Pipeline tests
 
-We use the `sarscov2` test dataset provided by `nf-core` for testing (even
-though we tried to write this pipeline for viruses _other_ than the 'rona).
-`GitHub Actions` then runs the pipeline on this data to ensure that it exits
+We use the test dataset over at
+<https://github.com/ksumngs/nf-test-datasets/tree/yavsap> for testing. `GitHub
+Actions` then runs the pipeline on this data to ensure that it exits
 successfully. If there are any failures then the automated tests fail. These
 tests are run both with the latest available version of `Nextflow` and also the
 minimum required version that is stated in the pipeline code.
