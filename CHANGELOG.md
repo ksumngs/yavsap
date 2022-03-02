@@ -8,13 +8,23 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+This is a major overhaul of YAVSAP to make it use nf-core's DSL2 modules.
+
 ### Added
 
 - Interleaved and Single-end Illumina read support (#34)
+- nf-core compliance
+- SARS-CoV2 genome preset
+- Support for tarballed and/or remote Kraken2 database
+
+### Changed
+
+- Multiple sequence alignments and phylogenetic trees now include all samples collectively
 
 ### Removed
 
 - `--pe` and `--ont` parameters (#34)
+- _de novo_ assembly steps and parameters
 
 ## [0.5.0-alpha] - 2022-02-09
 
