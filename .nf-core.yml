@@ -30,8 +30,8 @@ lint:
   nextflow_config: false
   # Currently not supported, but hopefully soon!
   # See https://github.com/nf-core/tools/issues/1031
-    # - mainfest.name
-    # - manifest.homePage
+  # - mainfest.name
+  # - manifest.homePage
   files_unchanged:
     - .markdownlint.yml
     - CODE_OF_CONDUCT.md
@@ -48,6 +48,7 @@ lint:
     - .gitignore
     - .gitattributes
     - assets/multiqc_config.yaml
-  actions_ci: false
+  actions_ci:
+    false
     # Can't find minimum NF version and doesn't like the addition of 'dispatch'
     # to the events

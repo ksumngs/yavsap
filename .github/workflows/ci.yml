@@ -24,10 +24,10 @@ jobs:
         # Nextflow versions
         include:
           # Test pipeline minimum Nextflow version
-          - NXF_VER: '20.10.0'
-            NXF_EDGE: ''
-          - NXF_VER: ''
-            NXF_EDGE: '1'
+          - NXF_VER: "20.10.0"
+            NXF_EDGE: ""
+          - NXF_VER: ""
+            NXF_EDGE: "1"
     steps:
       - name: Check out pipeline code
         uses: actions/checkout@v2
@@ -68,13 +68,13 @@ jobs:
     strategy:
       matrix:
         parameters:
-          - '--keep_taxid classified'
+          - "--keep_taxid classified"
           # - '--keep_taxid unclassified' # This will fail with current Kraken database
-          - '--skip_qc'
-          - '--skip_trimming'
-          - '--skip_filtering'
-          - '--skip_haplotype'
-          - '--skip_phylogenetics'
+          - "--skip_qc"
+          - "--skip_trimming"
+          - "--skip_filtering"
+          - "--skip_haplotype"
+          - "--skip_phylogenetics"
     steps:
       - name: Check out pipeline code
         uses: actions/checkout@v2
