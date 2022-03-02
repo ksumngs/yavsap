@@ -290,58 +290,6 @@
                 }
             }
         },
-        "de_novo_assembly_options": {
-            "title": "de novo assembly options",
-            "type": "object",
-            "description": "Options for how to construct contigs",
-            "default": "",
-            "fa_icon": "fas fa-industry",
-            "properties": {
-                "spades_mode": {
-                    "type": "string",
-                    "default": "rnaviral",
-                    "fa_icon": "fas fa-wrench",
-                    "description": "Type of reads to assemble using SPAdes",
-                    "help_text": "Only applies to Illumina reads. This parameter is turned into a flag and passed as the 'mode' to\nthe SPAdes assembly. Note that the `isolate` and `bio` modes normally provided by SPAdes\nare unavailable in the pipeline.\n\nSee [SPAdes command line options](https://cab.spbu.ru/files/release3.15.3/manual.html#sec3.2)\nfor more info on what each of these mean.",
-                    "enum": [
-                        "meta",
-                        "plasmid",
-                        "metaplasmid",
-                        "metaviral",
-                        "rna",
-                        "rnaviral"
-                    ]
-                },
-                "canu_corrected_error_rate": {
-                    "type": "number",
-                    "default": 0.144,
-                    "fa_icon": "fas fa-times",
-                    "description": "How dissimilar two reads can be and still be assembled together",
-                    "help_text": "Only applies to ONT reads. Corresponds to the {ref}`correctedErrorRate` option of Canu."
-                },
-                "canu_min_read_length": {
-                    "type": "integer",
-                    "default": 1000,
-                    "fa_icon": "fas fa-ruler-horizontal",
-                    "description": "Minimum length allowed for assembled reads",
-                    "help_text": "Only applies to ONT reads.\nCorresponds to the {ref}`minReadLength` option of Canu."
-                },
-                "canu_min_overlap_length": {
-                    "type": "integer",
-                    "default": 500,
-                    "fa_icon": "fas fa-align-center",
-                    "description": "Shortest overlap for reads to be assembled together",
-                    "help_text": "Only applies to ONT reads.\nCorresponds to the {ref}`minOverlapLength` option of Canu."
-                },
-                "canu_stop_on_low_coverage": {
-                    "type": "integer",
-                    "default": 10,
-                    "fa_icon": "fas fa-hand-paper",
-                    "description": "Minimum depth to allow assembly",
-                    "help_text": "Only applies to ONT reads.\nCorresponds to the {ref}`stopOnLowCoverage` option of Canu."
-                }
-            }
-        },
         "variant_calling_options": {
             "title": "Variant calling options",
             "type": "object",
@@ -500,11 +448,6 @@
                     "type": "boolean",
                     "fa_icon": "fas fa-filter",
                     "description": "Skip Kraken2"
-                },
-                "skip_assembly": {
-                    "type": "boolean",
-                    "fa_icon": "fas fa-industry",
-                    "description": "Skip _de novo_ assembly (SPAdes/canu)"
                 },
                 "skip_haplotype": {
                     "type": "boolean",
