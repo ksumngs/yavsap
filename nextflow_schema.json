@@ -517,9 +517,6 @@
             "$ref": "#/definitions/read_trimming_options"
         },
         {
-            "$ref": "#/definitions/de_novo_assembly_options"
-        },
-        {
             "$ref": "#/definitions/variant_calling_options"
         },
         {
