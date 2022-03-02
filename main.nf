@@ -12,6 +12,7 @@ include { PHYLOGENETIC_TREE } from './subworkflows/phylogenetics.nf'
 include { QC } from './subworkflows/qc.nf'
 include { READS_INGEST } from './subworkflows/ingest.nf'
 include { TRIMMING } from './subworkflows/trimming.nf'
+include { KRAKEN2_DBPREPARATION } from './modules/local/kraken2/dbpreparation.nf'
 include { cowsay } from './lib/cowsay.nf'
 include { yavsap_logo } from './lib/logo.nf'
 
@@ -108,9 +109,30 @@ workflow {
     }
 
     if (!params.skip_filtering) {
+        KrakenDb = file("${params.kraken2_db}", checkIfExists: true)
+        if (KrakenDb.isDirectory()) {
+            // This is a local database, and everything is ready to pass to the
+            // filtering process
+
+        }
+        else {
+            if (KrakenDb.getExtension() == 'k2d') {
+                // The user got confused, and passed a database file, we'll try to
+                // correct it for them
+                log.warn "WARNING: ${params.kraken2_db} appears to be a file that is a *part* of a Kraken2 database."
+                log.warn "         Kraken databases are folders that contain multiple files."
+                log.warn "         YAVSAP will attempt to use the parent directory as the database, but it might fail!"
+                KrakenDb = KrakenDb.getParent()
+            }
+            else {
+                // We'll assume this is a tarballed database
+                KRAKEN2_DBPREPARATION(KrakenDb)
+                KrakenDb = KRAKEN2_DBPREPARATION.out.db
+            }
+        }
         FILTERING(
             TrimmedReads,
-            file("${params.kraken2_db}", type: 'dir', checkIfExists: true),
+            KrakenDb,
             "${params.keep_taxid}"
         )
         FILTERING.out.filtered.set { FilteredReads }
