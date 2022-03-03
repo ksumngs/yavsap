@@ -52,6 +52,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#profile-selection">Profile Selection</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mandatory-parameters">Mandatory Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#genome-preparation">Genome Preparation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#setting-up-for-hpc-job-schedulers">Setting up for HPC Job Schedulers</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#process-labels">Process Labels</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#example">Example</a></li>
@@ -91,27 +92,29 @@
   <section id="usage">
 <h1>Usage<a class="headerlink" href="#usage" title="Permalink to this headline"></a></h1>
 <p>Basic jist:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">nextflow</span> <span class="n">run</span> <span class="n">ksumngs</span><span class="o">/</span><span class="n">yavsap</span> <span class="o">-</span><span class="n">profile</span> <span class="o">&lt;</span><span class="n">docker</span><span class="p">,</span><span class="n">podman</span><span class="p">,</span><span class="n">singularity</span><span class="o">&gt;</span> <span class="o">--</span><span class="n">platform</span> <span class="o">&lt;</span><span class="n">pe</span><span class="p">,</span><span class="n">ont</span><span class="o">&gt;</span> <span class="o">--</span><span class="n">kraken2_db</span> <span class="o">&lt;</span><span class="n">kraken2_db</span><span class="o">&gt;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">nextflow</span> <span class="n">run</span> <span class="n">ksumngs</span><span class="o">/</span><span class="n">yavsap</span> <span class="o">-</span><span class="n">profile</span> <span class="o">&lt;</span><span class="n">docker</span><span class="p">,</span><span class="n">podman</span><span class="p">,</span><span class="n">singularity</span><span class="p">,</span><span class="n">INSTITUTE</span><span class="o">&gt;</span> <span class="o">--</span><span class="n">platform</span> <span class="o">&lt;</span><span class="n">illumina</span><span class="p">,</span><span class="n">nanopore</span><span class="o">&gt;</span> <span class="o">--</span><span class="n">kraken2_db</span> <span class="o">&lt;</span><span class="n">kraken2_db</span><span class="o">&gt;</span>
 </pre></div>
 </div>
 <section id="input-preparation">
 <h2>Input Preparation<a class="headerlink" href="#input-preparation" title="Permalink to this headline"></a></h2>
 <section id="using-a-directory-as-input">
 <h3>Using a Directory as Input<a class="headerlink" href="#using-a-directory-as-input" title="Permalink to this headline"></a></h3>
-<p>When running YAVSAP within a directory, Reads files must have one of one of the
-following extensions:</p>
+<p>If the <a class="reference internal" href="parameters.html#input-output-options"><span class="std std-ref">–input</span></a> parameter is not passed, then
+YAVSAP assumes reads files are located in the current directory. You can also
+pass a directory that contains reads files to <code class="docutils literal notranslate"><span class="pre">--input</span></code>. YAVSAP will not look
+in subdirectories of <code class="docutils literal notranslate"><span class="pre">--input</span></code>. When running YAVSAP on a directory, Reads
+files must have one of one of the following extensions:</p>
 <ul class="simple">
 <li><p>.fastq</p></li>
 <li><p>.fq</p></li>
 <li><p>.fastq.gz</p></li>
 <li><p>.fq.gz</p></li>
 </ul>
-<p>There must be only one file per sample for single-end reads, and one pair of
-files (two files) for paired-end reads. Interleaved paired-end reads files are
-not supported at this time. Paired-end files must have either the characters
-<code class="docutils literal notranslate"><span class="pre">_1</span></code> and <code class="docutils literal notranslate"><span class="pre">_2</span></code> or <code class="docutils literal notranslate"><span class="pre">_R1</span></code> and <code class="docutils literal notranslate"><span class="pre">_R2</span></code> in the filename to be identified as a
-pair. The sample name is taken as the all the characters <em>before</em> the first
-underscore in the file name.</p>
+<p>There must be only one file per sample for single-end and inteleaved paired-end
+reads, and one pair of files (two files) for regular paired-end reads. Regular
+paired-end files must have either the characters <code class="docutils literal notranslate"><span class="pre">_1</span></code> and <code class="docutils literal notranslate"><span class="pre">_2</span></code> or <code class="docutils literal notranslate"><span class="pre">_R1</span></code>
+and <code class="docutils literal notranslate"><span class="pre">_R2</span></code> in the filename to be identified as a pair. The sample name is taken
+as the all the characters <em>before</em> the first underscore in the file name.</p>
 <p>For example, a folder with the following files</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>.
 ├── pig-serum_S4_L001_R1_001.fastq.gz
@@ -131,24 +134,28 @@ underscore in the file name.</p>
 <li><p>mosquito1</p></li>
 <li><p>mosquito2</p></li>
 </ul>
+<p>Paired-endedness is determined based on the <a class="reference internal" href="parameters.html#input-output-options"><span class="std std-ref">–paired</span></a> flag. By default <code class="docutils literal notranslate"><span class="pre">--paired</span></code> is <code class="docutils literal notranslate"><span class="pre">true</span></code> when <a class="reference internal" href="parameters.html#input-output-options"><span class="std std-ref">–platform</span></a> is <code class="docutils literal notranslate"><span class="pre">illumina</span></code> and <code class="docutils literal notranslate"><span class="pre">false</span></code> for <code class="docutils literal notranslate"><span class="pre">nanopore</span></code>, but this
+can be overridden. To use interleaved paired-end reads, use the
+<a class="reference internal" href="parameters.html#input-output-options"><span class="std std-ref">–interleaved</span></a> flag.</p>
 <p>This file naming system is very common for Illumina output, however for Oxford
 Nanopore reads, the default file structure breaks this in several ways, and it is
 often better to use a samplesheet.</p>
 </section>
 <section id="using-a-samplesheet-as-input">
 <h3>Using a Samplesheet as Input<a class="headerlink" href="#using-a-samplesheet-as-input" title="Permalink to this headline"></a></h3>
-<p>A samplesheet is optional, but it allows you to pass multiple reads files in as
-a single sample, which can be useful for e.g. Oxford Nanopore reads. A
-samplesheet header is optional, and must be delineated by beginning with the
-pound (<code class="docutils literal notranslate"><span class="pre">#</span></code>) symbol. The first column contains sample names, and each
-subsequent column contains a path to reads files. All sample names will be
-cleaned of any shell metacharacters, and will be truncated at the first
-underscore. Paths are resolved relative to the <a class="reference internal" href="parameters.html#input-output-options"><span class="std std-ref">–input</span></a> directory. Path names can contain wildcard characters, and will
-resolve as glob patterns identical to how they would in Nextflow’s
-<a class="reference external" href="https://nextflow.io/docs/latest/channel.html#channel-path" title="(in Nextflow v21.10)"><span class="xref std std-ref">Channel.fromPath</span></a> constructor. For paired-end reads,
-forward reads should be specified in the even-number columns (<code class="docutils literal notranslate"><span class="pre">2,4,6</span></code>), and
-reverse reads should be specified in the odd-number columns (<code class="docutils literal notranslate"><span class="pre">3,5,7</span></code>).
-Interleaved reads are not supported at this time.</p>
+<p>A samplesheet allows you to pass multiple reads files in as
+a single sample, which can be useful for e.g. Oxford Nanopore reads. When using
+a samplesheet, simply pass the path to the sheet to <a class="reference internal" href="parameters.html#input-output-options"><span class="std std-ref">–input</span></a>.</p>
+<p>Samplesheets are tab-delimited files. A header is optional, and must be
+delineated by beginning with the pound (<code class="docutils literal notranslate"><span class="pre">#</span></code>) symbol. The first column contains
+sample names, and each subsequent column contains a path to reads files. All
+sample names will be cleaned of any shell metacharacters, and will be truncated
+at the first underscore. Paths are resolved relative to the current directory.
+Path names can contain wildcard characters, and will resolve as glob patterns
+identical to how they would in Nextflow’s <a class="reference external" href="https://nextflow.io/docs/latest/channel.html#channel-path" title="(in Nextflow v21.10)"><span class="xref std std-ref">Channel.fromPath</span></a>
+constructor. For paired-end reads, forward reads should be specified in the
+even-number columns (<code class="docutils literal notranslate"><span class="pre">2,4,6</span></code>), and reverse reads should be specified in the
+odd-number columns (<code class="docutils literal notranslate"><span class="pre">3,5,7</span></code>).</p>
 <section id="single-end-example">
 <h4>Single-end example<a class="headerlink" href="#single-end-example" title="Permalink to this headline"></a></h4>
 <table class="docutils align-default">
@@ -229,7 +236,7 @@ Interleaved reads are not supported at this time.</p>
 </tbody>
 </table>
 <p>Once the samplesheet is constructed, pass it on the command line as:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">nextflow</span> <span class="n">run</span> <span class="n">ksumngs</span><span class="o">/</span><span class="n">yavsap</span> <span class="o">...</span> <span class="o">--</span><span class="n">samplesheet</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">sheet</span><span class="o">.</span><span class="n">tsv</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">nextflow</span> <span class="n">run</span> <span class="n">ksumngs</span><span class="o">/</span><span class="n">yavsap</span> <span class="o">--</span><span class="nb">input</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">sheet</span><span class="o">.</span><span class="n">tsv</span> <span class="o">-</span><span class="n">profile</span> <span class="o">&lt;</span><span class="n">docker</span><span class="p">,</span><span class="n">podman</span><span class="p">,</span><span class="n">singularity</span><span class="p">,</span><span class="n">INSTITUTE</span><span class="o">&gt;</span> <span class="o">--</span><span class="n">platform</span> <span class="o">&lt;</span><span class="n">illumina</span><span class="p">,</span><span class="n">nanopore</span><span class="o">&gt;</span> <span class="o">--</span><span class="n">kraken2_db</span> <span class="o">&lt;</span><span class="n">kraken2_db</span><span class="o">&gt;</span>
 </pre></div>
 </div>
 </section>
@@ -259,17 +266,25 @@ container on RHEL-based distros thanks to their particular SELinux
 implementation.</p>
 </dd>
 <dt>singularity</dt><dd><p><strong>Recommended</strong></p>
-<p>Use the
-<a class="reference external" href="https://apptainer.org/user-docs/master/index.html" title="(in Singularity User Guide v3.8)"><span class="xref std std-doc">Singularity</span></a> container enginer.
-This engine was build with HPC use in mind, and doesn’t require any special
-permissions to run. Singularity’s downfall is how it will expose your home
-directory to the container, resulting in rare, but difficult to explain bugs
-when files conflict. Every effort has been made to minimize the effects of
-Singularity’s file mounting in this pipeline.</p>
+<p>Use the <a class="reference external" href="https://apptainer.org/user-docs/master/index.html" title="(in Singularity User Guide v3.8)"><span class="xref std std-doc">Singularity</span></a> container engine. This engine
+was built with HPC use in mind, and doesn’t require any special permissions to
+run. Singularity’s downfall is how it will expose your home directory to the
+container, resulting in rare, but difficult to explain bugs when files
+conflict. Every effort has been made to minimize the effects of Singularity’s
+file mounting in this pipeline.</p>
 </dd>
-<dt>testpe/testont</dt><dd><p>These exist, but are for continuous integration purposes on GitHub Actions
-only. Using these profiles in any other context will almost certainly result
-in failure. They don’t even analyze the reads in the input folder!</p>
+<dt>INSTITUTE</dt><dd><p>If your computing center is listed in <a class="reference external" href="https://github.com/nf-core/configs/">nf-core configs</a> then you can pass that name to
+<code class="docutils literal notranslate"><span class="pre">-profile</span></code> to have the container engine and resource limits configured
+automatically.</p>
+</dd>
+<dt>test</dt><dd><p>Download a test dataset from nf-core and run a sample to ensure your machine
+configuration is correct. Must be used with one of the container engine
+profiles.</p>
+</dd>
+<dt>test_nanopore</dt><dd><p>Download a MinION test dataset and run just like <code class="docutils literal notranslate"><span class="pre">test</span></code>.</p>
+</dd>
+<dt>gh</dt><dd><p>Used to limit resource usage during continuous integration on GitHub Actions.
+You should never have to use these for real-life analysis.</p>
 </dd>
 </dl>
 <p>To select a profile, you must pass the desired profile name to Nextflow’s
@@ -281,10 +296,10 @@ so it is a single dash (<code class="docutils literal notranslate"><span class="
 <p>See <a class="reference internal" href="parameters.html"><span class="doc">the page on parameters</span></a> for the complete lowdown on
 parameters.</p>
 <p>The pipeline is pretty much set up to run itself. So long as you have your input
-reads formatted correctly, it doesn’t need much input from you. (Provided, if
-you are analyzing anything but Japanese Encephalitis Virus, your results might
-be way off.) These are the bare minimum parameters that you must provide on the
-command-line for the pipeline to complete. Note that there has been mixed
+reads formatted correctly, it doesn’t need much input from you. (Provided, the
+defaults are for analyzing Japanese Encephalitis Virus, so your results might be
+way off if you don’t have any JEV in your samples, see <a class="reference internal" href="#genome-preparation"><span class="std std-ref">Genome Preparation</span></a>.) These are the bare minimum parameters that you must provide on
+the command-line for the pipeline to complete. Note that there has been mixed
 success with placing these parameters in a <code class="docutils literal notranslate"><span class="pre">nextflow.config</span></code> file, so keeping
 them on the command-line is best.</p>
 <dl class="option-list">
@@ -292,14 +307,65 @@ them on the command-line is best.</p>
 <dd><p>The path to a Kraken2 database. See <a class="reference internal" href="parameters.html#kraken2-options"><span class="std std-ref">–kraken2_db</span></a>.</p>
 </dd>
 <dt><kbd><span class="option">--platform</span></kbd></dt>
-<dd><p>Must be set to <code class="docutils literal notranslate"><span class="pre">ont</span></code> or <code class="docutils literal notranslate"><span class="pre">pe</span></code>, depending on the type of reads you are
-analyzing. See <a class="reference internal" href="parameters.html#input-output-options"><span class="std std-ref">–platform</span></a>.</p>
+<dd><p>Must be set to <code class="docutils literal notranslate"><span class="pre">illumina</span></code> or <code class="docutils literal notranslate"><span class="pre">nanopore</span></code>, depending on the type of reads
+you are analyzing. See <a class="reference internal" href="parameters.html#input-output-options"><span class="std std-ref">–platform</span></a>.</p>
 </dd>
 <dt><kbd><span class="option">-p<var>rofile</var></span></kbd></dt>
-<dd><p>So, this isn’t really a parameter, but the container enginer needs to be set
+<dd><p>So, this isn’t really a parameter, but the container engine needs to be set
 using Nextflow’s <code class="docutils literal notranslate"><span class="pre">-profile</span></code> flag. See <a class="reference internal" href="#profile-selection"><span class="std std-ref">Profile Selection</span></a>.</p>
 </dd>
 </dl>
+</section>
+<section id="genome-preparation">
+<h2>Genome Preparation<a class="headerlink" href="#genome-preparation" title="Permalink to this headline"></a></h2>
+<p>YAVSAP needs some idea of what kind of viruses it’s looking for. You will need
+to provide it with</p>
+<ol class="arabic simple">
+<li><p>A reference genome of the virus of interest</p></li>
+<li><p>Genome examples of different strains or relatives of the virus of interest</p></li>
+</ol>
+<p>YAVSAP needs these in the form of NCBI GenBank Accession Numbers. To pick a new
+reference genome, simply pass the accession number to the <a class="reference internal" href="parameters.html#reference-genome-options"><span class="std std-ref">–genome</span></a> parameter, e.g. <code class="docutils literal notranslate"><span class="pre">nextflow</span> <span class="pre">run</span> <span class="pre">ksumngs/yavsap</span>
+<span class="pre">--genome</span> <span class="pre">'NC_001437.1'</span></code>.</p>
+<p>Close relative examples must be provided as a tab-delimited document with the
+name in the first column, and the NCBI accession number in the second column. No
+header is allowed in the comparison genomes file.</p>
+<p>Nodes will be grouped in the output phylogenetic tree based on the name before
+any underscore, to allow for easy visualization of known related groups. In
+other words, <code class="docutils literal notranslate"><span class="pre">Nakayama\tEF571853.1</span></code> and <code class="docutils literal notranslate"><span class="pre">SA14\tMH258848.1</span></code> are perfectly
+valid entries in the relatives list, but <code class="docutils literal notranslate"><span class="pre">GIII_Nakayama\tEF571853.1</span></code> and
+<code class="docutils literal notranslate"><span class="pre">GIII_SA14\tMH258848.1</span></code> will give these two entries the same color so you can
+easily see the Genotype III node.</p>
+<p>There <strong>MUST</strong> be one entry whose name begins with <code class="docutils literal notranslate"><span class="pre">ROOT</span></code>. The genome of this
+entry will be used as the outgroup for the resulting phylogenetic tree.</p>
+<p>Once a comparison genomes file is prepared, the path to it can be passed to the
+<a class="reference internal" href="parameters.html#reference-genome-options"><span class="std std-ref">–genome_list</span></a> parameter.</p>
+<p>YAVSAP comes with some example comparison genomes files. These can be referred
+to by name, rather than by path(e.g. <code class="docutils literal notranslate"><span class="pre">nextflow</span> <span class="pre">run</span> <span class="pre">ksumngs/yavsap</span> <span class="pre">--genome_list</span>
+<span class="pre">jev</span></code>). They are</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 64%" />
+<col style="width: 4%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Virus</p></th>
+<th class="head"><p>Name</p></th>
+<th class="head"><p>Recommended Reference</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><a class="reference external" href="https://www.ncbi.nlm.nih.gov/data-hub/taxonomy/11072/">Japanese Encephalitis Virus (JEV)</a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">jev</span></code></p></td>
+<td><p><a class="reference external" href="https://www.ncbi.nlm.nih.gov/nuccore/NC_001437.1">NC_001437.1</a></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference external" href="https://www.ncbi.nlm.nih.gov/labs/data-hub/taxonomy/2697049/">Severe acute respiratory syndrome coronavirus 2 (SARS-CoV-2)</a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sc2</span></code></p></td>
+<td><p><a class="reference external" href="https://www.ncbi.nlm.nih.gov/nuccore/NC_045512.2">NC_045512.2</a></p></td>
+</tr>
+</tbody>
+</table>
 </section>
 <section id="setting-up-for-hpc-job-schedulers">
 <h2>Setting up for HPC Job Schedulers<a class="headerlink" href="#setting-up-for-hpc-job-schedulers" title="Permalink to this headline"></a></h2>

@@ -14,14 +14,17 @@ Define where the pipeline should find input data and save output data.
 | `input` | Path the folder containing input reads. <details><summary>Help</summary><small>For Illumina (paired-end) reads, the file names must be identical until the ending underscore with a read number, e.g. 'sample1_S10_L001_R1_001.fastq.gz' and 'sample1_S10_L001_R2_001.fastq.gz'. The read number must be designated using either '_1' and '_2' or '_R1' and '_R2'. For Nanopore reads, each fastq file is assumed to be a unique sample, so, e.g. 'FAP01234_pass_barcode05_abcd01234_0.fastq.gz' and 'FAP01234_pass_barcode05_abcd01234_1.fastq.gz' are assumed to be different samples even though they are from the same barcode. All read files must be gzipped, and have the extension '.fastq.gz' or '.fq.gz'.</small></details>| `string` | . |  |  |
 | `sra` | Pull input reads from NCBI SRA <details><summary>Help</summary><small>This flag switches the meaning of `--input` to mean an NCBI Short Read Archive (SRA) accession number, then pulls the associated files directly from NCBI and runs the pipeline on them. To use this flag, you **must** have an [NCBI API key](https://ncbiinsights.ncbi.nlm.nih.gov/2017/11/02/new-api-keys-for-the-e-utilities/) and it **must** be exported in the shell environment as `NCBI_API_KEY`, e.g. `NCBI_API_KEY=0123456789abcdef`. This feature is currenly broken due to an upstream issue in Nextflow, but should be fixed by Nextflow version 21.10.0.</small></details>| `boolean` |  |  | True |
 | `platform` | NGS platform used to sequence the samples | `string` |  |  |  |
-| `pe` | INTERNAL USE ONLY!!! | `boolean` |  |  | True |
-| `ont` | INTERNAL USE ONLY!!! | `boolean` |  |  | True |
+| `paired` | Flag to indicate whether the reads files are paired-end or not | `boolean` |  |  | True |
+| `interleaved` | Whether paired-end reads interleaved into a single fastq file | `boolean` |  |  |  |
 | `samplesheet` | Path to a tab-separated file containing a table of samplenames and reads files <details><summary>Help</summary><small>For more info, see {ref}`Using a Samplesheet as Input`</small></details>| `string` | None |  |  |
 | `seed` | Set the random seed for all applicable processes | `integer` | 42 |  |  |
 | `outdir` | Path to the output directory where the results will be saved. | `string` | ./results |  |  |
 | `publish_dir_mode` | How to create results files | `string` | copy |  | True |
 | `tracedir` | Directory to keep pipeline Nextflow logs and reports. | `string` | ${params.outdir}/pipeline_info |  | True |
 | `help` | Display help text. | `boolean` |  |  | True |
+| `show_hidden_params` | Show all params when using `--help` | `boolean` |  |  | True |
+| `custom_config_version` | Git commit id for Institutional configs. | `string` | master |  |  |
+| `custom_config_base` | Base directory for Institutional configs. | `string` | https://raw.githubusercontent.com/nf-core/configs/master |  |  |
 
 ## Reference genome options
 
@@ -109,26 +112,6 @@ Corresponds to the
 | `trim_tailcrop` | Number of bases to remove from the end of each read <details><summary>Help</summary><small>Only applies to ONT reads. Corresponds to the
 [--tailcrop](https://github.com/wdecoster/nanofilt/#usage) option of NanoFilt.</small></details>| `integer` | 0 |  |  |
 
-## de novo assembly options
-
-Options for how to construct contigs
-
-| Parameter | Description | Type | Default | Required | Hidden |
-|-----------|-----------|-----------|-----------|-----------|-----------|
-| `spades_mode` | Type of reads to assemble using SPAdes <details><summary>Help</summary><small>Only applies to Illumina reads. This parameter is turned into a flag and passed as the 'mode' to
-the SPAdes assembly. Note that the `isolate` and `bio` modes normally provided by SPAdes
-are unavailable in the pipeline.
-
-See [SPAdes command line options](https://cab.spbu.ru/files/release3.15.3/manual.html#sec3.2)
-for more info on what each of these mean.</small></details>| `string` | rnaviral |  |  |
-| `canu_corrected_error_rate` | How dissimilar two reads can be and still be assembled together <details><summary>Help</summary><small>Only applies to ONT reads. Corresponds to the {ref}`correctedErrorRate` option of Canu.</small></details>| `number` | 0.144 |  |  |
-| `canu_min_read_length` | Minimum length allowed for assembled reads <details><summary>Help</summary><small>Only applies to ONT reads.
-Corresponds to the {ref}`minReadLength` option of Canu.</small></details>| `integer` | 1000 |  |  |
-| `canu_min_overlap_length` | Shortest overlap for reads to be assembled together <details><summary>Help</summary><small>Only applies to ONT reads.
-Corresponds to the {ref}`minOverlapLength` option of Canu.</small></details>| `integer` | 500 |  |  |
-| `canu_stop_on_low_coverage` | Minimum depth to allow assembly <details><summary>Help</summary><small>Only applies to ONT reads.
-Corresponds to the {ref}`stopOnLowCoverage` option of Canu.</small></details>| `integer` | 10 |  |  |
-
 ## Variant calling options
 
 Options for how strict to call variants
@@ -154,6 +137,7 @@ Options for how strictly to call haplotypes
 | `haplotype_overlap_min` | Minimum number of bases reads must overlap to be built into the same pseudo-read | `integer` | 0 |  |  |
 | `haplotype_overlap_max` | Maximum number of bases reads must overlap to be built into the same pseudo-read | `integer` | 100 |  |  |
 | `haplotype_iterations` | Number of iterations to build pseudo-reads | `integer` | 1000 |  |  |
+| `cliquesnv_method` | Method to call variants/haplotypes with CliqueSNV | `string` | accurate |  |  |
 
 ## Phylogenetic tree options
 
@@ -161,8 +145,10 @@ Options to control how the phylogenetic trees are generated
 
 | Parameter | Description | Type | Default | Required | Hidden |
 |-----------|-----------|-----------|-----------|-----------|-----------|
+| `mafft_method` | Which method to use for the alignment process | `string` | --auto |  |  |
 | `phylogenetic_bootstraps` | Number of iterations to create phylogenetic trees with | `integer` | 1000 |  |  |
 | `phylogenetic_bootstrap_cutoff` | Minimum quality for phylogenetic bootstraps | `number` | 0.03 |  |  |
+| `phylogenetic_model` | Evolutionary model to use for phylogenetic distance calculation | `string` | GTR+G |  |  |
 
 ## Workflow options
 
@@ -173,8 +159,8 @@ Options to skip portions of the workflow
 | `skip_trimming` | Skip read trimming (Trimmomatic/Nanofilt) | `boolean` |  |  |  |
 | `skip_qc` | Skip FastQC | `boolean` |  |  |  |
 | `skip_filtering` | Skip Kraken2 | `boolean` |  |  |  |
-| `skip_assembly` | Skip _de novo_ assembly (SPAdes/canu) | `boolean` |  |  |  |
 | `skip_haplotype` | Skip haplotyping (CliqueSNV/HapLink) | `boolean` |  |  |  |
+| `skip_phylogenetics` | Skip phylogenetic tree generation (RAxML-NG) | `boolean` |  |  |  |
 
 ## Max job request options
 
@@ -185,4 +171,5 @@ Set the top limit for requested resources for any single job.
 | `max_cpus` | Maximum number of CPUs that can be requested for any single job. <details><summary>Help</summary><small>Use to set an upper-limit for the CPU requirement for each process. Should be an integer e.g. `--max_cpus 1`</small></details>| `integer` | 16 |  | True |
 | `max_memory` | Maximum amount of memory that can be requested for any single job. <details><summary>Help</summary><small>Use to set an upper-limit for the memory requirement for each process. Should be a string in the format integer-unit e.g. `--max_memory '8.GB'`</small></details>| `string` | 128.GB |  | True |
 | `max_time` | Maximum amount of time that can be requested for any single job. <details><summary>Help</summary><small>Use to set an upper-limit for the time requirement for each process. Should be a string in the format integer-unit e.g. `--max_time '2.h'`</small></details>| `string` | 240.h |  | True |
+| `enable_conda` | Run this workflow with Conda. You can also use '-profile conda' instead of providing this parameter. | `boolean` |  |  | True |
 
