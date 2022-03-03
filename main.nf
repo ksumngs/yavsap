@@ -1,197 +1,212 @@
 #!/usr/bin/env nextflow
 nextflow.enable.dsl = 2
 
+include { ALIGNMENT } from './subworkflows/alignment.nf'
+include { CLOSEST_REFERENCE } from './subworkflows/closest-reference.nf'
+include { CUSTOM_DUMPSOFTWAREVERSIONS } from './modules/nf-core/modules/custom/dumpsoftwareversions/main.nf'
+include { FILTERING } from './subworkflows/filtering.nf'
+include { GENOME_DOWNLOAD } from './subworkflows/reference.nf'
+include { HAPLOTYPING } from './subworkflows/haplotype.nf'
+include { MULTIQC } from './modules/nf-core/modules/multiqc/main.nf'
+include { PHYLOGENETIC_TREE } from './subworkflows/phylogenetics.nf'
+include { QC } from './subworkflows/qc.nf'
+include { READS_INGEST } from './subworkflows/ingest.nf'
+include { TRIMMING } from './subworkflows/trimming.nf'
+include { KRAKEN2_DBPREPARATION } from './modules/local/kraken2/dbpreparation.nf'
 include { cowsay } from './lib/cowsay.nf'
+include { yavsap_logo } from './lib/logo.nf'
+
+cowsay(yavsap_logo())
 
 if (params.help) {
-    cowsay(
-    """\
-====================================================================================
-                                     YAVSAP
-                (Yet Another Viral Subspecies Analysis Pipeline)
-====================================================================================
+    log.info(
+        """\
+        YAVSAP (Yet Another Viral Subspecies Analysis Pipeline) - Intra-sample viral
+        population analysis
 
-    YAVSAP (Yet Another Viral Subspecies Analysis Pipeline) - Intra-sample viral
-    population analysis
+        Usage:
 
-    Usage:
+            nextflow run ksumngs/yavsap
 
-        nextflow run ksumngs/yavsap
+        Options:
 
-    Options:
+            --input             Relative or absolute path to directory containing
+                                gzipped fastq files
+                                    type: path, default: .
 
-        --input             Relative or absolute path to directory containing
-                            gzipped fastq files
-                                type: path, default: .
+            --platform          Type of reads to process. Options are 'illumina' and
+                                'nanopore'
+                                    type: string, default: none
 
-        --platform          Type of reads to process. Options are 'illumina' and
-                            'nanopore'
-                                type: string, default: none
+            --genome            NCBI accession number of the reference genome to
+                                align reads against
+                                    type: string, default: 'NC_001437.1'
 
-        --genome            NCBI accession number of the reference genome to align
-                            reads against
-                                type: string, default: 'NC_001437.1'
+            --kraken2_db        Kraken2-compatible database for classifying reads
+                                    type: path, default: none
 
-        --kraken2_db        Kraken2-compatible database for classifying reads
-                                type: path, default: none
+            --keep_taxid        Space-separated list of NCBI taxids to keep and
+                                process after classifying
+                                    type: string, default: '0 10239'
 
-        --keep_taxid        Space-separated list of NCBI taxids to keep and process
-                            after classifying
-                                type: string, default: '0 10239'
+            --outdir            Directory in which to place results
+                                    type: path, default: ./results
 
-        --outdir            Directory in which to place results
-                                type: path, default: ./results
+            --help              Print this message and exit
 
-        --help              Print this message and exit
+        For more information on usage and parameters, visit the website at
+            https://ksumngs.github.io/yavsap
+    """.stripIndent()
+    )
 
-    For more information on usage and parameters, visit the website at
-        https://ksumngs.github.io/yavsap
-"""
-)
-exit 0
+    exit 0
 }
 
-if (!params.ont && !params.pe) {
+if (params.platform != 'illumina' && params.platform != 'nanopore') {
     log.error "ERROR: --platform <illumina,nanopore> must be specified"
     exit 1
 }
 
-include { GENOME_DOWNLOAD } from './subworkflows/reference.nf'
-include { READS_INGEST } from './modules/ingest.nf'
-include { trimming }              from './subworkflows/trimming.nf'
-include { assembly }              from './subworkflows/assembly.nf'
-include { read_filtering }        from './subworkflows/filtering.nf'
-include { haplotyping }           from './subworkflows/haplotype.nf'
-include { QC }                    from './subworkflows/qc.nf'
-include { SIMULATED_READS }       from './test/test.nf'
-
-cowsay(
-"""\
-====================================================================================
-                                     YAVSAP
-                (Yet Another Viral Subspecies Analysis Pipeline)
-====================================================================================
-
-Input folder:           ${params.input}
-Sequencing platform:    ${params.platform}
-    Illumina?:          ${params.pe}
-    Nanopore?:          ${params.ont}
-Reference genome:       ${params.genome}
-Kraken2 Database:       ${params.kraken2_db}
-Taxonomic Ids:          '${params.keep_taxid}'
-Output folder           ${params.outdir}
-Diagnostics folder:     ${params.tracedir}
-"""
+log.info(
+    """\
+    Input folder:           ${params.input}
+    Sequencing platform:    ${params.platform}
+    Reference genome:       ${params.genome}
+    Kraken2 Database:       ${params.kraken2_db}
+    Taxonomic Ids:          '${params.keep_taxid}'
+    Output folder           ${params.outdir}
+    Diagnostics folder:     ${params.tracedir}
+    """.stripIndent()
 )
 
 workflow {
+    LogFiles = Channel.empty()
+    VersionFiles = Channel.empty()
+
     GENOME_DOWNLOAD()
-    IndexedReference = GENOME_DOWNLOAD.out.indexedFasta
-    AnnotatedReference = GENOME_DOWNLOAD.out.referenceAnnotations
-    GenomeSize = GENOME_DOWNLOAD.out.genomeSize
+    ReferenceGenome = GENOME_DOWNLOAD.out.fasta
+    VersionFiles = VersionFiles.mix(GENOME_DOWNLOAD.out.versions)
 
     // Bring in the reads files
-    if (params.sra) {
-        SIMULATED_READS()
-        RawReads = SIMULATED_READS.out
-    }
-    else {
-        READS_INGEST()
-        RawReads = READS_INGEST.out
-    }
+    READS_INGEST()
+    RawReads = READS_INGEST.out.sample_info
+    VersionFiles = VersionFiles.mix(READS_INGEST.out.versions)
 
-    trimming(RawReads)
-
-    if (params.skip_qc) {
-        QcReport = Channel.from([])
-    }
-    else {
+    if (!params.skip_qc) {
         QC(RawReads)
-        QcReport = QC.out.QcReport
+        LogFiles = LogFiles.mix(QC.out.report)
+        VersionFiles = VersionFiles.mix(QC.out.versions)
     }
 
-
-    read_filtering(trimming.out.trimmedreads)
-    KrakenReports = read_filtering.out.KrakenReports
-    FilteredReads = read_filtering.out.FilteredReads
-
-    if (!params.skip_assembly) {
-        // _de novo_ assemble the viral reads
-        assembly(FilteredReads, IndexedReference, GenomeSize)
-        Assemblies = assembly.out.Contigs
-        AlignedContigs = assembly.out.AlignedContigs
+    if (!params.skip_trimming) {
+        TRIMMING(RawReads)
+        TRIMMING.out.fastq.set{ TrimmedReads }
+        LogFiles = LogFiles.mix(TRIMMING.out.log_out)
+        VersionFiles = VersionFiles.mix(TRIMMING.out.versions)
     }
     else {
-        Assemblies = Channel.from([])
-        AlignedContigs = Channel.from([])
+        RawReads.set { TrimmedReads }
     }
 
-    // Realign reads to the reference genome
-    reads_realign_to_reference(FilteredReads, IndexedReference)
-    Alignments = reads_realign_to_reference.out
+    if (!params.skip_filtering) {
+        KrakenDb = file("${params.kraken2_db}", checkIfExists: true)
+        if (KrakenDb.isDirectory()) {
+            // This is a local database, and everything is ready to pass to the
+            // filtering process
 
-    AllAlignments = Alignments.join(AlignedContigs, remainder: true).flatMap{ n -> [n[1], n[2]] }.collect()
+        }
+        else {
+            if (KrakenDb.getExtension() == 'k2d') {
+                // The user got confused, and passed a database file, we'll try to
+                // correct it for them
+                log.warn "WARNING: ${params.kraken2_db} appears to be a file that is a *part* of a Kraken2 database."
+                log.warn "         Kraken databases are folders that contain multiple files."
+                log.warn "         YAVSAP will attempt to use the parent directory as the database, but it might fail!"
+                KrakenDb = KrakenDb.getParent()
+            }
+            else {
+                // We'll assume this is a tarballed database
+                KRAKEN2_DBPREPARATION(KrakenDb)
+                KrakenDb = KRAKEN2_DBPREPARATION.out.db
+                VersionFiles = VersionFiles.mix(KRAKEN2_DBPREPARATION.out.versions)
+            }
+        }
+        FILTERING(
+            TrimmedReads,
+            KrakenDb,
+            "${params.keep_taxid}"
+        )
+        FILTERING.out.filtered.set { FilteredReads }
+        LogFiles = LogFiles.mix(FILTERING.out.log_out)
+        VersionFiles = VersionFiles.mix(FILTERING.out.versions)
+    }
+    else {
+        TrimmedReads.set { FilteredReads }
+    }
+
+    ALIGNMENT(FilteredReads, ReferenceGenome)
+    ALIGNMENT.out.bam
+        .join(ALIGNMENT.out.bai)
+        .set { AlignedReads }
+
+    VersionFiles = VersionFiles.mix(ALIGNMENT.out.versions)
+
+    // Find the strain genomes list
+    genomePath = params.genome_list
+    genomeFile = file(genomePath)
+    if (!genomeFile.toFile().exists()) {
+        genomePath = "${workflow.projectDir}/genomes/${params.genome_list}*"
+        genomeFile = file(genomePath, checkIfExists: true)
+    }
+
+    // Realign reads to their closest strain
+    CLOSEST_REFERENCE(
+        ALIGNMENT.out.bam,
+        ReferenceGenome,
+        genomeFile
+    )
+
+    VersionFiles = VersionFiles.mix(CLOSEST_REFERENCE.out.versions)
 
     if (!params.skip_haplotype) {
-        haplotyping(FilteredReads, Alignments, IndexedReference, AnnotatedReference)
-        //PhyloTrees = haplotyping.out
-    }
-    else {
-        //PhyloTrees = Channel.from([])
+        HAPLOTYPING(
+            CLOSEST_REFERENCE.out.bam
+                .join(
+                    CLOSEST_REFERENCE.out.bai
+                ),
+            CLOSEST_REFERENCE.out.fasta
+        )
+
+        VersionFiles = VersionFiles.mix(HAPLOTYPING.out.versions)
+
+        if (!params.skip_phylogenetics) {
+            PHYLOGENETIC_TREE(
+                HAPLOTYPING.out.fasta,
+                CLOSEST_REFERENCE.out.consensus_fasta,
+                CLOSEST_REFERENCE.out.genome_fasta,
+                genomeFile
+            )
+
+            VersionFiles = VersionFiles.mix(PHYLOGENETIC_TREE.out.versions)
+        }
     }
 
-    MultiQCConfig = file("${workflow.projectDir}/multiqc_config.yaml")
+    LogFiles = LogFiles
+        .map{ (it instanceof Path) ? it : it.drop(1) }
+        .mix(Channel.of(file("${workflow.projectDir}/assets/multiqc_config.yaml")))
+        .flatten()
+        .collect()
 
-    multiqc(MultiQCConfig,
-        KrakenReports
-        .concat(trimming.out.report)
-        .concat(QcReport)
-        .collect())
+    MULTIQC(LogFiles)
+
+    CUSTOM_DUMPSOFTWAREVERSIONS(VersionFiles.unique().collectFile(name: 'collated_versions.yml'))
 
     // Put a pretty bow on everything
-    presentation_generator()
-}
-
-process reads_realign_to_reference {
-    label 'minimap'
-
-    input:
-    tuple val(sampleName), file(readsFile)
-    file(reference)
-
-    output:
-    tuple val(sampleName), file("${sampleName}.{bam,bam.bai}")
-
-    script:
-    minimapMethod = (params.pe) ? 'sr' : 'map-ont'
-    """
-    minimap2 -ax ${minimapMethod} -t ${task.cpus} --MD ${reference[0]} ${readsFile} | \
-        samtools sort > ${sampleName}.bam
-    samtools index ${sampleName}.bam
-    """
-}
-
-process multiqc {
-    label 'process_low'
-    label 'multiqc'
-    publishDir "${params.outdir}", mode: "${params.publish_dir_mode}"
-
-    input:
-    file(configFile)
-    file '*'
-
-    output:
-    path 'multiqc_report.html' optional true
-    path 'multiqc_data'        optional true
-
-    script:
-    """
-    multiqc .
-    """
+    PRESENTATION_GENERATOR()
 }
 
 // Create a viewer of all the assembly files
-process presentation_generator {
+process PRESENTATION_GENERATOR {
     label 'process_low'
     publishDir "${params.outdir}", mode: "${params.publish_dir_mode}"
 

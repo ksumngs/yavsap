@@ -8,6 +8,26 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.6.0-alpha] - 2022-03-03
+
+This is a major overhaul of YAVSAP to make it use nf-core's DSL2 modules.
+
+### Added
+
+- Interleaved and Single-end Illumina read support (#34)
+- nf-core compliance
+- SARS-CoV2 genome preset
+- Support for tarballed and/or remote Kraken2 database
+
+### Changed
+
+- Multiple sequence alignments and phylogenetic trees now include all samples collectively
+
+### Removed
+
+- `--pe` and `--ont` parameters (#34)
+- _de novo_ assembly steps and parameters
+
 ## [0.5.0-alpha] - 2022-02-09
 
 ### Added
@@ -173,7 +193,8 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 - Krona graphs of Kraken2 output
 - BLAST of assemblies and unclassified reads
 
-[Unreleased]: https://github.com/ksumngs/yavsap/compare/v0.5.0-alpha...HEAD
+[Unreleased]: https://github.com/ksumngs/yavsap/compare/v0.6.0-alpha...HEAD
+[0.6.0-alpha]: https://github.com/ksumngs/yavsap/compare/v0.5.0-alpha...v0.6.0-alpha
 [0.5.0-alpha]: https://github.com/ksumngs/yavsap/compare/v0.4.0-alpha...v0.5.0-alpha
 [0.4.0-alpha]: https://github.com/ksumngs/yavsap/compare/v0.3.3-alpha...v0.4.0-alpha
 [0.3.3-alpha]: https://github.com/ksumngs/yavsap/compare/v0.3.2-alpha...v0.3.3-alpha

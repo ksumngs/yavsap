@@ -1,92 +1,124 @@
 name: Testing
 # This workflow runs the pipeline with the minimal test dataset to check that it completes without any syntax errors
 on:
-  - release
-  - workflow_dispatch
+  push:
+    branches:
+      - develop
+  pull_request:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+env:
+  NXF_ANSI_LOG: false
+  CAPSULE_LOG: none
 
 jobs:
   test:
     name: Run workflow tests
+    # Only run on push if this is the develop branch (merged PRs)
+    if: ${{ github.event_name != 'push' || (github.event_name == 'push' && github.repository == 'ksumngs/yavsap') }}
     runs-on: ubuntu-latest
-    continue-on-error: ${{ matrix.nxf_edge == 1 }}
-    env:
-      NXF_VER: ${{ matrix.nxf_ver }}
-      NXF_EDGE: ${{ matrix.nxf_edge }}
-      NXF_ANSI_LOG: false
-      RUN_CONTAINER: ${{ matrix.container_env }}
-      RUN_READTYPE: ${{ matrix.read_type }}
-      RUN_SKIPPING: ${{ matrix.skipping }}
     strategy:
       matrix:
-        nxf_ver: ['20.10.0', '']
-        nxf_edge: [ '' ]
-        container_env: ['docker', 'singularity']
-        read_type: ['ont', 'pe']
-        skipping: [ '' ]
+        # Nextflow versions
         include:
-          - nxf_ver: ''
-            nxf_edge: 1
-            container_env: docker
-            skipping: ''
-            read_type: ont
-          - nxf_ver: ''
-            nxf_edge: 1
-            container_env: docker
-            skipping: ''
-            read_type: pe
+          # Test pipeline minimum Nextflow version
+          - NXF_VER: "21.10.6"
+            NXF_EDGE: ""
+          - NXF_VER: ""
+            NXF_EDGE: "1"
     steps:
       - name: Check out pipeline code
         uses: actions/checkout@v2
 
-      - name: Install Singularity
-        if: ${{ env.RUN_CONTAINER == 'singularity' }}
-        uses: eWaterCycle/setup-singularity@v6
-        with:
-          singularity-version: 3.8
-
-      - name: Cache Singularity images
-        id: singularity-cache
-        if: ${{ env.RUN_CONTAINER == 'singularity' }}
-        uses: actions/cache@v2
-        with:
-          path: ~/.nxf-singularity-cache
-          key: singularity-${{ hashFiles('**/conf/containers.config') }}
-
-      - name: Install Podman
-        if: ${{ env.RUN_CONTAINER == 'podman' }}
-        run: |
-          sudo apt-get update
-          sudo apt-get -y install podman
-
       - name: Install Nextflow
         env:
-          CAPSULE_LOG: none
+          NXF_VER: ${{ matrix.NXF_VER }}
+          # Uncomment only if the edge release is more recent than the latest stable release
+          # See https://github.com/nextflow-io/nextflow/issues/2467
+          # NXF_EDGE: ${{ matrix.NXF_EDGE }}
         run: |
           wget -qO- get.nextflow.io | bash
-          sudo mv nextflow /usr/local/bin/
-          [ -n $NXF_EDGE ] && nextflow self-update
-
-      - name: Cache Kraken2 database
-        id: kraken2db-cache
-        uses: actions/cache@v2
-        with:
-          path: ~/kraken2-db
-          key: kraken2db-viral_20210517
-
-      - name: Download Kraken2 database
-        if: ${{ steps.kraken2db-cache.outputs.cache-hit != 'true' }}
-        run: |
-          mkdir ~/kraken2-db
-          wget -qO- https://genome-idx.s3.amazonaws.com/kraken/k2_viral_20210517.tar.gz | tar xzv -C ~/kraken2-db
-
-      - name: Pull Singularity images
-        if: ${{ env.RUN_CONTAINER == 'singularity' && steps.singularity-cache.outputs.cache-hit != 'true' }}
-        run: |
-          grep 'container =' ${GITHUB_WORKSPACE}/conf/containers.config | awk '{print $3}' | xargs -I {} -n1 singularity pull docker://{}
+          sudo mv nextflow /usr/local/bin
 
       - name: Run pipeline with test data
         env:
           NCBI_API_KEY: ${{ secrets.NCBI_API_KEY }}
         run: |
-          export NXF_SINGULARITY_CACHEDIR=$HOME/.nxf-singularity-cache
-          nextflow run ${GITHUB_WORKSPACE} -profile test,gh,${RUN_READTYPE},${RUN_CONTAINER} $RUN_SKIPPING --kraken2_db ~/kraken2-db
+          nextflow run ${GITHUB_WORKSPACE} -profile test,gh,docker
+
+  parameters:
+    name: Test workflow parameters
+    if: ${{ github.event_name != 'push' || (github.event_name == 'push' && github.repository == 'ksumngs/yavsap') }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        parameters:
+          - "--keep_taxid classified"
+          - "--kraken2_db https://genome-idx.s3.amazonaws.com/kraken/16S_Silva132_20200326.tgz --keep_taxid unclassified"
+          - "--kraken2_db ~/kraken2-db"
+          - "--skip_qc"
+          - "--skip_trimming"
+          - "--skip_filtering"
+          - "--skip_haplotype"
+          - "--skip_phylogenetics"
+    steps:
+      - name: Check out pipeline code
+        uses: actions/checkout@v2
+
+      - name: Install Nextflow
+        run: |
+          wget -qO- get.nextflow.io | bash
+          sudo mv nextflow /usr/local/bin
+
+      - name: Download Kraken2 database
+        if: ${{ matrix.parameters == '--kraken2_db ~/kraken2-db' }}
+        run: |
+          mkdir ~/kraken2-db
+          wget -qO- https://genome-idx.s3.amazonaws.com/kraken/k2_viral_20210517.tar.gz | tar xzv -C ~/kraken2-db
+
+      - name: Run pipeline with test data
+        env:
+          NCBI_API_KEY: ${{ secrets.NCBI_API_KEY }}
+        run: |
+          nextflow run ${GITHUB_WORKSPACE} -profile test,gh,docker ${{ matrix.parameters }}
+
+  test_interleaved:
+    name: Test Interleaved Reads Workflow
+    # Only run on push if this is the develop branch (merged PRs)
+    if: ${{ github.event_name != 'push' || (github.event_name == 'push' && github.repository == 'ksumngs/yavsap') }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out pipeline code
+        uses: actions/checkout@v2
+
+      - name: Install Nextflow
+        run: |
+          wget -qO- get.nextflow.io | bash
+          sudo mv nextflow /usr/local/bin
+
+      - name: Run pipeline with test data
+        env:
+          NCBI_API_KEY: ${{ secrets.NCBI_API_KEY }}
+        run: |
+          nextflow run ${GITHUB_WORKSPACE} -profile test_interleaved,gh,docker
+  test_nanopore:
+    name: Run workflow tests
+    # Only run on push if this is the develop branch (merged PRs)
+    if: ${{ github.event_name != 'push' || (github.event_name == 'push' && github.repository == 'ksumngs/yavsap') }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out pipeline code
+        uses: actions/checkout@v2
+
+      - name: Install Nextflow
+        run: |
+          wget -qO- get.nextflow.io | bash
+          sudo mv nextflow /usr/local/bin
+
+      - name: Run pipeline with test data
+        env:
+          NCBI_API_KEY: ${{ secrets.NCBI_API_KEY }}
+        run: |
+          nextflow run ${GITHUB_WORKSPACE} -profile test,gh,docker

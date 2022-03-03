@@ -1,84 +1,43 @@
 #!/usr/bin/env nextflow
 nextflow.enable.dsl = 2
 
-import static java.lang.Math.sqrt
-import static java.lang.Math.round
+include { KRAKEN2 } from '../modules/ksumngs/nf-modules/kraken2/main.nf'
+include { KRAKENTOOLS_EXTRACT } from '../modules/ksumngs/nf-modules/krakentools/extract/main.nf'
 
-KrakenDbSize = file(params.kraken2_db).toFile().directorySize()
-KrakenAllocationSize = round(sqrt(KrakenDbSize) + KrakenDbSize)
-
-workflow read_filtering {
+workflow FILTERING {
     take:
-    InputReads
+    reads
+    kraken2_db
+    filter
 
     main:
-    if (params.skip_filtering) {
-        FilteredReads = InputReads
-        KrakenReports = Channel.from([])
+    versions = Channel.empty()
+
+    KRAKEN2(reads, kraken2_db)
+
+    KRAKEN2.out.kreport.set{ log_out }
+
+    if (filter == 'classified') {
+        KRAKEN2.out.classified.set{ filtered }
+    }
+    else if ( filter == 'unclassified') {
+        KRAKEN2.out.unclassified.set{ filtered }
     }
     else {
-        classification(InputReads)
-        KrakenReports = classification.out
-
-        KrakenReads = InputReads.join(KrakenReports)
-
-        // Filter out the non-viral reads
-        filtering(KrakenReads)
-        FilteredReads = filtering.out
+        KRAKENTOOLS_EXTRACT(
+            reads
+                .join(KRAKEN2.out.kraken)
+                .join(KRAKEN2.out.kreport),
+            filter
+        )
+        KRAKENTOOLS_EXTRACT.out.fastq.set{ filtered }
+        versions = versions.mix(KRAKENTOOLS_EXTRACT.out.versions)
     }
 
+    versions = versions.mix(KRAKEN2.out.versions)
+
     emit:
-    FilteredReads
-    KrakenReports
-}
-
-// Classify reads using Kraken
-process classification {
-    label 'kraken'
-    label 'process_high_memory'
-    memory "${KrakenAllocationSize} B"
-    publishDir "${params.outdir}/classification", mode: "${params.publish_dir_mode}"
-
-    input:
-    tuple val(sampleName), file(readsFile)
-
-    output:
-    tuple val(sampleName), file("${sampleName}.kraken"), file("${sampleName}.kreport")
-
-    script:
-    pairedflag = params.pe ? '--paired' : ''
-    """
-    kraken2 --db ${params.kraken2_db} --threads ${task.cpus} \
-        --report "${sampleName}.kreport" \
-        --output "${sampleName}.kraken" \
-        ${pairedflag} \
-        ${readsFile}
-    """
-}
-
-// Pull the viral reads and any unclassified reads from the original reads
-// files for futher downstream processing using KrakenTools
-process filtering {
-    label 'krakentools'
-    label 'process_low'
-
-    input:
-    tuple val(sampleName), file(readsFile), file(krakenFile), file(krakenReport)
-
-    output:
-    tuple val(sampleName), file("${sampleName}_filtered*.fastq.gz")
-
-    script:
-    read2flagin  = (params.pe) ? "-s2 ${readsFile[1]}" : ''
-    read1flagout = (params.pe) ? "-o ${sampleName}_filtered_R1.fastq" : " -o ${sampleName}_filtered.fastq"
-    read2flagout = (params.pe) ? "-o2 ${sampleName}_filtered_R2.fastq" : ''
-    """
-    extract_kraken_reads.py -k ${krakenFile} \
-        -s ${readsFile[0]} ${read2flagin} \
-        -r ${krakenReport} \
-        -t ${params.keep_taxid} --include-children \
-        --fastq-output \
-        ${read1flagout} ${read2flagout}
-    gzip ${sampleName}_filtered*.fastq
-    """
+    filtered
+    log_out
+    versions
 }

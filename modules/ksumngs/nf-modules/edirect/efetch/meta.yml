@@ -1,0 +1,35 @@
+name: edirect_efetch
+description: Download files from NCBI based on previous searches
+keywords:
+  - NCBI
+  - download
+tools:
+  - edirect:
+      description: Entrez Direct (EDirect) is an advanced method for accessing the NCBI's set of interconnected databases (publication, sequence, structure, gene, variation, expression, etc.) from a UNIX terminal window. Functions take search terms from command-line arguments. Individual operations are combined to build multi-step queries. Record retrieval and formatting normally complete the process.
+      homepage: https://eutils.ncbi.nlm.nih.gov/
+      documentation: https://www.ncbi.nlm.nih.gov/books/NBK179288/
+      licence: ['PUBLIC DOMAIN']
+
+input:
+  - search:
+      type: file
+      description: Previous result from esearch in XML format
+      pattern: "*.{,xml}"
+  - format:
+      type: string
+      description: Desired format for the output
+  - search:
+      type: file
+      description: When the format supports it, what flavor of the format (e.g. GenBank flat file vs. GenBank XML)
+
+output:
+  - versions:
+      type: file
+      description: File containing software versions
+      pattern: "versions.yml"
+  - txt:
+      type: file
+      description: The downloaded results of the search
+
+authors:
+  - "@MillironX"
