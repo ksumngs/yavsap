@@ -128,6 +128,7 @@ workflow {
                 // We'll assume this is a tarballed database
                 KRAKEN2_DBPREPARATION(KrakenDb)
                 KrakenDb = KRAKEN2_DBPREPARATION.out.db
+                VersionFiles = VersionFiles.mix(KRAKEN2_DBPREPARATION.out.versions)
             }
         }
         FILTERING(
