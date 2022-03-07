@@ -153,7 +153,7 @@ workflow {
 
     // Find the strain genomes list
     genomePath = params.genome_list
-    genomeFile = file(genomePath)
+    genomeFile = file(genomePath, type: 'file')
     if (!genomeFile.toFile().exists()) {
         genomePath = "${workflow.projectDir}/genomes/${params.genome_list}*"
         genomeFile = file(genomePath, checkIfExists: true)
