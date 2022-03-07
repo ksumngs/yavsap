@@ -17,7 +17,6 @@ workflow CLOSEST_REFERENCE {
 
     // Transform the TSV genome list into an edirect query
     genomeQuery = genome_list
-        .first()
         .readLines()
         .collect{ it.split('\t')[1] }
         .join(' OR ')
