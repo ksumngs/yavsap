@@ -4,39 +4,81 @@ block layout-styles
   link(rel="stylesheet", href="/css/phylotree/phylotree.css", type="text/css")
 
 block layout-content
-  h1 #{samplename}
-  div.row
-    div.col-12
-      div.btn-group(role="group").mx-1
-        button(type="button", data-direction="vertical", data-amount="1", title="Expand vertical spacing").btn.btn-primary
+  h1 #{ samplename }
+  .row
+    .col-12
+      .btn-group.mx-1(role="group")
+        button.btn.btn-primary(
+          type="button",
+          data-direction="vertical",
+          data-amount="1",
+          title="Expand vertical spacing"
+        )
           i.fas.fa-arrows-alt-v
-        button(type="button", data-direction="vertical", data-amount="-1", title="Compress vertical spacing").btn.btn-primary
-          i(data-fa-transform="rotate-135").fas.fa-compress-alt
-        button(type="button", data-direction="horizontal", data-amount="1", title="Expand horizontal spacing").btn.btn-primary
+        button.btn.btn-primary(
+          type="button",
+          data-direction="vertical",
+          data-amount="-1",
+          title="Compress vertical spacing"
+        )
+          i.fas.fa-compress-alt(data-fa-transform="rotate-135")
+        button.btn.btn-primary(
+          type="button",
+          data-direction="horizontal",
+          data-amount="1",
+          title="Expand horizontal spacing"
+        )
           i.fas.fa-arrows-alt-h
-        button(type="button", data-direction="horizontal", data-amount="-1", title="Compress horizontal spacing").btn.btn-primary
-          i(data-fa-transform="rotate-45").fas.fa-compress-alt
-      div.btn-group(role="group").mx-1
-        button(type="button", title="Sort deepest clades to the bottom")#sort-ascending.btn.btn-primary
+        button.btn.btn-primary(
+          type="button",
+          data-direction="horizontal",
+          data-amount="-1",
+          title="Compress horizontal spacing"
+        )
+          i.fas.fa-compress-alt(data-fa-transform="rotate-45")
+      .btn-group.mx-1(role="group")
+        button#sort-ascending.btn.btn-primary(
+          type="button",
+          title="Sort deepest clades to the bottom"
+        )
           i.fas.fa-sort-amount-down-alt
-        button(type="button", title="Sort deepest clades to the top")#sort-descending.btn.btn-primary
+        button#sort-descending.btn.btn-primary(
+          type="button",
+          title="Sort deepest clades to the top"
+        )
           i.fas.fa-sort-amount-up-alt
-      div.btn-group(role="group").mx-1
-        button(type="button", title="Save image")#save-image.btn.btn-primary
+      .btn-group.mx-1(role="group")
+        button#save-image.btn.btn-primary(type="button", title="Save image")
           i.fas.fa-file-image
-      div.btn-group(role="group").mx-1
-        button(type="button", title="Linear", data-mode="linear").btn.btn-primary.phylotree-layout-mode.active
+      .btn-group.mx-1(role="group")
+        button.btn.btn-primary.phylotree-layout-mode.active(
+          type="button",
+          title="Linear",
+          data-mode="linear"
+        )
           i.fas.fa-align-left
-        button(type="button", title="Radial", data-mode="radial").btn.btn-primary.phylotree-layout-mode
+        button.btn.btn-primary.phylotree-layout-mode(
+          type="button",
+          title="Radial",
+          data-mode="radial"
+        )
           i.fas.fa-circle-notch
-      div.btn-group(role="group").mx-1
-        button(type="button", title="Align left", data-align="left").btn.btn-primary.phylotree-align-toggler.active
+      .btn-group.mx-1(role="group")
+        button.btn.btn-primary.phylotree-align-toggler.active(
+          type="button",
+          title="Align left",
+          data-align="left"
+        )
           i.fas.fa-outdent
-        button(type="button", title="Align right", data-align="right").btn.btn-primary.phylotree-align-toggler
+        button.btn.btn-primary.phylotree-align-toggler(
+          type="button",
+          title="Align right",
+          data-align="right"
+        )
           i.fas.fa-indent
-  div.row
-    div.col-12
-      div#phylotree.my-2.p-3
+  .row
+    .col-12
+      #phylotree.my-2.p-3
 
 block layout-scripts
   script(src="/js/d3/d3.js")
@@ -44,10 +86,10 @@ block layout-scripts
   script(src="/js/phylotree/phylotree.js")
   script(src="/js/local/phylotree-utils.js")
   script.
-    newick = "#{sampletree}";
+    newick = '#{sampletree}';
     tree = new phylotree.phylotree(newick);
     rendered_tree = tree.render({
-      container: "#phylotree"
+      container: '#phylotree',
     });
     $(tree.display.container).empty();
     $(tree.display.container).html(tree.display.show());

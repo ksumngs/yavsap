@@ -1,39 +1,5 @@
 {
-    "cSpell.words": [
-        "allhaplotypes",
-        "baifile",
-        "bamcounts",
-        "bamfields",
-        "bamfile",
-        "bamline",
-        "bammatch",
-        "bammatches",
-        "bamref",
-        "delim",
-        "equalhaplotypes",
-        "FASTX",
-        "haplotype",
-        "haplotypecounts",
-        "haplotypedata",
-        "haplotypefrequencies",
-        "haplotypeoccurances",
-        "haplotypes",
-        "individualhaplotypes",
-        "ivar",
-        "ivarfile",
-        "linkage",
-        "Nanopore",
-        "nolint",
-        "outtsv",
-        "outyaml",
-        "phylotools",
-        "possiblehaplotypes",
-        "pvalue",
-        "Δlinkage"
-    ],
-    "files.associations": {
-        "haplink": "julia",
-        "make-haplotype-fastas": "julia",
-        "*.config": "nextflow"
-    }
+  "files.associations": {
+    "*.config": "nextflow"
+  }
 }
