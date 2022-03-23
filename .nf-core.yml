@@ -27,6 +27,8 @@ lint:
     # We don't use AWS
     - .github/workflows/awstest.yml
     - .github/workflows/awsfulltest.yml
+    # We use default Prettier settings
+    - .prettierrc.yml
   nextflow_config: false
   # Currently not supported, but hopefully soon!
   # See https://github.com/nf-core/tools/issues/1031
