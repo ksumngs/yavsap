@@ -8,6 +8,12 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.6.3-alpha] - 2022-03-23
+
+### Fixed
+
+- Bug introduced for internal genome table files in v0.6.2
+
 ## [0.6.2-alpha] - 2022-03-07
 
 ### Fixed
@@ -205,7 +211,8 @@ This is a major overhaul of YAVSAP to make it use nf-core's DSL2 modules.
 - Krona graphs of Kraken2 output
 - BLAST of assemblies and unclassified reads
 
-[Unreleased]: https://github.com/ksumngs/yavsap/compare/v0.6.2-alpha...HEAD
+[Unreleased]: https://github.com/ksumngs/yavsap/compare/v0.6.3-alpha...HEAD
+[0.6.3-alpha]: https://github.com/ksumngs/yavsap/compare/v0.6.2-alpha...v0.6.3-alpha
 [0.6.2-alpha]: https://github.com/ksumngs/yavsap/compare/v0.6.1-alpha...v0.6.2-alpha
 [0.6.1-alpha]: https://github.com/ksumngs/yavsap/compare/v0.6.0-alpha...v0.6.1-alpha
 [0.6.0-alpha]: https://github.com/ksumngs/yavsap/compare/v0.5.0-alpha...v0.6.0-alpha
