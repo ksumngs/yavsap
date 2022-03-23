@@ -112,45 +112,45 @@ flowchart TD
 
 Here's what happens to your reads in the pipeline.
 
- 1. Quality analysis ([FastQC])
- 2. Quality trimming ([Trimmomatic]/[NanoFilt])
- 3. Read classification ([Kraken2])
- 4. Host read removal ([KrakenTools])
- 5. Alignment of reads against the reference genome ([minimap2])
- 6. Consensus sequence generation ([iVar])
- 7. Closest strain matching ([BLAST])
- 8. Realignment to closest strain ([minimap2])
- 9. Variant calling ([CliqueSNV]/[HapLink.jl])
+1.  Quality analysis ([FastQC])
+2.  Quality trimming ([Trimmomatic]/[NanoFilt])
+3.  Read classification ([Kraken2])
+4.  Host read removal ([KrakenTools])
+5.  Alignment of reads against the reference genome ([minimap2])
+6.  Consensus sequence generation ([iVar])
+7.  Closest strain matching ([BLAST])
+8.  Realignment to closest strain ([minimap2])
+9.  Variant calling ([CliqueSNV]/[HapLink.jl])
 10. Haplotype calling ([CliqueSNV]/[HapLink.jl])
 11. Multiple sequence alignment of consensus sequences, strain genomes, and
     haplotypes alignment ([MAFFT])
 12. Phylogenetic tree generation ([raxml-ng])
 13. Alignments and phylogenetics output to browser ([IGV]+[phylotree.js])
 
-[BLAST]: https://blast.ncbi.nlm.nih.gov/Blast.cgi
-[CliqueSNV]: https://github.com/vtsyvina/CliqueSNV
-[Conda]: https://conda.io/miniconda.html
-[Docker]: https://docs.docker.com/engine/installation
-[FastQC]: https://www.bioinformatics.babraham.ac.uk/projects/fastqc/
+[blast]: https://blast.ncbi.nlm.nih.gov/Blast.cgi
+[cliquesnv]: https://github.com/vtsyvina/CliqueSNV
+[conda]: https://conda.io/miniconda.html
+[docker]: https://docs.docker.com/engine/installation
+[fastqc]: https://www.bioinformatics.babraham.ac.uk/projects/fastqc/
 [git-flow]: https://nvie.com/posts/a-successful-git-branching-model
-[HapLink.jl]: https://ksumngs.github.io/HapLink.jl
-[IGV]: https://igv.org/
-[Installation]: https://ksumngs.github.io/yavsap/install
-[iVar]: https://andersen-lab.github.io/ivar/html/manualpage.html
-[Japanese Encephalitis Virus]: https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=11072
-[Kraken2 database]: https://github.com/DerrickWood/kraken2/wiki/Manual#custom-databases
-[Kraken2]: https://github.com/DerrickWood/kraken2/wiki
-[KrakenTools]: https://github.com/jenniferlu717/KrakenTools
-[MAFFT]: https://mafft.cbrc.jp/alignment/software/
+[haplink.jl]: https://ksumngs.github.io/HapLink.jl
+[igv]: https://igv.org/
+[installation]: https://ksumngs.github.io/yavsap/install
+[ivar]: https://andersen-lab.github.io/ivar/html/manualpage.html
+[japanese encephalitis virus]: https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=11072
+[kraken2 database]: https://github.com/DerrickWood/kraken2/wiki/Manual#custom-databases
+[kraken2]: https://github.com/DerrickWood/kraken2/wiki
+[krakentools]: https://github.com/jenniferlu717/KrakenTools
+[mafft]: https://mafft.cbrc.jp/alignment/software/
 [minimap2]: https://lh3.github.io/minimap2/
-[NanoFilt]: https://github.com/wdecoster/nanofilt/
-[Nextflow]: https://nextflow.io
-[Parameters]: https://ksumngs.github.io/yavsap/parameters
+[nanofilt]: https://github.com/wdecoster/nanofilt/
+[nextflow]: https://nextflow.io
+[parameters]: https://ksumngs.github.io/yavsap/parameters
 [phylotree.js]: https://github.com/veg/phylotree.js
-[Podman]: https://podman.io
+[podman]: https://podman.io
 [raxml-ng]: https://github.com/amkozlov/raxml-ng
 [semver]: https://semver.org
-[Singularity]: https://www.sylabs.io/guides/3.8/user-guide
-[SPAdes]: cab.spbu.ru/spades
-[Trimmomatic]: www.usadellab.org/cms/?page=trimmomatic
-[Usage]: https://ksumngs.github.io/yavsap/usage
+[singularity]: https://www.sylabs.io/guides/3.8/user-guide
+[spades]: cab.spbu.ru/spades
+[trimmomatic]: www.usadellab.org/cms/?page=trimmomatic
+[usage]: https://ksumngs.github.io/yavsap/usage

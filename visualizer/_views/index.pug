@@ -1,13 +1,13 @@
 extends layout
 
 block layout-content
-  h1 #{refname} Results
-  div.row
-    div.col-2
-      div.card.mb-3.mx-3
-        div.card-header
+  h1 #{ refname } Results
+  .row
+    .col-2
+      .card.mb-3.mx-3
+        .card-header
           h2.card-title Pipeline Results
-        div.card-body
+        .card-body
           ul
             li
               a(href="/multiqc") MultiQC Report
@@ -17,28 +17,28 @@ block layout-content
                 span.caret
               .dropdown-menu
                 each report in nfreports
-                  a(href=`/nf-report/${report.timestamp}`).dropdown-item= report.timestamp
+                  a.dropdown-item(href=`/nf-report/${report.timestamp}`)= report.timestamp
             li.dropdown
               a(href="/nf-timeline/latest") Nextflow Timeline
               a.dropdown-toggle(href="#", data-bs-toggle="dropdown")
                 span.caret
               .dropdown-menu
                 each timeline in nftimelines
-                  a(href=`/nf-timeline/${timeline.timestamp}`).dropdown-item= timeline.timestamp
+                  a.dropdown-item(href=`/nf-timeline/${timeline.timestamp}`)= timeline.timestamp
             li.dropdown
               a(href="/nf-trace/latest") Nextflow Trace
               a.dropdown-toggle(href="#", data-bs-toggle="dropdown")
                 span.caret
               .dropdown-menu
                 each trace in nftraces
-                  a(href=`/nf-trace/${trace.timestamp}`).dropdown-item= trace.timestamp
+                  a.dropdown-item(href=`/nf-trace/${trace.timestamp}`)= trace.timestamp
             li.dropdown
               a(href="/nf-dag/latest") Nextflow Graph
               a.dropdown-toggle(href="#", data-bs-toggle="dropdown")
                 span.caret
               .dropdown-menu
                 each dag in nfdags
-                  a(href=`/nf-dag/${dag.timestamp}`).dropdown-item= dag.timestamp
+                  a.dropdown-item(href=`/nf-dag/${dag.timestamp}`)= dag.timestamp
       .card.mb-3.mx-3
         .card-header
           h2.card-title Reference Genome Results
@@ -51,18 +51,18 @@ block layout-content
               a.dropdown-toggle(href="#", data-bs-toggle="dropdown")
                 span.caret
               .dropdown-menu
-                a(href=`/reference/${refname}.fasta.fai`).dropdown-item
-                    i.fas.fa-download
-                    | &ensp; Download index
+                a.dropdown-item(href=`/reference/${refname}.fasta.fai`)
+                  i.fas.fa-download
+                  | &ensp; Download index
             li
               a(href=`/reference/${refname}.gff`)
                 i.fas.fa-download
                 | &ensp; Download annotation
-    div.col-10
-      div.card.mb-3.mx-3
-        div.card-header
+    .col-10
+      .card.mb-3.mx-3
+        .card-header
           h2.card-title Sample Results
-        div.card-body
+        .card-body
           .table-responsive
             table.table.table-striped.table-hover.table-sm
               tr
@@ -76,12 +76,14 @@ block layout-content
                 th Phylogenetics
               each sample in samples
                 tr
-                  th=sample.samplename
+                  th= sample.samplename
                   if haskraken
                     td
                       ul
                         li
-                          a(href=`/classification/${sample.samplename}.kreport`)
+                          a(
+                            href=`/classification/${sample.samplename}.kreport`
+                          )
                             i.fas.fa-download
                             | &nbsp; Report
                         li
@@ -101,27 +103,38 @@ block layout-content
                         a(href=`/alignment/${sample.samplename}.bam`)
                           i.fas.fa-download
                           | &nbsp; BAM File
-                        a(href="#", data-bs-toggle="dropdown").dropdown-toggle
+                        a.dropdown-toggle(href="#", data-bs-toggle="dropdown")
                           span.caret
                         .dropdown-menu
-                          a(href=`/alignment/${sample.samplename}.bam.bai`).dropdown-item
+                          a.dropdown-item(
+                            href=`/alignment/${sample.samplename}.bam.bai`
+                          )
                             i.fas.fa-download
                             | &nbsp; BAM Index
                     if sample.hascontigs
                       td
                         ul
                           li
-                            a(href=`/assembly/sequence/${sample.samplename}.contigs.fasta`)
+                            a(
+                              href=`/assembly/sequence/${sample.samplename}.contigs.fasta`
+                            )
                               i.fas.fa-download
                               | &nbsp; Sequences
                           li.dropdown
-                            a(href=`/assembly/alignment/${sample.samplename}.contigs.bam`)
+                            a(
+                              href=`/assembly/alignment/${sample.samplename}.contigs.bam`
+                            )
                               i.fas.fa-download
                               | &nbsp; Alignment
-                            a(href="#", data-bs-toggle="dropdown").dropdown-toggle
+                            a.dropdown-toggle(
+                              href="#",
+                              data-bs-toggle="dropdown"
+                            )
                               span.caret
                             .dropdown-menu
-                              a(href=`assembly/alignment/${sample.samplename}.contigs.bam.bai`).dropdown-item
+                              a.dropdown-item(
+                                href=`assembly/alignment/${sample.samplename}.contigs.bam.bai`
+                              )
                                 i.fas.fa-download
                                 | &nbsp; BAM Index
                     else
@@ -129,7 +142,8 @@ block layout-content
                         i.fas.fa-exclamation
                         | &nbsp;
                         i de novo
-                        |  assembly failed
+                        |
+                        | assembly failed
                     if sample.hasvariants
                       td
                         ul
@@ -144,23 +158,31 @@ block layout-content
                   td
                     ul
                       li
-                        a(href=`/haplotypes/${sample.samplename}.haplotypes.fasta`)
+                        a(
+                          href=`/haplotypes/${sample.samplename}.haplotypes.fasta`
+                        )
                           i.fas.fa-download
                           | &nbsp; Sequences
                         if platform == 'ont'
                           li
-                            a(href=`/haplotypes/${sample.samplename}.haplotypes.yaml`)
+                            a(
+                              href=`/haplotypes/${sample.samplename}.haplotypes.yaml`
+                            )
                               i.fas.fa-download
                               | &nbsp; Stats &amp; data
                         else
                           li
-                            a(href=`/haplotypes/${sample.samplename}.haplotypes.json`)
+                            a(
+                              href=`/haplotypes/${sample.samplename}.haplotypes.json`
+                            )
                               i.fas.fa-download
                               | &nbsp; Stats &amp; data
                   td
                     ul
                       li
-                        a(href=`/multi_alignment/${sample.samplename}.haplotypes.fas`)
+                        a(
+                          href=`/multi_alignment/${sample.samplename}.haplotypes.fas`
+                        )
                           i.fas.fa-download
                           | &nbsp; FASTA Alignment
                     if sample.hastree

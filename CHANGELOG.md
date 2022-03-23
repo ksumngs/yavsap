@@ -211,7 +211,7 @@ This is a major overhaul of YAVSAP to make it use nf-core's DSL2 modules.
 - Krona graphs of Kraken2 output
 - BLAST of assemblies and unclassified reads
 
-[Unreleased]: https://github.com/ksumngs/yavsap/compare/v0.6.3-alpha...HEAD
+[unreleased]: https://github.com/ksumngs/yavsap/compare/v0.6.3-alpha...HEAD
 [0.6.3-alpha]: https://github.com/ksumngs/yavsap/compare/v0.6.2-alpha...v0.6.3-alpha
 [0.6.2-alpha]: https://github.com/ksumngs/yavsap/compare/v0.6.1-alpha...v0.6.2-alpha
 [0.6.1-alpha]: https://github.com/ksumngs/yavsap/compare/v0.6.0-alpha...v0.6.1-alpha
