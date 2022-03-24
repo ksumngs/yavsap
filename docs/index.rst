@@ -6,11 +6,11 @@ a single sample, with a focus on Japanese Encephalitis Virus (JEV). We're still
 waiting to be inspired with a better name.
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+    :maxdepth: 2
+    :caption: Contents:
 
-   install
-   usage
-   parameters
-   output
-   reference
+    install
+    usage
+    parameters
+    output
+    reference

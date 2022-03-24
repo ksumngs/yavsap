@@ -19,7 +19,7 @@ jobs:
         run: npm install -g editorconfig-checker
 
       - name: Run ECLint check
-        run: editorconfig-checker -exclude README.md $(git ls-files | grep -v test)
+        run: editorconfig-checker -exclude '.*.md' $(git ls-files | grep -v test)
 
   Prettier:
     runs-on: ubuntu-latest
