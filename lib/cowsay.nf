@@ -1,6 +1,4 @@
-#!/usr/bin/env nextflow
-nextflow.enable.dsl = 2
-
+// editorconfig-checker-disable-file
 def cowsay(message) {
     messagelines = message.split('\n')
     nlines = messagelines.length
