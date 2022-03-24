@@ -9,9 +9,9 @@ time.
 However, don't be put off by this template - other more general issues and
 suggestions are welcome! Contributions to the code are even more welcome ;)
 
-> YAVSAP comforms to pipeline standards made by the [nf-core
-> group](https://nf-co.re). These guidelines are a mix of general GitHub
-> workflow, nf-core compliance, and our own way of doing things.
+> YAVSAP comforms to pipeline standards made by the
+> [nf-core group](https://nf-co.re). These guidelines are a mix of general
+> GitHub workflow, nf-core compliance, and our own way of doing things.
 
 ## Contribution workflow
 
@@ -24,8 +24,8 @@ follows:
    - If there isn't one already, please create one so that others know you're
      working on this
 2. [Fork](https://help.github.com/en/github/getting-started-with-github/fork-a-repo)
-   the [ksumngs/yavsap repository](https://github.com/ksumngs/yavsap) to
-   your GitHub account
+   the [ksumngs/yavsap repository](https://github.com/ksumngs/yavsap) to your
+   GitHub account
 3. Make the necessary changes / additions within your forked repository
    following [Pipeline conventions](#pipeline-contribution-conventions)
 4. Use `nf-core schema build` and add any new parameters to the pipeline JSON
@@ -33,14 +33,14 @@ follows:
 5. Submit a Pull Request against the `dev` branch and wait for the code to be
    reviewed and merged
 
-If you're not used to this workflow with git, you can start with some [docs from
-GitHub](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests)
+If you're not used to this workflow with git, you can start with some
+[docs from GitHub](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests)
 or even their [excellent `git` resources](https://try.github.io/).
 
 ## Tests
 
-When you create a pull request with changes, [GitHub
-Actions](https://github.com/features/actions) will run automatic tests.
+When you create a pull request with changes,
+[GitHub Actions](https://github.com/features/actions) will run automatic tests.
 Typically, pull-requests are only fully reviewed when these tests are passing,
 though of course we can help out before then.
 
@@ -69,7 +69,8 @@ more documentation.
 ### Pipeline tests
 
 We use the test dataset over at
-<https://github.com/ksumngs/nf-test-datasets/tree/yavsap> for testing. `GitHub Actions` then runs the pipeline on this data to ensure that it exits
+<https://github.com/ksumngs/nf-test-datasets/tree/yavsap> for testing.
+`GitHub Actions` then runs the pipeline on this data to ensure that it exits
 successfully. If there are any failures then the automated tests fail. These
 tests are run both with the latest available version of `Nextflow` and also the
 minimum required version that is stated in the pipeline code.
@@ -85,8 +86,8 @@ bug.
 
 ## Getting help
 
-For further information/help, please consult the [YAVSAP
-documentation](https://ksumngs.github.io/yavsap).
+For further information/help, please consult the
+[YAVSAP documentation](https://ksumngs.github.io/yavsap).
 
 ## Pipeline contribution conventions
 
@@ -125,8 +126,8 @@ Once there, use `nf-core schema build` to add to `nextflow_schema.json`.
 
 Every process definition should be specified with `withLabel:` selectors so they
 will request the proper amount of resources. A nf-core standard set of labels
-that should be followed where possible can be seen in the [nf-core pipeline
-template](https://github.com/nf-core/tools/blob/master/nf_core/pipeline-template/conf/base.config),
+that should be followed where possible can be seen in the
+[nf-core pipeline template](https://github.com/nf-core/tools/blob/master/nf_core/pipeline-template/conf/base.config),
 which has the default process as a single core-process, and then different
 levels of multi-core configurations for increasingly large memory requirements
 defined with standardised labels.
@@ -140,8 +141,8 @@ block.
 There are only two hard things in computer science: naming and cache
 invalidation. With regards to the later, in case of failure remove the `-resume`
 flag. With regards to the former, we name things slightly different from
-nf-core's guidelines. Specifically, we use these [naming
-guidelines](https://gist.github.com/MillironX/bd9606623b3ccfdfb72d77e2bd3dc213#naming):
+nf-core's guidelines. Specifically, we use these
+[naming guidelines](https://gist.github.com/MillironX/bd9606623b3ccfdfb72d77e2bd3dc213#naming):
 
 > - Use `UPPER_CASE_WITH_UNDERSCORE_SEPARATORS` for Process and Workflow names
 > - Use `CapitalizeEveryWordWithoutSeparators` for Channel and Global variable
@@ -153,9 +154,10 @@ guidelines](https://gist.github.com/MillironX/bd9606623b3ccfdfb72d77e2bd3dc213#n
 ### Nextflow version bumping
 
 If you are using a new feature from core Nextflow, you may bump the minimum
-required version of nextflow in the pipeline with: `nf-core bump-version --nextflow . [min-nf-version]`
+required version of nextflow in the pipeline with:
+`nf-core bump-version --nextflow . [min-nf-version]`
 
 ### Images and figures
 
-For overview images and other documents we follow the nf-core [style guidelines
-and examples](https://nf-co.re/developers/design_guidelines).
+For overview images and other documents we follow the nf-core
+[style guidelines and examples](https://nf-co.re/developers/design_guidelines).

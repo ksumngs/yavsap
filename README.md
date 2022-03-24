@@ -15,8 +15,9 @@
 <!-- markdownlint-enable -->
 
 A [Nextflow] pipeline for studying viral populations within a single sample,
-tuned for [Japanese Encephalitis Virus]. :dna::computer::chart_with_upwards_trend:
-Yeah, we're still looking for a better name. :shrug:
+tuned for [Japanese Encephalitis Virus].
+:dna::computer::chart_with_upwards_trend: Yeah, we're still looking for a better
+name. :shrug:
 
 > This project follows the [semver] _pro forma_ and uses the [git-flow]
 > branching model.
@@ -112,15 +113,15 @@ flowchart TD
 
 Here's what happens to your reads in the pipeline.
 
-1.  Quality analysis ([FastQC])
-2.  Quality trimming ([Trimmomatic]/[NanoFilt])
-3.  Read classification ([Kraken2])
-4.  Host read removal ([KrakenTools])
-5.  Alignment of reads against the reference genome ([minimap2])
-6.  Consensus sequence generation ([iVar])
-7.  Closest strain matching ([BLAST])
-8.  Realignment to closest strain ([minimap2])
-9.  Variant calling ([CliqueSNV]/[HapLink.jl])
+1. Quality analysis ([FastQC])
+2. Quality trimming ([Trimmomatic]/[NanoFilt])
+3. Read classification ([Kraken2])
+4. Host read removal ([KrakenTools])
+5. Alignment of reads against the reference genome ([minimap2])
+6. Consensus sequence generation ([iVar])
+7. Closest strain matching ([BLAST])
+8. Realignment to closest strain ([minimap2])
+9. Variant calling ([CliqueSNV]/[HapLink.jl])
 10. Haplotype calling ([CliqueSNV]/[HapLink.jl])
 11. Multiple sequence alignment of consensus sequences, strain genomes, and
     haplotypes alignment ([MAFFT])

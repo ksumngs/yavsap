@@ -3,8 +3,8 @@
 All notable changes to YAVSAP will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic
-Versioning](https://semver.org/spec/v2.0.0.html).
+and this project adheres to
+[Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
@@ -45,7 +45,8 @@ This is a major overhaul of YAVSAP to make it use nf-core's DSL2 modules.
 
 ### Changed
 
-- Multiple sequence alignments and phylogenetic trees now include all samples collectively
+- Multiple sequence alignments and phylogenetic trees now include all samples
+  collectively
 
 ### Removed
 
@@ -70,8 +71,9 @@ This is a major overhaul of YAVSAP to make it use nf-core's DSL2 modules.
 ### Added
 
 - VCF output for Illumina reads via CliqueSNV (#18)
-- Parameter schema in [Nextflow
-  schema](https://help.tower.nf/pipeline-schema/overview/) format (#19)
+- Parameter schema in
+  [Nextflow schema](https://help.tower.nf/pipeline-schema/overview/) format
+  (#19)
 - Phylogenetic tree quality cutoff parameter (#20)
 
 ### Changes
@@ -108,7 +110,8 @@ This is a major overhaul of YAVSAP to make it use nf-core's DSL2 modules.
 
 - Kraken2 database download instructions to docs (547f67b)
 - Parameter option for number of phylogenetic bootstrap trees (474652f)
-- Options to skip read trimming (`--skip_trimming`) and read QC (`--skip_qc`) (#5)
+- Options to skip read trimming (`--skip_trimming`) and read QC (`--skip_qc`)
+  (#5)
 - Realignment to closest reference genome based on BLAST (#6)
 
 ### Changed
