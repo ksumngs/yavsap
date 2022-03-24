@@ -1,3 +1,4 @@
+// editorconfig-checker-disable-file
 def yavsap_logo() {
 
 tagline = "(Yet Another Viral Subspecies Analysis Pipeline)"

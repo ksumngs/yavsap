@@ -154,9 +154,12 @@ workflow {
     // Find the strain genomes list
     genomePath = params.genome_list
     genomeFile = file(genomePath, type: 'file')
-    if (!genomeFile.toFile().exists()) {
+    if (genomeFile.toFile().exists()) {
+        genomeFile = [genomeFile]
+    }
+    else {
         genomePath = "${workflow.projectDir}/genomes/${params.genome_list}*"
-        genomeFile = file(genomePath, checkIfExists: true)
+        genomeFile = file(genomePath, checkIfExists: true, type: 'file')
     }
 
     // Realign reads to their closest strain

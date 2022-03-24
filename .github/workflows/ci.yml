@@ -58,6 +58,8 @@ jobs:
           - "--keep_taxid classified"
           - "--kraken2_db https://genome-idx.s3.amazonaws.com/kraken/16S_Silva132_20200326.tgz --keep_taxid unclassified"
           - "--kraken2_db ~/kraken2-db"
+          - "--genome_list ./genomes/jev.tsv"
+          - "--genome_list jev"
           - "--skip_qc"
           - "--skip_trimming"
           - "--skip_filtering"

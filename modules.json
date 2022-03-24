@@ -1,100 +1,100 @@
 {
-  "name": "yavsap",
-  "homePage": "https://ksumngs.github.io/yavsap",
-  "repos": {
-    "ksumngs/nf-modules": {
-      "cat/fastq": {
-        "git_sha": "da5728117c6caaee428ed8729e88b93abc60c5fc"
-      },
-      "cliquesnv/illumina": {
-        "git_sha": "3c4ecd5017df87d5224100ab87bc4879bf043473"
-      },
-      "cliquesnv/illuminavc": {
-        "git_sha": "0c47a6672c68c47a15d2ef3255b63f95b7bc1758"
-      },
-      "edirect/efetch": {
-        "git_sha": "21873b5c2ed4c2defea089d6070a0f2c032aa11d"
-      },
-      "edirect/esearch": {
-        "git_sha": "54e488eab3013f48124a4dfd54ec2b05e0a75b62"
-      },
-      "kraken2": {
-        "git_sha": "21873b5c2ed4c2defea089d6070a0f2c032aa11d"
-      },
-      "krakentools/extract": {
-        "git_sha": "181a04778a81494dc71b1d68b514b43cfef1512c"
-      },
-      "minimap2/align": {
-        "git_sha": "ae81650d918dd11707cd61d61a4f2c966739de21"
-      },
-      "nanofilt": {
-        "git_sha": "8e2140d607a9bbbf82ddf1604609f22e7371f9fb"
-      },
-      "nanostat": {
-        "git_sha": "02e9fc52eb0c57550c2820a62b865313ab764a85"
-      },
-      "raxmlng/bootstrap": {
-        "git_sha": "7bc0cad69ab9dc65cdd5dd389f85766cf189612c"
-      },
-      "raxmlng/parse": {
-        "git_sha": "3ad9561f34733ce646bb3149b1928c81eb052960"
-      },
-      "raxmlng/search": {
-        "git_sha": "c807ee98a0c789a2b45795e7ec9592167f477675"
-      },
-      "raxmlng/support": {
-        "git_sha": "1589b66c23d176829e73c2ce1c7db039cd237fed"
-      },
-      "trimmomatic": {
-        "git_sha": "0f1c3ecb06bd5695a37dcb6dc9c4e75698aae905"
-      }
-    },
-    "nf-core/modules": {
-      "blast/blastn": {
-        "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
-      },
-      "blast/makeblastdb": {
-        "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
-      },
-      "cat/cat": {
-        "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
-      },
-      "custom/dumpsoftwareversions": {
-        "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
-      },
-      "fastqc": {
-        "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
-      },
-      "ivar/consensus": {
-        "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
-      },
-      "mafft": {
-        "git_sha": "841c661cad7181a36fd20bb306258d17b750c873"
-      },
-      "minimap2/align": {
-        "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
-      },
-      "multiqc": {
-        "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
-      },
-      "samtools/bam2fq": {
-        "git_sha": "1ad73f1b2abdea9398680d6d20014838135c9a35"
-      },
-      "samtools/faidx": {
-        "git_sha": "1ad73f1b2abdea9398680d6d20014838135c9a35"
-      },
-      "samtools/index": {
-        "git_sha": "1ad73f1b2abdea9398680d6d20014838135c9a35"
-      },
-      "samtools/sort": {
-        "git_sha": "1ad73f1b2abdea9398680d6d20014838135c9a35"
-      },
-      "seqkit/split2": {
-        "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
-      },
-      "seqtk/mergepe": {
-        "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
-      }
+    "name": "yavsap",
+    "homePage": "https://ksumngs.github.io/yavsap",
+    "repos": {
+        "ksumngs/nf-modules": {
+            "cat/fastq": {
+                "git_sha": "da5728117c6caaee428ed8729e88b93abc60c5fc"
+            },
+            "cliquesnv/illumina": {
+                "git_sha": "3c4ecd5017df87d5224100ab87bc4879bf043473"
+            },
+            "cliquesnv/illuminavc": {
+                "git_sha": "0c47a6672c68c47a15d2ef3255b63f95b7bc1758"
+            },
+            "edirect/efetch": {
+                "git_sha": "21873b5c2ed4c2defea089d6070a0f2c032aa11d"
+            },
+            "edirect/esearch": {
+                "git_sha": "54e488eab3013f48124a4dfd54ec2b05e0a75b62"
+            },
+            "kraken2": {
+                "git_sha": "21873b5c2ed4c2defea089d6070a0f2c032aa11d"
+            },
+            "krakentools/extract": {
+                "git_sha": "181a04778a81494dc71b1d68b514b43cfef1512c"
+            },
+            "minimap2/align": {
+                "git_sha": "ae81650d918dd11707cd61d61a4f2c966739de21"
+            },
+            "nanofilt": {
+                "git_sha": "8e2140d607a9bbbf82ddf1604609f22e7371f9fb"
+            },
+            "nanostat": {
+                "git_sha": "02e9fc52eb0c57550c2820a62b865313ab764a85"
+            },
+            "raxmlng/bootstrap": {
+                "git_sha": "7bc0cad69ab9dc65cdd5dd389f85766cf189612c"
+            },
+            "raxmlng/parse": {
+                "git_sha": "3ad9561f34733ce646bb3149b1928c81eb052960"
+            },
+            "raxmlng/search": {
+                "git_sha": "c807ee98a0c789a2b45795e7ec9592167f477675"
+            },
+            "raxmlng/support": {
+                "git_sha": "1589b66c23d176829e73c2ce1c7db039cd237fed"
+            },
+            "trimmomatic": {
+                "git_sha": "0f1c3ecb06bd5695a37dcb6dc9c4e75698aae905"
+            }
+        },
+        "nf-core/modules": {
+            "blast/blastn": {
+                "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
+            },
+            "blast/makeblastdb": {
+                "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
+            },
+            "cat/cat": {
+                "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
+            },
+            "custom/dumpsoftwareversions": {
+                "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
+            },
+            "fastqc": {
+                "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
+            },
+            "ivar/consensus": {
+                "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
+            },
+            "mafft": {
+                "git_sha": "841c661cad7181a36fd20bb306258d17b750c873"
+            },
+            "minimap2/align": {
+                "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
+            },
+            "multiqc": {
+                "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
+            },
+            "samtools/bam2fq": {
+                "git_sha": "1ad73f1b2abdea9398680d6d20014838135c9a35"
+            },
+            "samtools/faidx": {
+                "git_sha": "1ad73f1b2abdea9398680d6d20014838135c9a35"
+            },
+            "samtools/index": {
+                "git_sha": "1ad73f1b2abdea9398680d6d20014838135c9a35"
+            },
+            "samtools/sort": {
+                "git_sha": "1ad73f1b2abdea9398680d6d20014838135c9a35"
+            },
+            "seqkit/split2": {
+                "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
+            },
+            "seqtk/mergepe": {
+                "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
+            }
+        }
     }
-  }
 }
