@@ -193,7 +193,7 @@ workflow {
 
     LogFiles = LogFiles
         .map{ (it instanceof Path) ? it : it.drop(1) }
-        .mix(Channel.of(file("${workflow.projectDir}/assets/multiqc_config.yaml")))
+        .mix(Channel.of(file("${workflow.projectDir}/assets/multiqc_config.yml")))
         .flatten()
         .collect()
 
