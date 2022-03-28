@@ -7,12 +7,13 @@ include { CUSTOM_DUMPSOFTWAREVERSIONS } from './modules/nf-core/modules/custom/d
 include { FILTERING } from './subworkflows/filtering.nf'
 include { GENOME_DOWNLOAD } from './subworkflows/reference.nf'
 include { HAPLOTYPING } from './subworkflows/haplotype.nf'
+include { KRAKEN2_DBPREPARATION } from './modules/local/kraken2/dbpreparation.nf'
 include { MULTIQC } from './modules/nf-core/modules/multiqc/main.nf'
 include { PHYLOGENETIC_TREE } from './subworkflows/phylogenetics.nf'
+include { PRESENTATION } from './subworkflows/presentation.nf'
 include { QC } from './subworkflows/qc.nf'
 include { READS_INGEST } from './subworkflows/ingest.nf'
 include { TRIMMING } from './subworkflows/trimming.nf'
-include { KRAKEN2_DBPREPARATION } from './modules/local/kraken2/dbpreparation.nf'
 include { cowsay } from './lib/cowsay.nf'
 include { yavsap_logo } from './lib/logo.nf'
 
@@ -201,6 +202,18 @@ workflow {
         .collect()
 
     MULTIQC(LogFiles)
+
+    PRESENTATION(
+        ALIGNMENT.out.bam,
+        ALIGNMENT.out.bai,
+        GENOME_DOWNLOAD.out.fasta,
+        GENOME_DOWNLOAD.out.fai,
+        CLOSEST_REFERENCE.out.consensus_fasta,
+        CLOSEST_REFERENCE.out.accession,
+        CLOSEST_REFERENCE.out.strain,
+        HAPLOTYPING.out.yaml,
+        HAPLOTYPING.out.fasta
+    )
 
     CUSTOM_DUMPSOFTWAREVERSIONS(VersionFiles.unique().collectFile(name: 'collated_versions.yml'))
 
