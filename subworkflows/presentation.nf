@@ -1,5 +1,5 @@
-
 include { HAPLOTYPE_YAML2TSV } from '../modules/local/haplotype-yaml2tsv.nf'
+include { MINIMAP2_ALIGN } from '../modules/nf-core/modules/minimap2/align/main.nf'
 
 workflow PRESENTATION {
     take:
@@ -25,60 +25,61 @@ workflow PRESENTATION {
     versions = versions.mix(HAPLOTYPE_YAML2TSV.out.versions)
 
     consensus_fasta
-        .splitFasta(record: [seqString: true])
-        .map{ [ it[0], "${it[0].id}_consensus", null, it[1].seqString ] }
-        .set{ consensus_table }
+        .mix(haplotype_fasta)
+        .map{ it[1] }
+        .collectFile(name: 'haplotypes.fasta')
+        .map{ [ [ 'id': 'haplotypes', 'single_end': true ], it ] }
+        .set{ haplotype_sequences }
 
-    bam
-        .join(bai)
-        .join(accession)
+    MINIMAP2_ALIGN(haplotype_sequences, reference_fasta)
+
+    MINIMAP2_ALIGN.out.paf.map{ it[1] }.set{ haplotype_alignment }
+
+    versions = versions.mix(MINIMAP2_ALIGN.out.versions)
+
+    accession
         .join(strain)
         .map{ [
-            ['id': it[0].id, 'single_end': null, 'strandedness': null],
-            it[1],
-            it[2],
-            it[3],
-            it[4]
-        ] }
-        .set{ strain_table }
-
-    haplotype_tsv
-        .splitCsv(sep: '\t')
-        .map{ [
-            ['id': it[0], 'single_end': null, 'strandedness': null],
+            it[0].id,
             it[1],
             it[2]
         ] }
-        .set{ haplotype_table }
+        .combine(haplotype_tsv.splitCsv(sep: '\t'), by: 0)
+        .set{ strain_table }
 
-    haplotype_fasta
-        .splitFasta(record: [id: true, seqString: true])
-        .map{ [
-            ['id': it[0].id, 'single_end': null, 'strandedness': null],
-            it[1].id,
-            it[1].seqString
-        ] }
-        .set{ haplotype_sequences }
+    ECHO2TSV(strain_table)
 
-    strain_table
-        .combine(
-            haplotype_table
-                .join(haplotype_sequences, by: [0, 1])
-                .mix(consensus_table),
-            by: 0
-        )
-        .set{ answer_table }
+    ECHO2TSV.out
+        .collectFile(name: 'haplotype_strains.tsv')
+        .set{ haplotype_strains }
 
-    ANSWER_DUMP(answer_table)
+    YAVSAP_SUMMARY(haplotype_alignment, reference_fasta, haplotype_strains)
 }
 
-process ANSWER_DUMP {
+process ECHO2TSV {
+    label 'process_low'
+
     input:
-    tuple val(meta), file(bam), file(bai), val(accession), val(strain), val(name), val(freq), val(sequence)
+    tuple val(sample), val(accession), val(strain), val(name), val(frequency)
+
+    output:
+    path "*.tsv"
 
     script:
     """
-    echo "${meta.id}\t${accession}\t${strain}\t${name}\t${freq}" > ${name}.tsv
-    echo ">${name}\n${sequence}" > ${name}.fasta
+    echo "${sample}\t${accession}\t${strain}\t${name}\t${frequency}" \\
+        > ${sample}_${accession}.tsv
+    """
+}
+
+process YAVSAP_SUMMARY {
+    input:
+    file(sam)
+    file(reference)
+    file(tsv)
+
+    script:
+    """
+    echo \$(ls)
     """
 }
