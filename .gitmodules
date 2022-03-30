@@ -1,3 +1,0 @@
-[submodule "docs/_ext/nfdocs-parser"]
-    path = docs/_ext/nfdocs-parser
-    url = https://github.com/MillironX/nfdocs-parser.git

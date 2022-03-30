@@ -13,4 +13,3 @@ waiting to be inspired with a better name.
     usage
     parameters
     output
-    reference
