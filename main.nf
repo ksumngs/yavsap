@@ -175,6 +175,9 @@ workflow {
 
     VersionFiles = VersionFiles.mix(CLOSEST_REFERENCE.out.versions)
 
+    HaplotypeFastas = Channel.of([])
+    HaplotypeYamls = Channel.of([])
+
     if (!params.skip_haplotype) {
         HAPLOTYPING(
             CLOSEST_REFERENCE.out.bam
@@ -184,18 +187,25 @@ workflow {
             CLOSEST_REFERENCE.out.fasta
         )
 
+        HAPLOTYPING.out.fasta.set{ HaplotypeFastas }
+        HAPLOTYPING.out.yaml.set{ HaplotypeYamls }
+
         VersionFiles = VersionFiles.mix(HAPLOTYPING.out.versions)
+    }
 
-        if (!params.skip_phylogenetics) {
-            PHYLOGENETIC_TREE(
-                HAPLOTYPING.out.fasta,
-                CLOSEST_REFERENCE.out.consensus_fasta,
-                CLOSEST_REFERENCE.out.genome_fasta,
-                genomeFile
-            )
+    PhylogeneticTree = Channel.of([])
 
-            VersionFiles = VersionFiles.mix(PHYLOGENETIC_TREE.out.versions)
-        }
+    if (!params.skip_phylogenetics) {
+        PHYLOGENETIC_TREE(
+            HaplotypeFastas,
+            CLOSEST_REFERENCE.out.consensus_fasta,
+            CLOSEST_REFERENCE.out.genome_fasta,
+            genomeFile
+        )
+
+        PHYLOGENETIC_TREE.out.tree.set{ PhylogeneticTree }
+
+        VersionFiles = VersionFiles.mix(PHYLOGENETIC_TREE.out.versions)
     }
 
     LogFiles = LogFiles
@@ -206,6 +216,8 @@ workflow {
 
     MULTIQC(LogFiles)
 
+    KronaChart = Channel.of([])
+
     PRESENTATION(
         ALIGNMENT.out.bam,
         ALIGNMENT.out.bai,
@@ -214,14 +226,17 @@ workflow {
         CLOSEST_REFERENCE.out.consensus_fasta,
         CLOSEST_REFERENCE.out.accession,
         CLOSEST_REFERENCE.out.strain,
-        HAPLOTYPING.out.yaml,
-        HAPLOTYPING.out.fasta
+        HaplotypeYamls,
+        HaplotypeFastas,
+        PhylogeneticTree,
+        MULTIQC.out.report,
+        KronaChart
     )
 
     CUSTOM_DUMPSOFTWAREVERSIONS(VersionFiles.unique().collectFile(name: 'collated_versions.yml'))
 
     // Put a pretty bow on everything
-    PRESENTATION_GENERATOR()
+    // PRESENTATION_GENERATOR()
 }
 
 // Create a viewer of all the assembly files

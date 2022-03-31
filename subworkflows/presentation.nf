@@ -12,6 +12,9 @@ workflow PRESENTATION {
     strain
     haplotype_yaml
     haplotype_fasta
+    tree
+    multiqc
+    krona
 
     main:
     versions = Channel.empty()
@@ -53,7 +56,14 @@ workflow PRESENTATION {
         .collectFile(name: 'haplotype_strains.tsv')
         .set{ haplotype_strains }
 
-    YAVSAP_SUMMARY(haplotype_alignment, reference_fasta, haplotype_strains)
+    SEQUENCETABLE(
+        haplotype_strains,
+        haplotype_alignment,
+        reference_fasta,
+        tree,
+        multiqc,
+        krona
+    )
 }
 
 process ECHO2TSV {
