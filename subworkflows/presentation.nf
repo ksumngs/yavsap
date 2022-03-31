@@ -1,5 +1,6 @@
 include { HAPLOTYPE_YAML2TSV } from '../modules/local/haplotype-yaml2tsv.nf'
 include { MINIMAP2_ALIGN } from '../modules/nf-core/modules/minimap2/align/main.nf'
+include { SEQUENCETABLE } from '../modules/local/sequencetable.nf'
 
 workflow PRESENTATION {
     take:
@@ -64,6 +65,11 @@ workflow PRESENTATION {
         multiqc,
         krona
     )
+
+    versions = versions.mix(SEQUENCETABLE.out.versions)
+
+    emit:
+    versions
 }
 
 process ECHO2TSV {
@@ -79,17 +85,5 @@ process ECHO2TSV {
     """
     echo "${sample}\t${accession}\t${strain}\t${name}\t${frequency}" \\
         > ${sample}_${accession}.tsv
-    """
-}
-
-process YAVSAP_SUMMARY {
-    input:
-    file(sam)
-    file(reference)
-    file(tsv)
-
-    script:
-    """
-    echo \$(ls)
     """
 }

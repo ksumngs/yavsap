@@ -175,8 +175,8 @@ workflow {
 
     VersionFiles = VersionFiles.mix(CLOSEST_REFERENCE.out.versions)
 
-    HaplotypeFastas = Channel.of([])
-    HaplotypeYamls = Channel.of([])
+    HaplotypeFastas = Channel.empty()
+    HaplotypeYamls = Channel.empty()
 
     if (!params.skip_haplotype) {
         HAPLOTYPING(
@@ -216,8 +216,7 @@ workflow {
 
     MULTIQC(LogFiles)
 
-    KronaChart = Channel.of([])
-
+    // Note: The Visualizer cannot be output if haplotyping is skipped
     PRESENTATION(
         ALIGNMENT.out.bam,
         ALIGNMENT.out.bai,
@@ -232,6 +231,7 @@ workflow {
         MULTIQC.out.report,
         KronaChart
     )
+    VersionFiles = VersionFiles.mix(PRESENTATION.out.versions)
 
     CUSTOM_DUMPSOFTWAREVERSIONS(VersionFiles.unique().collectFile(name: 'collated_versions.yml'))
 
