@@ -109,6 +109,8 @@ workflow {
         RawReads.set { TrimmedReads }
     }
 
+    KronaChart = Channel.of([])
+
     if (!params.skip_filtering) {
         KrakenDb = file("${params.kraken2_db}", checkIfExists: true)
         if (KrakenDb.isDirectory()) {
@@ -138,6 +140,7 @@ workflow {
             "${params.keep_taxid}"
         )
         FILTERING.out.filtered.set { FilteredReads }
+        FILTERING.out.krona.set { KronaChart }
         LogFiles = LogFiles.mix(FILTERING.out.log_out)
         VersionFiles = VersionFiles.mix(FILTERING.out.versions)
     }
