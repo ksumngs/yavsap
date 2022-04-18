@@ -27,6 +27,9 @@
             "krakentools/kreport2krona": {
                 "git_sha": "c6c9d4fad20eb77232756fc08403fbc4e9988ce2"
             },
+            "krona/importtext": {
+                "git_sha": "f423673c57aba461cf16bd3bc628e36e33b20029"
+            },
             "minimap2/align": {
                 "git_sha": "ae81650d918dd11707cd61d61a4f2c966739de21"
             },
