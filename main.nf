@@ -235,27 +235,4 @@ workflow {
     VersionFiles = VersionFiles.mix(PRESENTATION.out.versions)
 
     CUSTOM_DUMPSOFTWAREVERSIONS(VersionFiles.unique().collectFile(name: 'collated_versions.yml'))
-
-    // Put a pretty bow on everything
-    // PRESENTATION_GENERATOR()
-}
-
-// Create a viewer of all the assembly files
-process PRESENTATION_GENERATOR {
-    label 'process_low'
-    publishDir "${params.outdir}", mode: "${params.publish_dir_mode}"
-
-    output:
-    file '_css/*.css'
-    file '_js/*.js'
-    file '_views/*.pug'
-    file 'index.js'
-    file 'package.json'
-    file 'package-lock.json'
-    file 'favicon.ico'
-
-    script:
-    """
-    cp -r ${workflow.projectDir}/visualizer/{_css,_js,_views,index.js,package.json,package-lock.json,favicon.ico} .
-    """
 }
