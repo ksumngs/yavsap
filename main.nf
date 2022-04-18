@@ -215,6 +215,7 @@ workflow {
         .collect()
 
     MULTIQC(LogFiles)
+    VersionFiles = VersionFiles.mix(MULTIQC.out.versions)
 
     // Note: The Visualizer cannot be output if haplotyping is skipped
     PRESENTATION(
