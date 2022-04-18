@@ -8,6 +8,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Changed
+
+- Visualizer changed to single, static page ([#40](https://github.com/ksumngs/yavsap/pull/40))
+
 ## [0.6.5-alpha] - 2022-03-24
 
 ### Fixed
