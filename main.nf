@@ -7,12 +7,13 @@ include { CUSTOM_DUMPSOFTWAREVERSIONS } from './modules/nf-core/modules/custom/d
 include { FILTERING } from './subworkflows/filtering.nf'
 include { GENOME_DOWNLOAD } from './subworkflows/reference.nf'
 include { HAPLOTYPING } from './subworkflows/haplotype.nf'
+include { KRAKEN2_DBPREPARATION } from './modules/local/kraken2/dbpreparation.nf'
 include { MULTIQC } from './modules/nf-core/modules/multiqc/main.nf'
 include { PHYLOGENETIC_TREE } from './subworkflows/phylogenetics.nf'
+include { PRESENTATION } from './subworkflows/presentation.nf'
 include { QC } from './subworkflows/qc.nf'
 include { READS_INGEST } from './subworkflows/ingest.nf'
 include { TRIMMING } from './subworkflows/trimming.nf'
-include { KRAKEN2_DBPREPARATION } from './modules/local/kraken2/dbpreparation.nf'
 include { cowsay } from './lib/cowsay.nf'
 include { yavsap_logo } from './lib/logo.nf'
 
@@ -108,6 +109,8 @@ workflow {
         RawReads.set { TrimmedReads }
     }
 
+    KronaChart = Channel.of([])
+
     if (!params.skip_filtering) {
         KrakenDb = file("${params.kraken2_db}", checkIfExists: true)
         if (KrakenDb.isDirectory()) {
@@ -137,6 +140,7 @@ workflow {
             "${params.keep_taxid}"
         )
         FILTERING.out.filtered.set { FilteredReads }
+        FILTERING.out.krona.set { KronaChart }
         LogFiles = LogFiles.mix(FILTERING.out.log_out)
         VersionFiles = VersionFiles.mix(FILTERING.out.versions)
     }
@@ -171,6 +175,9 @@ workflow {
 
     VersionFiles = VersionFiles.mix(CLOSEST_REFERENCE.out.versions)
 
+    HaplotypeFastas = Channel.empty()
+    HaplotypeYamls = Channel.empty()
+
     if (!params.skip_haplotype) {
         HAPLOTYPING(
             CLOSEST_REFERENCE.out.bam
@@ -180,50 +187,52 @@ workflow {
             CLOSEST_REFERENCE.out.fasta
         )
 
+        HAPLOTYPING.out.fasta.set{ HaplotypeFastas }
+        HAPLOTYPING.out.yaml.set{ HaplotypeYamls }
+
         VersionFiles = VersionFiles.mix(HAPLOTYPING.out.versions)
+    }
 
-        if (!params.skip_phylogenetics) {
-            PHYLOGENETIC_TREE(
-                HAPLOTYPING.out.fasta,
-                CLOSEST_REFERENCE.out.consensus_fasta,
-                CLOSEST_REFERENCE.out.genome_fasta,
-                genomeFile
-            )
+    PhylogeneticTree = Channel.of([])
 
-            VersionFiles = VersionFiles.mix(PHYLOGENETIC_TREE.out.versions)
-        }
+    if (!params.skip_phylogenetics) {
+        PHYLOGENETIC_TREE(
+            HaplotypeFastas,
+            CLOSEST_REFERENCE.out.consensus_fasta,
+            CLOSEST_REFERENCE.out.genome_fasta,
+            genomeFile
+        )
+
+        PHYLOGENETIC_TREE.out.tree.set{ PhylogeneticTree }
+
+        VersionFiles = VersionFiles.mix(PHYLOGENETIC_TREE.out.versions)
     }
 
     LogFiles = LogFiles
         .map{ (it instanceof Path) ? it : it.drop(1) }
-        .mix(Channel.of(file("${workflow.projectDir}/assets/multiqc_config.yaml")))
+        .mix(Channel.of(file("${workflow.projectDir}/assets/multiqc_config.yml")))
         .flatten()
         .collect()
 
     MULTIQC(LogFiles)
+    VersionFiles = VersionFiles.mix(MULTIQC.out.versions)
+
+    // Note: The Visualizer cannot be output if haplotyping is skipped
+    PRESENTATION(
+        ALIGNMENT.out.bam,
+        ALIGNMENT.out.bai,
+        GENOME_DOWNLOAD.out.fasta,
+        GENOME_DOWNLOAD.out.fai,
+        CLOSEST_REFERENCE.out.consensus_fasta,
+        CLOSEST_REFERENCE.out.accession,
+        CLOSEST_REFERENCE.out.strain,
+        HaplotypeYamls,
+        HaplotypeFastas,
+        PhylogeneticTree,
+        MULTIQC.out.report,
+        KronaChart
+    )
+    VersionFiles = VersionFiles.mix(PRESENTATION.out.versions)
 
     CUSTOM_DUMPSOFTWAREVERSIONS(VersionFiles.unique().collectFile(name: 'collated_versions.yml'))
-
-    // Put a pretty bow on everything
-    PRESENTATION_GENERATOR()
-}
-
-// Create a viewer of all the assembly files
-process PRESENTATION_GENERATOR {
-    label 'process_low'
-    publishDir "${params.outdir}", mode: "${params.publish_dir_mode}"
-
-    output:
-    file '_css/*.css'
-    file '_js/*.js'
-    file '_views/*.pug'
-    file 'index.js'
-    file 'package.json'
-    file 'package-lock.json'
-    file 'favicon.ico'
-
-    script:
-    """
-    cp -r ${workflow.projectDir}/visualizer/{_css,_js,_views,index.js,package.json,package-lock.json,favicon.ico} .
-    """
 }

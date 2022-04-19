@@ -3,10 +3,16 @@
 All notable changes to YAVSAP will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic
-Versioning](https://semver.org/spec/v2.0.0.html).
+and this project adheres to
+[Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [0.7.0] - 2022-04-19
+
+### Changed
+
+- Visualizer changed to single, static page ([#40](https://github.com/ksumngs/yavsap/pull/40))
 
 ## [0.6.5-alpha] - 2022-03-24
 
@@ -51,7 +57,8 @@ This is a major overhaul of YAVSAP to make it use nf-core's DSL2 modules.
 
 ### Changed
 
-- Multiple sequence alignments and phylogenetic trees now include all samples collectively
+- Multiple sequence alignments and phylogenetic trees now include all samples
+  collectively
 
 ### Removed
 
@@ -76,8 +83,9 @@ This is a major overhaul of YAVSAP to make it use nf-core's DSL2 modules.
 ### Added
 
 - VCF output for Illumina reads via CliqueSNV (#18)
-- Parameter schema in [Nextflow
-  schema](https://help.tower.nf/pipeline-schema/overview/) format (#19)
+- Parameter schema in
+  [Nextflow schema](https://help.tower.nf/pipeline-schema/overview/) format
+  (#19)
 - Phylogenetic tree quality cutoff parameter (#20)
 
 ### Changes
@@ -114,7 +122,8 @@ This is a major overhaul of YAVSAP to make it use nf-core's DSL2 modules.
 
 - Kraken2 database download instructions to docs (547f67b)
 - Parameter option for number of phylogenetic bootstrap trees (474652f)
-- Options to skip read trimming (`--skip_trimming`) and read QC (`--skip_qc`) (#5)
+- Options to skip read trimming (`--skip_trimming`) and read QC (`--skip_qc`)
+  (#5)
 - Realignment to closest reference genome based on BLAST (#6)
 
 ### Changed
@@ -223,7 +232,8 @@ This is a major overhaul of YAVSAP to make it use nf-core's DSL2 modules.
 - Krona graphs of Kraken2 output
 - BLAST of assemblies and unclassified reads
 
-[unreleased]: https://github.com/ksumngs/yavsap/compare/v0.6.5-alpha...HEAD
+[unreleased]: https://github.com/ksumngs/yavsap/compare/v0.7.0...HEAD
+[0.7.0]: https://github.com/ksumngs/yavsap/compare/v0.6.5-alpha...v0.7.0
 [0.6.5-alpha]: https://github.com/ksumngs/yavsap/compare/v0.6.4-alpha...v0.6.5-alpha
 [0.6.4-alpha]: https://github.com/ksumngs/yavsap/compare/v0.6.3-alpha...v0.6.4-alpha
 [0.6.3-alpha]: https://github.com/ksumngs/yavsap/compare/v0.6.2-alpha...v0.6.3-alpha

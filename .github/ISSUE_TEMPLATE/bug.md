@@ -5,8 +5,10 @@ title: "[Bug]: "
 labels: ["bug"]
 ---
 
-> _Thanks for helping squash bugs in YAVSAP!_ :smile:
-> _This template is rather extensive._ > _Please fill out all that you can, but remember that this template_ > _is only a tool: if you feel that anything is not relevant, simply_ > _leave it blank._
+> _Thanks for helping squash bugs in YAVSAP!_ :smile: _This template is rather
+> extensive._ > _Please fill out all that you can, but remember that this
+> template_ > _is only a tool: if you feel that anything is not relevant,
+> simply_ > _leave it blank._
 
 ## Behavior
 
@@ -67,9 +69,8 @@ nextflow run ksumngs/yavsap \
 
 ### Possible Solution
 
-> _**(Highly optional, but highly useful.)**
-> If you can figure out a design decision or a particular function call
-> that is causing the bug, explain here.
+> _**(Highly optional, but highly useful.)** If you can figure out a design
+> decision or a particular function call that is causing the bug, explain here.
 > Even better, if you know a way to fix it, but don't want to open a pull
 > request, then explain the fix here._
 

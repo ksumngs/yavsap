@@ -24,12 +24,11 @@
 
 - [CliqueSNV](https://www.ncbi.nlm.nih.gov/pubmed/34214168/)
 
-  > Knyazev S, Tsyvina V, Shankar A, Melnyk A, Artyomenko A, Malygina T,
-  > Porozov YB, Campbell EM, Switzer WM, Skums P, Mangul S, Zelikovsky A.
-  > Accurate assembly of minority viral haplotypes from next-generation
-  > sequencing through efficient noise reduction. Nucleic Acids Res. 2021 Sep
-  > 27;49(17):e102. doi: 10.1093/nar/gkab576. PMID: 34214168; PMCID:
-  > PMC8464054.
+  > Knyazev S, Tsyvina V, Shankar A, Melnyk A, Artyomenko A, Malygina T, Porozov
+  > YB, Campbell EM, Switzer WM, Skums P, Mangul S, Zelikovsky A. Accurate
+  > assembly of minority viral haplotypes from next-generation sequencing
+  > through efficient noise reduction. Nucleic Acids Res. 2021 Sep
+  > 27;49(17):e102. doi: 10.1093/nar/gkab576. PMID: 34214168; PMCID: PMC8464054.
 
 - [Entrez Direct](https://www.ncbi.nlm.nih.gov/books/NBK179288/)
 
@@ -39,13 +38,12 @@
 
 - [iVar](https://www.ncbi.nlm.nih.gov/pubmed/30621750/)
 
-  > Grubaugh ND, Gangavarapu K, Quick J, Matteson NL, De Jesus JG, Main BJ,
-  > Tan AL, Paul LM, Brackney DE, Grewal S, Gurfield N, Van Rompay KKA, Isern
-  > S, Michael SF, Coffey LL, Loman NJ, Andersen KG. An amplicon-based
-  > sequencing framework for accurately measuring intrahost virus diversity
-  > using PrimalSeq and iVar. Genome Biol. 2019 Jan 8;20(1):8. doi:
-  > 10.1186/s13059-018-1618-7. PubMed PMID: 30621750; PubMed Central PMCID:
-  > PMC6325816.
+  > Grubaugh ND, Gangavarapu K, Quick J, Matteson NL, De Jesus JG, Main BJ, Tan
+  > AL, Paul LM, Brackney DE, Grewal S, Gurfield N, Van Rompay KKA, Isern S,
+  > Michael SF, Coffey LL, Loman NJ, Andersen KG. An amplicon-based sequencing
+  > framework for accurately measuring intrahost virus diversity using PrimalSeq
+  > and iVar. Genome Biol. 2019 Jan 8;20(1):8. doi: 10.1186/s13059-018-1618-7.
+  > PubMed PMID: 30621750; PubMed Central PMCID: PMC6325816.
 
 - [Kraken 2](https://www.ncbi.nlm.nih.gov/pubmed/31779668/)
 
@@ -62,9 +60,9 @@
 
 - [minimap2](https://www.ncbi.nlm.nih.gov/pubmed/29750242/)
 
-  > Li H. Minimap2: pairwise alignment for nucleotide sequences.
-  > Bioinformatics. 2018 Sep 15;34(18):3094-3100. doi:
-  > 10.1093/bioinformatics/bty191. PMID: 29750242; PMCID: PMC6137996.
+  > Li H. Minimap2: pairwise alignment for nucleotide sequences. Bioinformatics.
+  > 2018 Sep 15;34(18):3094-3100. doi: 10.1093/bioinformatics/bty191. PMID:
+  > 29750242; PMCID: PMC6137996.
 
 - [MultiQC](https://www.ncbi.nlm.nih.gov/pubmed/27312411/)
 
@@ -77,20 +75,20 @@
 
   > De Coster W, D'Hert S, Schultz DT, Cruts M, Van Broeckhoven C. NanoPack:
   > visualizing and processing long-read sequencing data. Bioinformatics. 2018
-  > Aug 1;34(15):2666-2669. doi: 10.1093/bioinformatics/bty149. PMID:
-  > 29547981; PMCID: PMC6061794.
+  > Aug 1;34(15):2666-2669. doi: 10.1093/bioinformatics/bty149. PMID: 29547981;
+  > PMCID: PMC6061794.
 
 - [NanoStat](https://www.ncbi.nlm.nih.gov/pubmed/29547981/)
 
   > De Coster W, D'Hert S, Schultz DT, Cruts M, Van Broeckhoven C. NanoPack:
   > visualizing and processing long-read sequencing data. Bioinformatics. 2018
-  > Aug 1;34(15):2666-2669. doi: 10.1093/bioinformatics/bty149. PMID:
-  > 29547981; PMCID: PMC6061794.
+  > Aug 1;34(15):2666-2669. doi: 10.1093/bioinformatics/bty149. PMID: 29547981;
+  > PMCID: PMC6061794.
 
 - [R](https://www.R-project.org/)
 
-  > R Core Team (2017). R: A language and environment for statistical
-  > computing. R Foundation for Statistical Computing, Vienna, Austria.
+  > R Core Team (2017). R: A language and environment for statistical computing.
+  > R Foundation for Statistical Computing, Vienna, Austria.
 
 - [RAxML-NG](https://github.com/amkozlov/raxml-ng/)
 
@@ -101,16 +99,16 @@
 
 - [SAMtools](https://www.ncbi.nlm.nih.gov/pubmed/19505943/)
 
-  > Li H, Handsaker B, Wysoker A, Fennell T, Ruan J, Homer N, Marth G,
-  > Abecasis G, Durbin R; 1000 Genome Project Data Processing Subgroup. The
-  > Sequence Alignment/Map format and SAMtools. Bioinformatics. 2009 Aug
+  > Li H, Handsaker B, Wysoker A, Fennell T, Ruan J, Homer N, Marth G, Abecasis
+  > G, Durbin R; 1000 Genome Project Data Processing Subgroup. The Sequence
+  > Alignment/Map format and SAMtools. Bioinformatics. 2009 Aug
   > 15;25(16):2078-9. doi: 10.1093/bioinformatics/btp352. Epub 2009 Jun 8.
   > PubMed PMID: 19505943; PubMed Central PMCID: PMC2723002.
 
 - [seqkit](https://www.ncbi.nlm.nih.gov/pubmed/27706213/)
 
-  > Shen W, Le S, Li Y, Hu F. SeqKit: A Cross-Platform and Ultrafast Toolkit
-  > for FASTA/Q File Manipulation. PLoS One. 2016 Oct 5;11(10):e0163962. doi:
+  > Shen W, Le S, Li Y, Hu F. SeqKit: A Cross-Platform and Ultrafast Toolkit for
+  > FASTA/Q File Manipulation. PLoS One. 2016 Oct 5;11(10):e0163962. doi:
   > 10.1371/journal.pone.0163962. PMID: 27706213; PMCID: PMC5051824.
 
 - [seqtk](https://github.com/lh3/seqtk)
@@ -125,15 +123,15 @@
 
 - [Anaconda](https://anaconda.com)
 
-  > Anaconda Software Distribution. Computer software. Vers. 2-2.4.0.
-  > Anaconda, Nov. 2016. Web.
+  > Anaconda Software Distribution. Computer software. Vers. 2-2.4.0. Anaconda,
+  > Nov. 2016. Web.
 
 - [Bioconda](https://pubmed.ncbi.nlm.nih.gov/29967506/)
 
-  > Grüning B, Dale R, Sjödin A, Chapman BA, Rowe J, Tomkins-Tinch CH,
-  > Valieris R, Köster J; Bioconda Team. Bioconda: sustainable and
-  > comprehensive software distribution for the life sciences. Nat Methods.
-  > 2018 Jul;15(7):475-476. doi: 10.1038/s41592-018-0046-7. PubMed PMID: 29967506.
+  > Grüning B, Dale R, Sjödin A, Chapman BA, Rowe J, Tomkins-Tinch CH, Valieris
+  > R, Köster J; Bioconda Team. Bioconda: sustainable and comprehensive software
+  > distribution for the life sciences. Nat Methods. 2018 Jul;15(7):475-476.
+  > doi: 10.1038/s41592-018-0046-7. PubMed PMID: 29967506.
 
 - [BioContainers](https://pubmed.ncbi.nlm.nih.gov/28379341/)
 
@@ -142,8 +140,8 @@
   > Pfeuffer J, Alvarez RV, Griss J, Nesvizhskii AI, Perez-Riverol Y.
   > BioContainers: an open-source and community-driven framework for software
   > standardization. Bioinformatics. 2017 Aug 15;33(16):2580-2582. doi:
-  > 10.1093/bioinformatics/btx192. PubMed PMID: 28379341; PubMed Central
-  > PMCID: PMC5870671.
+  > 10.1093/bioinformatics/btx192. PubMed PMID: 28379341; PubMed Central PMCID:
+  > PMC5870671.
 
 - [Docker](https://dl.acm.org/doi/10.5555/2600239.2600241)
 

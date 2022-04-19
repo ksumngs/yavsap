@@ -48,48 +48,10 @@ var datamonkey_save_image = function (type, container) {
     svg: "http://www.w3.org/2000/svg",
   };
 
-  function get_styles(doc) {
-    function process_stylesheet(ss) {
-      try {
-        if (ss.cssRules) {
-          for (var i = 0; i < ss.cssRules.length; i++) {
-            var rule = ss.cssRules[i];
-            if (rule.type === 3) {
-              // Import Rule
-              process_stylesheet(rule.styleSheet);
-            } else {
-              // hack for illustrator crashing on descendent selectors
-              if (rule.selectorText) {
-                if (rule.selectorText.indexOf(">") === -1) {
-                  styles += "\n" + rule.cssText;
-                }
-              }
-            }
-          }
-        }
-      } catch (e) {
-        console.log("Could not process stylesheet : " + ss); // eslint-disable-line
-      }
-    }
-
-    var styles = "",
-      styleSheets = doc.styleSheets;
-
-    if (styleSheets) {
-      for (var i = 0; i < styleSheets.length; i++) {
-        process_stylesheet(styleSheets[i]);
-      }
-    }
-
-    return styles;
-  }
-
   var svg = $(container).find("svg")[0];
   if (!svg) {
     svg = $(container)[0];
   }
-
-  var styles = get_styles(window.document);
 
   svg.setAttribute("version", "1.1");
 
@@ -113,11 +75,24 @@ var datamonkey_save_image = function (type, container) {
     svg.setAttributeNS(prefix.xmlns, "xmlns:xlink", prefix.xlink);
   }
 
-  var source = new XMLSerializer()
-    .serializeToString(svg)
-    .replace("</style>", "<![CDATA[" + styles + "]]></style>");
-  var doctype =
-    '<?xml version="1.0" standalone="no"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">';
+  // This is a deviation from the original Phylotree-utils
+  // We know that the 2nd stylesheet contains all the svg styles,
+  // so import them
+  styles = "";
+  styleRules = [...document.styleSheets[1].cssRules];
+  styleRules.forEach(function (style) {
+    styles = styles + style.cssText + "\n";
+  });
+  svg.getElementsByTagName("style")[0].innerText = styles;
+
+  var source = new XMLSerializer().serializeToString(svg);
+  var doctype = new XMLSerializer().serializeToString(
+    document.implementation.createDocumentType(
+      "svg",
+      "-//W3C//DTD SVG 1.1//EN",
+      "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"
+    )
+  );
   var to_download = [doctype + source];
   var image_string =
     "data:image/svg+xml;base66," + encodeURIComponent(to_download);
@@ -172,3 +147,4 @@ $(".phylotree-align-toggler").on("click", function (e) {
     tree.display.update();
   }
 });
+color_scale = d3.scaleOrdinal(d3.schemeCategory10);

@@ -29,6 +29,8 @@ lint:
     - .github/workflows/awsfulltest.yml
     # We use default Prettier settings
     - .prettierrc.yml
+    # We hang on to our Markdownlint config file for VSCode to read
+    - .markdownlint.yml
   nextflow_config: false
   # Currently not supported, but hopefully soon!
   # See https://github.com/nf-core/tools/issues/1031
@@ -54,3 +56,4 @@ lint:
     false
     # Can't find minimum NF version and doesn't like the addition of 'dispatch'
     # to the events
+  multiqc_config: false

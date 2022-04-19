@@ -24,6 +24,12 @@
             "krakentools/extract": {
                 "git_sha": "181a04778a81494dc71b1d68b514b43cfef1512c"
             },
+            "krakentools/kreport2krona": {
+                "git_sha": "c6c9d4fad20eb77232756fc08403fbc4e9988ce2"
+            },
+            "krona/importtext": {
+                "git_sha": "f423673c57aba461cf16bd3bc628e36e33b20029"
+            },
             "minimap2/align": {
                 "git_sha": "ae81650d918dd11707cd61d61a4f2c966739de21"
             },
@@ -77,11 +83,11 @@
             "multiqc": {
                 "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
             },
-            "samtools/bam2fq": {
-                "git_sha": "1ad73f1b2abdea9398680d6d20014838135c9a35"
-            },
             "samtools/faidx": {
                 "git_sha": "1ad73f1b2abdea9398680d6d20014838135c9a35"
+            },
+            "samtools/fastq": {
+                "git_sha": "897c33d5da084b61109500ee44c01da2d3e4e773"
             },
             "samtools/index": {
                 "git_sha": "1ad73f1b2abdea9398680d6d20014838135c9a35"

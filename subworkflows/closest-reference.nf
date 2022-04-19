@@ -4,7 +4,7 @@ include { CUSTOM_ALIGNMENT } from './custom-alignment.nf'
 include { EDIRECT_EFETCH } from '../modules/ksumngs/nf-modules/edirect/efetch/main.nf'
 include { EDIRECT_ESEARCH } from '../modules/ksumngs/nf-modules/edirect/esearch/main.nf'
 include { IVAR_CONSENSUS } from '../modules/nf-core/modules/ivar/consensus/main.nf'
-include { SAMTOOLS_BAM2FQ } from '../modules/nf-core/modules/samtools/bam2fq/main.nf'
+include { SAMTOOLS_FASTQ } from '../modules/nf-core/modules/samtools/fastq/main.nf'
 
 workflow CLOSEST_REFERENCE {
     take:
@@ -79,10 +79,10 @@ workflow CLOSEST_REFERENCE {
         .set{ fasta }
 
     // Convert the aligned reads back into fastq format (unalign them?)
-    SAMTOOLS_BAM2FQ(reads, true)
+    SAMTOOLS_FASTQ(reads)
 
     // Align the reads to their new reference genome
-    CUSTOM_ALIGNMENT(SAMTOOLS_BAM2FQ.out.reads.join(fasta))
+    CUSTOM_ALIGNMENT(SAMTOOLS_FASTQ.out.fastq.join(fasta))
     CUSTOM_ALIGNMENT.out.bam.set{ bam }
     CUSTOM_ALIGNMENT.out.bai.set{ bai }
 
@@ -91,7 +91,7 @@ workflow CLOSEST_REFERENCE {
     versions = versions.mix(BLAST_MAKEBLASTDB.out.versions)
     versions = versions.mix(IVAR_CONSENSUS.out.versions)
     versions = versions.mix(BLAST_BLASTN.out.versions)
-    versions = versions.mix(SAMTOOLS_BAM2FQ.out.versions)
+    versions = versions.mix(SAMTOOLS_FASTQ.out.versions)
     versions = versions.mix(CUSTOM_ALIGNMENT.out.versions)
 
     emit:
