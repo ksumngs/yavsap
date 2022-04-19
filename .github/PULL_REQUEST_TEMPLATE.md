@@ -23,8 +23,8 @@ Learn more about contributing: [CONTRIBUTING.md](https://github.com/ksumngs/yavs
 - [ ] Make sure your code lints (`nf-core lint`).
 - [ ] Ensure the test suite passes
       (`nextflow run . -profile test,docker --outdir <OUTDIR>`).
-- [ ] Usage Documentation in `docs/usage.rst` is updated.
-- [ ] Output Documentation in `docs/output.rst` is updated.
+- [ ] Usage Documentation in `docs/usage.md` is updated.
+- [ ] Output Documentation in `docs/output.md` is updated.
 - [ ] `CHANGELOG.md` is updated.
 - [ ] `README.md` is updated (including new tool citations and
       authors/contributors).

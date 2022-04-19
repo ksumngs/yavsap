@@ -1,0 +1,50 @@
+.nav-flush .nav-link {
+  border-radius: 0;
+}
+
+table {
+  empty-cells: show;
+}
+
+thead > tr > th {
+  text-align: center;
+  vertical-align: bottom;
+}
+
+tbody {
+  overflow: scroll;
+}
+
+th {
+  text-align: left;
+  vertical-align: top;
+}
+
+.gene {
+  background-color: yellow !important;
+}
+
+.variant {
+  background-color: purple !important;
+}
+
+.A {
+  color: red;
+}
+
+.C {
+  color: blue;
+}
+
+.G {
+  color: orange;
+}
+
+.T {
+  color: green;
+}
+
+.iframe-content {
+  width: calc(100vw - 5rem);
+  height: 100vh;
+}

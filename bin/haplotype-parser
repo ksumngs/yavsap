@@ -1,0 +1,24 @@
+#!/usr/bin/env python3
+# Converts a haplotype yaml file into a TSV of the haplotype ids and their
+# abundances
+import argparse
+import yaml
+import sys
+
+parser = argparse.ArgumentParser()
+parser.add_argument("id", nargs="?", type=str)
+parser.add_argument(
+    "haplotype_yaml", nargs="?", type=argparse.FileType("r"), default=sys.stdin
+)
+parser.add_argument(
+    "haplotype_tsv", nargs="?", type=argparse.FileType("w"), default=sys.stdout
+)
+
+id = parser.parse_args().id
+haplotype_yaml = parser.parse_args().haplotype_yaml
+haplotype_tsv = parser.parse_args().haplotype_tsv
+
+for hap in yaml.load(haplotype_yaml, Loader=yaml.BaseLoader)["haplotypes"]:
+    hap_name = hap["name"].replace(">", "")
+    hap_freq = hap["frequency"]
+    haplotype_tsv.write(f"{id}\t{hap_name}\t{hap_freq}\n")
