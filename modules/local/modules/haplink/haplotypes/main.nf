@@ -5,7 +5,7 @@ process HAPLINK_HAPLOTYPES {
     container 'quay.io/millironx/haplink:0.6.1'
 
     input:
-    tuple val(meta), file(bam), file(vcf)
+    tuple val(meta), path(bam), path(vcf), path(reference)
 
     output:
     tuple val(meta), path("*.yaml"), emit: yaml
@@ -21,6 +21,7 @@ process HAPLINK_HAPLOTYPES {
     haplink haplotypes \\
         --bam "${bam}" \\
         --variants "${vcf}" \\
+        --reference "${reference}" \\
         --output "${prefix}.haplotypes.yaml" \\
         ${args} \\
         --julia-args -t${task.cpus}

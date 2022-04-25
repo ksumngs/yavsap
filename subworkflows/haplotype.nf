@@ -47,6 +47,7 @@ workflow HAPLOTYPING {
             alignments
                 .map{ it.dropRight(1) }
                 .join(HAPLINK_VARIANTS.out.vcf)
+                .join(references)
         )
         HAPLINK_HAPLOTYPES.out.yaml.set{ yaml }
 
