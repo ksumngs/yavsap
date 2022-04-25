@@ -8,6 +8,12 @@ and this project adheres to
 
 ## [Unreleased]
 
+## [0.7.1] - 2022-04-25
+
+### Fixed
+
+- No visualizer output for Nanopore reads ([#41](https://github.com/ksumngs/yavsap/issues/41))
+
 ## [0.7.0] - 2022-04-19
 
 ### Changed
