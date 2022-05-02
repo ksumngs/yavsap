@@ -20,6 +20,13 @@ if (sum(startsWith(name_changes$old, "Consensus")) > 0) {
         paste(sample_name, "consensus", sep = "_")
 }
 
+# HapLink.jl consensus sequence rename
+# e.g. SAMPLE_CONSENSUS -> SAMPLE_consensus
+if (sum(endsWith(name_changes$old, "CONSENSUS")) > 0) {
+    name_changes[endsWith(name_changes$old, "CONSENSUS"), ]$new <-
+        paste(sample_name, "consensus", sep = "_")
+}
+
 # HapLink.jl haplotype sequence rename
 # e.g. ???????? ... -> SAMPLE_haplotype_????????
 # This might clash with CliqueSNV if the samplename is entirely hex, so do it
@@ -50,7 +57,7 @@ if (sum(grepl("^.+_[0-9]+_.*", name_changes$old)) > 0) {
                     name_changes[grepl(
                         "^.+_[0-9]+_.*",
                         name_changes$old
-                        ), ]$old,
+                    ), ]$old,
                     "_"
                 ),
                 "[[",
