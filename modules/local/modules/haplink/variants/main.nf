@@ -2,7 +2,7 @@ process HAPLINK_VARIANTS {
     tag "$meta.id"
     label 'process_medium'
 
-    container 'quay.io/millironx/haplink:0.6.1'
+    container 'quay.io/millironx/haplink:0.7.0'
 
     input:
     tuple val(meta), file(bam), file(bai), file(reference)
