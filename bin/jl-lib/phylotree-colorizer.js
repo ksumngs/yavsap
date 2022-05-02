@@ -1,7 +1,5 @@
 tree = new phylotree.phylotree(newick);
-selection_set = !tree.get_parsed_tags().length
-  ? tree.get_parsed_tags()
-  : ["Foreground"];
+selection_set = !tree.get_parsed_tags().length ? tree.get_parsed_tags() : ["Foreground"];
 nodeColorizer = function (element, data) {
   try {
     var count_class = 0;

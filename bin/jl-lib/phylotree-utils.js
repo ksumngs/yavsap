@@ -94,8 +94,7 @@ var datamonkey_save_image = function (type, container) {
     )
   );
   var to_download = [doctype + source];
-  var image_string =
-    "data:image/svg+xml;base66," + encodeURIComponent(to_download);
+  var image_string = "data:image/svg+xml;base66," + encodeURIComponent(to_download);
 
   if (navigator.msSaveBlob) {
     // IE10

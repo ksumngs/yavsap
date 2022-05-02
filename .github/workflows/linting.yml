@@ -1,6 +1,7 @@
 name: nf-core linting
 # This workflow is triggered on pushes and PRs to the repository.
-# It runs the `nf-core lint` and markdown lint tests to ensure that the code meets the nf-core guidelines
+# It runs the `nf-core lint` and markdown lint tests to ensure
+# that the code meets the nf-core guidelines.
 on:
   push:
   pull_request:
@@ -19,7 +20,7 @@ jobs:
         run: npm install -g editorconfig-checker
 
       - name: Run ECLint check
-        run: editorconfig-checker -exclude '.*.md' $(git ls-files | grep -v test)
+        run: editorconfig-checker -exclude README.md $(find .* -type f | grep -v '.git\|.py\|.md\|json\|yml\|yaml\|html\|css\|work\|.nextflow\|build\|nf_core.egg-info\|log.txt\|Makefile')
 
   Prettier:
     runs-on: ubuntu-latest
