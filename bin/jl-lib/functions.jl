@@ -49,7 +49,12 @@ function sample_rows(
 
     # Get the alignment of this sample's consensus sequence
     consensus_record = first(
-        filter(s -> contains(SAM.tempname(s), "Consensus_$(samplename)"), alignments)
+        filter(
+            s ->
+                occursin("consensus", lowercase(SAM.tempname(s))) &&
+                    occursin(samplename, SAM.tempname(s)),
+            alignments,
+        ),
     )
 
     rows = EzXML.Node[]
