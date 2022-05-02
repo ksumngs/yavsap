@@ -67,14 +67,7 @@
                     "default": "copy",
                     "fa_icon": "fab fa-leanpub",
                     "description": "How to create results files",
-                    "enum": [
-                        "symlink",
-                        "relink",
-                        "link",
-                        "copy",
-                        "copyNoFollow",
-                        "move"
-                    ],
+                    "enum": ["symlink", "relink", "link", "copy", "copyNoFollow", "move"],
                     "hidden": true
                 },
                 "tracedir": {
@@ -183,12 +176,7 @@
                     "fa_icon": "fas fa-align-right",
                     "description": "Sequences to be removed during trimming",
                     "help_text": "Only applies to Illumina reads. Corresponds to the first\n[ILLUMINACLIP](http://www.usadellab.org/cms/?page=trimmomatic) option of\nTrimmomatic. If left blank (i.e. `--trim_adapters ''`), then adapter trimming is\ndisabled. Custom adapters cannot be used, and the parameter corresponds to\none of the prebuilt sequence files provided with Trimmomatic.\n",
-                    "enum": [
-                        "NexteraPE-PE.fa",
-                        "TruSeq2-PE.fa",
-                        "TruSeq3-PE-2.fa",
-                        "TruSeq3-PE.fa"
-                    ]
+                    "enum": ["NexteraPE-PE.fa", "TruSeq2-PE.fa", "TruSeq3-PE-2.fa", "TruSeq3-PE.fa"]
                 },
                 "trim_mismatches": {
                     "type": "integer",
