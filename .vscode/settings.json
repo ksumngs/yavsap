@@ -1,5 +1,6 @@
 {
     "files.associations": {
-        "*.config": "nextflow"
+        "*.config": "nextflow",
+        "bin/sequence-table": "julia"
     }
 }
