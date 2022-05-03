@@ -31,16 +31,13 @@ if (sum(endsWith(name_changes$old, "CONSENSUS")) > 0) {
 # e.g. ???????? ... -> SAMPLE_haplotype_????????
 # This might clash with CliqueSNV if the samplename is entirely hex, so do it
 # first
-if (sum(grepl("^[0-9a-f]{8}\\s.*", name_changes$old)) > 0) {
-    name_changes[grepl("^[0-9a-f]{8}\\s.*", name_changes$old), ]$new <-
+haplink_indexes <- grepl("^[0-9a-f]{8}\\s.*", name_changes$old)
+if (sum(haplink_indexes) > 0) {
+    name_changes[haplink_indexes, ]$new <-
         paste(
             sample_name,
             "haplotype",
-            substr(
-                name_changes[grepl("^[0-9a-f]{8}.*", name_changes$old), ]$old,
-                1,
-                8
-            ),
+            substr(name_changes[haplink_indexes, ]$old, 1, 8),
             sep = "_"
         )
 }
