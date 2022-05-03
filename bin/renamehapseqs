@@ -22,8 +22,9 @@ if (sum(startsWith(name_changes$old, "Consensus")) > 0) {
 
 # HapLink.jl consensus sequence rename
 # e.g. SAMPLE_CONSENSUS -> SAMPLE_consensus
-if (sum(endsWith(name_changes$old, "CONSENSUS")) > 0) {
-    name_changes[endsWith(name_changes$old, "CONSENSUS"), ]$new <-
+haplink_consensus_indexes <- endsWith(name_changes$old, "CONSENSUS")
+if (sum(haplink_consensus_indexes) > 0) {
+    name_changes[haplink_consensus_indexes, ]$new <-
         paste(sample_name, "consensus", sep = "_")
 }
 
