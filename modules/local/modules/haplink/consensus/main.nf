@@ -15,7 +15,6 @@ process HAPLINK_CONSENSUS {
     task.ext.when == null || task.ext.when
 
     script:
-    def args = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: "${meta.id}"
     """
     haplink consensus \\
@@ -23,7 +22,6 @@ process HAPLINK_CONSENSUS {
         --variants ${variantcalls} \\
         --prefix ${prefix} \\
         --output ${prefix}.consensus.fasta \\
-        ${args} \\
         --julia-args -t${task.cpus}
 
     cat <<-END_VERSIONS > versions.yml
