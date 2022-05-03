@@ -43,20 +43,15 @@ if (sum(haplink_indexes) > 0) {
 }
 
 # CliqueSNV haplotype sequence rename
-# e.g. SAMPLE_##_... -> SAMPLE_haplotype_##
-if (sum(grepl("^.+_[0-9]+_.*", name_changes$old)) > 0) {
-    name_changes[grepl("^.+_[0-9]+_.*", name_changes$old), ]$new <-
+# e.g. SAMPLE_##_... -> SAMPLE_haplotype_##+
+cliquesnv_indexes <- grepl("^.+_[0-9]+_.*", name_changes$old)
+if (sum(cliquesnv_indexes) > 0) {
+    name_changes[cliquesnv_indexes, ]$new <-
         paste(
             sample_name,
             "haplotype",
             sapply(
-                strsplit(
-                    name_changes[grepl(
-                        "^.+_[0-9]+_.*",
-                        name_changes$old
-                    ), ]$old,
-                    "_"
-                ),
+                strsplit(name_changes[cliquesnv_indexes, ]$old, "_"),
                 "[[",
                 2
             ),
