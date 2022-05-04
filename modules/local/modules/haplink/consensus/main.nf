@@ -22,7 +22,7 @@ process HAPLINK_CONSENSUS {
         --variants ${variantcalls} \\
         --prefix ${prefix} \\
         --output ${prefix}.consensus.fasta \\
-        --julia-args -t${task.cpus}
+        ${args} --julia-args -t${task.cpus}
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

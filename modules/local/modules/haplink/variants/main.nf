@@ -22,8 +22,7 @@ process HAPLINK_VARIANTS {
         --bam ${bam} \\
         --reference ${reference} \\
         --output ${prefix}.vcf \\
-        ${args} \\
-        --julia-args -t${task.cpus}
+        ${args} --julia-args -t${task.cpus}
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

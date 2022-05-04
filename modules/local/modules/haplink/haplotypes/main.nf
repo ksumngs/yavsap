@@ -23,8 +23,7 @@ process HAPLINK_HAPLOTYPES {
         --variants "${vcf}" \\
         --reference "${reference}" \\
         --output "${prefix}.haplotypes.yaml" \\
-        ${args} \\
-        --julia-args -t${task.cpus}
+        ${args} --julia-args -t${task.cpus}
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
