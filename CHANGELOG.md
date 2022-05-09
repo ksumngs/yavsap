@@ -8,6 +8,11 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Changed
+
+- Consensus sequences now called using the variant callers for Illumina/Nanopore
+  reads
+
 ## [0.7.1] - 2022-04-25
 
 ### Fixed
