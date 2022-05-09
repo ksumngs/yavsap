@@ -18,7 +18,14 @@ id = parser.parse_args().id
 haplotype_yaml = parser.parse_args().haplotype_yaml
 haplotype_tsv = parser.parse_args().haplotype_tsv
 
-for hap in yaml.load(haplotype_yaml, Loader=yaml.BaseLoader)["haplotypes"]:
+haplotype_data = yaml.load(haplotype_yaml, Loader=yaml.BaseLoader)["haplotypes"]
+haplotype_data = list(filter(lambda x: x["name"] != "CONSENSUS", haplotype_data))
+
+if len(haplotype_data) < 1:
+    haplotype_tsv.write(f"{id}\tDUMMY\t0.00\n")
+
+for hap in haplotype_data:
     hap_name = hap["name"].replace(">", "")
-    hap_freq = hap["frequency"]
-    haplotype_tsv.write(f"{id}\t{hap_name}\t{hap_freq}\n")
+    if hap_name != "CONSENSUS":
+        hap_freq = hap["frequency"]
+        haplotype_tsv.write(f"{id}\t{hap_name}\t{hap_freq}\n")

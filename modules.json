@@ -6,6 +6,9 @@
             "cat/fastq": {
                 "git_sha": "da5728117c6caaee428ed8729e88b93abc60c5fc"
             },
+            "cliquesnv/consensusillumina": {
+                "git_sha": "2362072d4e1659d9096e047990e2959f56134820"
+            },
             "cliquesnv/illumina": {
                 "git_sha": "3c4ecd5017df87d5224100ab87bc4879bf043473"
             },

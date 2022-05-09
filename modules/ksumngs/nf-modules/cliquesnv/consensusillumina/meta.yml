@@ -1,0 +1,41 @@
+name: cliquesnv_consensusillumina
+description: Utility method to calculate consensus string base from reconstruction of Intra-Host Viral Populations with Illumina reads
+keywords:
+  - viral
+  - consensus
+  - illumina
+tools:
+  - cliquesnv:
+      description: "Scalable Reconstruction of Intra-Host Viral Populations from NGS Reads"
+      homepage: https://github.com/vtsyvina/CliqueSNV
+      doi: "10.1093/nar/gkab576"
+      licence: ["MIT"]
+
+input:
+  - meta:
+      type: map
+      description: |
+        Groovy Map containing sample information
+        e.g. [ id:'test', single_end:false ]
+  - bam:
+      type: file
+      description: Sorted bam file to call variants from
+      pattern: "*.bam"
+
+output:
+  - meta:
+      type: map
+      description: |
+        Groovy Map containing sample information
+        e.g. [ id:'test', single_end:false ]
+  - versions:
+      type: file
+      description: File containing software versions
+      pattern: "versions.yml"
+  - fasta:
+      type: file
+      description: Consensus sequence in FASTA format
+      pattern: "*.{fasta}"
+
+authors:
+  - "@MillironX"

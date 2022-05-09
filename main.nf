@@ -169,6 +169,7 @@ workflow {
     // Realign reads to their closest strain
     CLOSEST_REFERENCE(
         ALIGNMENT.out.bam,
+        ALIGNMENT.out.bai,
         ReferenceGenome,
         genomeFile
     )

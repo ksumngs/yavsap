@@ -49,7 +49,12 @@ function sample_rows(
 
     # Get the alignment of this sample's consensus sequence
     consensus_record = first(
-        filter(s -> contains(SAM.tempname(s), "Consensus_$(samplename)"), alignments)
+        filter(
+            s ->
+                occursin("consensus", lowercase(SAM.tempname(s))) &&
+                    occursin(samplename, SAM.tempname(s)),
+            alignments,
+        ),
     )
 
     rows = EzXML.Node[]
@@ -68,11 +73,24 @@ function sample_rows(
         haplotype_name = haplotype_table.haplotype
         haplotype_frequency = haplotype_table.frequency
 
-        haplotype_record = first(
-            filter(
-                s -> contains(SAM.tempname(s), haplotype_table.haplotype), alignment_records
-            ),
+        haplotype_records = filter(
+            s -> contains(SAM.tempname(s), haplotype_table.haplotype), alignment_records
         )
+
+        if isempty(haplotype_records)
+            push!(
+                rows,
+                tr(
+                    td(
+                        em("No sub-consensus haplotypes found in $samplename");
+                        colspan=SAM.seqlength(consensus_record),
+                    ),
+                ),
+            )
+            return rows
+        end #if
+
+        haplotype_record = first(haplotype_records)
 
         push!(
             rows,

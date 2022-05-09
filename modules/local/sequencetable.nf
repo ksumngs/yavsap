@@ -25,7 +25,7 @@ process SEQUENCETABLE {
     krona_flag = krona ? '--krona' : '--no-krona'
     tree_flag = tree ? "--newick ${tree}" : ''
     """
-    sequence-table.jl \\
+    sequence-table \\
             ${tsv} \\
             ${sam} \\
             ${reference} \\

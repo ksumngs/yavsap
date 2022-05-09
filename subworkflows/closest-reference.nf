@@ -1,5 +1,6 @@
 include { BLAST_BLASTN } from '../modules/nf-core/modules/blast/blastn/main.nf'
 include { BLAST_MAKEBLASTDB } from '../modules/nf-core/modules/blast/makeblastdb/main.nf'
+include { CONSENSUS } from './consensus.nf'
 include { CUSTOM_ALIGNMENT } from './custom-alignment.nf'
 include { EDIRECT_EFETCH } from '../modules/ksumngs/nf-modules/edirect/efetch/main.nf'
 include { EDIRECT_ESEARCH } from '../modules/ksumngs/nf-modules/edirect/esearch/main.nf'
@@ -9,6 +10,7 @@ include { SAMTOOLS_FASTQ } from '../modules/nf-core/modules/samtools/fastq/main.
 workflow CLOSEST_REFERENCE {
     take:
     reads
+    read_index
     reference
     genome_list
 
@@ -33,8 +35,9 @@ workflow CLOSEST_REFERENCE {
     BLAST_MAKEBLASTDB(genome_fasta)
 
     // Get the consensus sequence of each sample
-    IVAR_CONSENSUS(reads, reference, false)
-    IVAR_CONSENSUS.out.fasta.set{ consensus_fasta }
+    CONSENSUS(reads, read_index, reference)
+    CONSENSUS.out.fasta.set{ consensus_fasta }
+    versions = versions.mix(CONSENSUS.out.versions)
 
     // BLAST the consensus sequence against all of the reference genomes
     BLAST_BLASTN(
@@ -89,7 +92,6 @@ workflow CLOSEST_REFERENCE {
     versions = versions.mix(EDIRECT_ESEARCH.out.versions)
     versions = versions.mix(EDIRECT_EFETCH.out.versions)
     versions = versions.mix(BLAST_MAKEBLASTDB.out.versions)
-    versions = versions.mix(IVAR_CONSENSUS.out.versions)
     versions = versions.mix(BLAST_BLASTN.out.versions)
     versions = versions.mix(SAMTOOLS_FASTQ.out.versions)
     versions = versions.mix(CUSTOM_ALIGNMENT.out.versions)

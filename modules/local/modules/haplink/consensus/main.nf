@@ -1,15 +1,15 @@
-process HAPLINK_VARIANTS {
+process HAPLINK_CONSENSUS {
     tag "$meta.id"
-    label 'process_medium'
+    label 'process_low'
 
     container 'quay.io/millironx/haplink:0.7.0'
 
     input:
-    tuple val(meta), file(bam), file(bai), file(reference)
+    tuple val(meta), path(variantcalls), path(reference)
 
     output:
-    tuple val(meta), path("*.vcf"), emit: vcf
-    path "versions.yml"             , emit: versions
+    tuple val(meta), path("*.fasta"), emit: fasta
+    path "versions.yml", emit: versions
 
     when:
     task.ext.when == null || task.ext.when
@@ -18,10 +18,11 @@ process HAPLINK_VARIANTS {
     def args = task.ext.args ?: ''
     def prefix = task.ext.prefix ?: "${meta.id}"
     """
-    haplink variants \\
-        --bam ${bam} \\
+    haplink consensus \\
         --reference ${reference} \\
-        --output ${prefix}.vcf \\
+        --variants ${variantcalls} \\
+        --prefix ${prefix} \\
+        --output ${prefix}.consensus.fasta \\
         ${args} --julia-args -t${task.cpus}
 
     cat <<-END_VERSIONS > versions.yml

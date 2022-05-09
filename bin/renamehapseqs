@@ -13,10 +13,11 @@ fasta_out <- args[3]
 fasta_raw <- read.fasta(fasta_in, clean_name = FALSE)
 name_changes <- data.frame(old = fasta_raw[1]$seq.name, new = NA)
 
-# iVar consensus sequence rename
-# e.g. Consensus_SAMPLE_... -> SAMPLE_consensus
-if (sum(startsWith(name_changes$old, "Consensus")) > 0) {
-    name_changes[startsWith(name_changes$old, "Consensus"), ]$new <-
+# HapLink.jl consensus sequence rename
+# e.g. SAMPLE_CONSENSUS -> SAMPLE_consensus
+haplink_consensus_indexes <- endsWith(name_changes$old, "CONSENSUS")
+if (sum(haplink_consensus_indexes) > 0) {
+    name_changes[haplink_consensus_indexes, ]$new <-
         paste(sample_name, "consensus", sep = "_")
 }
 
@@ -24,35 +25,27 @@ if (sum(startsWith(name_changes$old, "Consensus")) > 0) {
 # e.g. ???????? ... -> SAMPLE_haplotype_????????
 # This might clash with CliqueSNV if the samplename is entirely hex, so do it
 # first
-if (sum(grepl("^[0-9a-f]{8}\\s.*", name_changes$old)) > 0) {
-    name_changes[grepl("^[0-9a-f]{8}\\s.*", name_changes$old), ]$new <-
+haplink_indexes <- grepl("^[0-9a-f]{8}\\s.*", name_changes$old)
+if (sum(haplink_indexes) > 0) {
+    name_changes[haplink_indexes, ]$new <-
         paste(
             sample_name,
             "haplotype",
-            substr(
-                name_changes[grepl("^[0-9a-f]{8}.*", name_changes$old), ]$old,
-                1,
-                8
-            ),
+            substr(name_changes[haplink_indexes, ]$old, 1, 8),
             sep = "_"
         )
 }
 
 # CliqueSNV haplotype sequence rename
-# e.g. SAMPLE_##_... -> SAMPLE_haplotype_##
-if (sum(grepl("^.+_[0-9]+_.*", name_changes$old)) > 0) {
-    name_changes[grepl("^.+_[0-9]+_.*", name_changes$old), ]$new <-
+# e.g. SAMPLE_##_... -> SAMPLE_haplotype_##+
+cliquesnv_indexes <- grepl("^.+_[0-9]+_.*", name_changes$old)
+if (sum(cliquesnv_indexes) > 0) {
+    name_changes[cliquesnv_indexes, ]$new <-
         paste(
             sample_name,
             "haplotype",
             sapply(
-                strsplit(
-                    name_changes[grepl(
-                        "^.+_[0-9]+_.*",
-                        name_changes$old
-                        ), ]$old,
-                    "_"
-                ),
+                strsplit(name_changes[cliquesnv_indexes, ]$old, "_"),
                 "[[",
                 2
             ),

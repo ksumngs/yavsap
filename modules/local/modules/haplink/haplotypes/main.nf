@@ -2,7 +2,7 @@ process HAPLINK_HAPLOTYPES {
     tag "$meta.id"
     label 'process_high'
 
-    container 'quay.io/millironx/haplink:0.6.1'
+    container 'quay.io/millironx/haplink:0.7.0'
 
     input:
     tuple val(meta), path(bam), path(vcf), path(reference)
@@ -23,8 +23,7 @@ process HAPLINK_HAPLOTYPES {
         --variants "${vcf}" \\
         --reference "${reference}" \\
         --output "${prefix}.haplotypes.yaml" \\
-        ${args} \\
-        --julia-args -t${task.cpus}
+        ${args} --julia-args -t${task.cpus}
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
