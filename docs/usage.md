@@ -1,3 +1,4 @@
+<!--markdownlint-disable line-length -->
 # Usage
 
 Basic jist:
@@ -8,7 +9,7 @@ nextflow run ksumngs/yavsap \
   --platform <illumina,nanopore> --kraken2_db <kraken2_db>
 ```
 
-## Input Preparation
+## Input preparation
 
 ### Using a Directory as Input
 
@@ -77,8 +78,6 @@ odd-number columns (`3,5,7`).
 
 #### Single-end example
 
-<!-- markdownlint-disable line-length -->
-
 | #samplename |                                                                                        |                                                                                         |
 | ----------- | -------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
 | pig-serum   | `/data/run/fastq{pass,fail}/barcode01/FAP01234_{pass,fail}_barcode01_abcde01_*.fastq*` | `/data/run2/fastq{pass,fail}/barcode07/FAP01234_{pass,fail}_barcode07_abcde01_*.fastq*` |
@@ -86,11 +85,7 @@ odd-number columns (`3,5,7`).
 | mosquito1   | `/data/run/fastq{pass,fail}/barcode03/FAP01234_{pass,fail}_barcode03_abcde01_*.fastq*` |                                                                                         |
 | mosquito2   | `` ./seq-results/mosquito2/*.fastq*` ``                                                |                                                                                         |
 
-<!-- markdownlint-enable line-length -->
-
 #### Paired-end example
-
-<!-- markdownlint-disable line-length -->
 
 | #Sample   | Forward1                                 | Reverse1                                 | Forward2                              | Reverse2                              |
 | --------- | ---------------------------------------- | ---------------------------------------- | ------------------------------------- | ------------------------------------- |
@@ -98,8 +93,6 @@ odd-number columns (`3,5,7`).
 | pig-feces | `/basespace/run/PIG-FECES*_R1*.fastq.gz` | `/basespace/run/PIG-FECES*_R2*.fastq.gz` |                                       |                                       |
 | mosquito1 | `/basespace/run/MOSQUITO1*_R1*.fastq.gz` | `/basespace/run/MOSQUITO1*_R1*.fastq.gz` |                                       |                                       |
 | mosquito2 | `./seq-results/mosquito2/*_R1*.fastq.gz` | `./seq-results/mosquito2/*_R2*.fastq.gz` |                                       |                                       |
-
-<!-- markdownlint-enable line-length -->
 
 Once the samplesheet is constructed, pass it on the command line as:
 
@@ -111,72 +104,87 @@ nextflow run ksumngs/yavsap \
   --kraken2_db <kraken2_db>
 ```
 
-## Profile Selection
+## Running the pipeline
 
-Profiles allow for unique combinations of settings within a Nextflow pipeline.
-For the purposes of YAVSAP, they reconfigure the pipeline to run on a particular
-container engine. Whichever engine you choose must be installed and available
-(e.g. `module load`) on each node that pipeline processes are running on. The
-available options are
+The typical command for running the pipeline is as follows:
 
-(none)
+```console
+nextflow run ksumngs/yavsap -profile docker --input . --outdir <OUTDIR> --platform illumina --kraken2_db https://genome-idx.s3.amazonaws.com/kraken/k2_viral_20210517.tar.gz --keep_taxid classified
+```
 
-: Don't use a container engine. Requires that every tool and the right version
-of every tool be installed on each machine the pipeline is running on. Don't
-use this one.
+This will launch the pipeline with the `docker` configuration profile. See below for more information about profiles.
 
-docker
+Note that the pipeline will create the following files in your working directory:
 
-: Use [Docker](https://docker.com) as the container engine. Note that Docker
-often requires root or nearly-root permissions that usually aren't available
-on HPCs, and has a weird license that might forbid its use in commercial
-settings. Works well on local machines, though.
+```console
+work                # Directory containing the nextflow working files
+<OUTIDR>            # Finished results in specified location (defined with --outdir)
+.nextflow_log       # Log file from Nextflow
+# Other nextflow hidden files, eg. history of pipeline runs and old logs.
+```
 
-podman
+### Updating the pipeline
 
-: Use [Podman](https://podman.io) instead of Docker. Podman is similar enough
-to Docker that they can often be used interchangably, but doesn't require root
-permissions and has a free license. Some files might not be accessible via
-container on RHEL-based distros thanks to their particular SELinux
-implementation.
+When you run the above command, Nextflow automatically pulls the pipeline code from GitHub and stores it as a cached version. When running the pipeline after this, it will always use the cached version if available - even if the pipeline has been updated since. To make sure that you're running the latest version of the pipeline, make sure that you regularly update the cached version of the pipeline:
 
-singularity
+```console
+nextflow pull ksumngs/yavsap
+```
 
-: **Recommended**
+### Reproducibility
 
-Use the {doc}`Singularity <singularity:index>` container engine. This engine
-was built with HPC use in mind, and doesn't require any special permissions to
-run. Singularity's downfall is how it will expose your home directory to the
-container, resulting in rare, but difficult to explain bugs when files
-conflict. Every effort has been made to minimize the effects of Singularity's
-file mounting in this pipeline.
+It is a good idea to specify a pipeline version when running the pipeline on your data. This ensures that a specific version of the pipeline code and software are used when you run your pipeline. If you keep using the same tag, you'll be running the same version of the pipeline, even if there have been changes to the code since.
 
-INSTITUTE
+First, go to the [yavsap releases page](https://github.com/ksumngs/yavsap/releases) and find the latest version number (eg. `v1.3.1`). Then specify this when running the pipeline with `-r` (one hyphen) - eg. `-r v1.3.1`.
 
-: If your computing center is listed in [nf-core configs](https://github.com/nf-core/configs/)
-then you can pass that name to `-profile` to have the container engine and
-resource limits configured automatically.
+This version number will be logged in reports when you run the pipeline, so that you'll know what you used when you look back in the future.
 
-test
+## Core Nextflow arguments
 
-: Download a test dataset from nf-core and run a sample to ensure your machine
-configuration is correct. Must be used with one of the container engine
-profiles.
+> **NB:** These options are part of Nextflow and use a _single_ hyphen (pipeline parameters use a double-hyphen).
 
-test_nanopore
+### `-profile`
 
-: Download a MinION test dataset and run just like `test`.
+Use this parameter to choose a configuration profile. Profiles can give configuration presets for different compute environments.
 
-gh
+Several generic profiles are bundled with the pipeline which instruct the pipeline to use software packaged using different methods (Docker, Singularity, Podman, Shifter, Charliecloud, Conda) - see below. When using Biocontainers, most of these software packaging methods pull Docker containers from quay.io e.g [FastQC](https://quay.io/repository/biocontainers/fastqc) except for Singularity which directly downloads Singularity images via https hosted by the [Galaxy project](https://depot.galaxyproject.org/singularity/)<!-- and Conda which downloads and installs software locally from [Bioconda](https://bioconda.github.io/)-->.
 
-: Used to limit resource usage during continuous integration on GitHub Actions.
-You should never have to use these for real-life analysis.
+> We highly recommend the use of Docker or Singularity containers for full pipeline reproducibility<!--, however when this is not possible, Conda is also supported-->.
 
-To select a profile, you must pass the desired profile name to Nextflow's
-`-profile` flag. Note that this is a Nextflow flag, and not a pipeline flag,
-so it is a single dash (`-profile`), not a double dash (`--profile`).
+The pipeline also dynamically loads configurations from [https://github.com/nf-core/configs](https://github.com/nf-core/configs) when it runs, making multiple config profiles for various institutional clusters available at run time. For more information and to see if your system is available in these configs please see the [nf-core/configs documentation](https://github.com/nf-core/configs#documentation).
 
-## Mandatory Parameters
+Note that multiple profiles can be loaded, for example: `-profile test,docker` - the order of arguments is important!
+They are loaded in sequence, so later profiles can overwrite earlier profiles.
+
+If `-profile` is not specified, the pipeline will run locally and expect all software to be installed and available on the `PATH`. This is _not_ recommended.
+
+- `docker`
+  - A generic configuration profile to be used with [Docker](https://docker.com/)
+- `singularity`
+  - A generic configuration profile to be used with [Singularity](https://sylabs.io/docs/)
+- `podman`
+  - A generic configuration profile to be used with [Podman](https://podman.io/)
+- `shifter`
+  - A generic configuration profile to be used with [Shifter](https://nersc.gitlab.io/development/shifter/how-to-use/)
+- `charliecloud`
+  - A generic configuration profile to be used with [Charliecloud](https://hpc.github.io/charliecloud/)
+- ~~`conda`~~
+  - ~~A generic configuration profile to be used with [Conda](https://conda.io/docs/). Please only use Conda as a last resort i.e. when it's not possible to run the pipeline with Docker, Singularity, Podman, Shifter or Charliecloud.~~ **YAVSAP doesn't currently have conda support, but we're working on it!. Don't use this profile!**
+- `test`
+  - A profile with a complete configuration for automated testing
+  - Includes links to test data so needs no other parameters
+
+### `-resume`
+
+Specify this when restarting a pipeline. Nextflow will use cached results from any pipeline steps where the inputs are the same, continuing from where it got to previously. For input to be considered the same, not only the names must be identical but the files' contents as well. For more info about this parameter, see [this blog post](https://www.nextflow.io/blog/2019/demystifying-nextflow-resume.html).
+
+You can also supply a run name to resume a specific run: `-resume [run-name]`. Use the `nextflow log` command to show previous run names.
+
+### `-c`
+
+Specify the path to a specific config file (this is a core Nextflow command). See the [nf-core website documentation](https://nf-co.re/usage/configuration) for more information.
+
+## Mandatory pipeline parameters
 
 See {doc}`the page on parameters <parameters>` for the complete lowdown on
 parameters.
@@ -197,13 +205,6 @@ The path to a Kraken2 database. See {ref}`--kraken2_db <Kraken2 Options>`.
 
 Must be set to `illumina` or `nanopore`, depending on the type of reads
 you are analyzing. See {ref}`--platform <Input/Output Options>`.
-
--p
-
-rofile
-
-So, this isn't really a parameter, but the container engine needs to be set
-using Nextflow's `-profile` flag. See {ref}`Profile Selection`.
 
 ## Genome Preparation
 
@@ -236,16 +237,30 @@ Once a comparison genomes file is prepared, the path to it can be passed to the
 YAVSAP comes with some example comparison genomes files. These can be referred
 to by name, rather than by path(e.g. `nextflow run ksumngs/yavsap --genome_list jev`). They are
 
-<!-- markdownlint-disable line-length -->
-
 | Virus                                                                                                                        | Name  | Recommended Reference                                           |
 | ---------------------------------------------------------------------------------------------------------------------------- | ----- | --------------------------------------------------------------- |
 | [Japanese Encephalitis Virus (JEV)](https://www.ncbi.nlm.nih.gov/data-hub/taxonomy/11072/)                                   | `jev` | [NC_001437.1](https://www.ncbi.nlm.nih.gov/nuccore/NC_001437.1) |
 | [Severe acute respiratory syndrome coronavirus 2 (SARS-CoV-2)](https://www.ncbi.nlm.nih.gov/labs/data-hub/taxonomy/2697049/) | `sc2` | [NC_045512.2](https://www.ncbi.nlm.nih.gov/nuccore/NC_045512.2) |
 
-<!-- markdownlint-enable line-length -->
+## Running in the background
 
-## Setting up for HPC Job Schedulers
+Nextflow handles job submissions and supervises the running jobs. The Nextflow process must run until the pipeline is finished.
+
+The Nextflow `-bg` flag launches Nextflow in the background, detached from your terminal so that the workflow does not stop if you log out of your session. The logs are saved to a file.
+
+Alternatively, you can use `screen` / `tmux` or similar tool to create a detached session which you can log back into at a later time.
+Some HPC setups also allow you to run nextflow within a cluster job submitted your job scheduler (from where it submits more jobs).
+
+## Nextflow memory requirements
+
+In some cases, the Nextflow Java virtual machines can start to request a large amount of memory.
+We recommend adding the following line to your environment to limit this (typically in `~/.bashrc` or `~./bash_profile`):
+
+```console
+NXF_OPTS='-Xms1g -Xmx4g'
+```
+
+## Setting up for HPC job schedulers
 
 YAVSAP comes preconfigured for local use only. Yes, that's about as ridiculous
 as it sounds. What's even more ridiculous is trying to make a configuration that
@@ -327,7 +342,7 @@ process {
     }
     withLabel: process_high_memory {
         queue      = 'mem'
-    }
+            }
 }
 ```
 

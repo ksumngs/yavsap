@@ -24,8 +24,9 @@ jobs:
         # Nextflow versions
         include:
           # Test pipeline minimum Nextflow version
-          - NXF_VER: "21.10.6"
+          - NXF_VER: "21.10.3"
             NXF_EDGE: ""
+          # Test latest edge release of Nextflow
           - NXF_VER: ""
             NXF_EDGE: "1"
     steps:
@@ -105,6 +106,7 @@ jobs:
           NCBI_API_KEY: ${{ secrets.NCBI_API_KEY }}
         run: |
           nextflow run ${GITHUB_WORKSPACE} -profile test_interleaved,gh,docker
+
   test_nanopore:
     name: Run workflow tests
     # Only run on push if this is the develop branch (merged PRs)

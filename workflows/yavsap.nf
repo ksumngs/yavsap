@@ -11,11 +11,11 @@ WorkflowYavsap.initialise(params, log)
 
 // TODO nf-core: Add all file path parameters for the pipeline to the list below
 // Check input path parameters to see if they exist
-def checkPathParamList = [ params.input, params.multiqc_config, params.fasta ]
+def checkPathParamList = [ params.input, params.multiqc_config, params.kraken2_db ]
 for (param in checkPathParamList) { if (param) { file(param, checkIfExists: true) } }
 
 // Check mandatory parameters
-if (params.input) { ch_input = file(params.input) } else { exit 1, 'Input samplesheet not specified!' }
+if (params.input) { ch_input = file(params.input) } else { exit 1, 'Input does not exist!' }
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -23,7 +23,7 @@ if (params.input) { ch_input = file(params.input) } else { exit 1, 'Input sample
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-ch_multiqc_config        = file("$projectDir/assets/multiqc_config.yml", checkIfExists: true)
+ch_multiqc_config = file("$projectDir/assets/multiqc_config.yml", checkIfExists: true)
 ch_multiqc_custom_config = params.multiqc_config ? Channel.fromPath(params.multiqc_config) : Channel.empty()
 
 /*
@@ -46,9 +46,25 @@ include { INPUT_CHECK } from '../subworkflows/local/input_check'
 //
 // MODULE: Installed directly from nf-core/modules
 //
-include { FASTQC                      } from '../modules/nf-core/modules/fastqc/main'
-include { MULTIQC                     } from '../modules/nf-core/modules/multiqc/main'
-include { CUSTOM_DUMPSOFTWAREVERSIONS } from '../modules/nf-core/modules/custom/dumpsoftwareversions/main'
+include { ALIGNMENT } from '../subworkflows/alignment.nf'
+include { CLOSEST_REFERENCE } from '../subworkflows/closest-reference.nf'
+include { CUSTOM_DUMPSOFTWAREVERSIONS } from '../modules/nf-core/modules/custom/dumpsoftwareversions/main.nf'
+include { FILTERING } from '../subworkflows/filtering.nf'
+include { GENOME_DOWNLOAD } from '../subworkflows/reference.nf'
+include { HAPLOTYPING } from '../subworkflows/haplotype.nf'
+include { KRAKEN2_DBPREPARATION } from '../modules/local/kraken2/dbpreparation.nf'
+include { MULTIQC } from '../modules/nf-core/modules/multiqc/main.nf'
+include { PHYLOGENETIC_TREE } from '../subworkflows/phylogenetics.nf'
+include { PRESENTATION } from '../subworkflows/presentation.nf'
+include { QC } from '../subworkflows/qc.nf'
+include { READS_INGEST } from '../subworkflows/ingest.nf'
+include { TRIMMING } from '../subworkflows/trimming.nf'
+include { cowsay } from '../lib/cowsay.nf'
+include { yavsap_logo } from '../lib/logo.nf'
+
+include { FASTQC } from '../modules/nf-core/modules/fastqc/main'
+// include { MULTIQC } from '../modules/nf-core/modules/multiqc/main'
+// include { CUSTOM_DUMPSOFTWAREVERSIONS } from '../modules/nf-core/modules/custom/dumpsoftwareversions/main'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -101,6 +117,163 @@ workflow YAVSAP {
     )
     multiqc_report = MULTIQC.out.report.toList()
     ch_versions    = ch_versions.mix(MULTIQC.out.versions)
+
+        LogFiles = Channel.empty()
+    VersionFiles = Channel.empty()
+
+    GENOME_DOWNLOAD()
+    ReferenceGenome = GENOME_DOWNLOAD.out.fasta
+    VersionFiles = VersionFiles.mix(GENOME_DOWNLOAD.out.versions)
+
+    // Bring in the reads files
+    READS_INGEST()
+    RawReads = READS_INGEST.out.sample_info
+    VersionFiles = VersionFiles.mix(READS_INGEST.out.versions)
+
+    if (!params.skip_qc) {
+        QC(RawReads)
+        LogFiles = LogFiles.mix(QC.out.report)
+        VersionFiles = VersionFiles.mix(QC.out.versions)
+    }
+
+    if (!params.skip_trimming) {
+        TRIMMING(RawReads)
+        TRIMMING.out.fastq.set{ TrimmedReads }
+        LogFiles = LogFiles.mix(TRIMMING.out.log_out)
+        VersionFiles = VersionFiles.mix(TRIMMING.out.versions)
+    }
+    else {
+        RawReads.set { TrimmedReads }
+    }
+
+    KronaChart = Channel.of([])
+
+    if (!params.skip_filtering) {
+        KrakenDb = file("${params.kraken2_db}", checkIfExists: true)
+        if (KrakenDb.isDirectory()) {
+            // This is a local database, and everything is ready to pass to the
+            // filtering process
+
+        }
+        else {
+            if (KrakenDb.getExtension() == 'k2d') {
+                // The user got confused, and passed a database file, we'll try to
+                // correct it for them
+                log.warn "WARNING: ${params.kraken2_db} appears to be a file that is a *part* of a Kraken2 database."
+                log.warn "         Kraken databases are folders that contain multiple files."
+                log.warn "         YAVSAP will attempt to use the parent directory as the database, but it might fail!"
+                KrakenDb = KrakenDb.getParent()
+            }
+            else {
+                // We'll assume this is a tarballed database
+                KRAKEN2_DBPREPARATION(KrakenDb)
+                KrakenDb = KRAKEN2_DBPREPARATION.out.db
+                VersionFiles = VersionFiles.mix(KRAKEN2_DBPREPARATION.out.versions)
+            }
+        }
+        FILTERING(
+            TrimmedReads,
+            KrakenDb,
+            "${params.keep_taxid}"
+        )
+        FILTERING.out.filtered.set { FilteredReads }
+        FILTERING.out.krona.set { KronaChart }
+        LogFiles = LogFiles.mix(FILTERING.out.log_out)
+        VersionFiles = VersionFiles.mix(FILTERING.out.versions)
+    }
+    else {
+        TrimmedReads.set { FilteredReads }
+    }
+
+    ALIGNMENT(FilteredReads, ReferenceGenome)
+    ALIGNMENT.out.bam
+        .join(ALIGNMENT.out.bai)
+        .set { AlignedReads }
+
+    VersionFiles = VersionFiles.mix(ALIGNMENT.out.versions)
+
+    // Find the strain genomes list
+    genomePath = params.genome_list
+    genomeFile = file(genomePath, type: 'file')
+    if (genomeFile.toFile().exists()) {
+        genomeFile = [genomeFile]
+    }
+    else {
+        genomePath = "${workflow.projectDir}/genomes/${params.genome_list}*"
+        genomeFile = file(genomePath, checkIfExists: true, type: 'file')
+    }
+
+    // Realign reads to their closest strain
+    CLOSEST_REFERENCE(
+        ALIGNMENT.out.bam,
+        ALIGNMENT.out.bai,
+        ReferenceGenome,
+        genomeFile
+    )
+
+    VersionFiles = VersionFiles.mix(CLOSEST_REFERENCE.out.versions)
+
+    HaplotypeFastas = Channel.empty()
+    HaplotypeYamls = Channel.empty()
+
+    if (!params.skip_haplotype) {
+        HAPLOTYPING(
+            CLOSEST_REFERENCE.out.bam
+                .join(
+                    CLOSEST_REFERENCE.out.bai
+                ),
+            CLOSEST_REFERENCE.out.fasta
+        )
+
+        HAPLOTYPING.out.fasta.set{ HaplotypeFastas }
+        HAPLOTYPING.out.yaml.set{ HaplotypeYamls }
+
+        VersionFiles = VersionFiles.mix(HAPLOTYPING.out.versions)
+    }
+
+    PhylogeneticTree = Channel.of([])
+
+    if (!params.skip_phylogenetics) {
+        PHYLOGENETIC_TREE(
+            HaplotypeFastas,
+            CLOSEST_REFERENCE.out.consensus_fasta,
+            CLOSEST_REFERENCE.out.genome_fasta,
+            genomeFile
+        )
+
+        PHYLOGENETIC_TREE.out.tree.set{ PhylogeneticTree }
+
+        VersionFiles = VersionFiles.mix(PHYLOGENETIC_TREE.out.versions)
+    }
+
+    LogFiles = LogFiles
+        .map{ (it instanceof Path) ? it : it.drop(1) }
+        .mix(Channel.of(file("${workflow.projectDir}/assets/multiqc_config.yml")))
+        .flatten()
+        .collect()
+
+    // MULTIQC(LogFiles)
+    VersionFiles = VersionFiles.mix(MULTIQC.out.versions)
+
+    // Note: The Visualizer cannot be output if haplotyping is skipped
+    PRESENTATION(
+        ALIGNMENT.out.bam,
+        ALIGNMENT.out.bai,
+        GENOME_DOWNLOAD.out.fasta,
+        GENOME_DOWNLOAD.out.fai,
+        CLOSEST_REFERENCE.out.consensus_fasta,
+        CLOSEST_REFERENCE.out.accession,
+        CLOSEST_REFERENCE.out.strain,
+        HaplotypeYamls,
+        HaplotypeFastas,
+        PhylogeneticTree,
+        MULTIQC.out.report,
+        KronaChart
+    )
+    VersionFiles = VersionFiles.mix(PRESENTATION.out.versions)
+
+    // CUSTOM_DUMPSOFTWAREVERSIONS(VersionFiles.unique().collectFile(name: 'collated_versions.yml'))
+
 }
 
 /*
