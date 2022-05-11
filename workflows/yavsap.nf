@@ -50,16 +50,18 @@ include { TRIMMING } from '../subworkflows/local/trimming.nf'
 //
 // MODULE: Installed directly from nf-core/modules
 //
-include { ALIGNMENT } from '../subworkflows/alignment.nf'
 include { CLOSEST_REFERENCE } from '../subworkflows/closest-reference.nf'
 include { CUSTOM_DUMPSOFTWAREVERSIONS } from '../modules/nf-core/modules/custom/dumpsoftwareversions/main.nf'
 include { HAPLOTYPING } from '../subworkflows/haplotype.nf'
 include { KRAKEN2_DBPREPARATION } from '../modules/local/kraken2/dbpreparation.nf'
+include { MINIMAP2_ALIGN } from '../modules/nf-core/modules/minimap2/align/main'
 include { MULTIQC } from '../modules/nf-core/modules/multiqc/main.nf'
 include { PHYLOGENETIC_TREE } from '../subworkflows/phylogenetics.nf'
 include { PRESENTATION } from '../subworkflows/presentation.nf'
+include { SAMTOOLS_INDEX } from '../modules/nf-core/modules/samtools/index/main'
 include { cowsay } from '../lib/cowsay.nf'
 include { yavsap_logo } from '../lib/logo.nf'
+
 
 // include { MULTIQC } from '../modules/nf-core/modules/multiqc/main'
 // include { CUSTOM_DUMPSOFTWAREVERSIONS } from '../modules/nf-core/modules/custom/dumpsoftwareversions/main'
@@ -127,6 +129,19 @@ workflow YAVSAP {
     REFERENCE_DOWNLOAD.out.fasta.set{ ch_reference_fasta }
     ch_versions = ch_versions.mix(REFERENCE_DOWNLOAD.out.versions)
 
+    //
+    // MODULE: Align reads into BAM format using minimap2
+    //
+    MINIMAP2_ALIGN(ch_filtered, ch_reference_fasta, true, false, false)
+    MINIMAP2_ALIGN.out.bam.set{ ch_bam }
+    ch_versions = ch_versions.mix(MINIMAP2_ALIGN.out.versions.first())
+
+    //
+    // MODULE: Index BAM reads using Samtools
+    //
+    SAMTOOLS_INDEX(ch_bam)
+    SAMTOOLS_INDEX.out.bai.set{ ch_bai }
+    ch_versions = ch_versions.mix(SAMTOOLS_INDEX.out.versions.first())
 
     CUSTOM_DUMPSOFTWAREVERSIONS (
         ch_versions.unique().collectFile(name: 'collated_versions.yml')
@@ -153,13 +168,6 @@ workflow YAVSAP {
 
         LogFiles = Channel.empty()
     VersionFiles = Channel.empty()
-
-    ALIGNMENT(FilteredReads, ReferenceGenome)
-    ALIGNMENT.out.bam
-        .join(ALIGNMENT.out.bai)
-        .set { AlignedReads }
-
-    VersionFiles = VersionFiles.mix(ALIGNMENT.out.versions)
 
     // Find the strain genomes list
     genomePath = params.genome_list
