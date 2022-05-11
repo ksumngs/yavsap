@@ -39,6 +39,7 @@ include { CLOSEST_REFERENCE } from '../subworkflows/local/closest-reference'
 include { CONSENSUS } from '../subworkflows/local/consensus'
 include { FILTERING } from '../subworkflows/local/filtering.nf'
 include { GENOME_DOWNLOAD } from '../subworkflows/local/genomes'
+include { HAPLOTYPING } from '../subworkflows/local/haplotype.nf'
 include { QC } from '../subworkflows/local/qc.nf'
 include { READS_INGEST } from '../subworkflows/local/ingest.nf'
 include { REFERENCE_DOWNLOAD } from '../subworkflows/local/reference'
@@ -55,7 +56,6 @@ include { VARIANTS } from '../subworkflows/local/variants'
 // MODULE: Installed directly from nf-core/modules
 //
 include { CUSTOM_DUMPSOFTWAREVERSIONS } from '../modules/nf-core/modules/custom/dumpsoftwareversions/main.nf'
-include { HAPLOTYPING } from '../subworkflows/haplotype.nf'
 include { KRAKEN2_DBPREPARATION } from '../modules/local/kraken2/dbpreparation.nf'
 include { MINIMAP2_ALIGN as MINIMAP2_REALIGN } from '../modules/ksumngs/nf-modules/minimap2/align/main'
 include { MINIMAP2_ALIGN } from '../modules/nf-core/modules/minimap2/align/main'
@@ -198,6 +198,18 @@ workflow YAVSAP {
     ch_versions = ch_versions.mix(VARIANTS.out.versions.first())
 
     //
+    // SUBWORKFLOW: Haplotype calling
+    //
+    ch_haplotype_fasta = Channel.empty()
+    ch_haplotype_yaml = Channel.empty()
+    if (!params.skip_haplotype) {
+        HAPLOTYPING(ch_realigned_bam, ch_vcf, ch_closest_reference)
+        HAPLOTYPING.out.fasta.set{ ch_haplotype_fasta }
+        HAPLOTYPING.out.yaml.set { ch_haplotype_yaml }
+        ch_versions = ch_versions.mix(HAPLOTYPING.out.versions)
+    }
+
+    //
     // MODULE: MultiQC
     //
     workflow_summary    = WorkflowYavsap.paramsSummaryMultiqc(workflow, summary_params)
@@ -220,39 +232,6 @@ workflow YAVSAP {
     VersionFiles = Channel.empty()
 
     VersionFiles = VersionFiles.mix(CLOSEST_REFERENCE.out.versions)
-
-    HaplotypeFastas = Channel.empty()
-    HaplotypeYamls = Channel.empty()
-
-    if (!params.skip_haplotype) {
-        HAPLOTYPING(
-            CLOSEST_REFERENCE.out.bam
-                .join(
-                    CLOSEST_REFERENCE.out.bai
-                ),
-            CLOSEST_REFERENCE.out.fasta
-        )
-
-        HAPLOTYPING.out.fasta.set{ HaplotypeFastas }
-        HAPLOTYPING.out.yaml.set{ HaplotypeYamls }
-
-        VersionFiles = VersionFiles.mix(HAPLOTYPING.out.versions)
-    }
-
-    PhylogeneticTree = Channel.of([])
-
-    if (!params.skip_phylogenetics) {
-        PHYLOGENETIC_TREE(
-            HaplotypeFastas,
-            CLOSEST_REFERENCE.out.consensus_fasta,
-            CLOSEST_REFERENCE.out.genome_fasta,
-            genomeFile
-        )
-
-        PHYLOGENETIC_TREE.out.tree.set{ PhylogeneticTree }
-
-        VersionFiles = VersionFiles.mix(PHYLOGENETIC_TREE.out.versions)
-    }
 
     LogFiles = LogFiles
         .map{ (it instanceof Path) ? it : it.drop(1) }
