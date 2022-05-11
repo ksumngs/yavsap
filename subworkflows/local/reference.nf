@@ -5,7 +5,7 @@ include { EDIRECT_EFETCH } from '../modules/ksumngs/nf-modules/edirect/efetch/ma
 include { EDIRECT_ESEARCH } from '../modules/ksumngs/nf-modules/edirect/esearch/main.nf'
 include { SAMTOOLS_FAIDX } from '../modules/nf-core/modules/samtools/faidx/main.nf'
 
-workflow GENOME_DOWNLOAD {
+workflow REFERENCE_DOWNLOAD {
     main:
     versions = Channel.empty()
 
