@@ -1,8 +1,8 @@
 #!/usr/bin/env nextflow
 nextflow.enable.dsl = 2
 
-include { CAT_FASTQ } from '../modules/ksumngs/nf-modules/cat/fastq/main.nf'
-include { SEQKIT_SPLIT2 } from '../modules/nf-core/modules/seqkit/split2/main.nf'
+include { CAT_FASTQ } from '../../modules/ksumngs/nf-modules/cat/fastq/main.nf'
+include { SEQKIT_SPLIT2 } from '../../modules/nf-core/modules/seqkit/split2/main.nf'
 
 /// summary: |
 ///   Take reads from the input folder or a samplesheet and reformat them to be

@@ -35,7 +35,7 @@ ch_multiqc_custom_config = params.multiqc_config ? Channel.fromPath(params.multi
 //
 // SUBWORKFLOW: Consisting of a mix of local and nf-core/modules
 //
-include { INPUT_CHECK } from '../subworkflows/local/input_check'
+include { READS_INGEST } from '../subworkflows/local/ingest.nf'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -57,7 +57,6 @@ include { MULTIQC } from '../modules/nf-core/modules/multiqc/main.nf'
 include { PHYLOGENETIC_TREE } from '../subworkflows/phylogenetics.nf'
 include { PRESENTATION } from '../subworkflows/presentation.nf'
 include { QC } from '../subworkflows/qc.nf'
-include { READS_INGEST } from '../subworkflows/ingest.nf'
 include { TRIMMING } from '../subworkflows/trimming.nf'
 include { cowsay } from '../lib/cowsay.nf'
 include { yavsap_logo } from '../lib/logo.nf'
@@ -82,10 +81,9 @@ workflow YAVSAP {
     //
     // SUBWORKFLOW: Read in samplesheet, validate and stage input files
     //
-    INPUT_CHECK (
-        ch_input
-    )
-    ch_versions = ch_versions.mix(INPUT_CHECK.out.versions)
+    READS_INGEST()
+    READS_INGEST.out.sample_info.set{ ch_reads }
+    ch_versions = ch_versions.mix(READS_INGEST.out.versions)
 
     //
     // MODULE: Run FastQC
@@ -124,11 +122,6 @@ workflow YAVSAP {
     GENOME_DOWNLOAD()
     ReferenceGenome = GENOME_DOWNLOAD.out.fasta
     VersionFiles = VersionFiles.mix(GENOME_DOWNLOAD.out.versions)
-
-    // Bring in the reads files
-    READS_INGEST()
-    RawReads = READS_INGEST.out.sample_info
-    VersionFiles = VersionFiles.mix(READS_INGEST.out.versions)
 
     if (!params.skip_qc) {
         QC(RawReads)
