@@ -37,6 +37,7 @@ ch_multiqc_custom_config = params.multiqc_config ? Channel.fromPath(params.multi
 //
 include { QC } from '../subworkflows/local/qc.nf'
 include { READS_INGEST } from '../subworkflows/local/ingest.nf'
+include { TRIMMING } from '../subworkflows/local/trimming.nf'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -57,7 +58,6 @@ include { KRAKEN2_DBPREPARATION } from '../modules/local/kraken2/dbpreparation.n
 include { MULTIQC } from '../modules/nf-core/modules/multiqc/main.nf'
 include { PHYLOGENETIC_TREE } from '../subworkflows/phylogenetics.nf'
 include { PRESENTATION } from '../subworkflows/presentation.nf'
-include { TRIMMING } from '../subworkflows/trimming.nf'
 include { cowsay } from '../lib/cowsay.nf'
 include { yavsap_logo } from '../lib/logo.nf'
 
@@ -94,6 +94,18 @@ workflow YAVSAP {
         ch_versions = ch_versions.mix(QC.out.versions)
     }
 
+    //
+    // SUBWORKFLOW: Trim reads
+    //
+    ch_reads.set{ ch_trimmed }
+    ch_trimlog = Channel.empty()
+    if (!params.skip_trimming) {
+        TRIMMING(ch_reads)
+        TRIMMING.out.fastq.set{ ch_trimmed }
+        TRIMMING.out.log_out.set{ ch_trimlog }
+        ch_versions = ch_versions.mix(TRIMMING.out.versions)
+    }
+
     CUSTOM_DUMPSOFTWAREVERSIONS (
         ch_versions.unique().collectFile(name: 'collated_versions.yml')
     )
@@ -123,16 +135,6 @@ workflow YAVSAP {
     GENOME_DOWNLOAD()
     ReferenceGenome = GENOME_DOWNLOAD.out.fasta
     VersionFiles = VersionFiles.mix(GENOME_DOWNLOAD.out.versions)
-
-    if (!params.skip_trimming) {
-        TRIMMING(RawReads)
-        TRIMMING.out.fastq.set{ TrimmedReads }
-        LogFiles = LogFiles.mix(TRIMMING.out.log_out)
-        VersionFiles = VersionFiles.mix(TRIMMING.out.versions)
-    }
-    else {
-        RawReads.set { TrimmedReads }
-    }
 
     KronaChart = Channel.of([])
 

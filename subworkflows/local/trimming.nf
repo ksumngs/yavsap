@@ -1,8 +1,8 @@
 #!/usr/bin/env nextflow
 nextflow.enable.dsl = 2
 
-include { NANOFILT } from '../modules/ksumngs/nf-modules/nanofilt/main.nf'
-include { TRIMMOMATIC } from '../modules/ksumngs/nf-modules/trimmomatic/main.nf'
+include { NANOFILT } from '../../modules/ksumngs/nf-modules/nanofilt/main.nf'
+include { TRIMMOMATIC } from '../../modules/ksumngs/nf-modules/trimmomatic/main.nf'
 
 workflow TRIMMING {
     take:
