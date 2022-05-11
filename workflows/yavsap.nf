@@ -37,6 +37,7 @@ ch_multiqc_custom_config = params.multiqc_config ? Channel.fromPath(params.multi
 //
 include { CONSENSUS } from '../subworkflows/local/consensus'
 include { FILTERING } from '../subworkflows/local/filtering.nf'
+include { GENOME_DOWNLOAD } from '../subworkflows/local/genomes'
 include { QC } from '../subworkflows/local/qc.nf'
 include { READS_INGEST } from '../subworkflows/local/ingest.nf'
 include { REFERENCE_DOWNLOAD } from '../subworkflows/local/reference'
@@ -150,6 +151,14 @@ workflow YAVSAP {
     CONSENSUS(ch_bam, ch_bai, ch_reference_fasta)
     CONSENSUS.out.fasta.set{ ch_consensus_fasta }
     ch_versions = ch_versions.mix(CONSENSUS.out.versions)
+
+    //
+    // SUBWORKFLOW: Download and reformat the strain reference genomes
+    //
+    GENOME_DOWNLOAD("${params.genome_list}")
+    GENOME_DOWNLOAD.out.strain.set{ ch_genome_strain }
+    GENOME_DOWNLOAD.out.fasta.set{ ch_genome_fasta }
+    ch_versions = ch_versions.mix(GENOME_DOWNLOAD.out.versions)
 
     CUSTOM_DUMPSOFTWAREVERSIONS (
         ch_versions.unique().collectFile(name: 'collated_versions.yml')
