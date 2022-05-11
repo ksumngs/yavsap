@@ -230,6 +230,179 @@ class NfcoreTemplate {
     }
 
     //
+    // Cattle breeds converted into ASCII colors
+    public static Map breedColors(Boolean monochrome_logs) {
+        Map colors = logColours(monochrome_logs)
+
+        Map breedcolors = [
+            plain:
+                [
+                    ears:   colors.reset,
+                    eyes:   colors.reset,
+                    poll:   colors.reset,
+                    face:   colors.reset,
+                    nose:   colors.reset,
+                    body1:  colors.reset,
+                    body2:  colors.reset,
+                    tail:   colors.reset,
+                    udder:  colors.reset,
+                    hooves: colors.reset
+                ],
+            charolais:
+                [
+                    ears: colors.white,
+                    eyes: colors.white,
+                    poll: colors.white,
+                    face: colors.white,
+                    nose: colors.white,
+                    body1: colors.white,
+                    body2: colors.white,
+                    tail: colors.white,
+                    udder: colors.white,
+                    hooves: colors.white
+                ],
+            angus:
+                [
+                    ears:   colors.black,
+                    eyes:   colors.black,
+                    poll:   colors.black,
+                    face:   colors.black,
+                    nose:   colors.black,
+                    body1:  colors.black,
+                    body2:  colors.black,
+                    tail:   colors.black,
+                    udder:  colors.black,
+                    hooves: colors.black
+                ],
+            baldy:
+                [
+                    ears:   colors.white,
+                    eyes:   colors.white,
+                    poll:   colors.white,
+                    face:   colors.white,
+                    nose:   colors.white,
+                    body1:  colors.black,
+                    body2:  colors.black,
+                    tail:   colors.black,
+                    udder:  colors.white,
+                    hooves: colors.black
+                ],
+            hereford:
+                [
+                    ears:   colors.white,
+                    eyes:   colors.white,
+                    poll:   colors.white,
+                    face:   colors.white,
+                    nose:   colors.white,
+                    body1:  colors.bred,
+                    body2:  colors.bred,
+                    tail:   colors.white,
+                    udder:  colors.white,
+                    hooves: colors.bred
+                ],
+            holstein:
+                [
+                    ears:   colors.black,
+                    eyes:   colors.white,
+                    poll:   colors.black,
+                    face:   colors.black,
+                    nose:   colors.black,
+                    body1:  colors.black,
+                    body2:  colors.white,
+                    tail:   colors.white,
+                    udder:  colors.white,
+                    hooves: colors.white
+                ],
+            aryshire:
+                [
+                    ears:   colors.bred,
+                    eyes:   colors.white,
+                    poll:   colors.bred,
+                    face:   colors.bred,
+                    nose:   colors.bred,
+                    body1:  colors.bred,
+                    body2:  colors.white,
+                    tail:   colors.white,
+                    udder:  colors.white,
+                    hooves: colors.white
+                ]
+        ]
+
+        return breedcolors
+    }
+
+    //
+    // Groovy cowsay implementation with color support
+    //
+    public static String cowsayColor(
+        String message,
+        Boolean monochrome_logs = false,
+        String balloonColor = 'reset',
+        String cowBreed = 'plain'
+        ) {
+        Map allBreeds = breedColors(monochrome_logs)
+        Map ccolor = [:]
+        if (cowBreed == 'random') {
+            def breedNames = allBreeds.keySet()
+            Integer numBreeds = allBreeds.size()
+            def r = new Random()
+            String randBreed = breedNames[r.nextInt(numBreeds)]
+            ccolor = allBreeds[randBreed]
+        }
+        else {
+            ccolor = allBreeds[cowBreed]
+        }
+
+        String bcolor = logColours(monochrome_logs)[balloonColor]
+        String reset = logColours(monochrome_logs)['reset']
+
+        String[] messagelines = message.split('\n')
+        Integer nlines = messagelines.length
+        Integer linelength = 0
+        messagelines.each{
+            l -> if ( l.replaceAll(/\S+\[([0-9];)*[0-9]+m/, '').length() > linelength ) { linelength = l.replaceAll(/\S+\[([0-9];)*[0-9]+m/, '').length() }
+        }
+        Integer paddinglength = linelength + 2
+
+        String balloon = ""
+
+        if ( nlines == 1 ) {
+            balloon =
+                """\
+                + ${bcolor}${"_"*paddinglength}
+                +<${reset} ${message} ${bcolor}>
+                + ${"-"*paddinglength}${reset}
+                +""".stripMargin('+')
+        }
+        else {
+            balloon =
+                """\
+                + ${bcolor}${"_"*paddinglength}
+                +/ ${reset}${messagelines[0].padRight(linelength)} ${bcolor}\\
+                +""".stripMargin('+')
+            for (int i=1;i<(nlines-1);i++) {
+                balloon += "|${reset} ${messagelines[i].padRight(linelength)} ${bcolor}|\n"
+            }
+            balloon +=
+                """\
+                +\\ ${reset}${messagelines[nlines-1].padRight(linelength)} ${bcolor}/
+                + ${"-"*paddinglength}${reset}
+                +""".stripMargin('+')
+        }
+
+        String cow =
+            """\
+            +    ${bcolor}\\${reset}   ${ccolor.ears}^${ccolor.poll}__${ccolor.ears}^
+            +     ${bcolor}\\${reset}  ${ccolor.face}(${ccolor.eyes}oo${ccolor.face})${ccolor.body1}\\_${ccolor.body2}___${ccolor.body1}___
+            +        ${ccolor.face}(${ccolor.nose}__${ccolor.face})${ccolor.body1}\\       )\\/${ccolor.tail}\\
+            +            ${ccolor.body1}|${ccolor.body2}|--${ccolor.body1}--${ccolor.udder}w ${ccolor.body2}|
+            +            ${ccolor.hooves}||     ||${reset}
+            +""".stripMargin('+')
+
+        return "${balloon}${cow}\n"
+    }
+
+    //
     // Does what is says on the tin
     //
     public static String dashedLine(monochrome_logs) {
