@@ -35,6 +35,7 @@ ch_multiqc_custom_config = params.multiqc_config ? Channel.fromPath(params.multi
 //
 // SUBWORKFLOW: Consisting of a mix of local and nf-core/modules
 //
+include { QC } from '../subworkflows/local/qc.nf'
 include { READS_INGEST } from '../subworkflows/local/ingest.nf'
 
 /*
@@ -56,12 +57,10 @@ include { KRAKEN2_DBPREPARATION } from '../modules/local/kraken2/dbpreparation.n
 include { MULTIQC } from '../modules/nf-core/modules/multiqc/main.nf'
 include { PHYLOGENETIC_TREE } from '../subworkflows/phylogenetics.nf'
 include { PRESENTATION } from '../subworkflows/presentation.nf'
-include { QC } from '../subworkflows/qc.nf'
 include { TRIMMING } from '../subworkflows/trimming.nf'
 include { cowsay } from '../lib/cowsay.nf'
 include { yavsap_logo } from '../lib/logo.nf'
 
-include { FASTQC } from '../modules/nf-core/modules/fastqc/main'
 // include { MULTIQC } from '../modules/nf-core/modules/multiqc/main'
 // include { CUSTOM_DUMPSOFTWAREVERSIONS } from '../modules/nf-core/modules/custom/dumpsoftwareversions/main'
 
@@ -86,12 +85,14 @@ workflow YAVSAP {
     ch_versions = ch_versions.mix(READS_INGEST.out.versions)
 
     //
-    // MODULE: Run FastQC
+    // SUBWORKFLOW: Run read QC
     //
-    FASTQC (
-        INPUT_CHECK.out.reads
-    )
-    ch_versions = ch_versions.mix(FASTQC.out.versions.first())
+    ch_qc = Channel.empty()
+    if (!params.skip_qc) {
+        QC(ch_reads)
+        QC.out.report.set{ ch_qc }
+        ch_versions = ch_versions.mix(QC.out.versions)
+    }
 
     CUSTOM_DUMPSOFTWAREVERSIONS (
         ch_versions.unique().collectFile(name: 'collated_versions.yml')
@@ -122,12 +123,6 @@ workflow YAVSAP {
     GENOME_DOWNLOAD()
     ReferenceGenome = GENOME_DOWNLOAD.out.fasta
     VersionFiles = VersionFiles.mix(GENOME_DOWNLOAD.out.versions)
-
-    if (!params.skip_qc) {
-        QC(RawReads)
-        LogFiles = LogFiles.mix(QC.out.report)
-        VersionFiles = VersionFiles.mix(QC.out.versions)
-    }
 
     if (!params.skip_trimming) {
         TRIMMING(RawReads)

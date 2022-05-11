@@ -1,9 +1,9 @@
 #!/usr/bin/env nextflow
 nextflow.enable.dsl = 2
 
-include { FASTQC } from '../modules/nf-core/modules/fastqc/main.nf'
-include { NANOSTAT } from '../modules/ksumngs/nf-modules/nanostat/main.nf'
-include { SEQTK_MERGEPE } from '../modules/nf-core/modules/seqtk/mergepe/main.nf'
+include { FASTQC } from '../../modules/nf-core/modules/fastqc/main.nf'
+include { NANOSTAT } from '../../modules/ksumngs/nf-modules/nanostat/main.nf'
+include { SEQTK_MERGEPE } from '../../modules/nf-core/modules/seqtk/mergepe/main.nf'
 
 /// summary: |
 ///   Perform context-sensitive QC on fastq reads
