@@ -1,15 +1,11 @@
 #!/usr/bin/env nextflow
 nextflow.enable.dsl = 2
 
-include { CAT_CAT } from '../modules/nf-core/modules/cat/cat/main.nf'
-include { CAT_FASTQ } from '../modules/ksumngs/nf-modules/cat/fastq/main.nf'
-include { MAFFT } from '../modules/nf-core/modules/mafft/main.nf'
-include { RAXMLNG_BOOTSTRAP } from '../modules/ksumngs/nf-modules/raxmlng/bootstrap/main.nf'
-include { RAXMLNG_PARSE } from '../modules/ksumngs/nf-modules/raxmlng/parse/main.nf'
-include { RAXMLNG_SEARCH } from '../modules/ksumngs/nf-modules/raxmlng/search/main.nf'
-include { RAXMLNG_SUPPORT } from '../modules/ksumngs/nf-modules/raxmlng/support/main.nf'
-include { RENAME_HAPLOTYPES } from '../modules/local/rename-haplotypes.nf'
-include { RENAME_NCBI } from '../modules/local/rename-ncbi.nf'
+include { MAFFT } from '../../modules/nf-core/modules/mafft/main.nf'
+include { RAXMLNG_BOOTSTRAP } from '../../modules/ksumngs/nf-modules/raxmlng/bootstrap/main.nf'
+include { RAXMLNG_PARSE } from '../../modules/ksumngs/nf-modules/raxmlng/parse/main.nf'
+include { RAXMLNG_SEARCH } from '../../modules/ksumngs/nf-modules/raxmlng/search/main.nf'
+include { RAXMLNG_SUPPORT } from '../../modules/ksumngs/nf-modules/raxmlng/support/main.nf'
 
 /// summary: Create a phylogenetic tree
 /// input:

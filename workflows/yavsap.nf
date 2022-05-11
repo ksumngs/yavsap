@@ -40,6 +40,7 @@ include { CONSENSUS } from '../subworkflows/local/consensus'
 include { FILTERING } from '../subworkflows/local/filtering.nf'
 include { GENOME_DOWNLOAD } from '../subworkflows/local/genomes'
 include { HAPLOTYPING } from '../subworkflows/local/haplotype.nf'
+include { PHYLOGENETIC_TREE } from '../subworkflows/local/phylogenetics.nf'
 include { QC } from '../subworkflows/local/qc.nf'
 include { READS_INGEST } from '../subworkflows/local/ingest.nf'
 include { REFERENCE_DOWNLOAD } from '../subworkflows/local/reference'
@@ -60,7 +61,6 @@ include { KRAKEN2_DBPREPARATION } from '../modules/local/kraken2/dbpreparation.n
 include { MINIMAP2_ALIGN as MINIMAP2_REALIGN } from '../modules/ksumngs/nf-modules/minimap2/align/main'
 include { MINIMAP2_ALIGN } from '../modules/nf-core/modules/minimap2/align/main'
 include { MULTIQC } from '../modules/nf-core/modules/multiqc/main.nf'
-include { PHYLOGENETIC_TREE } from '../subworkflows/phylogenetics.nf'
 include { PRESENTATION } from '../subworkflows/presentation.nf'
 include { SAMTOOLS_INDEX as SAMTOOLS_REINDEX } from '../modules/nf-core/modules/samtools/index/main'
 include { SAMTOOLS_INDEX } from '../modules/nf-core/modules/samtools/index/main'
@@ -186,10 +186,6 @@ workflow YAVSAP {
     SAMTOOLS_REINDEX.out.bai.set{ ch_realigned_bai }
     ch_versions = ch_versions.mix(SAMTOOLS_REINDEX.out.versions.first())
 
-    CUSTOM_DUMPSOFTWAREVERSIONS (
-        ch_versions.unique().collectFile(name: 'collated_versions.yml')
-    )
-
     //
     // SUBWORKFLOW: Variant calling
     //
@@ -208,6 +204,25 @@ workflow YAVSAP {
         HAPLOTYPING.out.yaml.set { ch_haplotype_yaml }
         ch_versions = ch_versions.mix(HAPLOTYPING.out.versions)
     }
+
+    //
+    // SUBWORKFLOW: Phylogenetics
+    //
+    PHYLOGENETIC_TREE(
+        ch_haplotype_fasta,
+        ch_consensus_fasta,
+        ch_genome_fasta,
+        ch_genome_strain
+    )
+    PHYLOGENETIC_TREE.out.tree.set{ ch_tree }
+    ch_versions = ch_versions.mix(PHYLOGENETIC_TREE.out.versions)
+
+    //
+    // MODULE: Get the versions of each bioinformatics tool
+    //
+    CUSTOM_DUMPSOFTWAREVERSIONS (
+        ch_versions.unique().collectFile(name: 'collated_versions.yml')
+    )
 
     //
     // MODULE: MultiQC
