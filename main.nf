@@ -35,13 +35,6 @@ WorkflowMain.initialise(workflow, params, log)
 
 include { YAVSAP } from './workflows/yavsap'
 
-//
-// WORKFLOW: Run main nf-core/yavsap analysis pipeline
-//
-workflow NFCORE_YAVSAP {
-    YAVSAP ()
-}
-
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     RUN ALL WORKFLOWS
@@ -53,7 +46,7 @@ workflow NFCORE_YAVSAP {
 // See: https://github.com/nf-core/rnaseq/issues/619
 //
 workflow {
-    NFCORE_YAVSAP ()
+    YAVSAP()
 }
 
 /*
