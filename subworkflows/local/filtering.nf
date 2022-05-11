@@ -2,6 +2,7 @@
 nextflow.enable.dsl = 2
 
 include { KRAKEN2 } from '../modules/ksumngs/nf-modules/kraken2/main.nf'
+include { KRAKEN2_DBPREPARATION } from '../modules/local/kraken2/dbpreparation.nf'
 include { KRAKENTOOLS_EXTRACT } from '../modules/ksumngs/nf-modules/krakentools/extract/main.nf'
 include { KRAKENTOOLS_KREPORT2KRONA } from '../modules/ksumngs/nf-modules/krakentools/kreport2krona/main.nf'
 include { KRONA_IMPORTTEXT } from '../modules/ksumngs/nf-modules/krona/importtext/main.nf'
@@ -15,7 +16,29 @@ workflow FILTERING {
     main:
     versions = Channel.empty()
 
-    KRAKEN2(reads, kraken2_db)
+    //
+    // Kraken2 database conversion:
+    // Kraken2 uses a directory of .k2d files as a sequence database
+    //
+    KrakenDb = file(kraken2_db, checkIfExists: true)
+    if (!KrakenDb.isDirectory()) {
+        if (KrakenDb.getExtension() == 'k2d') {
+            // The user got confused, and passed a database file, we'll try to
+            // correct it for them
+            log.warn "WARNING: ${params.kraken2_db} appears to be a file that is a *part* of a Kraken2 database."
+            log.warn "         Kraken databases are folders that contain multiple files."
+            log.warn "         YAVSAP will attempt to use the parent directory as the database, but it might fail!"
+            KrakenDb = KrakenDb.getParent()
+        }
+        else {
+            // We'll assume this is a tarballed database
+            KRAKEN2_DBPREPARATION(KrakenDb)
+            KrakenDb = KRAKEN2_DBPREPARATION.out.db
+            versions = versions.mix(KRAKEN2_DBPREPARATION.out.versions)
+        }
+    }
+
+    KRAKEN2(reads, KrakenDb)
 
     KRAKEN2.out.kreport.set{ log_out }
 
