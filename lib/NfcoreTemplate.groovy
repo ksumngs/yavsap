@@ -415,17 +415,18 @@ class NfcoreTemplate {
     //
     public static String logo(workflow, monochrome_logs) {
         Map colors = logColours(monochrome_logs)
-        String.format(
-            """\n
-            ${dashedLine(monochrome_logs)}
-                                                    ${colors.green},--.${colors.black}/${colors.green},-.${colors.reset}
-            ${colors.blue}        ___     __   __   __   ___     ${colors.green}/,-._.--~\'${colors.reset}
-            ${colors.blue}  |\\ | |__  __ /  ` /  \\ |__) |__         ${colors.yellow}}  {${colors.reset}
-            ${colors.blue}  | \\| |       \\__, \\__/ |  \\ |___     ${colors.green}\\`-._,-`-,${colors.reset}
-                                                    ${colors.green}`._,._,\'${colors.reset}
-            ${colors.purple}  ${workflow.manifest.name} v${workflow.manifest.version}${colors.reset}
-            ${dashedLine(monochrome_logs)}
-            """.stripIndent()
-        )
+        String tagline = "${colors.blue}(Yet Another Viral Subspecies Analysis Pipeline)"
+        Integer maxlength = tagline.length()
+        String figlet =
+            """\
+            +      ${colors.bgreen}__   __ ___     ______    _    ____       ${colors.reset}
+            +      ${colors.bgreen}\\ \\ / // \\ \\   / / ___|  / \\  |  _ \\      ${colors.reset}
+            +       ${colors.bgreen}\\ V // _ \\ \\ / /\\___ \\ / _ \\ | |_) |     ${colors.reset}
+            +        ${colors.bgreen}| |/ ___ \\ V /  ___) / ___ \\|  __/      ${colors.reset}
+            +        ${colors.bgreen}|_/_/   \\_\\_/  |____/_/   \\_\\_|         ${colors.reset}
+            +""".stripMargin('+')
+
+        String version = "${colors.cyan}v${workflow.manifest.version}".center(maxlength)
+        return cowsayColor("${figlet}\n${tagline}\n${version}", monochrome_logs, 'purple', 'random')
     }
 }
