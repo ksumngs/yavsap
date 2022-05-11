@@ -35,6 +35,7 @@ ch_multiqc_custom_config = params.multiqc_config ? Channel.fromPath(params.multi
 //
 // SUBWORKFLOW: Consisting of a mix of local and nf-core/modules
 //
+include { CONSENSUS } from '../subworkflows/local/consensus'
 include { FILTERING } from '../subworkflows/local/filtering.nf'
 include { QC } from '../subworkflows/local/qc.nf'
 include { READS_INGEST } from '../subworkflows/local/ingest.nf'
@@ -142,6 +143,13 @@ workflow YAVSAP {
     SAMTOOLS_INDEX(ch_bam)
     SAMTOOLS_INDEX.out.bai.set{ ch_bai }
     ch_versions = ch_versions.mix(SAMTOOLS_INDEX.out.versions.first())
+
+    //
+    // SUBWORKFLOW: Find the consensus sequence
+    //
+    CONSENSUS(ch_bam, ch_bai, ch_reference_fasta)
+    CONSENSUS.out.fasta.set{ ch_consensus_fasta }
+    ch_versions = ch_versions.mix(CONSENSUS.out.versions)
 
     CUSTOM_DUMPSOFTWAREVERSIONS (
         ch_versions.unique().collectFile(name: 'collated_versions.yml')
