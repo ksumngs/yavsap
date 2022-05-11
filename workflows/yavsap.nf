@@ -38,6 +38,7 @@ ch_multiqc_custom_config = params.multiqc_config ? Channel.fromPath(params.multi
 include { FILTERING } from '../subworkflows/local/filtering.nf'
 include { QC } from '../subworkflows/local/qc.nf'
 include { READS_INGEST } from '../subworkflows/local/ingest.nf'
+include { REFERENCE_DOWNLOAD } from '../subworkflows/local/reference'
 include { TRIMMING } from '../subworkflows/local/trimming.nf'
 
 /*
@@ -57,7 +58,6 @@ include { KRAKEN2_DBPREPARATION } from '../modules/local/kraken2/dbpreparation.n
 include { MULTIQC } from '../modules/nf-core/modules/multiqc/main.nf'
 include { PHYLOGENETIC_TREE } from '../subworkflows/phylogenetics.nf'
 include { PRESENTATION } from '../subworkflows/presentation.nf'
-include { REFERENCE_DOWNLOAD } from '../subworkflows/reference.nf'
 include { cowsay } from '../lib/cowsay.nf'
 include { yavsap_logo } from '../lib/logo.nf'
 
@@ -120,6 +120,14 @@ workflow YAVSAP {
         ch_versions = ch_versions.mix(FILTERING.out.versions)
     }
 
+    //
+    // SUBWORKFLOW: Download reference genome from NCBI
+    //
+    REFERENCE_DOWNLOAD()
+    REFERENCE_DOWNLOAD.out.fasta.set{ ch_reference_fasta }
+    ch_versions = ch_versions.mix(REFERENCE_DOWNLOAD.out.versions)
+
+
     CUSTOM_DUMPSOFTWAREVERSIONS (
         ch_versions.unique().collectFile(name: 'collated_versions.yml')
     )
@@ -145,10 +153,6 @@ workflow YAVSAP {
 
         LogFiles = Channel.empty()
     VersionFiles = Channel.empty()
-
-    GENOME_DOWNLOAD()
-    ReferenceGenome = GENOME_DOWNLOAD.out.fasta
-    VersionFiles = VersionFiles.mix(GENOME_DOWNLOAD.out.versions)
 
     ALIGNMENT(FilteredReads, ReferenceGenome)
     ALIGNMENT.out.bam
