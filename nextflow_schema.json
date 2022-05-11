@@ -515,6 +515,10 @@
                     "hidden": true,
                     "help_text": "Set to disable colorful command line output and live life in glorious monochrome."
                 },
+                "breed": {
+                    "type": "string",
+                    "hidden": true
+                },
                 "tracedir": {
                     "type": "string",
                     "description": "Directory to keep pipeline Nextflow logs and reports.",

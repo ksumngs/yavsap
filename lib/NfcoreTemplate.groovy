@@ -413,7 +413,7 @@ class NfcoreTemplate {
     //
     // nf-core logo
     //
-    public static String logo(workflow, monochrome_logs) {
+    public static String logo(workflow, monochrome_logs, breed) {
         Map colors = logColours(monochrome_logs)
         String tagline = "${colors.blue}(Yet Another Viral Subspecies Analysis Pipeline)"
         Integer maxlength = tagline.length()
@@ -427,6 +427,6 @@ class NfcoreTemplate {
             +""".stripMargin('+')
 
         String version = "${colors.cyan}v${workflow.manifest.version}".center(maxlength)
-        return cowsayColor("${figlet}\n${tagline}\n${version}", monochrome_logs, 'purple', 'random')
+        return cowsayColor("${figlet}\n${tagline}\n${version}", monochrome_logs, 'purple', breed)
     }
 }

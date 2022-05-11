@@ -24,7 +24,7 @@ class WorkflowMain {
     public static String help(workflow, params, log) {
         def command = "nextflow run ${workflow.manifest.name} --input samplesheet.csv --genome GRCh37 -profile docker"
         def help_string = ''
-        help_string += NfcoreTemplate.logo(workflow, params.monochrome_logs)
+        help_string += NfcoreTemplate.logo(workflow, params.monochrome_logs, params.breed)
         help_string += NfcoreSchema.paramsHelp(workflow, params, command)
         help_string += '\n' + citation(workflow) + '\n'
         help_string += NfcoreTemplate.dashedLine(params.monochrome_logs)
@@ -36,7 +36,7 @@ class WorkflowMain {
     //
     public static String paramsSummaryLog(workflow, params, log) {
         def summary_log = ''
-        summary_log += NfcoreTemplate.logo(workflow, params.monochrome_logs)
+        summary_log += NfcoreTemplate.logo(workflow, params.monochrome_logs, params.breed)
         summary_log += NfcoreSchema.paramsSummaryLog(workflow, params)
         summary_log += '\n' + citation(workflow) + '\n'
         summary_log += NfcoreTemplate.dashedLine(params.monochrome_logs)
