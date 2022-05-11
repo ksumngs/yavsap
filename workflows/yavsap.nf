@@ -56,10 +56,12 @@ include { TRIMMING } from '../subworkflows/local/trimming.nf'
 include { CUSTOM_DUMPSOFTWAREVERSIONS } from '../modules/nf-core/modules/custom/dumpsoftwareversions/main.nf'
 include { HAPLOTYPING } from '../subworkflows/haplotype.nf'
 include { KRAKEN2_DBPREPARATION } from '../modules/local/kraken2/dbpreparation.nf'
+include { MINIMAP2_ALIGN as MINIMAP2_REALIGN } from '../modules/ksumngs/nf-modules/minimap2/align/main'
 include { MINIMAP2_ALIGN } from '../modules/nf-core/modules/minimap2/align/main'
 include { MULTIQC } from '../modules/nf-core/modules/multiqc/main.nf'
 include { PHYLOGENETIC_TREE } from '../subworkflows/phylogenetics.nf'
 include { PRESENTATION } from '../subworkflows/presentation.nf'
+include { SAMTOOLS_INDEX as SAMTOOLS_REINDEX } from '../modules/nf-core/modules/samtools/index/main'
 include { SAMTOOLS_INDEX } from '../modules/nf-core/modules/samtools/index/main'
 include { cowsay } from '../lib/cowsay.nf'
 include { yavsap_logo } from '../lib/logo.nf'
@@ -168,6 +170,20 @@ workflow YAVSAP {
     CLOSEST_REFERENCE.out.strain.set{ ch_closest_strain }
     CLOSEST_REFERENCE.out.fasta.set{ ch_closest_reference }
     ch_versions = ch_versions.mix(CLOSEST_REFERENCE.out.versions)
+
+    //
+    // MODULE: Realign reads into BAM format using minimap2
+    //
+    MINIMAP2_REALIGN(ch_filtered.join(ch_closest_reference), true, false, false)
+    MINIMAP2_REALIGN.out.bam.set{ ch_realigned_bam }
+    ch_versions = ch_versions.mix(MINIMAP2_REALIGN.out.versions.first())
+
+    //
+    // MODULE: Index new BAM reads using Samtools
+    //
+    SAMTOOLS_REINDEX(ch_realigned_bam)
+    SAMTOOLS_REINDEX.out.bai.set{ ch_realigned_bai }
+    ch_versions = ch_versions.mix(SAMTOOLS_REINDEX.out.versions.first())
 
     CUSTOM_DUMPSOFTWAREVERSIONS (
         ch_versions.unique().collectFile(name: 'collated_versions.yml')
