@@ -1,11 +1,11 @@
 #!/usr/bin/env nextflow
 nextflow.enable.dsl = 2
 
-include { KRAKEN2 } from '../modules/ksumngs/nf-modules/kraken2/main.nf'
-include { KRAKEN2_DBPREPARATION } from '../modules/local/kraken2/dbpreparation.nf'
-include { KRAKENTOOLS_EXTRACT } from '../modules/ksumngs/nf-modules/krakentools/extract/main.nf'
-include { KRAKENTOOLS_KREPORT2KRONA } from '../modules/ksumngs/nf-modules/krakentools/kreport2krona/main.nf'
-include { KRONA_IMPORTTEXT } from '../modules/ksumngs/nf-modules/krona/importtext/main.nf'
+include { KRAKEN2 } from '../../modules/ksumngs/nf-modules/kraken2/main.nf'
+include { KRAKEN2_DBPREPARATION } from '../../modules/local/kraken2/dbpreparation.nf'
+include { KRAKENTOOLS_EXTRACT } from '../../modules/ksumngs/nf-modules/krakentools/extract/main.nf'
+include { KRAKENTOOLS_KREPORT2KRONA } from '../../modules/ksumngs/nf-modules/krakentools/kreport2krona/main.nf'
+include { KRONA_IMPORTTEXT } from '../../modules/ksumngs/nf-modules/krona/importtext/main.nf'
 
 workflow FILTERING {
     take:

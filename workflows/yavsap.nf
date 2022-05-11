@@ -35,6 +35,7 @@ ch_multiqc_custom_config = params.multiqc_config ? Channel.fromPath(params.multi
 //
 // SUBWORKFLOW: Consisting of a mix of local and nf-core/modules
 //
+include { FILTERING } from '../subworkflows/local/filtering.nf'
 include { QC } from '../subworkflows/local/qc.nf'
 include { READS_INGEST } from '../subworkflows/local/ingest.nf'
 include { TRIMMING } from '../subworkflows/local/trimming.nf'
@@ -51,7 +52,6 @@ include { TRIMMING } from '../subworkflows/local/trimming.nf'
 include { ALIGNMENT } from '../subworkflows/alignment.nf'
 include { CLOSEST_REFERENCE } from '../subworkflows/closest-reference.nf'
 include { CUSTOM_DUMPSOFTWAREVERSIONS } from '../modules/nf-core/modules/custom/dumpsoftwareversions/main.nf'
-include { FILTERING } from '../subworkflows/filtering.nf'
 include { GENOME_DOWNLOAD } from '../subworkflows/reference.nf'
 include { HAPLOTYPING } from '../subworkflows/haplotype.nf'
 include { KRAKEN2_DBPREPARATION } from '../modules/local/kraken2/dbpreparation.nf'
@@ -106,6 +106,20 @@ workflow YAVSAP {
         ch_versions = ch_versions.mix(TRIMMING.out.versions)
     }
 
+    //
+    // SUBWORKFLOW: Kraken2 host read filtering
+    //
+    ch_trimmed.set{ ch_filtered }
+    ch_krona = Channel.empty()
+    ch_kreport = Channel.empty()
+    if (!params.skip_filtering) {
+        FILTERING(ch_trimmed, "${params.kraken2_db}", "${params.keep_taxid}")
+        FILTERING.out.filtered.set{ ch_filtered }
+        FILTERING.out.krona.set{ ch_krona }
+        FILTERING.out.log_out.set{ ch_kreport }
+        ch_versions = ch_versions.mix(FILTERING.out.versions)
+    }
+
     CUSTOM_DUMPSOFTWAREVERSIONS (
         ch_versions.unique().collectFile(name: 'collated_versions.yml')
     )
@@ -135,23 +149,6 @@ workflow YAVSAP {
     GENOME_DOWNLOAD()
     ReferenceGenome = GENOME_DOWNLOAD.out.fasta
     VersionFiles = VersionFiles.mix(GENOME_DOWNLOAD.out.versions)
-
-    KronaChart = Channel.of([])
-
-    if (!params.skip_filtering) {
-        FILTERING(
-            TrimmedReads,
-            "${params.kraken2_db}",
-            "${params.keep_taxid}"
-        )
-        FILTERING.out.filtered.set { FilteredReads }
-        FILTERING.out.krona.set { KronaChart }
-        LogFiles = LogFiles.mix(FILTERING.out.log_out)
-        VersionFiles = VersionFiles.mix(FILTERING.out.versions)
-    }
-    else {
-        TrimmedReads.set { FilteredReads }
-    }
 
     ALIGNMENT(FilteredReads, ReferenceGenome)
     ALIGNMENT.out.bam
