@@ -35,6 +35,7 @@ ch_multiqc_custom_config = params.multiqc_config ? Channel.fromPath(params.multi
 //
 // SUBWORKFLOW: Consisting of a mix of local and nf-core/modules
 //
+include { CLOSEST_REFERENCE } from '../subworkflows/local/closest-reference'
 include { CONSENSUS } from '../subworkflows/local/consensus'
 include { FILTERING } from '../subworkflows/local/filtering.nf'
 include { GENOME_DOWNLOAD } from '../subworkflows/local/genomes'
@@ -52,7 +53,6 @@ include { TRIMMING } from '../subworkflows/local/trimming.nf'
 //
 // MODULE: Installed directly from nf-core/modules
 //
-include { CLOSEST_REFERENCE } from '../subworkflows/closest-reference.nf'
 include { CUSTOM_DUMPSOFTWAREVERSIONS } from '../modules/nf-core/modules/custom/dumpsoftwareversions/main.nf'
 include { HAPLOTYPING } from '../subworkflows/haplotype.nf'
 include { KRAKEN2_DBPREPARATION } from '../modules/local/kraken2/dbpreparation.nf'
@@ -160,6 +160,15 @@ workflow YAVSAP {
     GENOME_DOWNLOAD.out.fasta.set{ ch_genome_fasta }
     ch_versions = ch_versions.mix(GENOME_DOWNLOAD.out.versions)
 
+    //
+    // SUBWORKFLOW: Find the closest strain to each consensus sequence
+    //
+    CLOSEST_REFERENCE(ch_consensus_fasta, ch_genome_strain, ch_genome_fasta)
+    CLOSEST_REFERENCE.out.accession.set{ ch_closest_accession }
+    CLOSEST_REFERENCE.out.strain.set{ ch_closest_strain }
+    CLOSEST_REFERENCE.out.fasta.set{ ch_closest_reference }
+    ch_versions = ch_versions.mix(CLOSEST_REFERENCE.out.versions)
+
     CUSTOM_DUMPSOFTWAREVERSIONS (
         ch_versions.unique().collectFile(name: 'collated_versions.yml')
     )
@@ -185,25 +194,6 @@ workflow YAVSAP {
 
         LogFiles = Channel.empty()
     VersionFiles = Channel.empty()
-
-    // Find the strain genomes list
-    genomePath = params.genome_list
-    genomeFile = file(genomePath, type: 'file')
-    if (genomeFile.toFile().exists()) {
-        genomeFile = [genomeFile]
-    }
-    else {
-        genomePath = "${workflow.projectDir}/genomes/${params.genome_list}*"
-        genomeFile = file(genomePath, checkIfExists: true, type: 'file')
-    }
-
-    // Realign reads to their closest strain
-    CLOSEST_REFERENCE(
-        ALIGNMENT.out.bam,
-        ALIGNMENT.out.bai,
-        ReferenceGenome,
-        genomeFile
-    )
 
     VersionFiles = VersionFiles.mix(CLOSEST_REFERENCE.out.versions)
 
