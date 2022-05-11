@@ -43,6 +43,7 @@ include { QC } from '../subworkflows/local/qc.nf'
 include { READS_INGEST } from '../subworkflows/local/ingest.nf'
 include { REFERENCE_DOWNLOAD } from '../subworkflows/local/reference'
 include { TRIMMING } from '../subworkflows/local/trimming.nf'
+include { VARIANTS } from '../subworkflows/local/variants'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -188,6 +189,13 @@ workflow YAVSAP {
     CUSTOM_DUMPSOFTWAREVERSIONS (
         ch_versions.unique().collectFile(name: 'collated_versions.yml')
     )
+
+    //
+    // SUBWORKFLOW: Variant calling
+    //
+    VARIANTS(ch_realigned_bam, ch_realigned_bai, ch_closest_reference)
+    VARIANTS.out.vcf.set{ ch_vcf }
+    ch_versions = ch_versions.mix(VARIANTS.out.versions.first())
 
     //
     // MODULE: MultiQC
