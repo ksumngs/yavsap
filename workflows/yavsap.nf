@@ -214,7 +214,8 @@ workflow YAVSAP {
     //
     // SUBWORKFLOW: Fancy presentations
     //
-    PRESENTATION(ch_tree)
+    PRESENTATION(ch_bam, ch_tree)
+    PRESENTATION.out.igv.set{ ch_igv_mqc }
     PRESENTATION.out.phylotree.set{ ch_phylotree_mqc }
     ch_versions = ch_versions.mix(PRESENTATION.out.versions)
 
@@ -239,6 +240,7 @@ workflow YAVSAP {
     ch_multiqc_files = ch_multiqc_files.mix(ch_qc.collect{it[1]}.ifEmpty([]))
     ch_multiqc_files = ch_multiqc_files.mix(ch_trimlog.collect{it[1]}.ifEmpty([]))
     ch_multiqc_files = ch_multiqc_files.mix(ch_kreport.collect{it[1]}.ifEmpty([]))
+    ch_multiqc_files = ch_multiqc_files.mix(ch_igv_mqc.ifEmpty([]))
     ch_multiqc_files = ch_multiqc_files.mix(ch_phylotree_mqc.ifEmpty([]))
 
     MULTIQC (ch_multiqc_files.collect())
