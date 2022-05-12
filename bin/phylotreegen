@@ -1,0 +1,22 @@
+#!/usr/bin/env julia
+using Mustache
+
+newick_file = ARGS[1]
+template_file = ARGS[2]
+output_file = ARGS[3]
+phylotree_css = ARGS[4]
+d3_js = ARGS[5]
+underscore_js = ARGS[6]
+phylotree_js = ARGS[7]
+
+d = Dict(
+    "newick" => first(readlines(newick_file)),
+    "stylesheet" => String(read(phylotree_css)),
+    "D3" => String(read(d3_js)),
+    "underscore" => String(read(underscore_js)),
+    "phylotree" => String(read(phylotree_js)),
+)
+
+open(output_file, "w") do f
+    write(f, render_from_file(template_file, d))
+end
