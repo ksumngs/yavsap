@@ -64,12 +64,6 @@ include { MULTIQC } from '../modules/nf-core/modules/multiqc/main.nf'
 include { PRESENTATION } from '../subworkflows/presentation.nf'
 include { SAMTOOLS_INDEX as SAMTOOLS_REINDEX } from '../modules/nf-core/modules/samtools/index/main'
 include { SAMTOOLS_INDEX } from '../modules/nf-core/modules/samtools/index/main'
-include { cowsay } from '../lib/cowsay.nf'
-include { yavsap_logo } from '../lib/logo.nf'
-
-
-// include { MULTIQC } from '../modules/nf-core/modules/multiqc/main'
-// include { CUSTOM_DUMPSOFTWAREVERSIONS } from '../modules/nf-core/modules/custom/dumpsoftwareversions/main'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
