@@ -41,6 +41,7 @@ include { FILTERING } from '../subworkflows/local/filtering.nf'
 include { GENOME_DOWNLOAD } from '../subworkflows/local/genomes'
 include { HAPLOTYPING } from '../subworkflows/local/haplotype.nf'
 include { PHYLOGENETIC_TREE } from '../subworkflows/local/phylogenetics.nf'
+include { PRESENTATION } from '../subworkflows/local/presentation.nf'
 include { QC } from '../subworkflows/local/qc.nf'
 include { READS_INGEST } from '../subworkflows/local/ingest.nf'
 include { REFERENCE_DOWNLOAD } from '../subworkflows/local/reference'
@@ -61,7 +62,6 @@ include { KRAKEN2_DBPREPARATION } from '../modules/local/kraken2/dbpreparation.n
 include { MINIMAP2_ALIGN as MINIMAP2_REALIGN } from '../modules/ksumngs/nf-modules/minimap2/align/main'
 include { MINIMAP2_ALIGN } from '../modules/nf-core/modules/minimap2/align/main'
 include { MULTIQC } from '../modules/nf-core/modules/multiqc/main.nf'
-include { PRESENTATION } from '../subworkflows/presentation.nf'
 include { SAMTOOLS_INDEX as SAMTOOLS_REINDEX } from '../modules/nf-core/modules/samtools/index/main'
 include { SAMTOOLS_INDEX } from '../modules/nf-core/modules/samtools/index/main'
 
@@ -212,6 +212,13 @@ workflow YAVSAP {
     ch_versions = ch_versions.mix(PHYLOGENETIC_TREE.out.versions)
 
     //
+    // SUBWORKFLOW: Fancy presentations
+    //
+    PRESENTATION(ch_tree)
+    PRESENTATION.out.phylotree.set{ ch_phylotree_mqc }
+    ch_versions = ch_versions.mix(PRESENTATION.out.versions)
+
+    //
     // MODULE: Get the versions of each bioinformatics tool
     //
     CUSTOM_DUMPSOFTWAREVERSIONS (
@@ -229,47 +236,14 @@ workflow YAVSAP {
     ch_multiqc_files = ch_multiqc_files.mix(ch_multiqc_custom_config.collect().ifEmpty([]))
     ch_multiqc_files = ch_multiqc_files.mix(ch_workflow_summary.collectFile(name: 'workflow_summary_mqc.yaml'))
     ch_multiqc_files = ch_multiqc_files.mix(CUSTOM_DUMPSOFTWAREVERSIONS.out.mqc_yml.collect())
-    ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.zip.collect{it[1]}.ifEmpty([]))
+    ch_multiqc_files = ch_multiqc_files.mix(ch_qc.collect{it[1]}.ifEmpty([]))
+    ch_multiqc_files = ch_multiqc_files.mix(ch_trimlog.collect{it[1]}.ifEmpty([]))
+    ch_multiqc_files = ch_multiqc_files.mix(ch_kreport.collect{it[1]}.ifEmpty([]))
+    ch_multiqc_files = ch_multiqc_files.mix(ch_phylotree_mqc.ifEmpty([]))
 
-    MULTIQC (
-        ch_multiqc_files.collect()
-    )
+    MULTIQC (ch_multiqc_files.collect())
     multiqc_report = MULTIQC.out.report.toList()
-    ch_versions    = ch_versions.mix(MULTIQC.out.versions)
-
-        LogFiles = Channel.empty()
-    VersionFiles = Channel.empty()
-
-    VersionFiles = VersionFiles.mix(CLOSEST_REFERENCE.out.versions)
-
-    LogFiles = LogFiles
-        .map{ (it instanceof Path) ? it : it.drop(1) }
-        .mix(Channel.of(file("${workflow.projectDir}/assets/multiqc_config.yml")))
-        .flatten()
-        .collect()
-
-    // MULTIQC(LogFiles)
-    VersionFiles = VersionFiles.mix(MULTIQC.out.versions)
-
-    // Note: The Visualizer cannot be output if haplotyping is skipped
-    PRESENTATION(
-        ALIGNMENT.out.bam,
-        ALIGNMENT.out.bai,
-        GENOME_DOWNLOAD.out.fasta,
-        GENOME_DOWNLOAD.out.fai,
-        CLOSEST_REFERENCE.out.consensus_fasta,
-        CLOSEST_REFERENCE.out.accession,
-        CLOSEST_REFERENCE.out.strain,
-        HaplotypeYamls,
-        HaplotypeFastas,
-        PhylogeneticTree,
-        MULTIQC.out.report,
-        KronaChart
-    )
-    VersionFiles = VersionFiles.mix(PRESENTATION.out.versions)
-
-    // CUSTOM_DUMPSOFTWAREVERSIONS(VersionFiles.unique().collectFile(name: 'collated_versions.yml'))
-
+    ch_versions = ch_versions.mix(MULTIQC.out.versions)
 }
 
 /*
