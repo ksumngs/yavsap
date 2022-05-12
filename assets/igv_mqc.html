@@ -1,0 +1,19 @@
+<!--
+id: igv
+section_name: minimap2
+description: "[minimap2](https://www.ncbi.nlm.nih.gov/pubmed/29750242/) is a versatile pairwise aligner for genomic sequences"
+doi: 10.1093/bioinformatics/bty191
+-->
+<div id="igv-canvas"></div>
+
+<script>
+  {{{igvjs}}}
+</script>
+<script>
+  options = {{{igvopts}}};
+  igv
+    .createBrowser(document.getElementById("igv-canvas"), options)
+    .then(function (browser) {
+      igv.browser = browser;
+    });
+</script>

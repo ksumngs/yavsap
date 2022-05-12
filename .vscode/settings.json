@@ -1,6 +1,7 @@
 {
     "files.associations": {
         "*.config": "nextflow",
+        "bin/igvgen": "julia",
         "bin/phylotreegen": "julia",
         "bin/sequence-table": "julia"
     }
