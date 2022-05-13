@@ -1,0 +1,62 @@
+<!--
+id: haplotypes
+description: Summary table of haplotypes
+-->
+<style>
+  .kelpieseq table {
+    empty-cells: show;
+  }
+
+  .kelpieseq thead > tr > th {
+    text-align: center;
+    vertical-align: bottom;
+  }
+
+  .kelpieseq tbody {
+    overflow: scroll;
+  }
+
+  .keplieseq th {
+    text-align: left;
+    vertical-align: top;
+  }
+
+  .gene {
+    background-color: yellow !important;
+  }
+
+  .variant {
+    background-color: purple !important;
+  }
+
+  .A {
+    color: red;
+  }
+
+  .C {
+    color: blue;
+  }
+
+  .G {
+    color: orange;
+  }
+
+  .T {
+    color: green;
+  }
+</style>
+<div class="keplieseq">
+  <div id="genome-wrapper">
+    {{{kelpieseqtable}}}
+  </div>
+</div>
+<script>
+  {{{jqueryfreezetable}}}
+</script>
+<script>
+  $("#genome-wrapper").freezeTable({
+    columnNum: 2,
+    scrollable: true,
+    shadow: true,
+  });
+</script>

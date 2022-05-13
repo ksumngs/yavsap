@@ -3,6 +3,6 @@
         "*.config": "nextflow",
         "bin/igvgen": "julia",
         "bin/phylotreegen": "julia",
-        "bin/sequence-table": "julia"
+        "bin/sequencetable": "julia"
     }
 }

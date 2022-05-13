@@ -3,36 +3,29 @@ process SEQUENCETABLE {
     label 'process_low'
     cache false
 
-    container 'quay.io/millironx/biojulia:1.6.6-1.1.4-9409225'
+    container 'quay.io/millironx/biojulia:1.6.6-2.0.5-9877308'
 
     input:
-    path tsv
-    path sam
-    path reference
-    path tree
-    path multiqc
-    path krona
+    path(haplotypes, stageAs: 'haplotypes.yml')
+    path(reference, stageAs: 'reference.fasta')
+    path(template, stageAs: 'template.html')
+    path(freezetable_js, stageAs: 'freezetable.jquery.js')
 
     output:
-    path "*.html", emit: html
-    path "versions.yml"           , emit: versions
+    path "*_mqc.html", emit: mqc_html
+    path "versions.yml", emit: versions
 
     when:
     task.ext.when == null || task.ext.when
 
     script:
-    multiqc_flag = multiqc ? '--multiqc' : '--no-multiqc'
-    krona_flag = krona ? '--krona' : '--no-krona'
-    tree_flag = tree ? "--newick ${tree}" : ''
     """
-    sequence-table \\
-            ${tsv} \\
-            ${sam} \\
+    sequencetable \\
+            ${haplotypes} \\
             ${reference} \\
-            ${multiqc_flag} \\
-            ${krona_flag} \\
-            ${tree_flag} \\
-        > seq-table.partial.html
+            ${template} \\
+            ${freezetable_js} \\
+            sequencetable_mqc.html
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
