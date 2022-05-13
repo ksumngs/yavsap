@@ -1,6 +1,7 @@
 include { HAPLOTYPECONVERT } from '../../modules/local/haplotypeconvert'
 include { IGV } from '../../modules/local/igv'
 include { PHYLOTREEJS } from '../../modules/local/phylotreejs'
+include { SEQUENCETABLE } from '../../modules/local/sequencetable'
 
 workflow PRESENTATION {
     take:
@@ -32,6 +33,19 @@ workflow PRESENTATION {
         .set{ ch_collected_haplotypes }
     versions = versions.mix(HAPLOTYPECONVERT.out.versions)
 
+    freezetable_js = file(params.freezetable_js, checkIfExists: true)
+    sequencetable_template = file(
+        "${workflow.projectDir}/assets/kelpie_mqc.html", checkIfExists: true
+    )
+    SEQUENCETABLE(
+        ch_collected_haplotypes,
+        reference,
+        sequencetable_template,
+        freezetable_js
+    )
+    SEQUENCETABLE.out.mqc_html.set{ seqtable }
+    versions = versions.mix(SEQUENCETABLE.out.versions)
+
     igv_js = file(params.igv_js, checkIfExists: true)
     igv_template = file("${workflow.projectDir}/assets/igv_mqc.html", checkIfExists: true)
     IGV(
@@ -58,6 +72,7 @@ workflow PRESENTATION {
     versions = versions.mix(PHYLOTREEJS.out.versions)
 
     emit:
+    seqtable
     igv
     phylotree
     versions

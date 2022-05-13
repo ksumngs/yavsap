@@ -6,7 +6,7 @@
 
 def summary_params = NfcoreSchema.paramsSummaryMap(workflow, params)
 
-// Validate input parameters
+// Validate input parameters[](../../../../../../../multiqc_report.html)
 WorkflowYavsap.initialise(params, log)
 
 // TODO nf-core: Add all file path parameters for the pipeline to the list below
@@ -224,6 +224,7 @@ workflow YAVSAP {
         ch_haplotype_yaml.ifEmpty([]),
         ch_tree
     )
+    PRESENTATION.out.seqtable.set{ ch_seqtable_mqc }
     PRESENTATION.out.igv.set{ ch_igv_mqc }
     PRESENTATION.out.phylotree.set{ ch_phylotree_mqc }
     ch_versions = ch_versions.mix(PRESENTATION.out.versions)
@@ -249,6 +250,7 @@ workflow YAVSAP {
     ch_multiqc_files = ch_multiqc_files.mix(ch_qc.collect{it[1]}.ifEmpty([]))
     ch_multiqc_files = ch_multiqc_files.mix(ch_trimlog.collect{it[1]}.ifEmpty([]))
     ch_multiqc_files = ch_multiqc_files.mix(ch_kreport.collect{it[1]}.ifEmpty([]))
+    ch_multiqc_files = ch_multiqc_files.mix(ch_seqtable_mqc.ifEmpty([]))
     ch_multiqc_files = ch_multiqc_files.mix(ch_igv_mqc.ifEmpty([]))
     ch_multiqc_files = ch_multiqc_files.mix(ch_phylotree_mqc.ifEmpty([]))
 
