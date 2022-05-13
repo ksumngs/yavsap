@@ -1,13 +1,36 @@
+include { HAPLOTYPECONVERT } from '../../modules/local/haplotypeconvert'
 include { IGV } from '../../modules/local/igv'
 include { PHYLOTREEJS } from '../../modules/local/phylotreejs'
 
 workflow PRESENTATION {
     take:
     bam
+    reference
+    strain
+    accession
+    consensus
+    haplotype_fasta
+    haplotype_yaml
     tree
 
     main:
     versions = Channel.empty()
+
+    HAPLOTYPECONVERT(
+        strain
+            .join(accession)
+            .join(consensus)
+            .join(haplotype_fasta, remainder: true)
+            .join(haplotype_yaml, remainder: true),
+        reference
+    )
+    HAPLOTYPECONVERT
+        .out
+        .yaml
+        .map{ it[1] }
+        .collectFile(name: 'collated_haplotypes.yml', newLine: true)
+        .set{ ch_collected_haplotypes }
+    versions = versions.mix(HAPLOTYPECONVERT.out.versions)
 
     igv_js = file(params.igv_js, checkIfExists: true)
     igv_template = file("${workflow.projectDir}/assets/igv_mqc.html", checkIfExists: true)

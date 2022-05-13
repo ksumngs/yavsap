@@ -214,7 +214,16 @@ workflow YAVSAP {
     //
     // SUBWORKFLOW: Fancy presentations
     //
-    PRESENTATION(ch_bam, ch_tree)
+    PRESENTATION(
+        ch_bam,
+        ch_reference_fasta,
+        ch_closest_strain,
+        ch_closest_accession,
+        ch_consensus_fasta,
+        ch_haplotype_fasta.ifEmpty([]),
+        ch_haplotype_yaml.ifEmpty([]),
+        ch_tree
+    )
     PRESENTATION.out.igv.set{ ch_igv_mqc }
     PRESENTATION.out.phylotree.set{ ch_phylotree_mqc }
     ch_versions = ch_versions.mix(PRESENTATION.out.versions)
