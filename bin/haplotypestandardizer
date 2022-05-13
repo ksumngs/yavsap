@@ -1,0 +1,108 @@
+#!/usr/bin/env julia
+using BioAlignments
+using FASTX
+using YAML
+
+sample_name = ARGS[1]
+reference_fasta = ARGS[2]
+strain_name = ARGS[3]
+strain_ncbi = ARGS[4]
+consensus_fasta = ARGS[5]
+haplotype_yaml = ARGS[6]
+haplotype_fasta = ARGS[7]
+output_file = ARGS[8]
+
+# Create an alignment model that hates gaps
+const SCORE_MODEL = AffineGapScoreModel(EDNAFULL; gap_open=-10, gap_extend=-5)
+function align_sequences(query, reference)
+    return alignment(pairalign(GlobalAlignment(), query, reference, SCORE_MODEL))
+end
+
+function aligned_sequence(alignment)
+    seq = []
+    for (s, r) in alignment
+        push!(seq, s)
+    end
+    return string(seq...)
+end
+
+# Read in the first (and hopefully only) record from the reference file
+reference_reader = FASTA.Reader(open(reference_fasta, "r"))
+reference_record = first(reference_reader)
+if !isempty(reference_reader)
+    @warn "Reference $reference_fasta contains more than one sequence. Only the first will be used."
+end #if
+close(reference_reader)
+reference_sequence = FASTA.sequence(reference_record)
+
+# Read in the first (and hopefully only) record from the consensus file
+consensus_reader = FASTA.Reader(open(consensus_fasta, "r"))
+consensus_record = first(consensus_reader)
+if !isempty(consensus_reader)
+    @warn "Consensus $consensus_fasta contains more than one sequence. Only the first will be used."
+end #if
+close(consensus_reader)
+consensus_sequence = FASTA.sequence(consensus_record)
+
+# Align the consensus sequence against the reference
+consensus_alignment = align_sequences(consensus_sequence, reference_sequence)
+
+# Read in the haplotype yaml data
+haplotype_data = YAML.load_file(haplotype_yaml)["haplotypes"]
+
+# Read in the haplotype sequences
+haplotype_reader = FASTA.Reader(open(haplotype_fasta, "r"))
+haplotype_records = collect(haplotype_reader)
+close(haplotype_reader)
+
+haplotypes = Dict[]
+
+# Only log haplotypes if they are provided
+if isfile(haplotype_fasta) && isfile(haplotype_yaml)
+
+    # Convert each haplotype to an output record
+    for haplotype in haplotype_data
+        # Remove any angle brackets that might be left in the YAML (CliqueSNV tends to do this)
+        haplotype_name = replace(haplotype["name"], r"^>" => "")
+
+        # Get the haplotype frequency
+        haplotype_frequency = haplotype["frequency"]
+
+        # Get the record that matches this id
+        matching_haplotype_records = filter(
+            r -> occursin(haplotype_name, FASTA.identifier(r)), haplotype_records
+        )
+        if isempty(matching_haplotype_records)
+            @warn "No sequence found for $haplotype_name: skipping"
+            continue
+        end #if
+        haplotype_record = first(matching_haplotype_records)
+
+        # Align the sequence
+        haplotype_sequence = FASTA.sequence(haplotype_record)
+        haplotype_alignment = align_sequences(haplotype_sequence, reference_sequence)
+
+        push!(
+            haplotypes,
+            Dict(
+                haplotype_name => Dict(
+                    "frequency" => haplotype_frequency,
+                    "sequence" => aligned_sequence(haplotype_alignment),
+                ),
+            ),
+        )
+    end #for
+end #if
+
+# Write everything out to a dictionary
+YAML.write_file(
+    output_file,
+    Dict(
+        sample_name => Dict(
+            "strain_name" => strain_name,
+            "strain_ncbi" => strain_ncbi,
+            "consensus_sequence" => aligned_sequence(consensus_alignment),
+            "haplotypes" => haplotypes,
+        ),
+    ),
+)
