@@ -71,9 +71,6 @@
             "fastqc": {
                 "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
             },
-            "ivar/consensus": {
-                "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
-            },
             "mafft": {
                 "git_sha": "841c661cad7181a36fd20bb306258d17b750c873"
             },
