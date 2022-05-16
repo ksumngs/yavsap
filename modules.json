@@ -65,9 +65,6 @@
             "blast/makeblastdb": {
                 "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
             },
-            "cat/cat": {
-                "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
-            },
             "custom/dumpsoftwareversions": {
                 "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
             },
