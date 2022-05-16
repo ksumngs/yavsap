@@ -86,9 +86,6 @@
             "samtools/faidx": {
                 "git_sha": "1ad73f1b2abdea9398680d6d20014838135c9a35"
             },
-            "samtools/fastq": {
-                "git_sha": "897c33d5da084b61109500ee44c01da2d3e4e773"
-            },
             "samtools/index": {
                 "git_sha": "1ad73f1b2abdea9398680d6d20014838135c9a35"
             },
