@@ -1,5 +1,5 @@
 include { CLIQUESNV_CONSENSUSILLUMINA } from '../../modules/ksumngs/nf-modules/cliquesnv/consensusillumina/main.nf'
-include { HAPLINK_CONSENSUS } from '../../modules/local/modules/haplink/consensus/main.nf'
+include { HAPLINK_CONSENSUS } from '../../modules/local/haplink/consensus'
 include { HAPLINK_VARIANTS } from '../../modules/local/haplink/variants'
 
 workflow CONSENSUS {
