@@ -9,6 +9,7 @@ class WorkflowYavsap {
     //
     public static void initialise(params, log) {
         pairedNanoporeError(params, log)
+        pairedInterleaveError(params, log)
     }
 
     //
@@ -46,6 +47,18 @@ class WorkflowYavsap {
             log.error "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" +
                 "  Oxford Nanopore reads are not paired-end. Either set --platform to 'illumina' or \n" +
                 "  --paired to false.\n" +
+                "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+            System.exit(1)
+        }
+    }
+
+    //
+    // Exit pipeline if --paired and --interleaved are incompatible
+    //
+    private static void pairedInterleaveError(params, log) {
+        if (params.interleaved && !params.paired) {
+            log.error "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" +
+                "  --interleaved cannot be specified if --paired is false.\n" +
                 "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
             System.exit(1)
         }
