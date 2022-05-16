@@ -9,9 +9,18 @@ def summary_params = NfcoreSchema.paramsSummaryMap(workflow, params)
 // Validate input parameters[](../../../../../../../multiqc_report.html)
 WorkflowYavsap.initialise(params, log)
 
-// TODO nf-core: Add all file path parameters for the pipeline to the list below
 // Check input path parameters to see if they exist
-def checkPathParamList = [ params.input, params.multiqc_config, params.kraken2_db ]
+def checkPathParamList = [
+    params.input,
+    params.multiqc_config,
+    params.kraken2_db,
+    params.freezetable_js,
+    params.igv_js,
+    params.phylotree_css,
+    params.d3_js,
+    params.underscore_js,
+    params.phylotree_js
+]
 for (param in checkPathParamList) { if (param) { file(param, checkIfExists: true) } }
 
 // Check mandatory parameters
