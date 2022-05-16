@@ -26,6 +26,8 @@ process IGV {
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         julia: \$(julia -v | awk '{print \$3}')
+        "JSON3.jl": \$(julia -e 'using Pkg, UUIDs; println(string(Pkg.dependencies()[UUID("0f8b85d8-7281-11e9-16c2-39a750bddbf1")].version))')
+        "Mustache.jl": \$(julia -e 'using Pkg, UUIDs; println(string(Pkg.dependencies()[UUID("ffc61752-8dc7-55ee-8c37-f3e9cdd09e70")].version))')
     END_VERSIONS
     """
 }

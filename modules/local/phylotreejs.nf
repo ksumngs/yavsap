@@ -33,6 +33,7 @@ process PHYLOTREEJS {
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         julia: \$(julia -v | awk '{print \$3}')
+        "Mustache.jl": \$(julia -e 'using Pkg, UUIDs; println(string(Pkg.dependencies()[UUID("ffc61752-8dc7-55ee-8c37-f3e9cdd09e70")].version))')
     END_VERSIONS
     """
 }
