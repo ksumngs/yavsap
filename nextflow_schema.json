@@ -10,10 +10,7 @@
             "type": "object",
             "fa_icon": "fas fa-terminal",
             "description": "Define where the pipeline should find input data and save output data.",
-            "required": [
-                "platform",
-                "outdir"
-            ],
+            "required": ["platform", "outdir"],
             "properties": {
                 "input": {
                     "type": "string",
@@ -27,10 +24,7 @@
                     "type": "string",
                     "fa_icon": "fas fa-tram",
                     "description": "NGS platform used to sequence the samples",
-                    "enum": [
-                        "illumina",
-                        "nanopore"
-                    ]
+                    "enum": ["illumina", "nanopore"]
                 },
                 "paired": {
                     "type": "boolean",
@@ -105,9 +99,7 @@
                     "help_text": "A space-separated list (use quotes on the command line), of the taxonomic ids to keep based on Kraken2's classification.\n\nDefaults to keeping all unclassified reads and all viral reads. Note that this requires the host to be present in the Kraken2 database. When dealing with animals and the databases available from `kraken2-build`, this is not the case, and this parameter should be modified."
                 }
             },
-            "required": [
-                "kraken2_db"
-            ],
+            "required": ["kraken2_db"],
             "fa_icon": "fab fa-gitkraken"
         },
         "read_trimming_options": {
@@ -137,12 +129,7 @@
                     "fa_icon": "fas fa-align-right",
                     "description": "Sequences to be removed during trimming",
                     "help_text": "Only applies to Illumina reads. Corresponds to the first\n[ILLUMINACLIP](http://www.usadellab.org/cms/?page=trimmomatic) option of\nTrimmomatic. If left blank (i.e. `--trim_adapters ''`), then adapter trimming is\ndisabled. Custom adapters cannot be used, and the parameter corresponds to\none of the prebuilt sequence files provided with Trimmomatic.\n",
-                    "enum": [
-                        "NexteraPE-PE.fa",
-                        "TruSeq2-PE.fa",
-                        "TruSeq3-PE-2.fa",
-                        "TruSeq3-PE.fa"
-                    ]
+                    "enum": ["NexteraPE-PE.fa", "TruSeq2-PE.fa", "TruSeq3-PE-2.fa", "TruSeq3-PE.fa"]
                 },
                 "trim_mismatches": {
                     "type": "integer",
@@ -327,10 +314,7 @@
                     "type": "string",
                     "default": "ml-template",
                     "fa_icon": "fas fa-wrench",
-                    "enum": [
-                        "raw",
-                        "ml-template"
-                    ],
+                    "enum": ["raw", "ml-template"],
                     "description": "How to construct pseudo-reads for haplotyping"
                 },
                 "haplotype_overlap_min": {
@@ -356,10 +340,7 @@
                     "fa_icon": "fas fa-mouse",
                     "description": "Method to call variants/haplotypes with CliqueSNV",
                     "default": "accurate",
-                    "enum": [
-                        "fast",
-                        "accurate"
-                    ]
+                    "enum": ["fast", "accurate"]
                 }
             }
         },
@@ -483,14 +464,7 @@
                     "default": "copy",
                     "fa_icon": "fab fa-leanpub",
                     "description": "How to create results files",
-                    "enum": [
-                        "symlink",
-                        "relink",
-                        "link",
-                        "copy",
-                        "copyNoFollow",
-                        "move"
-                    ],
+                    "enum": ["symlink", "relink", "link", "copy", "copyNoFollow", "move"],
                     "hidden": true
                 },
                 "email_on_fail": {

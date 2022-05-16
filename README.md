@@ -4,6 +4,7 @@
 
 [![GitHub Actions CI Status](https://github.com/ksumngs/yavsap/actions/workflows/ci.yml/badge.svg)](https://github.com/ksumngs/yavsap/actions/workflows/ci.yml)
 [![GitHub Actions Linting Status](https://github.com/ksumngs/yavsap/actions/workflows/linting.yml/badge.svg)](https://github.com/ksumngs/yavsap/actions/workflows/linting.yml)
+
 <!--[![AWS CI](https://img.shields.io/badge/CI%20tests-full%20size-FF9900?labelColor=000000&logo=Amazon%20AWS)](https://nf-co.re/yavsap/results)-->
 <!--[![Cite with Zenodo](http://img.shields.io/badge/DOI-10.5281/zenodo.XXXXXXX-1073c8?labelColor=000000)](https://doi.org/10.5281/zenodo.XXXXXXX)-->
 
@@ -42,24 +43,24 @@ On release, automated continuous integration tests run the pipeline on a full-si
 2. Read trimming ([`Trimmomatic`](http://www.usadellab.org/cms/?page=trimmomatic)/[`NanoFilt`](https://github.com/wdecoster/nanofilt/))
 3. Host read filtering ([`Kraken2`](https://github.com/DerrickWood/kraken2/wiki)+[`krakentools`](https://github.com/jenniferlu717/KrakenTools))
 4. Consensus sequence generation
-    1. Reference genome download ([`entrez-direct`](https://www.ncbi.nlm.nih.gov/books/NBK179288/))
-    2. Read alignment ([`minimap2`](https://lh3.github.io/minimap2/))
-    3. Variant calling ([`CliqueSNV`](https://github.com/vtsyvina/CliqueSNV)/[`HapLink.jl`](https://ksumngs.github.io/HapLink.jl))
-    4. Consensus sequence generation ([`CliqueSNV`](https://github.com/vtsyvina/CliqueSNV)/[`HapLink.jl`](https://ksumngs.github.io/HapLink.jl))
+   1. Reference genome download ([`entrez-direct`](https://www.ncbi.nlm.nih.gov/books/NBK179288/))
+   2. Read alignment ([`minimap2`](https://lh3.github.io/minimap2/))
+   3. Variant calling ([`CliqueSNV`](https://github.com/vtsyvina/CliqueSNV)/[`HapLink.jl`](https://ksumngs.github.io/HapLink.jl))
+   4. Consensus sequence generation ([`CliqueSNV`](https://github.com/vtsyvina/CliqueSNV)/[`HapLink.jl`](https://ksumngs.github.io/HapLink.jl))
 5. Strain identification ([`BLAST+`](https://www.ncbi.nlm.nih.gov/books/NBK569839/))
 6. Variant calling
-    1. Read alignment ([`minimap2`](https://lh3.github.io/minimap2/))
-    2. Variant calling ([`CliqueSNV`](https://github.com/vtsyvina/CliqueSNV)/[`HapLink.jl`](https://ksumngs.github.io/HapLink.jl))
+   1. Read alignment ([`minimap2`](https://lh3.github.io/minimap2/))
+   2. Variant calling ([`CliqueSNV`](https://github.com/vtsyvina/CliqueSNV)/[`HapLink.jl`](https://ksumngs.github.io/HapLink.jl))
 7. Haplotype calling ([`CliqueSNV`](https://github.com/vtsyvina/CliqueSNV)/[`HapLink.jl`](https://ksumngs.github.io/HapLink.jl))
 8. Phylogenetic tree generation
-    1. Multiple sequence alignment ([`MAFFT`](https://mafft.cbrc.jp/alignment/software/))
-    2. Maximum-likelihood phylogenetic trees ([`RAxML-ng`](https://github.com/amkozlov/raxml-ng))
+   1. Multiple sequence alignment ([`MAFFT`](https://mafft.cbrc.jp/alignment/software/))
+   2. Maximum-likelihood phylogenetic trees ([`RAxML-ng`](https://github.com/amkozlov/raxml-ng))
 9. Output visualization
-    - Haplotypes table ([`BioJulia`](https://biojulia.net))
-    - Read QC results ([`MultiQC`](http://multiqc.info/))
-    - Metagenomic classifications ([`Krona`](https://github.com/marbl/Krona/wiki/KronaTools))
-    - Alignments ([`IGV`](https://igv.org/))
-    - Phylogenetic tree ([`phylotree.js`](https://github.com/veg/phylotree.js))
+   - Haplotypes table ([`BioJulia`](https://biojulia.net))
+   - Read QC results ([`MultiQC`](http://multiqc.info/))
+   - Metagenomic classifications ([`Krona`](https://github.com/marbl/Krona/wiki/KronaTools))
+   - Alignments ([`IGV`](https://igv.org/))
+   - Phylogenetic tree ([`phylotree.js`](https://github.com/veg/phylotree.js))
 
 ```mermaid
 flowchart TD
@@ -131,6 +132,7 @@ If you would like to contribute to this pipeline, please see the [contributing g
 This pipeline uses code and infrastructure developed and maintained by the [nf-core](https://nf-co.re) community, reused here under the [MIT license](https://github.com/nf-core/tools/blob/master/LICENSE).
 
 <!-- cspell:disable -->
+
 > The nf-core framework for community-curated bioinformatics pipelines.
 >
 > Philip Ewels, Alexander Peltzer, Sven Fillinger, Harshil Patel, Johannes Alneberg, Andreas Wilm, Maxime Ulysse Garcia, Paolo Di Tommaso & Sven Nahnsen.
