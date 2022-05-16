@@ -4,7 +4,7 @@
     "repos": {
         "ksumngs/nf-modules": {
             "cat/fastq": {
-                "git_sha": "da5728117c6caaee428ed8729e88b93abc60c5fc"
+                "git_sha": "9bd90a7333479b2ba7f835d1ddfc3f869e992c56"
             },
             "cliquesnv/consensusillumina": {
                 "git_sha": "2362072d4e1659d9096e047990e2959f56134820"
