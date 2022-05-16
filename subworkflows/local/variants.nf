@@ -1,5 +1,5 @@
 include { CLIQUESNV_ILLUMINAVC } from '../../modules/ksumngs/nf-modules/cliquesnv/illuminavc/main.nf'
-include { HAPLINK_VARIANTS } from '../../modules/local/modules/haplink/variants/main.nf'
+include { HAPLINK_VARIANTS } from '../../modules/local/haplink/variants'
 
 workflow VARIANTS {
     take:
