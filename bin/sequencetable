@@ -8,6 +8,7 @@ using YAML
 haplotype_yaml = popfirst!(ARGS)
 reference_fasta = popfirst!(ARGS)
 template_file = popfirst!(ARGS)
+tool_meta_yaml = popfirst!(ARGS)
 freeze_script = popfirst!(ARGS)
 output_file = popfirst!(ARGS)
 
@@ -103,9 +104,18 @@ io = IOBuffer()
 print(io, genome_table)
 table_xml = String(take!(io))
 
+# Read in the tool metadata
+tool_metadata = YAML.load_file(tool_meta_yaml)
+
 # Create the mustache table
 mustache_table = Dict(
-    "kelpieseqtable" => table_xml, "jqueryfreezetable" => String(read(freeze_script))
+    "kelpieseqtable" => table_xml,
+    "jqueryfreezetable" => String(read(freeze_script)),
+    "toolname" => tool_metadata["name"],
+    "toolnamelower" => lowercase(tool_metadata["name"]),
+    "tooldescription" => tool_metadata["description"],
+    "toollink" => tool_metadata["url"],
+    "doi" => tool_metadata["doi"],
 )
 
 # Output a rendered file

@@ -37,10 +37,22 @@ workflow PRESENTATION {
     sequencetable_template = file(
         "${workflow.projectDir}/assets/kelpie_mqc.html", checkIfExists: true
     )
+    tool_meta = []
+    if (params.platform == 'illumina') {
+        tool_meta = file(
+            "${workflow.projectDir}/assets/cliquesnv_info.yml", checkIfExists: true
+        )
+    }
+    else if (params.platform == 'nanopore') {
+        tool_meta = file(
+            "${workflow.projectDir}/assets/haplink_info.yml", checkIfExists: true
+        )
+    }
     SEQUENCETABLE(
         ch_collected_haplotypes,
         reference,
         sequencetable_template,
+        tool_meta,
         freezetable_js
     )
     SEQUENCETABLE.out.mqc_html.set{ seqtable }

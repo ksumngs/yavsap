@@ -9,6 +9,7 @@ process SEQUENCETABLE {
     path(haplotypes, stageAs: 'haplotypes.yml')
     path(reference, stageAs: 'reference.fasta')
     path(template, stageAs: 'template.html')
+    path(toolmeta, stageAs: 'tool.yml')
     path(freezetable_js, stageAs: 'freezetable.jquery.js')
 
     output:
@@ -24,6 +25,7 @@ process SEQUENCETABLE {
             ${haplotypes} \\
             ${reference} \\
             ${template} \\
+            ${toolmeta} \\
             ${freezetable_js} \\
             sequencetable_mqc.html
 
