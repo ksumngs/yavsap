@@ -36,6 +36,7 @@ lint:
     - docs/README.md
     - assets/multiqc_config.yaml
     - .prettierrc.yml
+    - lib/NfcoreTemplate.groovy
   actions_ci:
     false
     # Can't find minimum NF version and doesn't like the addition of 'dispatch'
