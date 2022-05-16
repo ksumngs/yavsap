@@ -41,3 +41,5 @@ lint:
     # Can't find minimum NF version and doesn't like the addition of 'dispatch'
     # to the events
   multiqc_config: false
+  # We actually use template strings in the pipeline, so turn this off
+  template_strings: false
