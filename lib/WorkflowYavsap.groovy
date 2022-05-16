@@ -8,6 +8,7 @@ class WorkflowYavsap {
     // Check and validate parameters
     //
     public static void initialise(params, log) {
+        pairedNanoporeError(params, log)
     }
 
     //
@@ -35,5 +36,18 @@ class WorkflowYavsap {
         yaml_file_text        += "data: |\n"
         yaml_file_text        += "${summary_section}"
         return yaml_file_text
+    }
+
+    //
+    // Exit pipeline if Nanopore reads are given as paired-end
+    //
+    private static void pairedNanoporeError(params, log) {
+        if (params.platform == 'nanopore' && params.paired) {
+            log.error "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" +
+                "  Oxford Nanopore reads are not paired-end. Either set --platform to 'illumina' or \n" +
+                "  --paired to false.\n" +
+                "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+            System.exit(1)
+        }
     }
 }
