@@ -3,7 +3,7 @@ nextflow.enable.dsl = 2
 
 include { CLIQUESNV_ILLUMINA } from '../../modules/ksumngs/nf-modules/cliquesnv/illumina/main.nf'
 include { HAPLINK_HAPLOTYPES } from '../../modules/local/haplink/haplotypes'
-include { HAPLINK_SEQUENCES } from '../../modules/local/modules/haplink/sequences/main.nf'
+include { HAPLINK_SEQUENCES } from '../../modules/local/haplink/sequences'
 include { JSON2YAML } from '../../modules/local/json2yaml.nf'
 
 workflow HAPLOTYPING {
