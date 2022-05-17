@@ -126,7 +126,7 @@ work                # Directory containing the nextflow working files
 
 ### Updating the pipeline
 
-When you run the above command, Nextflow automatically pulls the pipeline code from GitHub and stores it as a cached version. When running the pipeline after this, it will always use the cached version if available - even if the pipeline has been updated since. To make sure that you're running the latest version of the pipeline, make sure that you regularly update the cached version of the pipeline:
+When you run the above command, Nextflow automatically pulls YAVSAP from GitHub and stores it as a cached version. When running the pipeline after this, it will always use the cached version if available - even if we've updated it since. To make sure that you're running the latest version of the pipeline, you can update the cached version of the pipeline:
 
 ```console
 nextflow pull ksumngs/yavsap
@@ -134,23 +134,27 @@ nextflow pull ksumngs/yavsap
 
 ### Reproducibility
 
-It is a good idea to specify a pipeline version when running the pipeline on your data. This ensures that a specific version of the pipeline code and software are used when you run your pipeline. If you keep using the same tag, you'll be running the same version of the pipeline, even if there have been changes to the code since.
+It is often a good idea to specify a pipeline version when running the pipeline on your data. This ensures that a specific version of the pipeline code and software are used when you run your pipeline. If you keep using the same tag, you'll be running the same version of the pipeline, even if there have been changes to the code since.
 
 First, go to the [yavsap releases page](https://github.com/ksumngs/yavsap/releases) and find the latest version number (eg. `v1.3.1`). Then specify this when running the pipeline with `-r` (one hyphen) - eg. `-r v1.3.1`.
 
-This version number will be logged in reports when you run the pipeline, so that you'll know what you used when you look back in the future.
+This version number will be logged in {ref}`the YAVSAP report` when you run the pipeline, so that you'll know what you used when you look back in the future.
 
 ## Core Nextflow arguments
 
-> **NB:** These options are part of Nextflow and use a _single_ hyphen (pipeline parameters use a double-hyphen).
+```{note}
+These options are part of Nextflow and use a _single_ hyphen (pipeline parameters use a double-hyphen).
+```
 
 ### `-profile`
 
 Use this parameter to choose a configuration profile. Profiles can give configuration presets for different compute environments.
 
-Several generic profiles are bundled with the pipeline which instruct the pipeline to use software packaged using different methods (Docker, Singularity, Podman, Shifter, Charliecloud, Conda) - see below. When using Biocontainers, most of these software packaging methods pull Docker containers from quay.io e.g [FastQC](https://quay.io/repository/biocontainers/fastqc) except for Singularity which directly downloads Singularity images via https hosted by the [Galaxy project](https://depot.galaxyproject.org/singularity/)<!-- and Conda which downloads and installs software locally from [Bioconda](https://bioconda.github.io/)-->.
+Several generic profiles are bundled with the pipeline which instruct the pipeline to use software packaged using different methods (Docker, Singularity, Podman, Shifter, Charliecloud, Conda) - see below. When using Biocontainers, most of these software packaging methods pull Docker containers from [quay.io](https://quay.io). Singularity instead directly downloads Singularity images via https hosted by the [Galaxy project](https://depot.galaxyproject.org/singularity/), though.<!-- and Conda which downloads and installs software locally from [Bioconda](https://bioconda.github.io/)-->.
 
-> We highly recommend the use of Docker or Singularity containers for full pipeline reproducibility<!--, however when this is not possible, Conda is also supported-->.
+```{note}
+We highly recommend the use of Docker or Singularity containers for full pipeline reproducibility: they just work!<!--, however when this is not possible, Conda is also supported-->.
+```
 
 The pipeline also dynamically loads configurations from [https://github.com/nf-core/configs](https://github.com/nf-core/configs) when it runs, making multiple config profiles for various institutional clusters available at run time. For more information and to see if your system is available in these configs please see the [nf-core/configs documentation](https://github.com/nf-core/configs#documentation).
 
@@ -199,12 +203,10 @@ success with placing these parameters in a `nextflow.config` file, so keeping
 them on the command-line is best.
 
 --kraken2_db
-
-The path to a Kraken2 database. See {ref}`--kraken2_db <Kraken2 Options>`.
+: The path to a Kraken2 database. See {ref}`--kraken2_db <Kraken2 Options>`.
 
 --platform
-
-Must be set to `illumina` or `nanopore`, depending on the type of reads
+: Must be set to `illumina` or `nanopore`, depending on the type of reads
 you are analyzing. See {ref}`--platform <Input/Output Options>`.
 
 ## Genome Preparation
