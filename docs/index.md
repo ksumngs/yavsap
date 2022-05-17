@@ -12,4 +12,5 @@ install
 usage
 parameters
 output
+report
 ```
