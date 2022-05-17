@@ -61,6 +61,5 @@ html_logo = "images/yavsap_logo.png"
 
 intersphinx_mapping = {
     "nextflow": ("https://nextflow.io/docs/latest/", None),
-    "canu": ("https://canu.readthedocs.io/en/latest", None),
     "singularity": ("https://apptainer.org/user-docs/master", None),
 }
