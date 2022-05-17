@@ -22,7 +22,7 @@ class WorkflowMain {
     // Print help to screen if required
     //
     public static String help(workflow, params, log) {
-        def command = "nextflow run ${workflow.manifest.name} --input samplesheet.csv --genome GRCh37 -profile docker"
+        def command = "nextflow run ksumngs/yavsap --platform illumina --kraken2_db /db/kraken/viral -profile docker"
         def help_string = ''
         help_string += NfcoreTemplate.logo(workflow, params.monochrome_logs, params.breed)
         help_string += NfcoreSchema.paramsHelp(workflow, params, command)
