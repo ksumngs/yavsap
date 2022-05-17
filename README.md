@@ -1,6 +1,6 @@
-# ![yavsap](docs/images/nf-core/yavsap_logo_light.png#gh-light-mode-only) ![yavsap](docs/images/nf-core/yavsap_logo_dark.png#gh-dark-mode-only)
-
 <!--markdownlint-disable line-length -->
+
+# ![yavsap](docs/images/yavsap_logo.png) YAVSAP (Yet Another Viral Subspecies Analysis Pipeline)
 
 [![GitHub Actions CI Status](https://github.com/ksumngs/yavsap/actions/workflows/ci.yml/badge.svg)](https://github.com/ksumngs/yavsap/actions/workflows/ci.yml)
 [![GitHub Actions Linting Status](https://github.com/ksumngs/yavsap/actions/workflows/linting.yml/badge.svg)](https://github.com/ksumngs/yavsap/actions/workflows/linting.yml)
