@@ -152,10 +152,16 @@ workflow YAVSAP {
     ch_versions = ch_versions.mix(SAMTOOLS_INDEX.out.versions.first())
 
     //
-    // SUBWORKFLOW: Find the consensus sequence
+    // SUBWORKFLOW: Find the consensus sequence, falling back to the reference
+    //   sequence in case of failure
     //
     CONSENSUS(ch_bam, ch_bai, ch_reference_fasta)
-    CONSENSUS.out.fasta.set{ ch_consensus_fasta }
+    CONSENSUS
+        .out
+        .fasta
+        .concat(ch_bam.map{ it[0] }.combine(ch_reference_fasta))
+        .unique{ it[0].id }
+        .set{ ch_consensus_fasta }
     ch_versions = ch_versions.mix(CONSENSUS.out.versions)
 
     //
@@ -167,12 +173,29 @@ workflow YAVSAP {
     ch_versions = ch_versions.mix(GENOME_DOWNLOAD.out.versions)
 
     //
-    // SUBWORKFLOW: Find the closest strain to each consensus sequence
+    // SUBWORKFLOW: Find the closest strain to each consensus sequence, falling
+    //   back to the reference genome and an 'UNDEFINED' strain designation in
+    //   case of failure
     //
     CLOSEST_REFERENCE(ch_consensus_fasta, ch_genome_strain, ch_genome_fasta)
-    CLOSEST_REFERENCE.out.accession.set{ ch_closest_accession }
-    CLOSEST_REFERENCE.out.strain.set{ ch_closest_strain }
-    CLOSEST_REFERENCE.out.fasta.set{ ch_closest_reference }
+    CLOSEST_REFERENCE
+        .out
+        .accession
+        .concat(ch_consensus_fasta.map{ it[0] }.combine(Channel.of(params.genome)))
+        .unique{ it[0].id }
+        .set{ ch_closest_accession }
+    CLOSEST_REFERENCE
+        .out
+        .strain
+        .concat(ch_consensus_fasta.map{ it[0] }.combine(Channel.of('UNDEFINED')))
+        .unique{ it[0].id }
+        .set{ ch_closest_strain }
+    CLOSEST_REFERENCE
+        .out
+        .fasta
+        .concat(ch_consensus_fasta.map{ it[0] }.combine(ch_reference_fasta))
+        .unique{ it[0].id }
+        .set{ ch_closest_reference }
     ch_versions = ch_versions.mix(CLOSEST_REFERENCE.out.versions)
 
     //
