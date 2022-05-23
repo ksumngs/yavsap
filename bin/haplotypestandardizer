@@ -45,7 +45,12 @@ close(consensus_reader)
 consensus_sequence = FASTA.sequence(consensus_record)
 
 # Align the consensus sequence against the reference
-consensus_alignment = align_sequences(consensus_sequence, reference_sequence)
+consensus_alignment = Alignment("1M")
+try
+    global consensus_alignment = align_sequences(consensus_sequence, reference_sequence)
+catch
+    error("There was an error aligning the consensus sequence")
+end #try
 
 # Read in the haplotype yaml data
 haplotype_data = YAML.load_file(haplotype_yaml)["haplotypes"]
@@ -79,18 +84,26 @@ if isfile(haplotype_fasta) && isfile(haplotype_yaml)
         haplotype_record = first(matching_haplotype_records)
 
         # Align the sequence
-        haplotype_sequence = FASTA.sequence(haplotype_record)
-        haplotype_alignment = align_sequences(haplotype_sequence, reference_sequence)
+        try
+            haplotype_sequence = FASTA.sequence(haplotype_record)
+            haplotype_alignment = align_sequences(haplotype_sequence, reference_sequence)
 
-        push!(
-            haplotypes,
-            Dict(
-                haplotype_name => Dict(
-                    "frequency" => haplotype_frequency,
-                    "sequence" => aligned_sequence(haplotype_alignment),
+            push!(
+                haplotypes,
+                Dict(
+                    haplotype_name => Dict(
+                        "frequency" => haplotype_frequency,
+                        "sequence" => aligned_sequence(haplotype_alignment),
+                    ),
                 ),
-            ),
-        )
+            )
+        catch e
+            if e isa BoundsError
+                @warn "$haplotype_name has gaps in its sequence and cannot be aligned"
+            else
+                @warn "$haplotype_name encountered an unknown error and cannot be aligned"
+            end #if
+        end #try
     end #for
 end #if
 
