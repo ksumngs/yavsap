@@ -52,18 +52,17 @@ catch
     error("There was an error aligning the consensus sequence")
 end #try
 
-# Read in the haplotype yaml data
-haplotype_data = YAML.load_file(haplotype_yaml)["haplotypes"]
-
-# Read in the haplotype sequences
-haplotype_reader = FASTA.Reader(open(haplotype_fasta, "r"))
-haplotype_records = collect(haplotype_reader)
-close(haplotype_reader)
-
 haplotypes = Dict[]
 
 # Only log haplotypes if they are provided
 if isfile(haplotype_fasta) && isfile(haplotype_yaml)
+    # Read in the haplotype yaml data
+    haplotype_data = YAML.load_file(haplotype_yaml)["haplotypes"]
+
+    # Read in the haplotype sequences
+    haplotype_reader = FASTA.Reader(open(haplotype_fasta, "r"))
+    haplotype_records = collect(haplotype_reader)
+    close(haplotype_reader)
 
     # Convert each haplotype to an output record
     for haplotype in haplotype_data
