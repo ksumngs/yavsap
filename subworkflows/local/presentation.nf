@@ -22,7 +22,9 @@ workflow PRESENTATION {
             .join(accession)
             .join(consensus)
             .join(haplotype_fasta, remainder: true)
-            .join(haplotype_yaml, remainder: true),
+            .join(haplotype_yaml, remainder: true)
+            .map{ it[4] ? it : [it[0], it[1], it[2], it[3], [], it[5]] }
+            .map{ it[5] ? it : [it[0], it[1], it[2], it[3], it[4], []] },
         reference
     )
     HAPLOTYPECONVERT
