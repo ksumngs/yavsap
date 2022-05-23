@@ -44,13 +44,20 @@ administrative privileges for this, though.
 
    ![Changing to the report directory](images/report_cd_windows.png)
 
-4. Type `python -m http.server` <kbd>ENTER</kbd>
+4. Type `python -m http.server 8000` <kbd>ENTER</kbd>
 
    ![Launching the server](images/report_python_windows.png)
 
 5. Open a browser, and navigate to <http://localhost:8000>
 
    ![Viewing the report](images/report_view_windows.png)
+
+   ```{note}
+   You can launch multiple reports at once by changing `8000` to another number
+   in both the PowerShell window and the browser URL. Just make sure the number
+   is larger than 1024, and for best results try to pick a number than doesn't
+   appear on [this list](https://en.wikipedia.org/wiki/List_of_TCP_and_UDP_port_numbers#Registered_ports).
+   ```
 
 6. Once you are done with the report, close the browser, press
    <kbd>CTRL</kbd>+<kbd>C</kbd> in PowerShell, and close PowerShell
@@ -77,13 +84,20 @@ Hooray! Mac and Linux desktops come with server software pre-installed!
 
    ![Changing to the report directory](images/report_cd_linux.png)
 
-4. Type `python -m http.server` <kbd>ENTER</kbd>
+4. Type `python -m http.server 8000` <kbd>ENTER</kbd>
 
    ![Launching the server](images/report_python_linux.png)
 
 5. Open a browser, and navigate to <http://localhost:8000>
 
    ![Viewing the report](images/report_view_linux.png)
+
+   ```{note}
+   You can launch multiple reports at once by changing `8000` to another number
+   in both the terminal window and the browser URL. Just make sure the number
+   is larger than 1024, and for best results try to pick a number than doesn't
+   appear on [this list](https://en.wikipedia.org/wiki/List_of_TCP_and_UDP_port_numbers#Registered_ports).
+   ```
 
 6. Once you are done with the report, close the browser, press
    <kbd>CTRL</kbd>+<kbd>C</kbd> in the terminal, and close the terminal
