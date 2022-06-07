@@ -222,8 +222,8 @@ workflow YAVSAP {
     //
     // SUBWORKFLOW: Haplotype calling
     //
-    ch_haplotype_fasta = Channel.empty()
-    ch_haplotype_yaml = Channel.empty()
+    ch_closest_strain.map{ [it[0], []] }.set{ ch_haplotype_fasta }
+    ch_closest_strain.map{ [it[0], []] }.set{ ch_haplotype_yaml }
     if (!params.skip_haplotype) {
         HAPLOTYPING(ch_realigned_bam, ch_vcf, ch_closest_reference)
         HAPLOTYPING.out.fasta.set{ ch_haplotype_fasta }
