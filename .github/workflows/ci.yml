@@ -14,115 +14,73 @@ env:
   CAPSULE_LOG: none
 
 jobs:
-  test:
-    name: Run pipeline with test data
+  versions:
+    name: Run pipeline tests with different Nextflow versions
     # Only run on push if this is the develop branch (merged PRs)
     if: ${{ github.event_name != 'push' || (github.event_name == 'push' && github.repository == 'ksumngs/yavsap') }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        # Nextflow versions
         include:
-          # Test pipeline minimum Nextflow version
-          - NXF_VER: "21.10.3"
-            NXF_EDGE: ""
-          # Test latest edge release of Nextflow
           - NXF_VER: ""
             NXF_EDGE: "1"
+            TEST: "Test Illumina"
+          - NXF_VER: ""
+            NXF_EDGE: "1"
+            TEST: "Test Nanopore"
+          - NXF_VER: "21.10.3"
+            NXF_EDGE: ""
+            TEST: "Test Illumina"
+          - NXF_VER: "21.10.3"
+            NXF_EDGE: "1"
+            TEST: "Test Nanopore"
     steps:
       - name: Check out pipeline code
-        uses: actions/checkout@v2
-
+        uses: actions/checkout@v3
+      - name: Install Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: "3.10"
+          cache: "pip"
+      - name: Install Pytest and extensions
+        uses: logikal-code/pip-install@v1.0.0
+        with:
+          requirements: tests/requirements.txt
       - name: Install Nextflow
         env:
           NXF_VER: ${{ matrix.NXF_VER }}
-          # Uncomment only if the edge release is more recent than the latest stable release
-          # See https://github.com/nextflow-io/nextflow/issues/2467
-          # NXF_EDGE: ${{ matrix.NXF_EDGE }}
+          NXF_EDGE: ${{ matrix.NXF_EDGE }}
         run: |
           wget -qO- get.nextflow.io | bash
           sudo mv nextflow /usr/local/bin
-
-      - name: Run pipeline with test data
-        env:
-          NCBI_API_KEY: ${{ secrets.NCBI_API_KEY }}
+          nextflow self-update
+      - name: Run tests
         run: |
-          nextflow run ${GITHUB_WORKSPACE} -profile test,gh,docker --outdir results
+          pytest --git-aware --tag ${{ matrix.TEST }}
 
-  parameters:
-    name: Test workflow parameters
+  test:
+    name: Run pipeline tests
     if: ${{ github.event_name != 'push' || (github.event_name == 'push' && github.repository == 'ksumngs/yavsap') }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        parameters:
-          - "--keep_taxid classified"
-          - "--kraken2_db https://genome-idx.s3.amazonaws.com/kraken/16S_Silva132_20200326.tgz --keep_taxid unclassified"
-          - "--kraken2_db ~/kraken2-db"
-          - "--genome_list ./genomes/jev.tsv"
-          - "--genome_list jev"
-          - "--skip_qc"
-          - "--skip_trimming"
-          - "--skip_filtering"
-          - "--skip_haplotype"
-          - "--skip_phylogenetics"
+        GROUP: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
     steps:
       - name: Check out pipeline code
-        uses: actions/checkout@v2
-
+        uses: actions/checkout@v3
+      - name: Install Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: "3.10"
+          cache: "pip"
+      - name: Install Pytest and extensions
+        uses: logikal-code/pip-install@v1.0.0
+        with:
+          requirements: tests/requirements.txt
       - name: Install Nextflow
         run: |
           wget -qO- get.nextflow.io | bash
           sudo mv nextflow /usr/local/bin
-
-      - name: Download Kraken2 database
-        if: ${{ matrix.parameters == '--kraken2_db ~/kraken2-db' }}
+      - name: Run tests
         run: |
-          mkdir ~/kraken2-db
-          wget -qO- https://genome-idx.s3.amazonaws.com/kraken/k2_viral_20210517.tar.gz | tar xzv -C ~/kraken2-db
-
-      - name: Run pipeline with test data
-        env:
-          NCBI_API_KEY: ${{ secrets.NCBI_API_KEY }}
-        run: |
-          nextflow run ${GITHUB_WORKSPACE} -profile test,gh,docker ${{ matrix.parameters }} --outdir results
-
-  test_interleaved:
-    name: Test Interleaved Reads Workflow
-    # Only run on push if this is the develop branch (merged PRs)
-    if: ${{ github.event_name != 'push' || (github.event_name == 'push' && github.repository == 'ksumngs/yavsap') }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out pipeline code
-        uses: actions/checkout@v2
-
-      - name: Install Nextflow
-        run: |
-          wget -qO- get.nextflow.io | bash
-          sudo mv nextflow /usr/local/bin
-
-      - name: Run pipeline with test data
-        env:
-          NCBI_API_KEY: ${{ secrets.NCBI_API_KEY }}
-        run: |
-          nextflow run ${GITHUB_WORKSPACE} -profile test_interleaved,gh,docker --outdir results
-
-  test_nanopore:
-    name: Run workflow tests
-    # Only run on push if this is the develop branch (merged PRs)
-    if: ${{ github.event_name != 'push' || (github.event_name == 'push' && github.repository == 'ksumngs/yavsap') }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out pipeline code
-        uses: actions/checkout@v2
-
-      - name: Install Nextflow
-        run: |
-          wget -qO- get.nextflow.io | bash
-          sudo mv nextflow /usr/local/bin
-
-      - name: Run pipeline with test data
-        env:
-          NCBI_API_KEY: ${{ secrets.NCBI_API_KEY }}
-        run: |
-          nextflow run ${GITHUB_WORKSPACE} -profile test,gh,docker --outdir results
+          pytest --git-aware --test-group-count 20 --test-group=${{ matrix.GROUP }} --test-group-random-seed=1
