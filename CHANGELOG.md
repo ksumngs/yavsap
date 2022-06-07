@@ -10,6 +10,8 @@ and this project adheres to
 
 ### Changed
 
+- Visualizer created entirely in MultiQC
+- nf-core template updated to v1.4.0
 - Consensus sequences now called using the variant callers for Illumina/Nanopore
   reads
 
