@@ -47,7 +47,7 @@ jobs:
         env:
           NCBI_API_KEY: ${{ secrets.NCBI_API_KEY }}
         run: |
-          nextflow run ${GITHUB_WORKSPACE} -profile test,gh,docker
+          nextflow run ${GITHUB_WORKSPACE} -profile test,gh,docker --outdir results
 
   parameters:
     name: Test workflow parameters
@@ -85,7 +85,7 @@ jobs:
         env:
           NCBI_API_KEY: ${{ secrets.NCBI_API_KEY }}
         run: |
-          nextflow run ${GITHUB_WORKSPACE} -profile test,gh,docker ${{ matrix.parameters }}
+          nextflow run ${GITHUB_WORKSPACE} -profile test,gh,docker ${{ matrix.parameters }} --outdir results
 
   test_interleaved:
     name: Test Interleaved Reads Workflow
@@ -105,7 +105,7 @@ jobs:
         env:
           NCBI_API_KEY: ${{ secrets.NCBI_API_KEY }}
         run: |
-          nextflow run ${GITHUB_WORKSPACE} -profile test_interleaved,gh,docker
+          nextflow run ${GITHUB_WORKSPACE} -profile test_interleaved,gh,docker --outdir results
 
   test_nanopore:
     name: Run workflow tests
@@ -125,4 +125,4 @@ jobs:
         env:
           NCBI_API_KEY: ${{ secrets.NCBI_API_KEY }}
         run: |
-          nextflow run ${GITHUB_WORKSPACE} -profile test,gh,docker
+          nextflow run ${GITHUB_WORKSPACE} -profile test,gh,docker --outdir results
