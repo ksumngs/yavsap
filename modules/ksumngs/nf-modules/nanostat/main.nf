@@ -11,7 +11,7 @@ process NANOSTAT {
     tuple val(meta), path(reads)
 
     output:
-    tuple val(meta), path("*.log"), emit: log
+    tuple val(meta), path("*_NanoStats"), emit: log
     path "versions.yml"           , emit: versions
 
     when:
@@ -33,7 +33,7 @@ process NANOSTAT {
             -t ${task.cpus} \\
             --${analysis_flag} ${reads} \\
             ${args} \\
-        > ${prefix}_nanostat.log
+        > ${prefix}_NanoStats
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

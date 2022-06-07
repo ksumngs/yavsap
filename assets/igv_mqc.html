@@ -1,0 +1,19 @@
+<!--
+id: minimap2
+section_name: minimap2
+section_href: https://lh3.github.io/minimap2/
+description: '<a href="https://lh3.github.io/minimap2/">minimap2</a> is a versatile pairwise aligner for genomic and spliced nucleotide sequences. <em class="text-muted small" style="margin-left: 1rem">DOI: <a class="module-doi" data-doi="10.1093/bioinformatics/bty191" data-toggle="popover" href="https://doi.org/10.1093/bioinformatics/bty191" target="_blank">10.1093/bioinformatics/bty191</a></em>.'
+-->
+<div id="igv-canvas"></div>
+
+<script>
+  {{{igvjs}}}
+</script>
+<script>
+  options = {{{igvopts}}};
+  igv
+    .createBrowser(document.getElementById("igv-canvas"), options)
+    .then(function (browser) {
+      igv.browser = browser;
+    });
+</script>

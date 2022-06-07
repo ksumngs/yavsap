@@ -34,7 +34,7 @@ process TRIMMOMATIC {
             ${reads} \\
             ${trimmed} \\
             ${args} \\
-        2> ${prefix}.trimmomatic.log
+        2> >(tee ${prefix}.log >&2)
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

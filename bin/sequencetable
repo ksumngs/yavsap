@@ -1,0 +1,124 @@
+#!/usr/bin/env julia
+using EzXML
+using FASTX
+using Kelpie
+using Mustache
+using YAML
+
+haplotype_yaml = popfirst!(ARGS)
+reference_fasta = popfirst!(ARGS)
+template_file = popfirst!(ARGS)
+tool_meta_yaml = popfirst!(ARGS)
+freeze_script = popfirst!(ARGS)
+output_file = popfirst!(ARGS)
+
+function match_cols(query, reference)
+    cols = []
+    for (seq, ref) in zip(query, reference)
+        classes = [string(seq)]
+        if seq != ref
+            push!(classes, "variant")
+        end #43
+        push!(cols, td(seq; class=join(classes, " ")))
+    end #for
+
+    return cols
+end #function
+
+function sample_rows(sample, reference)
+    sample_name = first(sample)
+    sample_data = last(sample)
+    strain_name = sample_data["strain_name"]
+    strain_ncbi = sample_data["strain_ncbi"]
+    consensus_sequence = sample_data["consensus_sequence"]
+    haplotypes = sample_data["haplotypes"]
+
+    ncbi_link = "https://ncib.nlm.nih.gov/nuccore/$strain_ncbi"
+    num_haplotypes = length(haplotypes)
+
+    consensus_row = tr(
+        th(sample_name; rowspan=(num_haplotypes + 1)),
+        td("Consensus"; colspan=2),
+        td(strain_name),
+        td(a(strain_ncbi; href=ncbi_link)),
+        match_cols(consensus_sequence, reference)...,
+    )
+
+    haplotype_rows = []
+
+    for haplotype in haplotypes
+        haplotype_name = first(first(haplotype))
+        haplotype_data = last(first(haplotype))
+        haplotype_frequency = haplotype_data["frequency"]
+        haplotype_sequence = haplotype_data["sequence"]
+
+        push!(
+            haplotype_rows,
+            tr(
+                td(haplotype_name),
+                td(em("$(round(haplotype_frequency * 100))%"); colspan=3),
+                match_cols(haplotype_sequence, reference)...,
+            ),
+        )
+    end #for
+
+    return [consensus_row, haplotype_rows...]
+end #function
+
+# Read in the first (and hopefully only) record from the reference file
+reference_reader = FASTA.Reader(open(reference_fasta, "r"))
+reference_record = first(reference_reader)
+if !isempty(reference_reader)
+    @warn "Reference $reference_fasta contains more than one sequence. Only the first will be used."
+end #if
+close(reference_reader)
+reference_name = FASTA.identifier(reference_record)
+reference_sequence = string(FASTA.sequence(reference_record))
+
+# Get the header
+header_row = tr(
+    th("Sample"; colspan=3),
+    th("Genotype"; colspan=2),
+    th("Sequence"; colspan=4),
+    [td(i; colspan=5) for i in 5:5:length(reference_sequence)]...,
+)
+
+# Get the reference sequence row
+reference_row = tr(
+    th("Reference"; colspan=4),
+    td(a(reference_name; href="https://ncib.nlm.nih.gov/nuccore/$reference_name")),
+    [td(base; class=base) for base in reference_sequence]...,
+)
+
+# Get rows for each sample
+other_rows = []
+for sample in YAML.load_file(haplotype_yaml)
+    push!(other_rows, sample_rows(sample, reference_sequence)...)
+end #for
+
+# Plug it all into one big table
+genome_table = table(thead(header_row), tbody(reference_row, other_rows...); class="table")
+
+# Get the table as xml
+io = IOBuffer()
+print(io, genome_table)
+table_xml = String(take!(io))
+
+# Read in the tool metadata
+tool_metadata = YAML.load_file(tool_meta_yaml)
+
+# Create the mustache table
+mustache_table = Dict(
+    "kelpieseqtable" => table_xml,
+    "jqueryfreezetable" => String(read(freeze_script)),
+    "toolname" => tool_metadata["name"],
+    "toolnamelower" => lowercase(tool_metadata["name"]),
+    "tooldescription" => tool_metadata["description"],
+    "toollink" => tool_metadata["url"],
+    "doi" => tool_metadata["doi"],
+)
+
+# Output a rendered file
+open(output_file, "w") do f
+    write(f, render_from_file(template_file, mustache_table))
+end #do

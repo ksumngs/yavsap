@@ -5,26 +5,21 @@ outputs and where to find them, but first...
 
 ## The Visualizer
 
-If you like pictures, hate juggling files into various Java applications, and
-are OCD about having everything in one spot, then we have you covered. The
-pipeline outputs its own web application with every run that allows you to view,
-interact with, and download nearly every output file.
-
-To get started with The Visualizer, you'll need [a web
-server](https://developer.mozilla.org/en-US/docs/Learn/Common_questions/set_up_a_local_testing_server#running_a_simple_local_http_server).
-To learn how to use The Visualizer, click the question mark in the bottom-left
-corner of the web page.
+Our favorite output is the (mostly) self-contained report file. The report is
+contained in `report/index.html`. For the best experience, you will need all of
+the files in the `report` directory, and will need to serve it with a web server
+application. More details and step by step instructions are provided on the page
+dedicated to {ref}`The YAVSAP Report`.
 
 ## File Output
 
 You don't like all the fluff, huh? Here's the lowdown on the file structure you
 can expect from each pipeline run.
 
-### Visualizer Data
+### Report stuff
 
-All the following files and folders are for powering the Visualizer: if you want
-to use The Visualizer on another machine, you will need to take them all to the
-other computer in the exact same folder structure.
+The report itself, and the alignment data needed to view it at full potential
+are contained in the aptly-named `report` folder.
 
 ```text
 results
@@ -34,9 +29,6 @@ results
     ├── 📝 pig-feces.bam
     ├── 📝 pig-feces.bam.bai
     ├── 📝 index.html
-    ├── 📝 krona.html
-    ├── 📝 multiqc_report.html
-    ├── 📝 nextflow_report.html
     ├── 📝 reference.fasta
     └── 📝 reference.fasta.fai
 ```
@@ -146,7 +138,7 @@ results
 
 ### Diagnostics
 
-Pipeline runtime reports can be found in the `.trace` folder by default, but
+Pipeline runtime reports can be found in the `pipeline_info` folder by default, but
 this can be modified using the {ref}`--tracedir <Input/Output Options>`
 parameter. Four types of Nextflow traces are output.
 
@@ -161,7 +153,9 @@ date and time of execution appended, e.g.
 
 ```text
 results
-└── 📁 .trace
+└── 📁 pipeline_info
+    ├── 📝 execution_report_2021-09-01_12-00-00.html
+    ├── 📝 execution_report_2021-10-01_12-00-00.html
     ├── 📝 execution_timeline_2021-09-01_12-00-00.html
     ├── 📝 execution_timeline_2021-10-01_12-00-00.html
     ├── 📝 execution_trace_2021-09-01_12-00-00.txt
@@ -169,6 +163,3 @@ results
     ├── 📝 pipeline_dag_2021-09-01_12-00-00.svg
     └── 📝 pipeline_dag_2021-09-01_12-00-00.svg
 ```
-
-The latest execution report is saved to the `report/nextflow_report.html` file,
-instead, and will be included in {ref}`The Visualizer`.
