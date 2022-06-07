@@ -1,0 +1,353 @@
+<!--
+id: raxml-ng
+section_name: RAxML-NG
+section_href: https://github.com/amkozlov/raxml-ng/wiki
+description: '<a href="https://github.com/amkozlov/raxml-ng/wiki">RAxML-NG</a> is a fast, scalable and user-friendly tool for maximum likelihood phylogenetic inference. <em class="text-muted small" style="margin-left: 1rem">DOI: <a class="module-doi" data-doi="10.1093/bioinformatics/btz305" data-toggle="popover" href="https://doi.org/10.1093/bioinformatics/btz305" target="_blank">10.1093/bioinformatics/btz305</a></em>.'
+-->
+<style>
+  {{{stylesheet}}}
+</style>
+<div class="row">
+  <nav class="btn-toolbar col-sm-12">
+    <div class="btn-group" role="group">
+      <button
+        class="btn btn-primary"
+        type="button"
+        data-direction="vertical"
+        data-amount="1"
+        data-toggle="tooltip"
+        title="Expand vertical spacing"
+      >
+        <span class="glyphicon glyphicon-resize-vertical"></span>
+      </button>
+      <button
+        class="btn btn-primary"
+        type="button"
+        data-direction="vertical"
+        data-amount="-1"
+        data-toggle="tooltip"
+        title="Compress vertical spacing"
+      >
+        <span class="glyphicon glyphicon-resize-small" style="display: inline-block; transform: rotate(135deg)"></span>
+      </button>
+      <button
+        class="btn btn-primary"
+        type="button"
+        data-direction="horizontal"
+        data-amount="1"
+        data-toggle="tooltip"
+        title="Expand horizontal spacing"
+      >
+        <span class="glyphicon glyphicon-resize-horizontal"></span>
+      </button>
+      <button
+        class="btn btn-primary"
+        type="button"
+        data-direction="horizontal"
+        data-amount="-1"
+        data-toggle="tooltip"
+        title="Compress horizontal spacing"
+      >
+        <span class="glyphicon glyphicon-resize-small" style="display: inline-block; transform: rotate(45deg)"></span>
+      </button>
+    </div>
+    <div class="btn-group" role="group">
+      <button
+        id="sort-ascending"
+        class="btn btn-primary"
+        type="button"
+        data-toggle="tooltip"
+        title="Sort deepest clades to the bottom"
+      >
+        <span class="glyphicon glyphicon-sort-by-attributes"></span>
+      </button>
+      <button
+        id="sort-descending"
+        class="btn btn-primary"
+        type="button"
+        data-toggle="tooltip"
+        title="Sort deepest clades to the top"
+      >
+        <span class="glyphicon glyphicon-sort-by-attributes-alt"></span>
+      </button>
+    </div>
+    <div class="btn-group">
+      <button id="save-image" class="btn btn-primary" type="button" data-toggle="tooltip" title="Save image">
+        <span class="glyphicon glyphicon-picture"></span>
+      </button>
+      <button id="save-newick" class="btn btn-primary" type="button" data-toggle="tooltip" title="Save Newick file">
+        <span class="glyphicon glyphicon-save-file"></span>
+      </button>
+    </div>
+    <div class="btn-group">
+      <button
+        class="btn btn-primary phylotree-layout-mode active"
+        type="button"
+        data-toggle="tooltip"
+        title="Linear"
+        data-mode="linear"
+      >
+        <span class="glyphicon glyphicon-align-left"></span>
+      </button>
+      <button
+        class="btn btn-primary phylotree-layout-mode"
+        type="button"
+        data-toggle="tooltip"
+        title="Radial"
+        data-mode="radial"
+      >
+        <span class="glyphicon glyphicon-repeat"></span>
+      </button>
+    </div>
+    <div class="btn-group" role="group">
+      <button
+        class="btn btn-primary phylotree-align-toggler active"
+        type="button"
+        title="Align left"
+        data-toggle="tooltip"
+        data-align="left"
+      >
+        <span class="glyphicon glyphicon-indent-left"></span>
+      </button>
+      <button
+        class="btn btn-primary phylotree-align-toggler"
+        type="button"
+        title="Align right"
+        data-toggle="tooltip"
+        data-align="right"
+      >
+        <span class="glyphicon glyphicon-indent-right"></span>
+      </button>
+    </div>
+  </nav>
+  <div class="col-sm-12">
+    <div id="phylotree-canvas"></div>
+  </div>
+</div>
+<script>
+  {{{D3}}}
+</script>
+<script>
+  {{{underscore}}}
+</script>
+<script>
+  {{{phylotree}}}
+</script>
+<script>
+  /*
+    phylotree-utils.js
+
+    Extra functions that make Phylotree.js more useful.
+    Ported from Phylotree.js's example document.
+    Copyright (c) 2016 iGEM/UCSD evolutionary biology and bioinformatics group
+    https://github.com/veg/phylotree.js/blob/93fdebb81503f83b3fffe0a56ad3c02c64535fea/index.html
+
+    Used under MIT License
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
+  */
+
+  $("[data-direction]").on("click", function (e) {
+    var which_function =
+      $(this).data("direction") == "vertical"
+        ? tree.display.spacing_x.bind(tree.display)
+        : tree.display.spacing_y.bind(tree.display);
+    which_function(which_function() + +$(this).data("amount")).update();
+  });
+
+  function sort_nodes(asc) {
+    tree.resortChildren(function (a, b) {
+      return (b.height - a.height || b.value - a.value) * (asc ? 1 : -1);
+    });
+  }
+
+  $("#sort-ascending").on("click", function (e) {
+    sort_nodes(true);
+    tree.display.update();
+  });
+
+  $("#sort-descending").on("click", function (e) {
+    sort_nodes(false);
+    tree.display.update();
+  });
+
+  var datamonkey_save_file = function (content, filename, mimetype) {
+    if (navigator.msSaveBlob) {
+      // IE10
+      download(content, filename, mimetype);
+    } else {
+      var pom = document.createElement("a");
+      pom.setAttribute("download", filename);
+      pom.setAttribute("href", content);
+      $("body").append(pom);
+      pom.click();
+      pom.remove();
+    }
+  };
+
+  var datamonkey_save_image = function (type, container) {
+    var prefix = {
+      xmlns: "http://www.w3.org/2000/xmlns/",
+      xlink: "http://www.w3.org/1999/xlink",
+      svg: "http://www.w3.org/2000/svg",
+    };
+
+    function get_styles(doc) {
+      function process_stylesheet(ss) {
+        try {
+          if (ss.cssRules) {
+            for (var i = 0; i < ss.cssRules.length; i++) {
+              var rule = ss.cssRules[i];
+              if (rule.type === 3) {
+                // Import Rule
+                process_stylesheet(rule.styleSheet);
+              } else {
+                // hack for illustrator crashing on descendent selectors
+                if (rule.selectorText) {
+                  if (rule.selectorText.indexOf(">") === -1) {
+                    styles += "\n" + rule.cssText;
+                  }
+                }
+              }
+            }
+          }
+        } catch (e) {
+          console.log("Could not process stylesheet : " + ss); // eslint-disable-line
+        }
+      }
+
+      var styles = "",
+        styleSheets = doc.styleSheets;
+
+      if (styleSheets) {
+        for (var i = 0; i < styleSheets.length; i++) {
+          process_stylesheet(styleSheets[i]);
+        }
+      }
+
+      return styles;
+    }
+
+    var svg = $(container).find("svg")[0];
+    if (!svg) {
+      svg = $(container)[0];
+    }
+
+    var styles = get_styles(window.document);
+
+    svg.setAttribute("version", "1.1");
+
+    var defsEl = document.createElement("defs");
+    svg.insertBefore(defsEl, svg.firstChild);
+
+    var styleEl = document.createElement("style");
+    defsEl.appendChild(styleEl);
+    styleEl.setAttribute("type", "text/css");
+
+    // removing attributes so they aren't doubled up
+    svg.removeAttribute("xmlns");
+    svg.removeAttribute("xlink");
+
+    // These are needed for the svg
+    if (!svg.hasAttributeNS(prefix.xmlns, "xmlns")) {
+      svg.setAttributeNS(prefix.xmlns, "xmlns", prefix.svg);
+    }
+
+    if (!svg.hasAttributeNS(prefix.xmlns, "xmlns:xlink")) {
+      svg.setAttributeNS(prefix.xmlns, "xmlns:xlink", prefix.xlink);
+    }
+
+    var source = new XMLSerializer().serializeToString(svg).replace("</style>", "<![CDATA[" + styles + "]]></style>");
+    var doctype =
+      '<?xml version="1.0" standalone="no"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">';
+    var to_download = [doctype + source];
+    var image_string = "data:image/svg+xml;base66," + encodeURIComponent(to_download);
+    datamonkey_save_file(image_string, "tree.svg", "image/svg+xml");
+  };
+
+  $("#save-image").on("click", function (e) {
+    datamonkey_save_image("svg", "#phylotree-canvas");
+  });
+
+  $(".phylotree-layout-mode").on("click", function (e) {
+    if (tree.display.radial() != ($(this).data("mode") == "radial")) {
+      $(".phylotree-layout-mode").toggleClass("active");
+      tree.display.radial(!tree.display.radial()).update();
+    }
+  });
+
+  $(".phylotree-align-toggler").on("click", function (e) {
+    var button_align = $(this).data("align");
+    var tree_align = tree.display.options.alignTips;
+
+    if (tree_align != button_align) {
+      tree.display.alignTips(button_align == "right");
+      $(".phylotree-align-toggler").toggleClass("active");
+      tree.display.update();
+    }
+  });
+  color_scale = d3.scaleOrdinal(d3.schemeCategory10);
+  newick = "{{{newick}}}";
+
+  $("#save-newick").on("click", function (e) {
+    datamonkey_save_file("data:text/plan;" + newick, "tree.nwk", "text/plain");
+  });
+
+  tree = new phylotree.phylotree(newick);
+  selection_set = !tree.get_parsed_tags().length ? tree.get_parsed_tags() : ["Foreground"];
+  nodeColorizer = function (element, data) {
+    try {
+      var count_class = 0;
+      selection_set.forEach(function (d, i) {
+        if (data[d]) {
+          count_class++;
+          element.style("fill", color_scale(i), "important");
+        }
+      });
+      if (count_class == 0) {
+        element.style("fill", null);
+      }
+    } catch (e) {}
+  };
+  edgeColorizer = function (element, data) {
+    try {
+      var count_class = 0;
+
+      selection_set.forEach(function (d, i) {
+        if (data[d]) {
+          count_class++;
+          element.style("stroke", color_scale(i), "important");
+        }
+      });
+
+      if (count_class == 0) {
+        element.style("stroke", null).classes("branch-multiple", false);
+      } else {
+        element.classed("branch-multiple", true);
+      }
+    } catch (e) {}
+  };
+  colorNodesByName = function (element, data) {
+    nodeColorizer(element, data);
+    var m = data.data.name.split("_");
+    element.style("stroke", color_scale(m[0]));
+  };
+  colorEdgesByTarget = function (element, data) {
+    edgeColorizer(element, data);
+    var m = data.target.data.name.split("_");
+    element.style("stroke", color_scale(m[0]));
+  };
+  rendered_tree = tree.render({
+    container: "#phylotree-canvas",
+    "node-styler": colorNodesByName,
+    //'edge-styler': colorEdgesByTarget
+  });
+  $(tree.display.container).empty();
+  $(tree.display.container).html(tree.display.show());
+</script>

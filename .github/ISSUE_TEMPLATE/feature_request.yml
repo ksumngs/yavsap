@@ -1,11 +1,28 @@
 name: Feature request
 description: Suggest an idea for the nf-core/yavsap pipeline
-labels: enhancement
+labels: ["enhancement"]
+title: "[Feature]: "
 body:
   - type: textarea
-    id: description
+    id: summary
     attributes:
-      label: Description of feature
+      label: Summary of feature
       description: Please describe your suggestion for a new feature. It might help to describe a problem or use case, plus any alternatives that you have considered.
     validations:
       required: true
+  - type: textarea
+    id: processes
+    attributes:
+      label: Additional processes
+      description: Explain what tools would be needed to implement this feature, along with a link to the tool's documentation and a container for the tool.
+  - type: textarea
+    id: parameters
+    attributes:
+      label: Additional parameters
+      description: Give a list of new parameters and which tools/processes it would be passed to
+  - type: textarea
+    id: visualizer
+    attributes:
+      label: Additional visualizer section
+      description: Describe a new section to add to the visualizer
+      placeholder:

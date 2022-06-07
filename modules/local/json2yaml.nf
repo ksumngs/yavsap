@@ -24,7 +24,8 @@ process JSON2YAML {
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        python: \$(python --version | sed 's/Python //g')
+        python: \$(python --version 2>&1 | sed 's/Python //g' | sed 's/ ::.*//g')
+        pyyaml: \$(printf "import yaml\\nprint(yaml.__version__)" | python)
     END_VERSIONS
     """
 }

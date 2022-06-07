@@ -1,0 +1,4 @@
+name: CliqueSNV
+description: is a tool for accurate assembly of minority viral haplotypes from next-generation sequencing through efficient noise reduction.
+doi: 10.1093/nar/gkab576
+url: https://github.com/vtsyvina/CliqueSNV

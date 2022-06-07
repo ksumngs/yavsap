@@ -1,4 +1,4 @@
-name: kraken2_kraken2
+name: kraken2
 description: Classifies metagenomic sequence data
 keywords:
   - classify

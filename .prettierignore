@@ -1,2 +1,4 @@
 modules/ksumngs/
 modules/nf-core/
+# Ignore Mustache templates
+assets/*_mqc.html

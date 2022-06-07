@@ -1,0 +1,34 @@
+#!/usr/bin/env julia
+using JSON3
+using Mustache
+
+sample_list = ARGS[1]
+igvsrc = ARGS[2]
+template_file = ARGS[3]
+output_file = ARGS[4]
+
+d = Dict(
+    "igvopts" => JSON3.write(
+        Dict(
+            "reference" => Dict(
+                "id" => "reference",
+                "fastaURL" => "reference.fasta",
+                "indexURL" => "reference.fasta.fai",
+            ),
+            "tracks" => [
+                Dict(
+                    "type" => "alignment",
+                    "format" => "bam",
+                    "url" => "$samplename.bam",
+                    "indexURL" => "$samplename.bam.bai",
+                    "name" => samplename,
+                ) for samplename in readlines(sample_list)
+            ],
+        ),
+    ),
+    "igvjs" => String(read(igvsrc)),
+)
+
+open(output_file, "w") do f
+    write(f, render_from_file(template_file, d))
+end

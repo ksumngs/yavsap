@@ -1,0 +1,4 @@
+name: HapLink.jl
+description: is a viral haplotype caller for long NGS reads based on linkage disequilibrium.
+doi: ~
+url: https://ksumngs.github.io/HapLink.jl

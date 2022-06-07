@@ -2,13 +2,13 @@
 
 ## Prerequisites
 
-Here's what you'll need to get started. Unless otherwise noted, every program
+Here's what you'll need to get started. Every one of these programs
 must be available on your `PATH` in bash (other shells don't count).
 
 - Git v2.7.0 or higher (🌐/🍺/🐍)
 - Curl v2.41.0 or higher (🌐/🍺/🐍)
 - Java Runtime v8-v15 (🌐/🍺/🐍)
-- Nextflow v20.10.0 or higher (🌐/🐍)
+- Nextflow v21.10.3 or higher (🌐/🐍)
 - One or more of the following container engines
   - Docker v20.10.0 or higher (🌐)
   - Podman v3.0 or higher (🌐)
