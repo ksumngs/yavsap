@@ -1,0 +1,125 @@
+- name: Test Skipping QC Illumina
+  tags:
+    - general
+    - light
+    - illumina
+    - pe
+    - samplesheet
+    - skipping
+    - qc
+  command: nextflow run ./main.nf -profile test,docker,gh --outdir output --skip_qc
+  files:
+    - path: ./output/alignment/combo.bam
+      should_exist: true
+    - path: ./output/alignment/combo.bam.bai
+      should_exist: true
+    - path: ./output/alignment/single-compressed.bam
+      should_exist: true
+    - path: ./output/alignment/single-compressed.bam.bai
+      should_exist: true
+    - path: ./output/alignment/single-uncompressed.bam
+      should_exist: true
+    - path: ./output/alignment/single-uncompressed.bam.bai
+      should_exist: true
+
+    - path: ./output/classification/combo.kreport
+      contains: ["D	10239"]
+    - path: ./output/classification/single-compressed.kreport
+      contains: ["D	10239"]
+    - path: ./output/classification/single-uncompressed.kreport
+      contains: ["D	10239"]
+
+    - path: ./output/consensus/combo_consensus.fasta
+      contains: [">combo_consensus"]
+    - path: ./output/consensus/single-compressed_consensus.fasta
+      contains: [">single-compressed_consensus"]
+    - path: ./output/consensus/single-uncompressed_consensus.fasta
+      contains: [">single-uncompressed_consensus"]
+
+    - path: ./output/haplotypes/combo.fasta
+      contains: [">combo"]
+    - path: ./output/haplotypes/combo.yaml
+      contains: ["haplotypes:"]
+    - path: ./output/haplotypes/single-compressed.fasta
+      contains: [">single-compressed"]
+    - path: ./output/haplotypes/single-compressed.yaml
+      contains: ["haplotypes:"]
+    - path: ./output/haplotypes/single-uncompressed.fasta
+      contains: [">single-uncompressed"]
+    - path: ./output/haplotypes/single-uncompressed.yaml
+      contains: ["haplotypes:"]
+
+    - path: ./output/phylogenetics/alignment.fas
+      contains:
+        - ">GI_KV1899"
+        - ">ROOT"
+        - ">combo_haplotype"
+        - ">combo_consensus"
+    - path: ./output/phylogenetics/tree.nwk
+      contains:
+        - "GI_KV1899:"
+        - "ROOT:"
+        - "combo_haplotype"
+        - "combo_consensus:"
+
+    - path: ./output/realignment/combo.bam
+      should_exist: true
+    - path: ./output/realignment/combo.bam.bai
+      should_exist: true
+    - path: ./output/realignment/single-compressed.bam
+      should_exist: true
+    - path: ./output/realignment/single-compressed.bam.bai
+      should_exist: true
+    - path: ./output/realignment/single-uncompressed.bam
+      should_exist: true
+    - path: ./output/realignment/single-uncompressed.bam.bai
+      should_exist: true
+
+    - path: ./output/reference/result.fasta
+      contains: [">NC_001437.1 Japanese encephalitis virus, genome"]
+    - path: ./output/reference/result.fasta.fai
+      contains: ["NC_001437.1	10976	49	70	71"]
+
+    - path: ./output/variants/combo.vcf
+      contains:
+        - "##fileformat=VCFv4"
+        - "#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO"
+    - path: ./output/variants/single-compressed.vcf
+      contains:
+        - "##fileformat=VCFv4"
+        - "#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO"
+    - path: ./output/variants/single-uncompressed.vcf
+      contains:
+        - "##fileformat=VCFv4"
+        - "#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO"
+
+    - path: ./output/report/combo.bam
+      should_exist: true
+    - path: ./output/report/combo.bam.bai
+      should_exist: true
+    - path: ./output/report/single-compressed.bam
+      should_exist: true
+    - path: ./output/report/single-compressed.bam.bai
+      should_exist: true
+    - path: ./output/report/single-uncompressed.bam
+      should_exist: true
+    - path: ./output/report/single-uncompressed.bam.bai
+      should_exist: true
+    - path: ./output/report/reference.fasta
+      contains: [">NC_001437.1 Japanese encephalitis virus, genome"]
+    - path: ./output/report/reference.fasta.fai
+      contains: ["NC_001437.1	10976	49	70	71"]
+    - path: ./output/report/index.html
+      contains:
+        - "<h2>General Statistics</h2>"
+        - '<h2 id="trimmomatic">Trimmomatic</h2>'
+        - '<h2 id="kraken">Kraken</h2>'
+        - '<h2 id="minimap2">minimap2</h2>'
+        - '<h2 id="cliquesnv">CliqueSNV</h2>'
+        - '<h2 id="raxml-ng">RAxML-NG</h2>'
+        - '<h2 id="software_versions">yavsap Software Versions</h2>'
+        - '<h2 id="yavsap-summary">yavsap Workflow Summary</h2>'
+      must_not_contain:
+        - '<h2 id="fastqc">FastQC</h2>'
+        - '<h2 id="nanostat">NanoStat</h2>'
+        - '<h2 id="haplink_jl">HapLink.jl</h2>'
