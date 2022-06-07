@@ -1,0 +1,117 @@
+- name: Test Skipping Haplotyping Nanopore
+  tags:
+    - general
+    - light
+    - nanopore
+    - samplesheet
+    - skipping
+    - haplotyping
+  command: nextflow run ./main.nf -profile test_nanopore,docker,gh --outdir output --skip_haplotype
+  files:
+    - path: ./output/alignment/combo-barcode.bam
+      should_exist: true
+    - path: ./output/alignment/combo-barcode.bam.bai
+      should_exist: true
+    - path: ./output/alignment/single-barcode01.bam
+      should_exist: true
+    - path: ./output/alignment/single-barcode01.bam.bai
+      should_exist: true
+    - path: ./output/alignment/single-barcode02.bam
+      should_exist: true
+    - path: ./output/alignment/single-barcode02.bam.bai
+      should_exist: true
+
+    - path: ./output/classification/combo-barcode.kreport
+      contains: ["D	10239"]
+    - path: ./output/classification/single-barcode01.kreport
+      contains: ["D	10239"]
+    - path: ./output/classification/single-barcode02.kreport
+      contains: ["D	10239"]
+
+    - path: ./output/consensus/combo-barcode.consensus.fasta
+      contains: [">combo-barcode_CONSENSUS"]
+    - path: ./output/consensus/single-barcode01.consensus.fasta
+      contains: [">single-barcode01_CONSENSUS"]
+    - path: ./output/consensus/single-barcode02.consensus.fasta
+      contains: [">single-barcode02_CONSENSUS"]
+
+    - path: ./output/haplotypes/combo-barcode.haplotypes.fasta
+      should_exist: false
+    - path: ./output/haplotypes/combo-barcode.haplotypes.yaml
+      should_exist: false
+    - path: ./output/haplotypes/single-barcode01.haplotypes.fasta
+      should_exist: false
+    - path: ./output/haplotypes/single-barcode01.haplotypes.yaml
+      should_exist: false
+    - path: ./output/haplotypes/single-barcode02.haplotypes.fasta
+      should_exist: false
+    - path: ./output/haplotypes/single-barcode02.haplotypes.yaml
+      should_exist: false
+
+    - path: ./output/phylogenetics/alignment.fas
+      should_exist: false
+
+    - path: ./output/phylogenetics/tree.nwk
+      should_exist: false
+
+    - path: ./output/realignment/combo-barcode.bam
+      should_exist: true
+    - path: ./output/realignment/combo-barcode.bam.bai
+      should_exist: true
+    - path: ./output/realignment/single-barcode01.bam
+      should_exist: true
+    - path: ./output/realignment/single-barcode01.bam.bai
+      should_exist: true
+    - path: ./output/realignment/single-barcode02.bam
+      should_exist: true
+    - path: ./output/realignment/single-barcode02.bam.bai
+      should_exist: true
+
+    - path: ./output/reference/result.fasta
+      contains: [">NC_001437.1 Japanese encephalitis virus, genome"]
+    - path: ./output/reference/result.fasta.fai
+      contains: ["NC_001437.1	10976	49	70	71"]
+
+    - path: ./output/variants/combo-barcode.vcf
+      contains:
+        - "##fileformat=VCFv4"
+        - "#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO"
+    - path: ./output/variants/single-barcode01.vcf
+      contains:
+        - "##fileformat=VCFv4"
+        - "#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO"
+    - path: ./output/variants/single-barcode02.vcf
+      contains:
+        - "##fileformat=VCFv4"
+        - "#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO"
+
+    - path: ./output/report/combo-barcode.bam
+      should_exist: true
+    - path: ./output/report/combo-barcode.bam.bai
+      should_exist: true
+    - path: ./output/report/single-barcode01.bam
+      should_exist: true
+    - path: ./output/report/single-barcode01.bam.bai
+      should_exist: true
+    - path: ./output/report/single-barcode02.bam
+      should_exist: true
+    - path: ./output/report/single-barcode02.bam.bai
+      should_exist: true
+    - path: ./output/report/reference.fasta
+      contains: [">NC_001437.1 Japanese encephalitis virus, genome"]
+    - path: ./output/report/reference.fasta.fai
+      contains: ["NC_001437.1	10976	49	70	71"]
+    - path: ./output/report/index.html
+      contains:
+        - "<h2>General Statistics</h2>"
+        - '<h2 id="kraken">Kraken</h2>'
+        - '<h2 id="minimap2">minimap2</h2>'
+        - '<h2 id="haplink_jl">HapLink.jl</h2>' # Consensus sequences are listed here
+        - '<h2 id="software_versions">yavsap Software Versions</h2>'
+        - '<h2 id="yavsap-summary">yavsap Workflow Summary</h2>'
+      must_not_contain:
+        - '<h2 id="nanostat">NanoStat</h2>'
+        - '<h2 id="fastqc">FastQC</h2>'
+        - '<h2 id="trimmomatic">Trimmomatic</h2>'
+        - '<h2 id="cliquesnv">CliqueSNV</h2>'
+        - '<h2 id="raxml-ng">RAxML-NG</h2>'
