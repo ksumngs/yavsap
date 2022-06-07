@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Complete Parameter Reference &mdash; Yet Another Viral Subspecies Analysis Pipeline  documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Output" href="output.html" />
+    <link rel="prev" title="Usage" href="usage.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> Yet Another Viral Subspecies Analysis Pipeline
+            <img src="_static/yavsap_logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Complete Parameter Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#input-output-options">Input/output options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#reference-genome-options">Reference genome options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#kraken2-options">Kraken2 Options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#read-trimming-options">Read trimming options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#variant-calling-options">Variant calling options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#haplotype-calling-options">Haplotype calling options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#phylogenetic-tree-options">Phylogenetic tree options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#workflow-options">Workflow options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#max-job-request-options">Max job request options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#generic-options">Generic options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#institutional-config-options">Institutional config options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#remote-presentation-resource-options">Remote presentation resource options</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="output.html">Output</a></li>
+<li class="toctree-l1"><a class="reference internal" href="report.html">The YAVSAP report</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Yet Another Viral Subspecies Analysis Pipeline</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content style-external-links">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Complete Parameter Reference</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com//ksumngs/yavsap/blob/parameters.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="complete-parameter-reference">
+<h1>Complete Parameter Reference<a class="headerlink" href="#complete-parameter-reference" title="Permalink to this headline"></a></h1>
+<p>Every single parameter in the entire pipeline is described here. If you need to tweak every little detail of how your samples are analyzed, you’ve come to the right place! Note that <em>every</em> parameter is described here, even those that shouldn’t be used, so proceed with caution!</p>
+<section id="input-output-options">
+<h2>Input/output options<a class="headerlink" href="#input-output-options" title="Permalink to this headline"></a></h2>
+<p>Define where the pipeline should find input data and save output data.</p>
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Parameter</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Required</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">input</span></code></p></td>
+<td><p>Path the folder containing input reads or a TSV samplesheet <details><summary>Help</summary><small>For Illumina (paired-end) reads, the file names must be identical until the ending underscore with a read number, e.g. ‘sample1_S10_L001_R1_001.fastq.gz’ and ‘sample1_S10_L001_R2_001.fastq.gz’. The read number must be designated using either ‘_1’ and ‘_2’ or ‘_R1’ and ‘_R2’. For Nanopore reads, each fastq file is assumed to be a unique sample, so, e.g. ‘FAP01234_pass_barcode05_abcd01234_0.fastq.gz’ and ‘FAP01234_pass_barcode05_abcd01234_1.fastq.gz’ are assumed to be different samples even though they are from the same barcode. All read files must be gzipped, and have the extension ‘.fastq.gz’ or ‘.fq.gz’.</small></details></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p>.</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">platform</span></code></p></td>
+<td><p>NGS platform used to sequence the samples</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">paired</span></code></p></td>
+<td><p>Flag to indicate whether the reads files are paired-end or not</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">boolean</span></code></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">interleaved</span></code></p></td>
+<td><p>Whether paired-end reads interleaved into a single fastq file</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">boolean</span></code></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">seed</span></code></p></td>
+<td><p>Set the random seed for all applicable processes</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">integer</span></code></p></td>
+<td><p>42</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">outdir</span></code></p></td>
+<td><p>Path to the output directory where the results will be saved.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">email</span></code></p></td>
+<td><p>Email address for completion summary. <details><summary>Help</summary><small>Set this parameter to your e-mail address to get a summary e-mail with details of the run sent to you when the workflow exits. If set in your user config file (<code class="docutils literal notranslate"><span class="pre">~/.nextflow/config</span></code>) then you don’t need to specify this on the command line for every run.</small></details></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="reference-genome-options">
+<h2>Reference genome options<a class="headerlink" href="#reference-genome-options" title="Permalink to this headline"></a></h2>
+<p>Reference genome related files and options required for the workflow.</p>
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Parameter</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Required</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">genome</span></code></p></td>
+<td><p>NCBI accession number of reference genome <details><summary>Help</summary><small>The NCBI Genbank accession.version number of the reference genome to call strains from</small></details></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p>NC_001437.1</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">genome_list</span></code></p></td>
+<td><p>Path to TSV file containing NCBI accession numbers of strains for constructing phylogenetic trees. Preset genome lists can be specified by name</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p>jev</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="kraken2-options">
+<h2>Kraken2 Options<a class="headerlink" href="#kraken2-options" title="Permalink to this headline"></a></h2>
+<p>Control how Kraken2 filters out host reads</p>
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Parameter</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Required</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">kraken2_db</span></code></p></td>
+<td><p>Path to a Kraken2 database <details><summary>Help</summary><small>The path to a <a class="reference external" href="https://github.com/DerrickWood/kraken2/wiki/Manual#custom-databases">Kraken2 database</a> that will be used to filter out host reads in the pipeline. This path will be automatically mounted into the container environments if a containerized profile is used.  Corresponds to the <a class="reference external" href="https://github.com/DerrickWood/kraken2/wiki/Manual#classification">–db</a> option of Kraken2.</small></details></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p>None</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">keep_taxid</span></code></p></td>
+<td><p>Taxonomic IDs to keep and analyze <details><summary>Help</summary><small>A space-separated list (use quotes on the command line), of the taxonomic ids to keep based on Kraken2’s classification.  Defaults to keeping all unclassified reads and all viral reads. Note that this requires the host to be present in the Kraken2 database. When dealing with animals and the databases available from <code class="docutils literal notranslate"><span class="pre">kraken2-build</span></code>, this is not the case, and this parameter should be modified.</small></details></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p>0 10239</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="read-trimming-options">
+<h2>Read trimming options<a class="headerlink" href="#read-trimming-options" title="Permalink to this headline"></a></h2>
+<p>Options for how strictly to quality control NGS reads</p>
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Parameter</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Required</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">trim_minlen</span></code></p></td>
+<td><p>Minimum length of reads <details><summary>Help</summary><small>Corresponds to the <a class="reference external" href="http://www.usadellab.org/cms/?page=trimmomatic">MINLEN</a> option of Trimmomatic for Illumina reads.  Corresponds to the <a class="reference external" href="https://github.com/wdecoster/nanofilt/#usage">–length</a> option of NanoFilt for Nanopore reads.</small></details></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">integer</span></code></p></td>
+<td><p>100</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">trim_maxlen</span></code></p></td>
+<td><p>Maximum length of reads <details><summary>Help</summary><small>Only applies to Nanopore reads.  Corresponds to the <a class="reference external" href="https://github.com/wdecoster/nanofilt/#usage">–maxlength</a> option of NanoFilt.</small></details></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">integer</span></code></p></td>
+<td><p>0</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">trim_adapters</span></code></p></td>
+<td><p>Sequences to be removed during trimming <details><summary>Help</summary><small>Only applies to Illumina reads. Corresponds to the first <a class="reference external" href="http://www.usadellab.org/cms/?page=trimmomatic">ILLUMINACLIP</a> option of Trimmomatic. If left blank (i.e. <code class="docutils literal notranslate"><span class="pre">--trim_adapters</span> <span class="pre">''</span></code>), then adapter trimming is disabled. Custom adapters cannot be used, and the parameter corresponds to one of the prebuilt sequence files provided with Trimmomatic. </small></details></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p>NexteraPE-PE.fa</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">trim_mismatches</span></code></p></td>
+<td><p>Max number of base mismatches to allow an adapter match <details><summary>Help</summary><small>Only applies to Illumina reads. Corresponds to the second <a class="reference external" href="http://www.usadellab.org/cms/?page=trimmomatic">ILLUMINACLIP</a> option of Trimmomatic.</small></details></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">integer</span></code></p></td>
+<td><p>2</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">trim_pclip</span></code></p></td>
+<td><p>How accurate the match between adapter ligated reads must be for paired-end palindrome read alignment <details><summary>Help</summary><small>Only applies to Illumina reads. Corresponds to the third <a class="reference external" href="http://www.usadellab.org/cms/?page=trimmomatic">ILLUMINACLIP</a> option of Trimmomatic.</small></details></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">integer</span></code></p></td>
+<td><p>30</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">trim_clip</span></code></p></td>
+<td><p>How accurate the match between any adapter must be against a read <details><summary>Help</summary><small>Only applies to Illumina reads. Corresponds to the final <a class="reference external" href="http://www.usadellab.org/cms/?page=trimmomatic">ILLUMINACLIP</a> option of Trimmomatic.</small></details></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">integer</span></code></p></td>
+<td><p>10</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">trim_winsize</span></code></p></td>
+<td><p>Number of bases to average quality across <details><summary>Help</summary><small>Only applies to Illumina reads. If set to <code class="docutils literal notranslate"><span class="pre">0</span></code>, then sliding window trimming is disabled. Corresponds to the first <a class="reference external" href="http://www.usadellab.org/cms/?page=trimmomatic">SLIDINGWINDOW</a> option of Trimmomatic.</small></details></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">integer</span></code></p></td>
+<td><p>50</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">trim_winqual</span></code></p></td>
+<td><p>Required average window base quality <details><summary>Help</summary><small>Only applies to Illumina reads. If set to <code class="docutils literal notranslate"><span class="pre">0</span></code>, then sliding window trimming is disabled. Corresponds to the second <a class="reference external" href="http://www.usadellab.org/cms/?page=trimmomatic">SLIDINGWINDOW</a> option of Trimmomatic.</small></details></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">integer</span></code></p></td>
+<td><p>15</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">trim_leading</span></code></p></td>
+<td><p>Minimum quality of bases in leading end of read <details><summary>Help</summary><small>Only applies to Illumina reads. If set to <code class="docutils literal notranslate"><span class="pre">0</span></code>, LEADING trimming is disabled. Corresponds to the <a class="reference external" href="http://www.usadellab.org/cms/?page=trimmomatic">LEADING</a> option of Trimmomatic.</small></details></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">integer</span></code></p></td>
+<td><p>15</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">trim_trailing</span></code></p></td>
+<td><p>Minimum quality of bases in trailing end of read <details><summary>Help</summary><small>Only applies to Illumina reads. If set to <code class="docutils literal notranslate"><span class="pre">0</span></code>, TRAILING trimming is disabled. Corresponds to the <a class="reference external" href="http://www.usadellab.org/cms/?page=trimmomatic">TRAILING</a> option of Trimmomatic.</small></details></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">integer</span></code></p></td>
+<td><p>15</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">trim_headcrop</span></code></p></td>
+<td><p>Number of bases to remove from start of read <details><summary>Help</summary><small>Corresponds to the <a class="reference external" href="http://www.usadellab.org/cms/?page=trimmomatic">HEADCROP</a> option of Trimmomatic for Illumina reads. If set to <code class="docutils literal notranslate"><span class="pre">0</span></code>, then HEADCROP trimming is disabled.  Corresponds to the <a class="reference external" href="https://github.com/wdecoster/nanofilt/#usage">–headcrop</a> option of NanoFilt for Nanopore reads.</small></details></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">integer</span></code></p></td>
+<td><p>0</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">trim_crop</span></code></p></td>
+<td><p>Number of bases to keep from start of read <details><summary>Help</summary><small>Only applies to Illumina reads. If set to <code class="docutils literal notranslate"><span class="pre">0</span></code>, CROP trimming is disabled. Corresponds to the <a class="reference external" href="http://www.usadellab.org/cms/?page=trimmomatic">CROP</a> option of Trimmomatic.</small></details></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">integer</span></code></p></td>
+<td><p>0</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">trim_meanqual</span></code></p></td>
+<td><p>Minimum average base quality of entire reads <details><summary>Help</summary><small>Applies only to ONT reads. Corresponds to the <a class="reference external" href="https://github.com/wdecoster/nanofilt/#usage">–quality</a> option of NanoFilt.</small></details></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">integer</span></code></p></td>
+<td><p>7</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">trim_mingc</span></code></p></td>
+<td><p>Minimum GC count of reads <details><summary>Help</summary><small>Only applies to ONT reads. Corresponds to the <a class="reference external" href="https://github.com/wdecoster/nanofilt/#usage">–minGC</a> option of NanoFilt.</small></details></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">integer</span></code></p></td>
+<td><p>0</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">trim_maxgc</span></code></p></td>
+<td><p>Maximum GC count of reads <details><summary>Help</summary><small>Only applies to ONT reads. Corresponds to the <a class="reference external" href="https://github.com/wdecoster/nanofilt/#usage">–maxGC</a> option of NanoFilt.</small></details></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">integer</span></code></p></td>
+<td><p>0</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">trim_tailcrop</span></code></p></td>
+<td><p>Number of bases to remove from the end of each read <details><summary>Help</summary><small>Only applies to ONT reads. Corresponds to the <a class="reference external" href="https://github.com/wdecoster/nanofilt/#usage">–tailcrop</a> option of NanoFilt.</small></details></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">integer</span></code></p></td>
+<td><p>0</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">multiqc_title</span></code></p></td>
+<td><p>Custom title for the MultiQC report.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">multiqc_config</span></code></p></td>
+<td><p>Custom config file to supply to MultiQC.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">max_multiqc_email_size</span></code></p></td>
+<td><p>File size limit when attaching MultiQC reports to summary emails. <details><summary>Help</summary><small>If file generated by pipeline exceeds the threshold, it will not be attached.</small></details></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p>25.MB</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="variant-calling-options">
+<h2>Variant calling options<a class="headerlink" href="#variant-calling-options" title="Permalink to this headline"></a></h2>
+<p>Options for how strict to call variants</p>
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Parameter</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Required</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">variant_quality</span></code></p></td>
+<td><p>Minimum average quality (PHRED score) of a basecall to consider it a variant</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">integer</span></code></p></td>
+<td><p>12</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">variant_depth</span></code></p></td>
+<td><p>Minimum depth to consider a non-reference basecall a variant</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">integer</span></code></p></td>
+<td><p>15</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">variant_position</span></code></p></td>
+<td><p>Do not consider variants that occur only in positions within this percentage of the end</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">number</span></code></p></td>
+<td><p>0.1</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">variant_frequency</span></code></p></td>
+<td><p>Minimum frequency at which a variant must appear</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">number</span></code></p></td>
+<td><p>0.05</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">variant_significance</span></code></p></td>
+<td><p>Confidence threshold for variants based on Fisher’s Exact test</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">number</span></code></p></td>
+<td><p>0.001</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="haplotype-calling-options">
+<h2>Haplotype calling options<a class="headerlink" href="#haplotype-calling-options" title="Permalink to this headline"></a></h2>
+<p>Options for how strictly to call haplotypes</p>
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Parameter</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Required</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">haplotype_depth</span></code></p></td>
+<td><p>Minmum number of times a haplotype must appear</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">integer</span></code></p></td>
+<td><p>10</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">haplotype_frequency</span></code></p></td>
+<td><p>Minimum haplotype frequency</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">number</span></code></p></td>
+<td><p>0.05</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">haplotype_significance</span></code></p></td>
+<td><p>Confidence threshold for haplotypes based on a X-squared test of linkage disequilibrium</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">number</span></code></p></td>
+<td><p>0.05</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">haplotype_method</span></code></p></td>
+<td><p>How to construct pseudo-reads for haplotyping</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p>ml-template</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">haplotype_overlap_min</span></code></p></td>
+<td><p>Minimum number of bases reads must overlap to be built into the same pseudo-read</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">integer</span></code></p></td>
+<td><p>0</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">haplotype_overlap_max</span></code></p></td>
+<td><p>Maximum number of bases reads must overlap to be built into the same pseudo-read</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">integer</span></code></p></td>
+<td><p>100</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">haplotype_iterations</span></code></p></td>
+<td><p>Number of iterations to build pseudo-reads</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">integer</span></code></p></td>
+<td><p>1000</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">cliquesnv_method</span></code></p></td>
+<td><p>Method to call variants/haplotypes with CliqueSNV</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p>accurate</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="phylogenetic-tree-options">
+<h2>Phylogenetic tree options<a class="headerlink" href="#phylogenetic-tree-options" title="Permalink to this headline"></a></h2>
+<p>Options to control how the phylogenetic trees are generated</p>
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Parameter</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Required</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">mafft_method</span></code></p></td>
+<td><p>Which method to use for the alignment process</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p>–auto</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">phylogenetic_bootstraps</span></code></p></td>
+<td><p>Number of iterations to create phylogenetic trees with</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">integer</span></code></p></td>
+<td><p>1000</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">phylogenetic_bootstrap_cutoff</span></code></p></td>
+<td><p>Minimum quality for phylogenetic bootstraps</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">number</span></code></p></td>
+<td><p>0.03</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">phylogenetic_model</span></code></p></td>
+<td><p>Evolutionary model to use for phylogenetic distance calculation</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p>GTR+G</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="workflow-options">
+<h2>Workflow options<a class="headerlink" href="#workflow-options" title="Permalink to this headline"></a></h2>
+<p>Options to skip portions of the workflow</p>
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Parameter</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Required</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">skip_trimming</span></code></p></td>
+<td><p>Skip read trimming (Trimmomatic/Nanofilt)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">boolean</span></code></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">skip_qc</span></code></p></td>
+<td><p>Skip FastQC</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">boolean</span></code></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">skip_filtering</span></code></p></td>
+<td><p>Skip Kraken2</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">boolean</span></code></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">skip_haplotype</span></code></p></td>
+<td><p>Skip haplotyping (CliqueSNV/HapLink)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">boolean</span></code></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">skip_phylogenetics</span></code></p></td>
+<td><p>Skip phylogenetic tree generation (RAxML-NG)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">boolean</span></code></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="max-job-request-options">
+<h2>Max job request options<a class="headerlink" href="#max-job-request-options" title="Permalink to this headline"></a></h2>
+<p>Set the top limit for requested resources for any single job.</p>
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Parameter</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Required</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">max_cpus</span></code></p></td>
+<td><p>Maximum number of CPUs that can be requested for any single job. <details><summary>Help</summary><small>Use to set an upper-limit for the CPU requirement for each process. Should be an integer e.g. <code class="docutils literal notranslate"><span class="pre">--max_cpus</span> <span class="pre">1</span></code></small></details></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">integer</span></code></p></td>
+<td><p>16</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">max_memory</span></code></p></td>
+<td><p>Maximum amount of memory that can be requested for any single job. <details><summary>Help</summary><small>Use to set an upper-limit for the memory requirement for each process. Should be a string in the format integer-unit e.g. <code class="docutils literal notranslate"><span class="pre">--max_memory</span> <span class="pre">'8.GB'</span></code></small></details></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p>128.GB</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">max_time</span></code></p></td>
+<td><p>Maximum amount of time that can be requested for any single job. <details><summary>Help</summary><small>Use to set an upper-limit for the time requirement for each process. Should be a string in the format integer-unit e.g. <code class="docutils literal notranslate"><span class="pre">--max_time</span> <span class="pre">'2.h'</span></code></small></details></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p>240.h</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="generic-options">
+<h2>Generic options<a class="headerlink" href="#generic-options" title="Permalink to this headline"></a></h2>
+<p>Less common options for the pipeline, typically set in a config file</p>
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Parameter</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Required</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">help</span></code></p></td>
+<td><p>Display help text.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">boolean</span></code></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">publish_dir_mode</span></code></p></td>
+<td><p>How to create results files</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p>copy</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">email_on_fail</span></code></p></td>
+<td><p>Email address for completion summary, only when pipeline fails. <details><summary>Help</summary><small>This works exactly as with <code class="docutils literal notranslate"><span class="pre">--email</span></code>, except emails are only sent if the workflow is not successful.</small></details></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">plaintext_email</span></code></p></td>
+<td><p>Send plain-text email instead of HTML. <details><summary>Help</summary><small>Set to receive plain-text e-mails instead of HTML formatted.</small></details></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">boolean</span></code></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">monochrome_logs</span></code></p></td>
+<td><p>Do not use colored log outputs. <details><summary>Help</summary><small>Set to disable colorful command line output and live life in glorious monochrome.</small></details></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">boolean</span></code></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">breed</span></code></p></td>
+<td><p></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">tracedir</span></code></p></td>
+<td><p>Directory to keep pipeline Nextflow logs and reports.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p>${params.outdir}/pipeline_info</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">enable_conda</span></code></p></td>
+<td><p>Run this workflow with Conda. You can also use ‘-profile conda’ instead of providing this parameter.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">boolean</span></code></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">validate_params</span></code></p></td>
+<td><p>Boolean whether to validate parameters against the schema at runtime</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">boolean</span></code></p></td>
+<td><p>True</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">show_hidden_params</span></code></p></td>
+<td><p>Show all params when using <code class="docutils literal notranslate"><span class="pre">--help</span></code> <details><summary>Help</summary><small>By default, parameters set as <em>hidden</em> in the schema are not shown on the command line when a user runs with <code class="docutils literal notranslate"><span class="pre">--help</span></code>. Specifying this option will tell the pipeline to show all parameters.</small></details></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">boolean</span></code></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="institutional-config-options">
+<h2>Institutional config options<a class="headerlink" href="#institutional-config-options" title="Permalink to this headline"></a></h2>
+<p>Parameters used to describe centralised config profiles. These should not be edited.</p>
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Parameter</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Required</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">custom_config_version</span></code></p></td>
+<td><p>Git commit id for Institutional configs. <details><summary>Help</summary><small>Provide git commit id for custom Institutional configs hosted at <code class="docutils literal notranslate"><span class="pre">nf-core/configs</span></code>. This was implemented for reproducibility purposes. Default: <code class="docutils literal notranslate"><span class="pre">master</span></code>.  <code class="docutils literal notranslate"><span class="pre">bash</span> <span class="pre">##</span> <span class="pre">Download</span> <span class="pre">and</span> <span class="pre">use</span> <span class="pre">config</span> <span class="pre">file</span> <span class="pre">with</span> <span class="pre">following</span> <span class="pre">git</span> <span class="pre">commit</span> <span class="pre">id</span> <span class="pre">--custom_config_version</span> <span class="pre">d52db660777c4bf36546ddb188ec530c3ada1b96</span> </code></small></details></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p>master</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">custom_config_base</span></code></p></td>
+<td><p>Base directory for Institutional configs. <details><summary>Help</summary><small>If you’re running offline, nextflow will not be able to fetch the institutional config files from the internet. If you don’t need them, then this is not a problem. If you do need them, you should download the files from the repo and tell nextflow where to find them with the <code class="docutils literal notranslate"><span class="pre">custom_config_base</span></code> option. For example:  <code class="docutils literal notranslate"><span class="pre">bash</span> <span class="pre">##</span> <span class="pre">Download</span> <span class="pre">and</span> <span class="pre">unzip</span> <span class="pre">the</span> <span class="pre">config</span> <span class="pre">files</span> <span class="pre">cd</span> <span class="pre">/path/to/my/configs</span> <span class="pre">wget</span> <span class="pre">https://github.com/nf-core/configs/archive/master.zip</span> <span class="pre">unzip</span> <span class="pre">master.zip</span>&#160; <span class="pre">##</span> <span class="pre">Run</span> <span class="pre">the</span> <span class="pre">pipeline</span> <span class="pre">cd</span> <span class="pre">/path/to/my/data</span> <span class="pre">nextflow</span> <span class="pre">run</span> <span class="pre">/path/to/pipeline/</span> <span class="pre">--custom_config_base</span> <span class="pre">/path/to/my/configs/configs-master/</span> </code>  &gt; Note that the nf-core/tools helper package has a <code class="docutils literal notranslate"><span class="pre">download</span></code> command to download all required pipeline files + singularity containers + institutional configs in one go for you, to make this process easier.</small></details></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p>https://raw.githubusercontent.com/nf-core/configs/master</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">config_profile_name</span></code></p></td>
+<td><p>Institutional config name.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">config_profile_description</span></code></p></td>
+<td><p>Institutional config description.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">config_profile_contact</span></code></p></td>
+<td><p>Institutional config contact information.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">config_profile_url</span></code></p></td>
+<td><p>Institutional config URL link.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="remote-presentation-resource-options">
+<h2>Remote presentation resource options<a class="headerlink" href="#remote-presentation-resource-options" title="Permalink to this headline"></a></h2>
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Parameter</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Required</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">freezetable_js</span></code></p></td>
+<td><p>JavaScript file to help with haplotype alignment table</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p>https://cdn.jsdelivr.net/npm/jquery-freeze-table&#64;1.3.0/dist/js/freeze-table.min.js</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">igv_js</span></code></p></td>
+<td><p>JavaScript file to show alignments in a browser</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p>https://cdn.jsdelivr.net/npm/igv&#64;2.11.0/dist/igv.js</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">phylotree_css</span></code></p></td>
+<td><p>CSS file for phylogenetic trees</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p>https://cdn.jsdelivr.net/npm/phylotree&#64;1.0.13/dist/phylotree.css</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">d3_js</span></code></p></td>
+<td><p>JavaScript dependency for phylotree.js</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p>https://cdn.jsdelivr.net/npm/d3&#64;5.16.0/dist/d3.min.js</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">underscore_js</span></code></p></td>
+<td><p>JavaScript dependency for phylotree.js</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p>https://cdn.jsdelivr.net/npm/underscore&#64;1.13.2/underscore-umd.min.js</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">phylotree_js</span></code></p></td>
+<td><p>JavaScript to show phylogenetic trees in a browser</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p>https://cdn.jsdelivr.net/npm/phylotree&#64;1.0.13/dist/phylotree.min.js</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="usage.html" class="btn btn-neutral float-left" title="Usage" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="output.html" class="btn btn-neutral float-right" title="Output" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Thomas A. Christensen II.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    <span class="fa fa-book"> Other Versions</span>
+    v: develop
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Tags</dt>
+      <dd><a href="../v0.1.0-alpha/parameters.html">v0.1.0-alpha</a></dd>
+      <dd><a href="../v0.1.1/parameters.html">v0.1.1</a></dd>
+      <dd><a href="../v0.2.0-alpha/parameters.html">v0.2.0-alpha</a></dd>
+      <dd><a href="../v0.2.1-alpha/parameters.html">v0.2.1-alpha</a></dd>
+      <dd><a href="../v0.3.0-alpha/parameters.html">v0.3.0-alpha</a></dd>
+      <dd><a href="../v0.3.1-alpha/parameters.html">v0.3.1-alpha</a></dd>
+      <dd><a href="../v0.3.2-alpha/parameters.html">v0.3.2-alpha</a></dd>
+      <dd><a href="../v0.3.3-alpha/parameters.html">v0.3.3-alpha</a></dd>
+      <dd><a href="../v0.4.0-alpha/index.html">v0.4.0-alpha</a></dd>
+      <dd><a href="../v0.5.0-alpha/index.html">v0.5.0-alpha</a></dd>
+      <dd><a href="../v0.6.0-alpha/index.html">v0.6.0-alpha</a></dd>
+      <dd><a href="../v0.6.1-alpha/index.html">v0.6.1-alpha</a></dd>
+      <dd><a href="../v0.6.2-alpha/index.html">v0.6.2-alpha</a></dd>
+      <dd><a href="../v0.6.3-alpha/index.html">v0.6.3-alpha</a></dd>
+      <dd><a href="../v0.6.4-alpha/index.html">v0.6.4-alpha</a></dd>
+      <dd><a href="../v0.6.5-alpha/index.html">v0.6.5-alpha</a></dd>
+      <dd><a href="../v0.7.0/index.html">v0.7.0</a></dd>
+      <dd><a href="../v0.7.1/index.html">v0.7.1</a></dd>
+      <dd><a href="../v0.8.0/index.html">v0.8.0</a></dd>
+    </dl>
+    <dl>
+      <dt>Branches</dt>
+      <dd><a href="parameters.html">develop</a></dd>
+    </dl>
+  </div>
+</div><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Output &mdash; Yet Another Viral Subspecies Analysis Pipeline  documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Private API Reference" href="reference.html" />
+    <link rel="prev" title="Complete Parameter Reference" href="parameters.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> Yet Another Viral Subspecies Analysis Pipeline
+            <img src="_static/yavsap_logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parameters.html">Complete Parameter Reference</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Output</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#the-visualizer">The Visualizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#file-output">File Output</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#visualizer-data">Visualizer Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#multiqc-report">MultiQC Report</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reference-genome">Reference Genome</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#classification-reports">Classification Reports</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#alignments">Alignments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#assemblies">Assemblies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#variant-calls">Variant Calls</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#haplotypes">Haplotypes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#multiple-alignments">Multiple Alignments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phylogenetic-trees">Phylogenetic Trees</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#diagnostics">Diagnostics</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="reference.html">Private API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Yet Another Viral Subspecies Analysis Pipeline</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content style-external-links">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Output</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com//ksumngs/yavsap/blob/output.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="output">
+<h1>Output<a class="headerlink" href="#output" title="Permalink to this headline"></a></h1>
+<p>You ran the pipeline, but now what? Here is the description of the pipeline
+outputs and where to find them, but first…</p>
+<section id="the-visualizer">
+<h2>The Visualizer<a class="headerlink" href="#the-visualizer" title="Permalink to this headline"></a></h2>
+<p>If you like pictures, hate juggling files into various Java applications, and
+are OCD about having everything in one spot, then we have you covered. The
+pipeline outputs its own web application with every run that allows you to view,
+interact with, and download nearly every output file.</p>
+<p>To use, you’ll need Node.js v14 (LTS) or later. I highly recommend installing
+Node.js via <a class="reference external" href="https://github.com/tj/n">a little application called n</a>, which
+keeps your Node.js packages clean and organized. You can use n, Node.js, and the
+Visualizer on any computer, including Mac and Windows computers. Once you have
+Node.js installed, point a terminal to the output directory, and run</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">npm</span> <span class="n">install</span> <span class="o">&amp;&amp;</span> <span class="n">npm</span> <span class="n">start</span>
+</pre></div>
+</div>
+<p>A link should appear in the terminal. Follow the link in your browser to access
+the Visualizer.</p>
+<p>The Visualizer contains links to all of the output files
+<a class="reference internal" href="#file-output"><span class="std std-ref">described below</span></a>, as well as interactive viewers for
+alignments and phylogenetic trees.</p>
+<p>Once you are done, press <code class="docutils literal notranslate"><span class="pre">CTRL+C</span></code> in the terminal, and the Visualizer will
+shut down. If you need it again, just run <code class="docutils literal notranslate"><span class="pre">npm</span> <span class="pre">start</span></code> in the results folder
+and follow the link again.</p>
+</section>
+<section id="file-output">
+<h2>File Output<a class="headerlink" href="#file-output" title="Permalink to this headline"></a></h2>
+<p>You don’t like all the fluff, huh? Here’s the lowdown on the file structure you
+can expect from each pipeline run.</p>
+<section id="visualizer-data">
+<h3>Visualizer Data<a class="headerlink" href="#visualizer-data" title="Permalink to this headline"></a></h3>
+<p>All the following files and folders are strictly for powering the Visualizer,
+and have no scientific merit. You may safely ignore them.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>results
+├── 📁 _css
+├── 📁 _views
+├── 📝 index.js
+├── 📝 package.json
+├── 📝 package-lock.json
+└── 📝 favicon.ico
+</pre></div>
+</div>
+</section>
+<section id="multiqc-report">
+<h3>MultiQC Report<a class="headerlink" href="#multiqc-report" title="Permalink to this headline"></a></h3>
+<p>MultiQC is a tool that provides overall diagnostic insights into metagenomic
+pipelines. Although its use is limited in this pipeline, the report does contain
+information on trimmed reads from Trimmomatic and filtered reads from Kraken2.
+The reports can be viewed via <a class="reference internal" href="#the-visualizer"><span class="std std-ref">The Visualizer</span></a>, or they can be viewed
+alone. The report overwrites itself with every pipeline run, and is named
+<code class="docutils literal notranslate"><span class="pre">multiqc_report.html</span></code>. Its sidecar data files are located in the
+<code class="docutils literal notranslate"><span class="pre">multiqc_data</span></code> folder.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>results
+├── 📁 multiqc_data
+└── 📝 multiqc_report.html
+</pre></div>
+</div>
+</section>
+<section id="reference-genome">
+<h3>Reference Genome<a class="headerlink" href="#reference-genome" title="Permalink to this headline"></a></h3>
+<p>The pulled reference genome in fasta format can be found in the <code class="docutils literal notranslate"><span class="pre">reference</span></code>
+folder, as well as its samtools index, and its annotation in GFF3 format. The
+name of the files are given by the NCBI description of the reference genome,
+with some replacements to make it a safe name for all the processes that use it.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>results
+└── 📁 reference
+    ├── 📝 Japanese_Encephalitis_Virus.fasta
+    ├── 📝 Japanese_Encephalitis_Virus.fasta.fai
+    └── 📝 Japanese_Encephalitis_Virus.gff
+</pre></div>
+</div>
+</section>
+<section id="classification-reports">
+<h3>Classification Reports<a class="headerlink" href="#classification-reports" title="Permalink to this headline"></a></h3>
+<p>The read classification report generated by Kraken2 that is used to filter host
+reads can be found for each sample in the <code class="docutils literal notranslate"><span class="pre">classification</span></code> folder under the
+filename <code class="docutils literal notranslate"><span class="pre">&lt;samplename&gt;.kreport</span></code>. The individual read classifications are also
+available under the name <code class="docutils literal notranslate"><span class="pre">&lt;samplename&gt;.kraken</span></code>. A summary of these files is
+available in the <a class="reference internal" href="#multiqc-report"><span class="std std-ref">MultiQC Report</span></a>, that may be easier to visualize.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>results
+└── 📁 classification
+    ├── 📝 pig-serum.kraken
+    ├── 📝 pig-serum.kreport
+    ├── 📝 pig-feces.kraken
+    └── 📝 pig-feces.kreport
+</pre></div>
+</div>
+</section>
+<section id="alignments">
+<h3>Alignments<a class="headerlink" href="#alignments" title="Permalink to this headline"></a></h3>
+<p>Alignments for each sample can be found in the <code class="docutils literal notranslate"><span class="pre">alignment</span></code> folder in the BAM
+format, as well as their sidecar index files. Files are always in the
+<code class="docutils literal notranslate"><span class="pre">&lt;samplename&gt;.bam</span></code> and <code class="docutils literal notranslate"><span class="pre">&lt;samplename&gt;.bam.bai</span></code> naming scheme.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>results
+└── 📁 alignment
+    ├── 📝 pig-serum.bam
+    ├── 📝 pig-serum.bam.bai
+    ├── 📝 pig-feces.bam
+    └── 📝 pig-feces.bam.bai
+</pre></div>
+</div>
+</section>
+<section id="assemblies">
+<h3>Assemblies<a class="headerlink" href="#assemblies" title="Permalink to this headline"></a></h3>
+<p>Assemblies are output as both fasta sequences and as BAM alignments. They can be
+found in the <code class="docutils literal notranslate"><span class="pre">assembly/sequence</span></code> and <code class="docutils literal notranslate"><span class="pre">assembly/alignment</span></code> folders,
+respectively. All files are named <code class="docutils literal notranslate"><span class="pre">&lt;samplename&gt;.contigs.&lt;ext&gt;</span></code>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>results
+└── 📁 assembly
+    ├── 📁 alignment
+    |   ├── 📝 pig-serum.contigs.bam
+    |   ├── 📝 pig-serum.contigs.bam.bai
+    |   ├── 📝 pig-feces.contigs.bam
+    |   └── 📝 pig-feces.contigs.bam.bai
+    └── 📁 sequence
+        ├── 📝 pig-serum.contigs.fasta
+        └── 📝 pig-feces.contigs.fasta
+</pre></div>
+</div>
+</section>
+<section id="variant-calls">
+<h3>Variant Calls<a class="headerlink" href="#variant-calls" title="Permalink to this headline"></a></h3>
+<p>Variant calls for each sample are output to the <code class="docutils literal notranslate"><span class="pre">variants</span></code> folder when
+analyzing Nanopore reads (no variant calls are output for Illumina reads). The
+filename is always <code class="docutils literal notranslate"><span class="pre">&lt;samplename&gt;.vcf</span></code>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>results
+└── 📁 variants
+    ├── 📝 pig-serum.vcf
+    └── 📝 pig-feces.vcf
+</pre></div>
+</div>
+</section>
+<section id="haplotypes">
+<h3>Haplotypes<a class="headerlink" href="#haplotypes" title="Permalink to this headline"></a></h3>
+<p>Haplotypes for each sample are output to the <code class="docutils literal notranslate"><span class="pre">haplotypes</span></code> folder. There is a
+a fasta file containing the mutated sequences, and also a data file describing
+the haplotypes. The data file is in JSON format for Illumina reads and YAML
+format for Nanopore reads. The filename is always
+<code class="docutils literal notranslate"><span class="pre">&lt;samplename&gt;.haplotypes.&lt;ext&gt;</span></code>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>results
+└── 📁 haplotypes
+    ├── 📝 pig-serum.haplotypes.fasta
+    ├── 📝 pig-serum.haplotypes.yaml
+    ├── 📝 pig-feces.haplotypes.fasta
+    └── 📝 pig-feces.haplotypes.yaml
+</pre></div>
+</div>
+</section>
+<section id="multiple-alignments">
+<h3>Multiple Alignments<a class="headerlink" href="#multiple-alignments" title="Permalink to this headline"></a></h3>
+<p>The alignments of the reference genome, assembly, and haplotypes in fasta format
+are contained in the <code class="docutils literal notranslate"><span class="pre">&lt;samplename&gt;.haplotypes.fas</span></code> file in the
+<code class="docutils literal notranslate"><span class="pre">multi_alignment</span></code> folder.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>results
+    └── 📁 multi_alignment
+        ├── 📝 pig-serum.haplotypes.fas
+        └── 📝 pig-feces.haplotypes.fas
+</pre></div>
+</div>
+</section>
+<section id="phylogenetic-trees">
+<h3>Phylogenetic Trees<a class="headerlink" href="#phylogenetic-trees" title="Permalink to this headline"></a></h3>
+<p>Phylogenetic trees of the haplotypes in Newick format are contained in the
+<code class="docutils literal notranslate"><span class="pre">phylogenetics</span></code> folder in files with the name <code class="docutils literal notranslate"><span class="pre">&lt;samplename&gt;.nwk</span></code>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>results
+└── 📁 phylogenetics
+    ├── 📝 pig-serum.nwk
+    └── 📝 pig-feces.nwk
+</pre></div>
+</div>
+</section>
+<section id="diagnostics">
+<h3>Diagnostics<a class="headerlink" href="#diagnostics" title="Permalink to this headline"></a></h3>
+<p>Pipeline runtime reports can be found in the <code class="docutils literal notranslate"><span class="pre">.trace</span></code> folder by default, but
+this can be modified using the <a class="reference internal" href="parameters.html#input-output-options"><span class="std std-ref">–tracedir</span></a>
+parameter. Four types of Nextflow traces are output.</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://nextflow.io/docs/latest/tracing.html#execution-report" title="(in Nextflow v22.04)"><span class="xref std std-ref">Execution reports</span></a></p></li>
+<li><p><a class="reference external" href="https://nextflow.io/docs/latest/tracing.html#timeline-report" title="(in Nextflow v22.04)"><span class="xref std std-ref">Execution timelines</span></a></p></li>
+<li><p><a class="reference external" href="https://nextflow.io/docs/latest/tracing.html#trace-report" title="(in Nextflow v22.04)"><span class="xref std std-ref">Process traces</span></a></p></li>
+<li><p><a class="reference external" href="https://nextflow.io/docs/latest/tracing.html#dag-visualisation" title="(in Nextflow v22.04)"><span class="xref std std-ref">Process graphs</span></a></p></li>
+</ul>
+<p>These reports are specific to each time the pipeline is launched, and have the
+date and time of execution appended, e.g.
+<code class="docutils literal notranslate"><span class="pre">execution_report_2021-10-01_12-00-00.html</span></code>. They can all be viewed via
+<a class="reference internal" href="#the-visualizer"><span class="std std-ref">The Visualizer</span></a>, or viewed alone.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>results
+└── 📁 .trace
+    ├── 📝 execution_report_2021-09-01_12-00-00.html
+    ├── 📝 execution_report_2021-10-01_12-00-00.html
+    ├── 📝 execution_timeline_2021-09-01_12-00-00.html
+    ├── 📝 execution_timeline_2021-10-01_12-00-00.html
+    ├── 📝 execution_trace_2021-09-01_12-00-00.txt
+    ├── 📝 execution_trace_2021-10-01_12-00-00.txt
+    ├── 📝 pipeline_dag_2021-09-01_12-00-00.svg
+    └── 📝 pipeline_dag_2021-09-01_12-00-00.svg
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="parameters.html" class="btn btn-neutral float-left" title="Complete Parameter Reference" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="reference.html" class="btn btn-neutral float-right" title="Private API Reference" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Thomas A. Christensen II.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    <span class="fa fa-book"> Other Versions</span>
+    v: v0.5.0-alpha
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Tags</dt>
+      <dd><a href="../v0.1.0-alpha/output.html">v0.1.0-alpha</a></dd>
+      <dd><a href="../v0.1.1/output.html">v0.1.1</a></dd>
+      <dd><a href="../v0.2.0-alpha/output.html">v0.2.0-alpha</a></dd>
+      <dd><a href="../v0.2.1-alpha/output.html">v0.2.1-alpha</a></dd>
+      <dd><a href="../v0.3.0-alpha/output.html">v0.3.0-alpha</a></dd>
+      <dd><a href="../v0.3.1-alpha/output.html">v0.3.1-alpha</a></dd>
+      <dd><a href="../v0.3.2-alpha/output.html">v0.3.2-alpha</a></dd>
+      <dd><a href="../v0.3.3-alpha/output.html">v0.3.3-alpha</a></dd>
+      <dd><a href="../v0.4.0-alpha/output.html">v0.4.0-alpha</a></dd>
+      <dd><a href="output.html">v0.5.0-alpha</a></dd>
+      <dd><a href="../v0.6.0-alpha/output.html">v0.6.0-alpha</a></dd>
+      <dd><a href="../v0.6.1-alpha/output.html">v0.6.1-alpha</a></dd>
+      <dd><a href="../v0.6.2-alpha/output.html">v0.6.2-alpha</a></dd>
+      <dd><a href="../v0.6.3-alpha/output.html">v0.6.3-alpha</a></dd>
+      <dd><a href="../v0.6.4-alpha/output.html">v0.6.4-alpha</a></dd>
+      <dd><a href="../v0.6.5-alpha/output.html">v0.6.5-alpha</a></dd>
+      <dd><a href="../v0.7.0/index.html">v0.7.0</a></dd>
+      <dd><a href="../v0.7.1/index.html">v0.7.1</a></dd>
+      <dd><a href="../v0.8.0/index.html">v0.8.0</a></dd>
+    </dl>
+    <dl>
+      <dt>Branches</dt>
+      <dd><a href="../develop/index.html">develop</a></dd>
+    </dl>
+  </div>
+</div><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

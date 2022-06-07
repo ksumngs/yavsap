@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The YAVSAP report &mdash; Yet Another Viral Subspecies Analysis Pipeline  documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Output" href="output.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> Yet Another Viral Subspecies Analysis Pipeline
+            <img src="_static/yavsap_logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parameters.html">Complete Parameter Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="output.html">Output</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">The YAVSAP report</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#launching-the-report">Launching the report</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#windows">Windows</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#first-time-only">First time only</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#every-time">Every time</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#mac-and-linux">Mac and Linux</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#using-the-report">Using the Report</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#general-statistics">General Statistics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fastqc-illumina-only">FastQC (Illumina-only)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#number-of-reads-read-length">Number of reads + read length</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#read-quality">Read quality</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#adapter-contamination">Adapter contamination</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#nanostat-nanopore-only">NanoStat (Nanopore-only)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#trimmomatic-illumina-only">Trimmomatic (Illumina-only)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#kraken">Kraken</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#minimap2">minimap2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#haplotypes-cliquesnv-for-illumina-haplink-jl-for-nanopore">Haplotypes (CliqueSNV for Illumina, HapLink.jl for Nanopore)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#raxml-ng">RAxML-NG</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#software-versions">Software Versions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#workflow-summary">Workflow Summary</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Yet Another Viral Subspecies Analysis Pipeline</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content style-external-links">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>The YAVSAP report</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com//ksumngs/yavsap/blob/report.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="the-yavsap-report">
+<h1>The YAVSAP report<a class="headerlink" href="#the-yavsap-report" title="Permalink to this headline"></a></h1>
+<p>Formerly known as “The Visualizer.”</p>
+<p>YAVSAP outputs a consolidated report containing statistics on your analysis and
+the viral haplotypes found. The report is powered by <a class="reference external" href="https://multiqc.info/">MultiQC</a>, so you can view
+it in any browser.</p>
+<section id="launching-the-report">
+<h2>Launching the report<a class="headerlink" href="#launching-the-report" title="Permalink to this headline"></a></h2>
+<p>The report can be viewed simply by double-clicking the <code class="docutils literal notranslate"><span class="pre">report/index.html</span></code> file
+in your specified results folder, but for the best experience, you will need to
+run a temporary server. Don’t worry: it’s not as daunting as it sounds. Just
+follow the instructions below.</p>
+<section id="windows">
+<h3>Windows<a class="headerlink" href="#windows" title="Permalink to this headline"></a></h3>
+<p>You’ll need to download some server software first. You won’t need
+administrative privileges for this, though.</p>
+<section id="first-time-only">
+<h4>First time only<a class="headerlink" href="#first-time-only" title="Permalink to this headline"></a></h4>
+<ol class="arabic simple">
+<li><p>Open a PowerShell terminal by pressing <kbd>WIN</kbd>+<kbd>X</kbd>, then
+<kbd>I</kbd></p></li>
+<li><p>Type <code class="docutils literal notranslate"><span class="pre">Set-ExecutionPolicy</span> <span class="pre">RemoteSigned</span> <span class="pre">-Scope</span> <span class="pre">CurrentUser</span></code> <kbd>ENTER</kbd>
+and answer <code class="docutils literal notranslate"><span class="pre">Y</span></code> to all the prompts</p></li>
+<li><p>Type <code class="docutils literal notranslate"><span class="pre">Invoke-WebRequest</span> <span class="pre">get.scoop.sh</span> <span class="pre">|</span> <span class="pre">Invoke-Expression</span></code> <kbd>ENTER</kbd></p></li>
+<li><p>Type <code class="docutils literal notranslate"><span class="pre">scoop</span> <span class="pre">install</span> <span class="pre">python</span></code> <kbd>ENTER</kbd></p></li>
+<li><p>Close the PowerShell window</p></li>
+</ol>
+</section>
+<section id="every-time">
+<h4>Every time<a class="headerlink" href="#every-time" title="Permalink to this headline"></a></h4>
+<ol class="arabic">
+<li><p>Copy the entire <code class="docutils literal notranslate"><span class="pre">report</span></code> directory from the server to a location on your
+local computer</p>
+<p><img alt="Copying the directory" src="_images/report_copy_windows.png" /></p>
+</li>
+<li><p>Open a PowerShell terminal by pressing <kbd>WIN</kbd>+<kbd>X</kbd>, then
+<kbd>I</kbd></p>
+<p><img alt="Opening PowerShell" src="_images/report_powershell_open_windows.png" /></p>
+</li>
+<li><p>Type <code class="docutils literal notranslate"><span class="pre">cd</span></code> and paste the path of the <code class="docutils literal notranslate"><span class="pre">report</span></code> directory</p>
+<p><img alt="Changing to the report directory" src="_images/report_cd_windows.png" /></p>
+</li>
+<li><p>Type <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">http.server</span> <span class="pre">8000</span></code> <kbd>ENTER</kbd></p>
+<p><img alt="Launching the server" src="_images/report_python_windows.png" /></p>
+</li>
+<li><p>Open a browser, and navigate to <a class="reference external" href="http://localhost:8000">http://localhost:8000</a></p>
+<p><img alt="Viewing the report" src="_images/report_view_windows.png" /></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>You can launch multiple reports at once by changing <code class="docutils literal notranslate"><span class="pre">8000</span></code> to another number
+in both the PowerShell window and the browser URL. Just make sure the number
+is larger than 1024, and for best results try to pick a number than doesn’t
+appear on <a class="reference external" href="https://en.wikipedia.org/wiki/List_of_TCP_and_UDP_port_numbers#Registered_ports">this list</a>.</p>
+</div>
+</li>
+<li><p>Once you are done with the report, close the browser, press
+<kbd>CTRL</kbd>+<kbd>C</kbd> in PowerShell, and close PowerShell</p></li>
+</ol>
+</section>
+</section>
+<section id="mac-and-linux">
+<h3>Mac and Linux<a class="headerlink" href="#mac-and-linux" title="Permalink to this headline"></a></h3>
+<p>Hooray! Mac and Linux desktops come with server software pre-installed!</p>
+<ol class="arabic">
+<li><p>Copy the entire <code class="docutils literal notranslate"><span class="pre">report</span></code> directory from the server to a location on your
+local computer</p>
+<p><img alt="Copying the directory" src="_images/report_copy_linux.png" /></p>
+</li>
+<li><p>Open a new terminal window</p>
+<ul class="simple">
+<li><p><strong>Mac</strong>
+Press <kbd>CMD</kbd>+<kbd>SPACE</kbd>, type <code class="docutils literal notranslate"><span class="pre">terminal</span></code> and press enter</p></li>
+<li><p><strong>Linux</strong>
+Press <kbd>CTRL</kbd>+<kbd>ALT</kbd>+<kbd>T</kbd></p></li>
+</ul>
+<p><img alt="Opening a terminal" src="_images/report_terminal_open_linux.png" /></p>
+</li>
+<li><p>Type <code class="docutils literal notranslate"><span class="pre">cd</span></code> and the paste the path of the <code class="docutils literal notranslate"><span class="pre">report</span></code> directory</p>
+<p><img alt="Changing to the report directory" src="_images/report_cd_linux.png" /></p>
+</li>
+<li><p>Type <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">http.server</span> <span class="pre">8000</span></code> <kbd>ENTER</kbd></p>
+<p><img alt="Launching the server" src="_images/report_python_linux.png" /></p>
+</li>
+<li><p>Open a browser, and navigate to <a class="reference external" href="http://localhost:8000">http://localhost:8000</a></p>
+<p><img alt="Viewing the report" src="_images/report_view_linux.png" /></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>You can launch multiple reports at once by changing <code class="docutils literal notranslate"><span class="pre">8000</span></code> to another number
+in both the terminal window and the browser URL. Just make sure the number
+is larger than 1024, and for best results try to pick a number than doesn’t
+appear on <a class="reference external" href="https://en.wikipedia.org/wiki/List_of_TCP_and_UDP_port_numbers#Registered_ports">this list</a>.</p>
+</div>
+</li>
+<li><p>Once you are done with the report, close the browser, press
+<kbd>CTRL</kbd>+<kbd>C</kbd> in the terminal, and close the terminal</p></li>
+</ol>
+</section>
+</section>
+<section id="using-the-report">
+<h2>Using the Report<a class="headerlink" href="#using-the-report" title="Permalink to this headline"></a></h2>
+<p>Here’s a section-by-section breakdown of how everything in the report works.</p>
+<section id="general-statistics">
+<h3>General Statistics<a class="headerlink" href="#general-statistics" title="Permalink to this headline"></a></h3>
+<p><img alt="General Statistics Screenshot" src="_images/mqc_gen_stats.png" /></p>
+<p>A table with a general overview of statistics that MultiQC cares about. These
+numbers have some limited use cases, but overall are just repeats of everything
+contained in the other sections.</p>
+</section>
+<section id="fastqc-illumina-only">
+<span id="fastqc"></span><h3>FastQC (Illumina-only)<a class="headerlink" href="#fastqc-illumina-only" title="Permalink to this headline"></a></h3>
+<p><img alt="FastQC Screenshot" src="_images/mqc_fastqc.png" /></p>
+<p>FastQC checks for</p>
+<ul class="simple">
+<li><p><strong>Number of reads per sample</strong></p></li>
+<li><p><strong>Read quality</strong></p></li>
+<li><p>Sequence read diversity</p></li>
+<li><p>GC content anomalies</p></li>
+<li><p><strong>Read length</strong></p></li>
+<li><p>Sequence duplication and over-representation</p></li>
+<li><p><strong>Adapter contamination</strong></p></li>
+</ul>
+<p>Because YAVSAP is primarily a viral analysis pipeline for metagenomic reads,
+diversity, GC content, and duplication are typically irrelevant: use them if you
+know what you are doing.</p>
+<section id="number-of-reads-read-length">
+<h4>Number of reads + read length<a class="headerlink" href="#number-of-reads-read-length" title="Permalink to this headline"></a></h4>
+<p>These two numbers can be used to estimate coverage. The equation for coverage
+is<a class="footnote-reference brackets" href="#id2" id="id1">1</a></p>
+<div class="math notranslate nohighlight" id="equation-coverage">
+<span class="eqno">(1)<a class="headerlink" href="#equation-coverage" title="Permalink to this equation"></a></span>\[c = \frac{LN}{G}\]</div>
+<p>where</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(c\)</span> = coverage</p></li>
+<li><p><span class="math notranslate nohighlight">\(L\)</span> = average read length</p></li>
+<li><p><span class="math notranslate nohighlight">\(N\)</span> = number of reads</p></li>
+<li><p><span class="math notranslate nohighlight">\(G\)</span> = genome length</p></li>
+</ul>
+<p>For variant- and haplotype-calling purposes, the coverage <span class="math notranslate nohighlight">\(c\)</span> should be
+well in excess of 60.</p>
+</section>
+<section id="read-quality">
+<h4>Read quality<a class="headerlink" href="#read-quality" title="Permalink to this headline"></a></h4>
+<p>Illumina reads are famous for being high quality. If you have reads that fail in
+the quality assessment, then there are likely errors in the upstream sample
+preparation (extraction, amplification, library prep) or sequencing. Low-quality
+reads <em>can</em> be used by YAVSAP, but will reduce the ability to call variants and
+haplotypes.</p>
+</section>
+<section id="adapter-contamination">
+<h4>Adapter contamination<a class="headerlink" href="#adapter-contamination" title="Permalink to this headline"></a></h4>
+<p>If adapters are found in your reads, then you can compensate by adjusting the
+<a class="reference internal" href="parameters.html#read-trimming-options"><span class="std std-ref">Read trimming options</span></a>. Note that FastQC runs <em>before</em> read trimming, so
+this check will fail even if the adapters are being trimmed off.</p>
+<p>More detailed instructions for interpreting FastQC results can be found in <a class="reference external" href="https://www.bioinformatics.babraham.ac.uk/projects/fastqc/Help/">the
+FastQC documentation</a>.</p>
+<hr class="docutils" />
+</section>
+</section>
+<section id="nanostat-nanopore-only">
+<span id="nanostat"></span><h3>NanoStat (Nanopore-only)<a class="headerlink" href="#nanostat-nanopore-only" title="Permalink to this headline"></a></h3>
+<p><img alt="NanoStat Screenshot" src="_images/mqc_nanostat.png" /></p>
+<p>NanoStat calculates the</p>
+<ul class="simple">
+<li><p>Median read length</p></li>
+<li><p>N50 read length</p></li>
+<li><p>Median read quality</p></li>
+<li><p>Number of reads</p></li>
+<li><p>Total base count</p></li>
+<li><p>Read quality distribution</p></li>
+</ul>
+<p>For long reads, the N50 is generally more informative than the median length.
+Substituting <span class="math notranslate nohighlight">\(L\)</span> = N50 into Equation <a class="reference internal" href="#equation-coverage">(1)</a> will give an
+indication of the coverage of the sample.</p>
+<p>If a large proportion of reads are low (&lt;Q10), then YAVSAP will struggle to
+identify strains, and call variants and haplotypes. Quality that low indicates
+errors in either the upstream sample preparation (extraction, library prep) or
+sequencing, and the sequencing should be redone.</p>
+</section>
+<section id="trimmomatic-illumina-only">
+<span id="trimmomatic"></span><h3>Trimmomatic (Illumina-only)<a class="headerlink" href="#trimmomatic-illumina-only" title="Permalink to this headline"></a></h3>
+<p><img alt="Trimmomatic Screenshot" src="_images/mqc_trimmomatic.png" /></p>
+<p>Trimmomatic removes adapters, low-quality reads, and ends of reads in a highly
+configurable manner. This section shows how many reads were left by Trimmomatic.
+Use this section in conjunction with <a class="reference internal" href="#fastqc"><span class="std std-ref">FastQC</span></a> to ensure only
+high-quality sequence reads are processed by YAVSAP.</p>
+</section>
+<section id="kraken">
+<h3>Kraken<a class="headerlink" href="#kraken" title="Permalink to this headline"></a></h3>
+<p><img alt="Kraken Screenshot" src="_images/mqc_kraken.png" /></p>
+<p>Kraken identifies whether sequencing reads belong to the virus of interest or
+the host. This plot shows the five most abundant taxa in each sample pool.
+Check this plot to see if host reads are overcoming the viral reads and
+hindering the analysis. Depending on your Kraken database, host reads might be
+<code class="docutils literal notranslate"><span class="pre">unclassified</span></code> and viral reads are identified, or it might be that host reads
+are identified and viral reads are <code class="docutils literal notranslate"><span class="pre">unclassified</span></code>. The results from this plot
+should be interpreted as the number of reads that will actually be analyzed by
+YAVSAP.</p>
+<section id="examples">
+<h4>Examples<a class="headerlink" href="#examples" title="Permalink to this headline"></a></h4>
+<section id="example-1">
+<h5>Example 1<a class="headerlink" href="#example-1" title="Permalink to this headline"></a></h5>
+<dl class="simple myst">
+<dt>Virus</dt><dd><p>SARS-CoV2 (SC2)</p>
+</dd>
+<dt>Host</dt><dd><p><em>Homo sapiens</em> (human)</p>
+</dd>
+<dt>Kraken Database</dt><dd><p><a class="reference external" href="https://github.com/DerrickWood/kraken2/wiki/Manual#standard-kraken-2-database">standard</a></p>
+</dd>
+<dt>Kept reads</dt><dd><p><code class="docutils literal notranslate"><span class="pre">10239</span></code> (viral)</p>
+</dd>
+</dl>
+<p>In this case, both the virus and host will be identified in <code class="docutils literal notranslate"><span class="pre">standard</span></code>. The plot
+will show the abundances of both <code class="docutils literal notranslate"><span class="pre">Beta</span> <span class="pre">coronavirus</span></code> and <code class="docutils literal notranslate"><span class="pre">Homo</span> <span class="pre">sapiens</span></code> reads.
+Thanks to the <code class="docutils literal notranslate"><span class="pre">--keep_taxid</span></code> value, we know that only SC2 and related, non-human
+reads will be aligned and variant-called. High percentages of <code class="docutils literal notranslate"><span class="pre">Homo</span> <span class="pre">sapiens</span></code>
+reads indicate low viral load or a faulty extraction and/or amplification
+protocol.</p>
+</section>
+<section id="example-2">
+<h5>Example 2<a class="headerlink" href="#example-2" title="Permalink to this headline"></a></h5>
+<dl class="simple myst">
+<dt>Virus</dt><dd><p>Japanese Encephalitis Virus (JEV)</p>
+</dd>
+<dt>Host</dt><dd><p><em>Sus scrofa</em> (domestic pig)</p>
+</dd>
+<dt>Kraken Database</dt><dd><p><a class="reference external" href="https://github.com/DerrickWood/kraken2/wiki/Manual#standard-kraken-2-database">standard</a></p>
+</dd>
+<dt>Kept reads</dt><dd><p><code class="docutils literal notranslate"><span class="pre">10239</span></code> (viral)</p>
+</dd>
+</dl>
+<p>In this case, JEV is characterized in RefSeq, and its genome will be identified
+with the <code class="docutils literal notranslate"><span class="pre">standard</span></code> Kraken database. In contrast, <em>Sus scrofa</em> will be marked as
+<code class="docutils literal notranslate"><span class="pre">unclassified</span></code> with this database, as non-human mammals are not included in
+<code class="docutils literal notranslate"><span class="pre">standard</span></code>. In this case, the unclassified reads should be filtered out. High
+percentages of <code class="docutils literal notranslate"><span class="pre">unclassified</span></code> indicate a faulty extraction protocol and/or an
+amplification protocol that is too non-specific</p>
+</section>
+<section id="example-3">
+<h5>Example 3<a class="headerlink" href="#example-3" title="Permalink to this headline"></a></h5>
+<dl class="simple myst">
+<dt>Virus</dt><dd><p>Bovine Rotavirus (RV)</p>
+</dd>
+<dt>Host</dt><dd><p><em>Bos taurus</em> (domestic cattle)</p>
+</dd>
+<dt>Kraken Database</dt><dd><p><a class="reference external" href="https://github.com/DerrickWood/kraken2/wiki/Manual#custom-databases">nt</a></p>
+</dd>
+<dt>Kept reads</dt><dd><p><code class="docutils literal notranslate"><span class="pre">10239</span></code> (viral)</p>
+</dd>
+</dl>
+<p>RV is not present in RefSeq, and <em>Bos taurus</em> is a non-human mammal, so both
+would be <code class="docutils literal notranslate"><span class="pre">unclassified</span></code> if using <code class="docutils literal notranslate"><span class="pre">standard</span></code>. Instead, we switch to the <code class="docutils literal notranslate"><span class="pre">nt</span></code>
+database. Both RV and <em>Bos taurus</em> sequences are present in the <code class="docutils literal notranslate"><span class="pre">nt</span></code> database,
+so a plot should be interpreted in the same manner as the
+<a class="reference internal" href="#example-1"><span class="std std-ref">first example</span></a>.</p>
+</section>
+<section id="example-4">
+<h5>Example 4<a class="headerlink" href="#example-4" title="Permalink to this headline"></a></h5>
+<dl class="simple myst">
+<dt>Virus</dt><dd><p>Foot and Mouth Disease Virus (FMDV)</p>
+</dd>
+<dt>Host</dt><dd><p><em>Homo sapiens</em> (human)</p>
+</dd>
+<dt>Kraken Database</dt><dd><p><a class="reference external" href="https://s3.console.aws.amazon.com/s3/object/nf-core-awsmegatests?prefix=viralrecon/input_data/kraken2_human.tar.gz">human</a></p>
+</dd>
+<dt>Kept reads</dt><dd><p><code class="docutils literal notranslate"><span class="pre">unclassifed</span></code></p>
+</dd>
+</dl>
+<p>In this case, FMDV is in RefSeq, but it doesn’t matter because the database only
+contains human sequences. In this case <em>only</em> the host reads will be identified,
+so keep the <code class="docutils literal notranslate"><span class="pre">unclassifed</span></code> reads, and interpret them as viral reads.</p>
+</section>
+</section>
+</section>
+<section id="minimap2">
+<h3>minimap2<a class="headerlink" href="#minimap2" title="Permalink to this headline"></a></h3>
+<p><img alt="minimap2 Screenshot" src="_images/mqc_minimap2.png" /></p>
+<p>The alignments against the reference genome are displayed using <a class="reference external" href="https://igv.org/">IGV</a>. The IGV
+interface is described in detail at
+<a class="reference external" href="https://software.broadinstitute.org/software/igv/UserGuide">https://software.broadinstitute.org/software/igv/UserGuide</a>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>There are minor differences between the desktop application and the web application.</p>
+</div>
+<p>Briefly, the reference genome is listed in the top, left corner. Display options
+(cursor, labels, zoom) are located in the top, right corner. Immediately below
+the gray bar the genome annotations are shown along the length of the reference
+genome. These are colored based on the type of annotation.</p>
+<ul class="simple">
+<li><p><span style="background-color: limegreen;">Gene</span></p></li>
+<li><p><span style="background-color: gold;">CDS</span></p></li>
+<li><p><span style="background-color: forestgreen;">Mature Protein</span></p></li>
+<li><p><span style="background-color: blue;">Everything else</span></p></li>
+</ul>
+<p>A coverage graph is displayed in a histogram labelled with each sample name.
+Along those coverage graphs, IGV will attempt to call variants using colored
+bars. These variants <strong>are not</strong> precise, and <strong>do not</strong> reflect the variants
+called by YAVSAP. Each gray bar below the coverage graph represents an aligned
+read. Variant calls are also shown on the reads that support them. Variant calls
+have the following legend:</p>
+<ul class="simple">
+<li><p><span style="font-weight: 1000; color: #0000c8;">|</span>: C</p></li>
+<li><p><span style="font-weight: 1000; color: #ff0000;">|</span>: T</p></li>
+<li><p><span style="font-weight: 1000; color: #d17105;">|</span>: G</p></li>
+<li><p><span style="font-weight: 1000; color: #00c800;">|</span>: A</p></li>
+<li><p><span style="font-weight: 1000; color: #8a5ea1;">|</span>: Insertion</p></li>
+<li><p><span style="font-weight: 1000; color: #000000;">—</span>: Deletion</p></li>
+</ul>
+<p>IGV also attempts to call structural variants. These are generally meaningless
+in the context of viral haplotyping, and should be verified with some other
+tool.</p>
+<ul>
+<li><span style="font-weight: 1000; font-size: larger; color: #b9b9b9;">
+    &#10502;&#10503;
+ </span>: Normal
+</li>
+<li><span style="font-weight: 1000; font-size: larger; color: #1aa6a7;">
+    &#10502;&#10503;
+ </span>: Inversion
+</li>
+<li><span style="font-weight: 1000; font-size: larger; color: #1432c8;">
+    &#10502;&#10503;
+ </span>: Inversion
+</li>
+<li><span style="font-weight: 1000; font-size: larger; color: #13a44d;">
+    &#10502;&#10503;
+ </span>: Duplication or translocation
+</li>
+</ul>
+</section>
+<section id="haplotypes-cliquesnv-for-illumina-haplink-jl-for-nanopore">
+<span id="haplotypes-report"></span><h3>Haplotypes (CliqueSNV for Illumina, HapLink.jl for Nanopore)<a class="headerlink" href="#haplotypes-cliquesnv-for-illumina-haplink-jl-for-nanopore" title="Permalink to this headline"></a></h3>
+<p><img alt="HapLink Screenshot" src="_images/mqc_haplink.png" /></p>
+<p>A rough multi-sequence alignment for every consensus sequence and haplotype
+sequence found in each sample. The frequency of each minority haplotype, the
+closest strain, and that strain’s NCBI GenBank link is listed in the table. The
+bases are colored (<span style="color: red;">A</span>, <span style="color:
+blue;">C</span>, <span style="color: orange;">G</span>, <span style="color:
+green;">T</span>), and every variant site is highlighted purple.</p>
+</section>
+<section id="raxml-ng">
+<h3>RAxML-NG<a class="headerlink" href="#raxml-ng" title="Permalink to this headline"></a></h3>
+<p><img alt="RAxML-NG Screenshot" src="_images/mqc_raxmlng.png" /></p>
+<p>The phylogenetic tree of all consensus sequences and haplotypes, as well as all
+the strains included in the genome list is shown in an interactive viewer. The
+toolbar across the top has controls for</p>
+<ul class="simple">
+<li><p>Zoom</p></li>
+<li><p>Sorting</p></li>
+<li><p>Saving (image or Newick)</p></li>
+<li><p>Tree style (linear, circular)</p></li>
+<li><p>Alignment</p></li>
+</ul>
+<p>Node names take the form of one of</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;GENOTYPE&gt;_&lt;STRAIN&gt;</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;SAMPLENAME&gt;_consensus</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;SAMPLENAME&gt;_haplotype_&lt;HAPLOTYPE_ID&gt;</span></code></p></li>
+</ul>
+<p>Each node is colored based on the node name before the first underscore (<code class="docutils literal notranslate"><span class="pre">_</span></code>).
+This means that strains of the same genotype have the same color, and each
+sample’s consensus and haplotype sequences all have the same colors. There are
+only 10 colors, so having more samples than that might result in color
+collision. In that case, it may be advisable to download the Newick file and
+reformat it in another tree program.</p>
+</section>
+<section id="software-versions">
+<h3>Software Versions<a class="headerlink" href="#software-versions" title="Permalink to this headline"></a></h3>
+<p><img alt="Software Versions Screenshot" src="_images/mqc_versions.png" /></p>
+<p>A table of all the software used to produce the report. Just to make sure you
+give credit where it is due.</p>
+</section>
+<section id="workflow-summary">
+<h3>Workflow Summary<a class="headerlink" href="#workflow-summary" title="Permalink to this headline"></a></h3>
+<p><img alt="Workflow Summary Screenshot" src="_images/mqc_workflow.png" /></p>
+<p>A list of all the parameters (and various other metadata) used to produce this
+particular analysis and report. Sort of a light version of the
+<a class="reference external" href="https://nextflow.io/docs/latest/tracing.html#execution-report" title="(in Nextflow v22.04)"><span class="xref std std-ref">Nextflow report</span></a>.</p>
+<hr class="footnotes docutils" />
+<dl class="footnote brackets">
+<dt class="label" id="id2"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
+<dd><p>Lander ES, Waterman MS. Genomic mapping by fingerprinting random clones: a mathematical analysis. Genomics. 1988 Apr;2(3):231-9. doi: 10.1016/0888-7543(88)90007-9. PMID: 3294162.</p>
+</dd>
+</dl>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="output.html" class="btn btn-neutral float-left" title="Output" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Thomas A. Christensen II.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    <span class="fa fa-book"> Other Versions</span>
+    v: v0.8.0
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Tags</dt>
+      <dd><a href="../v0.1.0-alpha/index.html">v0.1.0-alpha</a></dd>
+      <dd><a href="../v0.1.1/index.html">v0.1.1</a></dd>
+      <dd><a href="../v0.2.0-alpha/index.html">v0.2.0-alpha</a></dd>
+      <dd><a href="../v0.2.1-alpha/index.html">v0.2.1-alpha</a></dd>
+      <dd><a href="../v0.3.0-alpha/index.html">v0.3.0-alpha</a></dd>
+      <dd><a href="../v0.3.1-alpha/index.html">v0.3.1-alpha</a></dd>
+      <dd><a href="../v0.3.2-alpha/index.html">v0.3.2-alpha</a></dd>
+      <dd><a href="../v0.3.3-alpha/index.html">v0.3.3-alpha</a></dd>
+      <dd><a href="../v0.4.0-alpha/index.html">v0.4.0-alpha</a></dd>
+      <dd><a href="../v0.5.0-alpha/index.html">v0.5.0-alpha</a></dd>
+      <dd><a href="../v0.6.0-alpha/index.html">v0.6.0-alpha</a></dd>
+      <dd><a href="../v0.6.1-alpha/index.html">v0.6.1-alpha</a></dd>
+      <dd><a href="../v0.6.2-alpha/index.html">v0.6.2-alpha</a></dd>
+      <dd><a href="../v0.6.3-alpha/index.html">v0.6.3-alpha</a></dd>
+      <dd><a href="../v0.6.4-alpha/index.html">v0.6.4-alpha</a></dd>
+      <dd><a href="../v0.6.5-alpha/index.html">v0.6.5-alpha</a></dd>
+      <dd><a href="../v0.7.0/index.html">v0.7.0</a></dd>
+      <dd><a href="../v0.7.1/index.html">v0.7.1</a></dd>
+      <dd><a href="report.html">v0.8.0</a></dd>
+    </dl>
+    <dl>
+      <dt>Branches</dt>
+      <dd><a href="../develop/index.html">develop</a></dd>
+    </dl>
+  </div>
+</div><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

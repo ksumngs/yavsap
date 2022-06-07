@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Output &mdash; Yet Another Viral Subspecies Analysis Pipeline  documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Complete Parameter Reference" href="parameters.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> Yet Another Viral Subspecies Analysis Pipeline
+            <img src="_static/yavsap_logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parameters.html">Complete Parameter Reference</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Output</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#the-visualizer">The Visualizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#file-output">File Output</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#visualizer-data">Visualizer Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reference-genome">Reference Genome</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#classification-reports">Classification Reports</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#alignments">Alignments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#consensus-sequences">Consensus Sequences</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#variant-calls">Variant Calls</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#haplotypes">Haplotypes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#multi-alignment-and-phylogenetic-trees">Multi-alignment and Phylogenetic Trees</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#diagnostics">Diagnostics</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Yet Another Viral Subspecies Analysis Pipeline</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content style-external-links">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Output</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com//ksumngs/yavsap/blob/output.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="output">
+<h1>Output<a class="headerlink" href="#output" title="Permalink to this headline"></a></h1>
+<p>You ran the pipeline, but now what? Here is the description of the pipeline
+outputs and where to find them, but first…</p>
+<section id="the-visualizer">
+<h2>The Visualizer<a class="headerlink" href="#the-visualizer" title="Permalink to this headline"></a></h2>
+<p>If you like pictures, hate juggling files into various Java applications, and
+are OCD about having everything in one spot, then we have you covered. The
+pipeline outputs its own web application with every run that allows you to view,
+interact with, and download nearly every output file.</p>
+<p>To get started with The Visualizer, you’ll need <a class="reference external" href="https://developer.mozilla.org/en-US/docs/Learn/Common_questions/set_up_a_local_testing_server#running_a_simple_local_http_server">a web
+server</a>.
+To learn how to use The Visualizer, click the question mark in the bottom-left
+corner of the web page.</p>
+</section>
+<section id="file-output">
+<h2>File Output<a class="headerlink" href="#file-output" title="Permalink to this headline"></a></h2>
+<p>You don’t like all the fluff, huh? Here’s the lowdown on the file structure you
+can expect from each pipeline run.</p>
+<section id="visualizer-data">
+<h3>Visualizer Data<a class="headerlink" href="#visualizer-data" title="Permalink to this headline"></a></h3>
+<p>All the following files and folders are for powering the Visualizer: if you want
+to use The Visualizer on another machine, you will need to take them all to the
+other computer in the exact same folder structure.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>results
+└── 📁 reference
+    ├── 📝 pig-serum.bam
+    ├── 📝 pig-serum.bam.bai
+    ├── 📝 pig-feces.bam
+    ├── 📝 pig-feces.bam.bai
+    ├── 📝 index.html
+    ├── 📝 krona.html
+    ├── 📝 multiqc_report.html
+    ├── 📝 nextflow_report.html
+    ├── 📝 reference.fasta
+    └── 📝 reference.fasta.fai
+</pre></div>
+</div>
+</section>
+<section id="reference-genome">
+<h3>Reference Genome<a class="headerlink" href="#reference-genome" title="Permalink to this headline"></a></h3>
+<p>The pulled reference genome in fasta format can be found in the <code class="docutils literal notranslate"><span class="pre">reference</span></code>
+folder, as well as its samtools index, under the names <code class="docutils literal notranslate"><span class="pre">result.fasta</span></code> and
+<code class="docutils literal notranslate"><span class="pre">result.fasta.fai</span></code>, respectively.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>results
+└── 📁 reference
+    ├── 📝 results.fasta
+    └── 📝 results.fasta.fai
+</pre></div>
+</div>
+</section>
+<section id="classification-reports">
+<h3>Classification Reports<a class="headerlink" href="#classification-reports" title="Permalink to this headline"></a></h3>
+<p>The read classification report generated by Kraken2 that is used to filter host
+reads can be found for each sample in the <code class="docutils literal notranslate"><span class="pre">classification</span></code> folder under the
+filename <code class="docutils literal notranslate"><span class="pre">&lt;samplename&gt;.kreport</span></code>.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>results
+└── 📁 classification
+    ├── 📝 pig-serum.kreport
+    └── 📝 pig-feces.kreport
+</pre></div>
+</div>
+</section>
+<section id="alignments">
+<h3>Alignments<a class="headerlink" href="#alignments" title="Permalink to this headline"></a></h3>
+<p>Alignments for each sample against the reference genome passed to <a class="reference internal" href="parameters.html#reference-genome-options"><span class="std std-ref">–genome</span></a> can be found in the <code class="docutils literal notranslate"><span class="pre">alignment</span></code> folder in the BAM
+format, as well as their sidecar index files. Alignments for each sample against
+its closest match in the <a class="reference internal" href="parameters.html#reference-genome-options"><span class="std std-ref">–genome_list</span></a> can be
+found in the <code class="docutils literal notranslate"><span class="pre">realignment</span></code> folder. Files are always in the <code class="docutils literal notranslate"><span class="pre">&lt;samplename&gt;.bam</span></code>
+and <code class="docutils literal notranslate"><span class="pre">&lt;samplename&gt;.bam.bai</span></code> naming scheme.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>results
+├── 📁 alignment
+|   ├── 📝 pig-serum.bam
+|   ├── 📝 pig-serum.bam.bai
+|   ├── 📝 pig-feces.bam
+|   └── 📝 pig-feces.bam.bai
+└── 📁 realignment
+    ├── 📝 pig-serum.bam
+    ├── 📝 pig-serum.bam.bai
+    ├── 📝 pig-feces.bam
+    └── 📝 pig-feces.bam.bai
+</pre></div>
+</div>
+</section>
+<section id="consensus-sequences">
+<h3>Consensus Sequences<a class="headerlink" href="#consensus-sequences" title="Permalink to this headline"></a></h3>
+<p>Consensus sequences for each sample are output to the <code class="docutils literal notranslate"><span class="pre">consensus</span></code> folder. The
+filename is always <code class="docutils literal notranslate"><span class="pre">&lt;samplename&gt;.fasta</span></code>.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>results
+└── 📁 consensus
+    ├── 📝 pig-serum.fasta
+    └── 📝 pig-feces.fasta
+</pre></div>
+</div>
+</section>
+<section id="variant-calls">
+<h3>Variant Calls<a class="headerlink" href="#variant-calls" title="Permalink to this headline"></a></h3>
+<p>Variant calls for each sample are output to the <code class="docutils literal notranslate"><span class="pre">variants</span></code> folder. The
+filename is always <code class="docutils literal notranslate"><span class="pre">&lt;samplename&gt;.vcf</span></code>.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>results
+└── 📁 variants
+    ├── 📝 pig-serum.vcf
+    └── 📝 pig-feces.vcf
+</pre></div>
+</div>
+</section>
+<section id="haplotypes">
+<h3>Haplotypes<a class="headerlink" href="#haplotypes" title="Permalink to this headline"></a></h3>
+<p>Haplotypes for each sample are output to the <code class="docutils literal notranslate"><span class="pre">haplotypes</span></code> folder. There is a a
+fasta file containing the mutated sequences, and also a data file in YAML format
+describing the haplotypes. The filename is always
+<code class="docutils literal notranslate"><span class="pre">&lt;samplename&gt;.&lt;ext&gt;</span></code>.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>results
+└── 📁 haplotypes
+    ├── 📝 pig-serum.fasta
+    ├── 📝 pig-serum.yaml
+    ├── 📝 pig-feces.fasta
+    └── 📝 pig-feces.yaml
+</pre></div>
+</div>
+</section>
+<section id="multi-alignment-and-phylogenetic-trees">
+<h3>Multi-alignment and Phylogenetic Trees<a class="headerlink" href="#multi-alignment-and-phylogenetic-trees" title="Permalink to this headline"></a></h3>
+<p>The alignments of the comparison genomes, consensus sequences, and haplotypes in
+fasta format are contained in the <code class="docutils literal notranslate"><span class="pre">alignment.fas</span></code> file in the <code class="docutils literal notranslate"><span class="pre">phylogenetics</span></code>
+folder. Phylogenetic trees of theses comparison genomes, consensus sequences,
+and haplotypes in Newick format are contained in the same folder in the file
+<code class="docutils literal notranslate"><span class="pre">tree.nwk</span></code>.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>results
+└── 📁 phylogenetics
+    ├── 📝 alignment.fas
+    └── 📝 tree.nwk
+</pre></div>
+</div>
+</section>
+<section id="diagnostics">
+<h3>Diagnostics<a class="headerlink" href="#diagnostics" title="Permalink to this headline"></a></h3>
+<p>Pipeline runtime reports can be found in the <code class="docutils literal notranslate"><span class="pre">.trace</span></code> folder by default, but
+this can be modified using the <a class="reference internal" href="parameters.html#input-output-options"><span class="std std-ref">–tracedir</span></a>
+parameter. Four types of Nextflow traces are output.</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://nextflow.io/docs/latest/tracing.html#execution-report" title="(in Nextflow v22.04)"><span class="xref std std-ref">Execution reports</span></a></p></li>
+<li><p><a class="reference external" href="https://nextflow.io/docs/latest/tracing.html#timeline-report" title="(in Nextflow v22.04)"><span class="xref std std-ref">Execution timelines</span></a></p></li>
+<li><p><a class="reference external" href="https://nextflow.io/docs/latest/tracing.html#trace-report" title="(in Nextflow v22.04)"><span class="xref std std-ref">Process traces</span></a></p></li>
+<li><p><a class="reference external" href="https://nextflow.io/docs/latest/tracing.html#dag-visualisation" title="(in Nextflow v22.04)"><span class="xref std std-ref">Process graphs</span></a></p></li>
+</ul>
+<p>These reports are specific to each time the pipeline is launched, and have the
+date and time of execution appended, e.g.
+<code class="docutils literal notranslate"><span class="pre">execution_trace_2021-10-01_12-00-00.html</span></code>.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>results
+└── 📁 .trace
+    ├── 📝 execution_timeline_2021-09-01_12-00-00.html
+    ├── 📝 execution_timeline_2021-10-01_12-00-00.html
+    ├── 📝 execution_trace_2021-09-01_12-00-00.txt
+    ├── 📝 execution_trace_2021-10-01_12-00-00.txt
+    ├── 📝 pipeline_dag_2021-09-01_12-00-00.svg
+    └── 📝 pipeline_dag_2021-09-01_12-00-00.svg
+</pre></div>
+</div>
+<p>The latest execution report is saved to the <code class="docutils literal notranslate"><span class="pre">report/nextflow_report.html</span></code> file,
+instead, and will be included in <a class="reference internal" href="#the-visualizer"><span class="std std-ref">The Visualizer</span></a>.</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="parameters.html" class="btn btn-neutral float-left" title="Complete Parameter Reference" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Thomas A. Christensen II.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    <span class="fa fa-book"> Other Versions</span>
+    v: v0.7.1
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Tags</dt>
+      <dd><a href="../v0.1.0-alpha/output.html">v0.1.0-alpha</a></dd>
+      <dd><a href="../v0.1.1/output.html">v0.1.1</a></dd>
+      <dd><a href="../v0.2.0-alpha/output.html">v0.2.0-alpha</a></dd>
+      <dd><a href="../v0.2.1-alpha/output.html">v0.2.1-alpha</a></dd>
+      <dd><a href="../v0.3.0-alpha/output.html">v0.3.0-alpha</a></dd>
+      <dd><a href="../v0.3.1-alpha/output.html">v0.3.1-alpha</a></dd>
+      <dd><a href="../v0.3.2-alpha/output.html">v0.3.2-alpha</a></dd>
+      <dd><a href="../v0.3.3-alpha/output.html">v0.3.3-alpha</a></dd>
+      <dd><a href="../v0.4.0-alpha/output.html">v0.4.0-alpha</a></dd>
+      <dd><a href="../v0.5.0-alpha/output.html">v0.5.0-alpha</a></dd>
+      <dd><a href="../v0.6.0-alpha/output.html">v0.6.0-alpha</a></dd>
+      <dd><a href="../v0.6.1-alpha/output.html">v0.6.1-alpha</a></dd>
+      <dd><a href="../v0.6.2-alpha/output.html">v0.6.2-alpha</a></dd>
+      <dd><a href="../v0.6.3-alpha/output.html">v0.6.3-alpha</a></dd>
+      <dd><a href="../v0.6.4-alpha/output.html">v0.6.4-alpha</a></dd>
+      <dd><a href="../v0.6.5-alpha/output.html">v0.6.5-alpha</a></dd>
+      <dd><a href="../v0.7.0/index.html">v0.7.0</a></dd>
+      <dd><a href="output.html">v0.7.1</a></dd>
+      <dd><a href="../v0.8.0/index.html">v0.8.0</a></dd>
+    </dl>
+    <dl>
+      <dt>Branches</dt>
+      <dd><a href="../develop/index.html">develop</a></dd>
+    </dl>
+  </div>
+</div><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

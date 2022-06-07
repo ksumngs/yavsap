@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Complete Parameter Reference &mdash; Yet Another Viral Subspecies Analysis Pipeline  documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Output" href="output.html" />
+    <link rel="prev" title="Usage" href="usage.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> Yet Another Viral Subspecies Analysis Pipeline
+            <img src="_static/yavsap_logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Complete Parameter Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#input-options">Input Options</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#input"><code class="docutils literal notranslate"><span class="pre">--input</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sra"><code class="docutils literal notranslate"><span class="pre">--sra</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#platform"><code class="docutils literal notranslate"><span class="pre">--platform</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pe"><code class="docutils literal notranslate"><span class="pre">--pe</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ont"><code class="docutils literal notranslate"><span class="pre">--ont</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#reference-genome-options">Reference Genome Options</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#genome"><code class="docutils literal notranslate"><span class="pre">--genome</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#kraken2-options">Kraken2 Options</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#kraken2-db"><code class="docutils literal notranslate"><span class="pre">--kraken2_db</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#keep-taxid"><code class="docutils literal notranslate"><span class="pre">--keep_taxid</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#read-trimming-options">Read Trimming Options</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#common-options">Common Options</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#trim-minlen"><code class="docutils literal notranslate"><span class="pre">--trim_minlen</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#illumina-specific-trimmomatic-options">Illumina-Specific (Trimmomatic) Options</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#trim-adapers"><code class="docutils literal notranslate"><span class="pre">--trim_adapers</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#haplotyping-options">Haplotyping Options</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#haplotype-significance"><code class="docutils literal notranslate"><span class="pre">--haplotype_significance</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#haplotype-minimum"><code class="docutils literal notranslate"><span class="pre">--haplotype_minimum</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="output.html">Output</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference.html">Private API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Yet Another Viral Subspecies Analysis Pipeline</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content style-external-links">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Complete Parameter Reference</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com//ksumngs/yavsap/blob/parameters.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="complete-parameter-reference">
+<h1>Complete Parameter Reference<a class="headerlink" href="#complete-parameter-reference" title="Permalink to this headline"></a></h1>
+<p>Every single parameter in the entire pipeline is described here. If you need to
+tweak every little detail of how your JEV samples are analyzed, you’ve come to
+the right place! Note that <em>every</em> parameter is described here, even those that
+shouldn’t be used, so proceed with caution!</p>
+<section id="input-options">
+<h2>Input Options<a class="headerlink" href="#input-options" title="Permalink to this headline"></a></h2>
+<section id="input">
+<h3><code class="docutils literal notranslate"><span class="pre">--input</span></code><a class="headerlink" href="#input" title="Permalink to this headline"></a></h3>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 57%" />
+<col style="width: 43%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Type</p></th>
+<th class="head"><p>String</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Required</p></td>
+<td><p>No</p></td>
+</tr>
+<tr class="row-odd"><td><p>Default</p></td>
+<td><p>.</p></td>
+</tr>
+</tbody>
+</table>
+<p>The path to the folder containing input reads. For Illumina (paired-end) reads,
+the file names must be identical until the ending underscore with a read number,
+e.g. ‘sample1_S10_L001_R1_001.fastq.gz’ and ‘sample1_S10_L001_R2_001.fastq.gz’.
+The read number must be designated using either ‘_1’ and ‘_2’ or ‘_R1’ and
+‘_R2’. For Nanopore reads, each fastq file is assumed to be a unique sample, so,
+e.g. ‘FAP01234_pass_barcode05_abcd01234_0.fastq.gz’ and
+‘FAP01234_pass_barcode05_abcd01234_1.fastq.gz’ are assumed to be different
+samples even though they are from the same barcode. All read files must be
+gzipped, and have the extension ‘.fastq.gz’ or ‘.fq.gz’.</p>
+<p>Defaults to the current working directory.</p>
+</section>
+<section id="sra">
+<h3><code class="docutils literal notranslate"><span class="pre">--sra</span></code><a class="headerlink" href="#sra" title="Permalink to this headline"></a></h3>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 57%" />
+<col style="width: 43%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Type</p></th>
+<th class="head"><p>Flag</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Required</p></td>
+<td><p>No</p></td>
+</tr>
+<tr class="row-odd"><td><p>Default</p></td>
+<td><p>false</p></td>
+</tr>
+</tbody>
+</table>
+<p>This flag switches the meaning of <code class="docutils literal notranslate"><span class="pre">--input</span></code> to mean an NCBI Short Read Archive
+(SRA) accession number, then pulls the associated files directly from NCBI and
+runs the pipeline on them. To use this flag, you <strong>must</strong> have an <a class="reference external" href="https://ncbiinsights.ncbi.nlm.nih.gov/2017/11/02/new-api-keys-for-the-e-utilities/">NCBI API key</a>
+and it <strong>must</strong> be exported in the shell environment as <code class="docutils literal notranslate"><span class="pre">NCBI_API_KEY</span></code>, e.g.
+<code class="docutils literal notranslate"><span class="pre">NCBI_API_KEY=0123456789abcdef</span></code>. This feature is currenly broken due to an
+upstream issue in Nextflow, but should be fixed by Nextflow version 21.10.0.</p>
+</section>
+<section id="platform">
+<h3><code class="docutils literal notranslate"><span class="pre">--platform</span></code><a class="headerlink" href="#platform" title="Permalink to this headline"></a></h3>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 57%" />
+<col style="width: 43%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Type</p></th>
+<th class="head"><p>String</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Required</p></td>
+<td><p>Yes</p></td>
+</tr>
+<tr class="row-odd"><td><p>Default</p></td>
+<td><p>n/a</p></td>
+</tr>
+</tbody>
+</table>
+<p>Defines which type of reads to analyze. Must be either ‘illumina’ or ‘nanopore’.</p>
+</section>
+<section id="pe">
+<h3><code class="docutils literal notranslate"><span class="pre">--pe</span></code><a class="headerlink" href="#pe" title="Permalink to this headline"></a></h3>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 53%" />
+<col style="width: 47%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Type</p></th>
+<th class="head"><p>Boolean</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Required</p></td>
+<td><p>No</p></td>
+</tr>
+<tr class="row-odd"><td><p>Default</p></td>
+<td><p>false</p></td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This parameter is hidden and should <strong>never</strong> be used on the command
+line! Bad things will happen if you do!</p>
+</div>
+<p>Internally-used parameter to check if the pipeline is processing Illumina reads.
+Automatically set by <code class="docutils literal notranslate"><span class="pre">--platform</span></code></p>
+</section>
+<section id="ont">
+<h3><code class="docutils literal notranslate"><span class="pre">--ont</span></code><a class="headerlink" href="#ont" title="Permalink to this headline"></a></h3>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 53%" />
+<col style="width: 47%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Type</p></th>
+<th class="head"><p>Boolean</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Required</p></td>
+<td><p>No</p></td>
+</tr>
+<tr class="row-odd"><td><p>Default</p></td>
+<td><p>false</p></td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This parameter is hidden and should <strong>never</strong> be used on the command
+line! Bad things will happen if you do!</p>
+</div>
+<p>Internally-used parameter to check if the pipeline is processing Nanopore reads.
+Automatically set by <code class="docutils literal notranslate"><span class="pre">--platform</span></code></p>
+</section>
+</section>
+<section id="reference-genome-options">
+<h2>Reference Genome Options<a class="headerlink" href="#reference-genome-options" title="Permalink to this headline"></a></h2>
+<section id="genome">
+<h3><code class="docutils literal notranslate"><span class="pre">--genome</span></code><a class="headerlink" href="#genome" title="Permalink to this headline"></a></h3>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 42%" />
+<col style="width: 58%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Type</p></th>
+<th class="head"><p>String</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Required</p></td>
+<td><p>No</p></td>
+</tr>
+<tr class="row-odd"><td><p>Default</p></td>
+<td><p>NC_001437.1</p></td>
+</tr>
+</tbody>
+</table>
+<p>The NCBI genbank accession number of the reference genome to align reads
+against.</p>
+<p>Defaults to the accession number of the Japanese Encephalitis Virus RefSeq
+record.</p>
+</section>
+</section>
+<section id="kraken2-options">
+<h2>Kraken2 Options<a class="headerlink" href="#kraken2-options" title="Permalink to this headline"></a></h2>
+<section id="kraken2-db">
+<h3><code class="docutils literal notranslate"><span class="pre">--kraken2_db</span></code><a class="headerlink" href="#kraken2-db" title="Permalink to this headline"></a></h3>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 57%" />
+<col style="width: 43%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Type</p></th>
+<th class="head"><p>String</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Required</p></td>
+<td><p>Yes</p></td>
+</tr>
+<tr class="row-odd"><td><p>Default</p></td>
+<td><p>n/a</p></td>
+</tr>
+</tbody>
+</table>
+<p>The path to a <a class="reference external" href="https://github.com/DerrickWood/kraken2/wiki/Manual#custom-databases">Kraken2 database</a> that
+will be used to filter out host reads in the pipeline. This path will be
+automatically mounted into the container environments if a containerized profile
+is used.</p>
+<p>Corresponds to the <a class="reference external" href="https://github.com/DerrickWood/kraken2/wiki/Manual#classification"><code class="docutils literal notranslate"><span class="pre">--db</span></code> option of Kraken2</a>.</p>
+</section>
+<section id="keep-taxid">
+<h3><code class="docutils literal notranslate"><span class="pre">--keep_taxid</span></code><a class="headerlink" href="#keep-taxid" title="Permalink to this headline"></a></h3>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 53%" />
+<col style="width: 47%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Type</p></th>
+<th class="head"><p>String</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Required</p></td>
+<td><p>No</p></td>
+</tr>
+<tr class="row-odd"><td><p>Default</p></td>
+<td><p>0 10239</p></td>
+</tr>
+</tbody>
+</table>
+<p>A space-separated list (use quotes on the command line), of the taxonomic ids to
+keep based on Kraken2’s classification.</p>
+<p>Defaults to keeping all unclassified reads and all viral reads. Note that this
+requires the host to be present in the Kraken2 database. When dealing with
+animals and the databases available from <code class="docutils literal notranslate"><span class="pre">kraken2-build</span></code>, this is not the
+case, and this parameter should be modified.</p>
+</section>
+</section>
+<section id="read-trimming-options">
+<h2>Read Trimming Options<a class="headerlink" href="#read-trimming-options" title="Permalink to this headline"></a></h2>
+<section id="common-options">
+<h3>Common Options<a class="headerlink" href="#common-options" title="Permalink to this headline"></a></h3>
+<section id="trim-minlen">
+<h4><code class="docutils literal notranslate"><span class="pre">--trim_minlen</span></code><a class="headerlink" href="#trim-minlen" title="Permalink to this headline"></a></h4>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 53%" />
+<col style="width: 47%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Type</p></th>
+<th class="head"><p>Integer</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Required</p></td>
+<td><p>No</p></td>
+</tr>
+<tr class="row-odd"><td><p>Default</p></td>
+<td><p>100</p></td>
+</tr>
+</tbody>
+</table>
+<p>Remove reads that are shorter than this length in bases.</p>
+<p>Corresponds to the <a class="reference external" href="http://www.usadellab.org/cms/?page=trimmomatic"><code class="docutils literal notranslate"><span class="pre">MINLEN:</span></code> option of Trimmomatic</a> for Illumina reads.</p>
+<p>Corresponds to the <a class="reference external" href="https://github.com/rrwick/Filtlong#full-usage"><code class="docutils literal notranslate"><span class="pre">--min_length</span></code> option of Filtlong</a> for Nanopore reads.</p>
+</section>
+</section>
+<section id="illumina-specific-trimmomatic-options">
+<h3>Illumina-Specific (Trimmomatic) Options<a class="headerlink" href="#illumina-specific-trimmomatic-options" title="Permalink to this headline"></a></h3>
+<section id="trim-adapers">
+<h4><code class="docutils literal notranslate"><span class="pre">--trim_adapers</span></code><a class="headerlink" href="#trim-adapers" title="Permalink to this headline"></a></h4>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 35%" />
+<col style="width: 65%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Type</p></th>
+<th class="head"><p>String</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Required</p></td>
+<td><p>No</p></td>
+</tr>
+<tr class="row-odd"><td><p>Default</p></td>
+<td><p>NexteraPE-PE.fa</p></td>
+</tr>
+</tbody>
+</table>
+<p>Illumina adapters to be removed during trimming.</p>
+<p>Due to the way the container is built, custom adapters cannot be used, and this
+option <strong>must</strong> be set to one of the following</p>
+<ul class="simple">
+<li><p>NexteraPE-PE.fa</p></li>
+<li><p>TruSeq2-PE.fa</p></li>
+<li><p>TruSeq3-PE-2.fa</p></li>
+<li><p>TruSeq3-PE.fa</p></li>
+</ul>
+<p>Corresponds to the <a class="reference external" href="http://www.usadellab.org/cms/?page=trimmomatic">first <code class="docutils literal notranslate"><span class="pre">ILLUMINACLIP</span></code> option of Trimmomatic</a>.</p>
+</section>
+</section>
+</section>
+<section id="haplotyping-options">
+<h2>Haplotyping Options<a class="headerlink" href="#haplotyping-options" title="Permalink to this headline"></a></h2>
+<section id="haplotype-significance">
+<h3><code class="docutils literal notranslate"><span class="pre">--haplotype_significance</span></code><a class="headerlink" href="#haplotype-significance" title="Permalink to this headline"></a></h3>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 57%" />
+<col style="width: 43%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Type</p></th>
+<th class="head"><p>Float</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Required</p></td>
+<td><p>No</p></td>
+</tr>
+<tr class="row-odd"><td><p>Default</p></td>
+<td><p>0.05</p></td>
+</tr>
+</tbody>
+</table>
+<p>The highest p-value that will be considered a significant haplotype based on
+linkage disequilibrium and proportional equivalence.</p>
+</section>
+<section id="haplotype-minimum">
+<h3><code class="docutils literal notranslate"><span class="pre">--haplotype_minimum</span></code><a class="headerlink" href="#haplotype-minimum" title="Permalink to this headline"></a></h3>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 53%" />
+<col style="width: 47%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Type</p></th>
+<th class="head"><p>Integer</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Required</p></td>
+<td><p>No</p></td>
+</tr>
+<tr class="row-odd"><td><p>Default</p></td>
+<td><p>10</p></td>
+</tr>
+</tbody>
+</table>
+<p>The minimum number of times a particular haplotype has to occur for it to be
+considered real and processed downstream and output.</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="usage.html" class="btn btn-neutral float-left" title="Usage" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="output.html" class="btn btn-neutral float-right" title="Output" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Thomas A. Christensen II.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    <span class="fa fa-book"> Other Versions</span>
+    v: v0.1.0-alpha
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Tags</dt>
+      <dd><a href="parameters.html">v0.1.0-alpha</a></dd>
+      <dd><a href="../v0.1.1/parameters.html">v0.1.1</a></dd>
+      <dd><a href="../v0.2.0-alpha/parameters.html">v0.2.0-alpha</a></dd>
+      <dd><a href="../v0.2.1-alpha/parameters.html">v0.2.1-alpha</a></dd>
+      <dd><a href="../v0.3.0-alpha/parameters.html">v0.3.0-alpha</a></dd>
+      <dd><a href="../v0.3.1-alpha/parameters.html">v0.3.1-alpha</a></dd>
+      <dd><a href="../v0.3.2-alpha/parameters.html">v0.3.2-alpha</a></dd>
+      <dd><a href="../v0.3.3-alpha/parameters.html">v0.3.3-alpha</a></dd>
+      <dd><a href="../v0.4.0-alpha/index.html">v0.4.0-alpha</a></dd>
+      <dd><a href="../v0.5.0-alpha/index.html">v0.5.0-alpha</a></dd>
+      <dd><a href="../v0.6.0-alpha/index.html">v0.6.0-alpha</a></dd>
+      <dd><a href="../v0.6.1-alpha/index.html">v0.6.1-alpha</a></dd>
+      <dd><a href="../v0.6.2-alpha/index.html">v0.6.2-alpha</a></dd>
+      <dd><a href="../v0.6.3-alpha/index.html">v0.6.3-alpha</a></dd>
+      <dd><a href="../v0.6.4-alpha/index.html">v0.6.4-alpha</a></dd>
+      <dd><a href="../v0.6.5-alpha/index.html">v0.6.5-alpha</a></dd>
+      <dd><a href="../v0.7.0/index.html">v0.7.0</a></dd>
+      <dd><a href="../v0.7.1/index.html">v0.7.1</a></dd>
+      <dd><a href="../v0.8.0/index.html">v0.8.0</a></dd>
+    </dl>
+    <dl>
+      <dt>Branches</dt>
+      <dd><a href="../develop/index.html">develop</a></dd>
+    </dl>
+  </div>
+</div><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

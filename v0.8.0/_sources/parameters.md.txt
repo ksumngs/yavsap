@@ -1,0 +1,164 @@
+# Complete Parameter Reference
+
+Every single parameter in the entire pipeline is described here. If you need to tweak every little detail of how your samples are analyzed, you've come to the right place! Note that *every* parameter is described here, even those that shouldn't be used, so proceed with caution!
+
+## Input/output options
+
+Define where the pipeline should find input data and save output data.
+
+| Parameter | Description | Type | Default | Required |
+|-----------|-----------|-----------|-----------|-----------|
+| `input` | Path the folder containing input reads or a TSV samplesheet <details><summary>Help</summary><small>For Illumina (paired-end) reads, the file names must be identical until the ending underscore with a read number, e.g. 'sample1_S10_L001_R1_001.fastq.gz' and 'sample1_S10_L001_R2_001.fastq.gz'. The read number must be designated using either '_1' and '_2' or '_R1' and '_R2'. For Nanopore reads, each fastq file is assumed to be a unique sample, so, e.g. 'FAP01234_pass_barcode05_abcd01234_0.fastq.gz' and 'FAP01234_pass_barcode05_abcd01234_1.fastq.gz' are assumed to be different samples even though they are from the same barcode. All read files must be gzipped, and have the extension '.fastq.gz' or '.fq.gz'.</small></details>| `string` | . |  |
+| `platform` | NGS platform used to sequence the samples | `string` |  |  |
+| `paired` | Flag to indicate whether the reads files are paired-end or not | `boolean` |  |  |
+| `interleaved` | Whether paired-end reads interleaved into a single fastq file | `boolean` |  |  |
+| `seed` | Set the random seed for all applicable processes | `integer` | 42 |  |
+| `outdir` | Path to the output directory where the results will be saved. | `string` |  |  |
+| `email` | Email address for completion summary. <details><summary>Help</summary><small>Set this parameter to your e-mail address to get a summary e-mail with details of the run sent to you when the workflow exits. If set in your user config file (`~/.nextflow/config`) then you don't need to specify this on the command line for every run.</small></details>| `string` |  |  |
+
+## Reference genome options
+
+Reference genome related files and options required for the workflow.
+
+| Parameter | Description | Type | Default | Required |
+|-----------|-----------|-----------|-----------|-----------|
+| `genome` | NCBI accession number of reference genome <details><summary>Help</summary><small>The NCBI Genbank accession.version number of the reference genome to call strains from</small></details>| `string` | NC_001437.1 |  |
+| `genome_list` | Path to TSV file containing NCBI accession numbers of strains for constructing phylogenetic trees. Preset genome lists can be specified by name | `string` | jev |  |
+
+## Kraken2 Options
+
+Control how Kraken2 filters out host reads
+
+| Parameter | Description | Type | Default | Required |
+|-----------|-----------|-----------|-----------|-----------|
+| `kraken2_db` | Path to a Kraken2 database <details><summary>Help</summary><small>The path to a [Kraken2 database](https://github.com/DerrickWood/kraken2/wiki/Manual#custom-databases) that will be used to filter out host reads in the pipeline. This path will be automatically mounted into the container environments if a containerized profile is used.  Corresponds to the [--db](https://github.com/DerrickWood/kraken2/wiki/Manual#classification) option of Kraken2.</small></details>| `string` | None |  |
+| `keep_taxid` | Taxonomic IDs to keep and analyze <details><summary>Help</summary><small>A space-separated list (use quotes on the command line), of the taxonomic ids to keep based on Kraken2's classification.  Defaults to keeping all unclassified reads and all viral reads. Note that this requires the host to be present in the Kraken2 database. When dealing with animals and the databases available from `kraken2-build`, this is not the case, and this parameter should be modified.</small></details>| `string` | 0 10239 |  |
+
+## Read trimming options
+
+Options for how strictly to quality control NGS reads
+
+| Parameter | Description | Type | Default | Required |
+|-----------|-----------|-----------|-----------|-----------|
+| `trim_minlen` | Minimum length of reads <details><summary>Help</summary><small>Corresponds to the [MINLEN](http://www.usadellab.org/cms/?page=trimmomatic) option of Trimmomatic for Illumina reads.  Corresponds to the [--length](https://github.com/wdecoster/nanofilt/#usage) option of NanoFilt for Nanopore reads.</small></details>| `integer` | 100 |  |
+| `trim_maxlen` | Maximum length of reads <details><summary>Help</summary><small>Only applies to Nanopore reads.  Corresponds to the [--maxlength](https://github.com/wdecoster/nanofilt/#usage) option of NanoFilt.</small></details>| `integer` | 0 |  |
+| `trim_adapters` | Sequences to be removed during trimming <details><summary>Help</summary><small>Only applies to Illumina reads. Corresponds to the first [ILLUMINACLIP](http://www.usadellab.org/cms/?page=trimmomatic) option of Trimmomatic. If left blank (i.e. `--trim_adapters ''`), then adapter trimming is disabled. Custom adapters cannot be used, and the parameter corresponds to one of the prebuilt sequence files provided with Trimmomatic. </small></details>| `string` | NexteraPE-PE.fa |  |
+| `trim_mismatches` | Max number of base mismatches to allow an adapter match <details><summary>Help</summary><small>Only applies to Illumina reads. Corresponds to the second [ILLUMINACLIP](http://www.usadellab.org/cms/?page=trimmomatic) option of Trimmomatic.</small></details>| `integer` | 2 |  |
+| `trim_pclip` | How accurate the match between adapter ligated reads must be for paired-end palindrome read alignment <details><summary>Help</summary><small>Only applies to Illumina reads. Corresponds to the third [ILLUMINACLIP](http://www.usadellab.org/cms/?page=trimmomatic) option of Trimmomatic.</small></details>| `integer` | 30 |  |
+| `trim_clip` | How accurate the match between any adapter must be against a read <details><summary>Help</summary><small>Only applies to Illumina reads. Corresponds to the final [ILLUMINACLIP](http://www.usadellab.org/cms/?page=trimmomatic) option of Trimmomatic.</small></details>| `integer` | 10 |  |
+| `trim_winsize` | Number of bases to average quality across <details><summary>Help</summary><small>Only applies to Illumina reads. If set to `0`, then sliding window trimming is disabled. Corresponds to the first [SLIDINGWINDOW](http://www.usadellab.org/cms/?page=trimmomatic) option of Trimmomatic.</small></details>| `integer` | 50 |  |
+| `trim_winqual` | Required average window base quality <details><summary>Help</summary><small>Only applies to Illumina reads. If set to `0`, then sliding window trimming is disabled. Corresponds to the second [SLIDINGWINDOW](http://www.usadellab.org/cms/?page=trimmomatic) option of Trimmomatic.</small></details>| `integer` | 15 |  |
+| `trim_leading` | Minimum quality of bases in leading end of read <details><summary>Help</summary><small>Only applies to Illumina reads. If set to `0`, LEADING trimming is disabled. Corresponds to the [LEADING](http://www.usadellab.org/cms/?page=trimmomatic) option of Trimmomatic.</small></details>| `integer` | 15 |  |
+| `trim_trailing` | Minimum quality of bases in trailing end of read <details><summary>Help</summary><small>Only applies to Illumina reads. If set to `0`, TRAILING trimming is disabled. Corresponds to the [TRAILING](http://www.usadellab.org/cms/?page=trimmomatic) option of Trimmomatic.</small></details>| `integer` | 15 |  |
+| `trim_headcrop` | Number of bases to remove from start of read <details><summary>Help</summary><small>Corresponds to the [HEADCROP](http://www.usadellab.org/cms/?page=trimmomatic) option of Trimmomatic for Illumina reads. If set to `0`, then HEADCROP trimming is disabled.  Corresponds to the [--headcrop](https://github.com/wdecoster/nanofilt/#usage) option of NanoFilt for Nanopore reads.</small></details>| `integer` | 0 |  |
+| `trim_crop` | Number of bases to keep from start of read <details><summary>Help</summary><small>Only applies to Illumina reads. If set to `0`, CROP trimming is disabled. Corresponds to the [CROP](http://www.usadellab.org/cms/?page=trimmomatic) option of Trimmomatic.</small></details>| `integer` | 0 |  |
+| `trim_meanqual` | Minimum average base quality of entire reads <details><summary>Help</summary><small>Applies only to ONT reads. Corresponds to the [--quality](https://github.com/wdecoster/nanofilt/#usage) option of NanoFilt.</small></details>| `integer` | 7 |  |
+| `trim_mingc` | Minimum GC count of reads <details><summary>Help</summary><small>Only applies to ONT reads. Corresponds to the [--minGC](https://github.com/wdecoster/nanofilt/#usage) option of NanoFilt.</small></details>| `integer` | 0 |  |
+| `trim_maxgc` | Maximum GC count of reads <details><summary>Help</summary><small>Only applies to ONT reads. Corresponds to the [--maxGC](https://github.com/wdecoster/nanofilt/#usage) option of NanoFilt.</small></details>| `integer` | 0 |  |
+| `trim_tailcrop` | Number of bases to remove from the end of each read <details><summary>Help</summary><small>Only applies to ONT reads. Corresponds to the [--tailcrop](https://github.com/wdecoster/nanofilt/#usage) option of NanoFilt.</small></details>| `integer` | 0 |  |
+| `multiqc_title` | Custom title for the MultiQC report. | `string` |  |  |
+| `multiqc_config` | Custom config file to supply to MultiQC. | `string` |  |  |
+| `max_multiqc_email_size` | File size limit when attaching MultiQC reports to summary emails. <details><summary>Help</summary><small>If file generated by pipeline exceeds the threshold, it will not be attached.</small></details>| `string` | 25.MB |  |
+
+## Variant calling options
+
+Options for how strict to call variants
+
+| Parameter | Description | Type | Default | Required |
+|-----------|-----------|-----------|-----------|-----------|
+| `variant_quality` | Minimum average quality (PHRED score) of a basecall to consider it a variant | `integer` | 12 |  |
+| `variant_depth` | Minimum depth to consider a non-reference basecall a variant | `integer` | 15 |  |
+| `variant_position` | Do not consider variants that occur only in positions within this percentage of the end | `number` | 0.1 |  |
+| `variant_frequency` | Minimum frequency at which a variant must appear | `number` | 0.05 |  |
+| `variant_significance` | Confidence threshold for variants based on Fisher's Exact test | `number` | 0.001 |  |
+
+## Haplotype calling options
+
+Options for how strictly to call haplotypes
+
+| Parameter | Description | Type | Default | Required |
+|-----------|-----------|-----------|-----------|-----------|
+| `haplotype_depth` | Minmum number of times a haplotype must appear | `integer` | 10 |  |
+| `haplotype_frequency` | Minimum haplotype frequency | `number` | 0.05 |  |
+| `haplotype_significance` | Confidence threshold for haplotypes based on a X-squared test of linkage disequilibrium | `number` | 0.05 |  |
+| `haplotype_method` | How to construct pseudo-reads for haplotyping | `string` | ml-template |  |
+| `haplotype_overlap_min` | Minimum number of bases reads must overlap to be built into the same pseudo-read | `integer` | 0 |  |
+| `haplotype_overlap_max` | Maximum number of bases reads must overlap to be built into the same pseudo-read | `integer` | 100 |  |
+| `haplotype_iterations` | Number of iterations to build pseudo-reads | `integer` | 1000 |  |
+| `cliquesnv_method` | Method to call variants/haplotypes with CliqueSNV | `string` | accurate |  |
+
+## Phylogenetic tree options
+
+Options to control how the phylogenetic trees are generated
+
+| Parameter | Description | Type | Default | Required |
+|-----------|-----------|-----------|-----------|-----------|
+| `mafft_method` | Which method to use for the alignment process | `string` | --auto |  |
+| `phylogenetic_bootstraps` | Number of iterations to create phylogenetic trees with | `integer` | 1000 |  |
+| `phylogenetic_bootstrap_cutoff` | Minimum quality for phylogenetic bootstraps | `number` | 0.03 |  |
+| `phylogenetic_model` | Evolutionary model to use for phylogenetic distance calculation | `string` | GTR+G |  |
+
+## Workflow options
+
+Options to skip portions of the workflow
+
+| Parameter | Description | Type | Default | Required |
+|-----------|-----------|-----------|-----------|-----------|
+| `skip_trimming` | Skip read trimming (Trimmomatic/Nanofilt) | `boolean` |  |  |
+| `skip_qc` | Skip FastQC | `boolean` |  |  |
+| `skip_filtering` | Skip Kraken2 | `boolean` |  |  |
+| `skip_haplotype` | Skip haplotyping (CliqueSNV/HapLink) | `boolean` |  |  |
+| `skip_phylogenetics` | Skip phylogenetic tree generation (RAxML-NG) | `boolean` |  |  |
+
+## Max job request options
+
+Set the top limit for requested resources for any single job.
+
+| Parameter | Description | Type | Default | Required |
+|-----------|-----------|-----------|-----------|-----------|
+| `max_cpus` | Maximum number of CPUs that can be requested for any single job. <details><summary>Help</summary><small>Use to set an upper-limit for the CPU requirement for each process. Should be an integer e.g. `--max_cpus 1`</small></details>| `integer` | 16 |  |
+| `max_memory` | Maximum amount of memory that can be requested for any single job. <details><summary>Help</summary><small>Use to set an upper-limit for the memory requirement for each process. Should be a string in the format integer-unit e.g. `--max_memory '8.GB'`</small></details>| `string` | 128.GB |  |
+| `max_time` | Maximum amount of time that can be requested for any single job. <details><summary>Help</summary><small>Use to set an upper-limit for the time requirement for each process. Should be a string in the format integer-unit e.g. `--max_time '2.h'`</small></details>| `string` | 240.h |  |
+
+## Generic options
+
+Less common options for the pipeline, typically set in a config file
+
+| Parameter | Description | Type | Default | Required |
+|-----------|-----------|-----------|-----------|-----------|
+| `help` | Display help text. | `boolean` |  |  |
+| `publish_dir_mode` | How to create results files | `string` | copy |  |
+| `email_on_fail` | Email address for completion summary, only when pipeline fails. <details><summary>Help</summary><small>This works exactly as with `--email`, except emails are only sent if the workflow is not successful.</small></details>| `string` |  |  |
+| `plaintext_email` | Send plain-text email instead of HTML. <details><summary>Help</summary><small>Set to receive plain-text e-mails instead of HTML formatted.</small></details>| `boolean` |  |  |
+| `monochrome_logs` | Do not use colored log outputs. <details><summary>Help</summary><small>Set to disable colorful command line output and live life in glorious monochrome.</small></details>| `boolean` |  |  |
+| `breed` |  | `string` |  |  |
+| `tracedir` | Directory to keep pipeline Nextflow logs and reports. | `string` | ${params.outdir}/pipeline_info |  |
+| `enable_conda` | Run this workflow with Conda. You can also use '-profile conda' instead of providing this parameter. | `boolean` |  |  |
+| `validate_params` | Boolean whether to validate parameters against the schema at runtime | `boolean` | True |  |
+| `show_hidden_params` | Show all params when using `--help` <details><summary>Help</summary><small>By default, parameters set as _hidden_ in the schema are not shown on the command line when a user runs with `--help`. Specifying this option will tell the pipeline to show all parameters.</small></details>| `boolean` |  |  |
+
+## Institutional config options
+
+Parameters used to describe centralised config profiles. These should not be edited.
+
+| Parameter | Description | Type | Default | Required |
+|-----------|-----------|-----------|-----------|-----------|
+| `custom_config_version` | Git commit id for Institutional configs. <details><summary>Help</summary><small>Provide git commit id for custom Institutional configs hosted at `nf-core/configs`. This was implemented for reproducibility purposes. Default: `master`.  ```bash ## Download and use config file with following git commit id --custom_config_version d52db660777c4bf36546ddb188ec530c3ada1b96 ```</small></details>| `string` | master |  |
+| `custom_config_base` | Base directory for Institutional configs. <details><summary>Help</summary><small>If you're running offline, nextflow will not be able to fetch the institutional config files from the internet. If you don't need them, then this is not a problem. If you do need them, you should download the files from the repo and tell nextflow where to find them with the `custom_config_base` option. For example:  ```bash ## Download and unzip the config files cd /path/to/my/configs wget https://github.com/nf-core/configs/archive/master.zip unzip master.zip  ## Run the pipeline cd /path/to/my/data nextflow run /path/to/pipeline/ --custom_config_base /path/to/my/configs/configs-master/ ```  > Note that the nf-core/tools helper package has a `download` command to download all required pipeline files + singularity containers + institutional configs in one go for you, to make this process easier.</small></details>| `string` | https://raw.githubusercontent.com/nf-core/configs/master |  |
+| `config_profile_name` | Institutional config name. | `string` |  |  |
+| `config_profile_description` | Institutional config description. | `string` |  |  |
+| `config_profile_contact` | Institutional config contact information. | `string` |  |  |
+| `config_profile_url` | Institutional config URL link. | `string` |  |  |
+
+## Remote presentation resource options
+
+
+
+| Parameter | Description | Type | Default | Required |
+|-----------|-----------|-----------|-----------|-----------|
+| `freezetable_js` | JavaScript file to help with haplotype alignment table | `string` | https://cdn.jsdelivr.net/npm/jquery-freeze-table@1.3.0/dist/js/freeze-table.min.js |  |
+| `igv_js` | JavaScript file to show alignments in a browser | `string` | https://cdn.jsdelivr.net/npm/igv@2.11.0/dist/igv.js |  |
+| `phylotree_css` | CSS file for phylogenetic trees | `string` | https://cdn.jsdelivr.net/npm/phylotree@1.0.13/dist/phylotree.css |  |
+| `d3_js` | JavaScript dependency for phylotree.js | `string` | https://cdn.jsdelivr.net/npm/d3@5.16.0/dist/d3.min.js |  |
+| `underscore_js` | JavaScript dependency for phylotree.js | `string` | https://cdn.jsdelivr.net/npm/underscore@1.13.2/underscore-umd.min.js |  |
+| `phylotree_js` | JavaScript to show phylogenetic trees in a browser | `string` | https://cdn.jsdelivr.net/npm/phylotree@1.0.13/dist/phylotree.min.js |  |
