@@ -234,14 +234,17 @@ workflow YAVSAP {
     //
     // SUBWORKFLOW: Phylogenetics
     //
-    PHYLOGENETIC_TREE(
-        ch_haplotype_fasta,
-        ch_consensus_fasta,
-        ch_genome_fasta,
-        ch_genome_strain
-    )
-    PHYLOGENETIC_TREE.out.tree.set{ ch_tree }
-    ch_versions = ch_versions.mix(PHYLOGENETIC_TREE.out.versions)
+    ch_tree = Channel.empty()
+    if (!params.skip_haplotype && !params.skip_phylogenetics) {
+        PHYLOGENETIC_TREE(
+            ch_haplotype_fasta,
+            ch_consensus_fasta,
+            ch_genome_fasta,
+            ch_genome_strain
+        )
+        PHYLOGENETIC_TREE.out.tree.set{ ch_tree }
+        ch_versions = ch_versions.mix(PHYLOGENETIC_TREE.out.versions)
+    }
 
     //
     // SUBWORKFLOW: Fancy presentations
@@ -252,8 +255,8 @@ workflow YAVSAP {
         ch_closest_strain,
         ch_closest_accession,
         ch_consensus_fasta,
-        ch_haplotype_fasta.ifEmpty([]),
-        ch_haplotype_yaml.ifEmpty([]),
+        ch_haplotype_fasta,
+        ch_haplotype_yaml,
         ch_tree
     )
     PRESENTATION.out.seqtable.set{ ch_seqtable_mqc }
