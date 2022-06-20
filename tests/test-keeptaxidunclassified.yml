@@ -23,11 +23,11 @@
       should_exist: true
 
     - path: ./output/classification/combo.kreport
-      contains: ["D	10239"]
+      contains: ["U	0"]
     - path: ./output/classification/single-compressed.kreport
-      contains: ["D	10239"]
+      contains: ["U	0"]
     - path: ./output/classification/single-uncompressed.kreport
-      contains: ["D	10239"]
+      contains: ["U	0"]
 
     - path: ./output/consensus/combo_consensus.fasta
       contains: [">combo_consensus"]
