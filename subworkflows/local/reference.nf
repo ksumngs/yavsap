@@ -6,10 +6,13 @@ include { EDIRECT_ESEARCH } from '../../modules/ksumngs/nf-modules/edirect/esear
 include { SAMTOOLS_FAIDX } from '../../modules/nf-core/modules/samtools/faidx/main.nf'
 
 workflow REFERENCE_DOWNLOAD {
+    take:
+    accession
+
     main:
     versions = Channel.empty()
 
-    EDIRECT_ESEARCH("${params.genome}", 'nucleotide')
+    EDIRECT_ESEARCH(accession, 'nucleotide')
     EDIRECT_EFETCH(EDIRECT_ESEARCH.out.xml, 'fasta', '')
     EDIRECT_EFETCH.out.txt.set{ fasta }
 

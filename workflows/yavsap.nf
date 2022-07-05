@@ -133,7 +133,7 @@ workflow YAVSAP {
     //
     // SUBWORKFLOW: Download reference genome from NCBI
     //
-    REFERENCE_DOWNLOAD()
+    REFERENCE_DOWNLOAD("${params.genome}")
     REFERENCE_DOWNLOAD.out.fasta.set{ ch_reference_fasta }
     ch_versions = ch_versions.mix(REFERENCE_DOWNLOAD.out.versions)
 
