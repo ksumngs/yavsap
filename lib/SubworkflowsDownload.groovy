@@ -23,4 +23,14 @@ class SubworkflowsDownload {
         }
         return -1
     }
+
+    /**
+     * Transforms a list by concatenating them with pipes
+     *
+     * @param accessionNumbers A list of accession numbers to concatenate
+     * @return The joined accession numbers
+     */
+    public static String accessionTransform(String[] accessionNumbers) {
+        return accessionNumbers.join('|')
+    }
 }
