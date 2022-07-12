@@ -23,8 +23,8 @@ process HAPLOTYPECONVERT {
     haplotypestandardizer \\
         ${meta.id} \\
         ${reference} \\
-        ${strain} \\
-        ${ncbi} \\
+        '${strain}' \\
+        '${ncbi}' \\
         ${consensus} \\
         ${yaml} \\
         ${fasta} \\
