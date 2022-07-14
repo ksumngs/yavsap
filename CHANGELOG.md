@@ -8,6 +8,11 @@ and this project adheres to
 
 ## [Unreleased]
 
+## Added
+
+- Multi-strand reference genome support ([#46](https://github.com/ksumngs/yavsap/pull/46)
+  fixes [#25](https://github.com/ksumngs/yavsap/issues/25))
+
 ## Changed
 
 - nf-core template updated to v1.4.1
