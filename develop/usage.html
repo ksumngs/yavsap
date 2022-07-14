@@ -253,7 +253,7 @@ odd-number columns (<code class="docutils literal notranslate"><span class="pre"
 <section id="running-the-pipeline">
 <h2>Running the pipeline<a class="headerlink" href="#running-the-pipeline" title="Permalink to this headline"></a></h2>
 <p>The typical command for running the pipeline is as follows:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">nextflow run ksumngs/yavsap -profile docker --input . --outdir &lt;OUTDIR&gt; --platform illumina --kraken2_db https://genome-idx.s3.amazonaws.com/kraken/k2_viral_20210517.tar.gz --keep_taxid classified</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">nextflow run ksumngs/yavsap -profile docker --input . --outdir illumina --kraken2_db https://genome-idx.s3.amazonaws.com/kraken/k2_viral_20210517.tar.gz --keep_taxid classified &lt; OUTDIR &gt; --platform</span>
 </pre></div>
 </div>
 <p>This will launch the pipeline with the <code class="docutils literal notranslate"><span class="pre">docker</span></code> configuration profile. See below for more information about profiles.</p>
@@ -373,10 +373,11 @@ to provide it with</p>
 <li><p>Genome examples of different strains or relatives of the virus of interest</p></li>
 </ol>
 <p>YAVSAP needs these in the form of NCBI GenBank Accession Numbers. To pick a new
-reference genome, simply pass the accession number to the <a class="reference internal" href="parameters.html#reference-genome-options"><span class="std std-ref">–genome</span></a> parameter, e.g. <code class="docutils literal notranslate"><span class="pre">nextflow</span> <span class="pre">run</span> <span class="pre">ksumngs/yavsap</span> <span class="pre">--genome</span> <span class="pre">'NC_001437.1'</span></code>.</p>
+reference genome, simply pass the accession number to the <a class="reference internal" href="parameters.html#reference-genome-options"><span class="std std-ref">–genome</span></a> parameter, e.g. <code class="docutils literal notranslate"><span class="pre">nextflow</span> <span class="pre">run</span> <span class="pre">ksumngs/yavsap</span> <span class="pre">--genome</span> <span class="pre">'NC_001437.1'</span></code>. If the reference genome is multi-segmented, then
+separate the segments by commas, e.g. <code class="docutils literal notranslate"><span class="pre">nextflow</span> <span class="pre">run</span> <span class="pre">ksumngs/yavsap</span> <span class="pre">--genome</span> <span class="pre">'NC_014395.1,NC_014396.1,NC_014397.1'</span></code>.</p>
 <p>Close relative examples must be provided as a tab-delimited document with the
-name in the first column, and the NCBI accession number in the second column. No
-header is allowed in the comparison genomes file.</p>
+name in the first column, and the NCBI accession numbers of each virus segment
+in the following columns. No header is allowed in the comparison genomes file.</p>
 <p>Nodes will be grouped in the output phylogenetic tree based on the name before
 any underscore, to allow for easy visualization of known related groups. In
 other words, <code class="docutils literal notranslate"><span class="pre">Nakayama\tEF571853.1</span></code> and <code class="docutils literal notranslate"><span class="pre">SA14\tMH258848.1</span></code> are perfectly
@@ -404,6 +405,10 @@ to by name, rather than by path(e.g. <code class="docutils literal notranslate">
 <tr class="row-odd"><td><p><a class="reference external" href="https://www.ncbi.nlm.nih.gov/labs/data-hub/taxonomy/2697049/">Severe acute respiratory syndrome coronavirus 2 (SARS-CoV-2)</a></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">sc2</span></code></p></td>
 <td><p><a class="reference external" href="https://www.ncbi.nlm.nih.gov/nuccore/NC_045512.2">NC_045512.2</a></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference external" href="https://www.ncbi.nlm.nih.gov/data-hub/taxonomy/11588/">Rift Valley Fever Virus (RVFV)</a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">rvfv</span></code></p></td>
+<td><p><a class="reference external" href="https://www.ncbi.nlm.nih.gov/nuccore/NC_014395.1">NC_014395.1</a>,<a class="reference external" href="https://www.ncbi.nlm.nih.gov/nuccore/NC_014396.1">NC_014396.1</a>,<a class="reference external" href="https://www.ncbi.nlm.nih.gov/nuccore/NC_014397.1">NC_014397.1</a></p></td>
 </tr>
 </tbody>
 </table>
