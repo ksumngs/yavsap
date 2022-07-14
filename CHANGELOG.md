@@ -8,11 +8,15 @@ and this project adheres to
 
 ## [Unreleased]
 
-- Update e-direct containers ([#48](https://github.com/ksumngs/yavsap/pull/48))
+## Added
+
+- Multi-strand reference genome support ([#46](https://github.com/ksumngs/yavsap/pull/46)
+  fixes [#25](https://github.com/ksumngs/yavsap/issues/25))
 
 ## Changed
 
 - nf-core template updated to v1.4.1
+- Update e-direct containers ([#48](https://github.com/ksumngs/yavsap/pull/48))
 
 ## [0.8.0] - 2022-06-06
 

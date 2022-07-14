@@ -25,6 +25,24 @@ function match_cols(query, reference)
     return cols
 end #function
 
+function strain_links(strain_string)
+    links = []
+
+    strain_list = split(strain_string, '|')
+
+    for i in 1:length(strain_list)
+        strain = popfirst!(strain_list)
+        ncbi_link = "https://ncbi.nlm.nih.gov/nuccore/$strain"
+        push!(links, a(strain; href=ncbi_link))
+
+        if !isempty(strain_list)
+            push!(links, span(" + "))
+        end
+    end
+
+    return links
+end #function
+
 function sample_rows(sample, reference)
     sample_name = first(sample)
     sample_data = last(sample)
@@ -33,14 +51,13 @@ function sample_rows(sample, reference)
     consensus_sequence = sample_data["consensus_sequence"]
     haplotypes = sample_data["haplotypes"]
 
-    ncbi_link = "https://ncib.nlm.nih.gov/nuccore/$strain_ncbi"
     num_haplotypes = length(haplotypes)
 
     consensus_row = tr(
         th(sample_name; rowspan=(num_haplotypes + 1)),
         td("Consensus"; colspan=2),
         td(strain_name),
-        td(a(strain_ncbi; href=ncbi_link)),
+        td(strain_links(strain_ncbi)...),
         match_cols(consensus_sequence, reference)...,
     )
 
@@ -86,7 +103,7 @@ header_row = tr(
 # Get the reference sequence row
 reference_row = tr(
     th("Reference"; colspan=4),
-    td(a(reference_name; href="https://ncib.nlm.nih.gov/nuccore/$reference_name")),
+    td(strain_links(reference_name)...),
     [td(base; class=base) for base in reference_sequence]...,
 )
 

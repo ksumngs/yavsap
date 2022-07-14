@@ -11,7 +11,11 @@ workflow CLOSEST_REFERENCE {
     versions = Channel.empty()
 
     // Make a BLAST database out of the strain reference genomes
-    BLAST_MAKEBLASTDB(genome_fasta.map{ it[1] }.collectFile(name: 'genomes.fasta'))
+    BLAST_MAKEBLASTDB(
+        genome_fasta
+            .map{ it[1] }
+            .collectFile(name: 'genomes.fasta', newLine: true)
+    )
     versions = versions.mix(BLAST_MAKEBLASTDB.out.versions)
 
     // BLAST the consensus sequence against all of the reference genomes
