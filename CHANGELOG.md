@@ -16,6 +16,7 @@ and this project adheres to
 ## Changed
 
 - nf-core template updated to v1.4.1
+- Update e-direct containers ([#48](https://github.com/ksumngs/yavsap/pull/48))
 
 ## [0.8.0] - 2022-06-06
 
