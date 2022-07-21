@@ -3,6 +3,7 @@ nextflow.enable.dsl = 2
 
 include { EDIRECT_EFETCH } from '../../modules/ksumngs/nf-modules/edirect/efetch/main.nf'
 include { EDIRECT_ESEARCH } from '../../modules/ksumngs/nf-modules/edirect/esearch/main.nf'
+include { EMBOSS_SEQRET } from '../../modules/ksumngs/nf-modules/emboss/seqret/main'
 include { SAMTOOLS_FAIDX } from '../../modules/nf-core/modules/samtools/faidx/main.nf'
 
 workflow REFERENCE_DOWNLOAD {
@@ -17,7 +18,10 @@ workflow REFERENCE_DOWNLOAD {
     def accession_id = accession.replaceAll(',', '|')
 
     EDIRECT_ESEARCH(accession_query, 'nucleotide')
-    EDIRECT_EFETCH(EDIRECT_ESEARCH.out.xml, 'fasta', '')
+    EDIRECT_EFETCH(EDIRECT_ESEARCH.out.xml, 'gb', '')
+    EMBOSS_SEQRET(
+        EDIRECT_EFETCH.out.txt.map{ [ [id: 'genbank'], it ] }, 'fasta'
+    )
 
     /*
         So...
@@ -31,7 +35,8 @@ workflow REFERENCE_DOWNLOAD {
             5. Add the new identifier to the beginning of the new fasta string
             6. Write the results into a new fasta format
     */
-    EDIRECT_EFETCH.out.txt // [ fasta ]
+    EMBOSS_SEQRET.out.outseq // [ meta, fasta ]
+        .map{ it[1] }
         .splitFasta(record: [text: true])
         .collectFile(
             name: 'references-sorted.fasta',
