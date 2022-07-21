@@ -21,6 +21,9 @@
             "edirect/esearch": {
                 "git_sha": "c2262e667aa981041efcaa5f697b4402357a39d7"
             },
+            "emboss/seqret": {
+                "git_sha": "1a1431b6cefd3c3aca4ea3c70188b0d8f69ae360"
+            },
             "kraken2": {
                 "git_sha": "e0b2138159eab5b54a4618f320895a308fcf53fa"
             },
