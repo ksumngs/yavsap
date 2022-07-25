@@ -14,9 +14,10 @@ workflow REFERENCE_DOWNLOAD {
     main:
     versions = Channel.empty()
 
-    def accession_query = accession.replaceAll(',', ' OR ')
-    def accession_list = accession.split(',')
-    def accession_id = accession.replaceAll(',', '|')
+    def accession_stripped = accession.replaceAll(/\.[0-9]/, '')
+    def accession_query = accession_stripped.replaceAll(',', ' OR ')
+    def accession_list = accession_stripped.split(',')
+    def accession_id = accession_stripped.replaceAll(',', '|')
 
     EDIRECT_ESEARCH(accession_query, 'nucleotide')
     EDIRECT_EFETCH(EDIRECT_ESEARCH.out.xml, 'gb', '')
