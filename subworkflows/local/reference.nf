@@ -14,59 +14,104 @@ workflow REFERENCE_DOWNLOAD {
     main:
     versions = Channel.empty()
 
-    def accession_stripped = accession.replaceAll(/\.[0-9]/, '')
-    def accession_query = accession_stripped.replaceAll(',', ' OR ')
-    def accession_list = accession_stripped.split(',')
-    def accession_id = accession_stripped.replaceAll(',', '|')
+    // Convert the accession numbers of the reference genome into metadata
+    def accession_list = accession.split(',')
+    def accession_plus_meta = []
+    accession_list.eachWithIndex {
+        accession, index ->
+            accession_plus_meta << [
+                [id: 'REFERENCE', strand_num: index, accession_num: accession],
+                accession
+            ]
+    }
+    Channel.fromList(accession_plus_meta).set{ ch_accession_query }
+    def num_strains = accession_list.length
+    ch_accession_query.dump(tag: 'accession_query')
 
-    EDIRECT_ESEARCH(accession_query, 'nucleotide')
+    EDIRECT_ESEARCH(ch_accession_query, 'nucleotide')
     EDIRECT_EFETCH(EDIRECT_ESEARCH.out.xml, 'gb', '')
 
-    EDIRECT_EFETCH.out.txt
-        .map{ [ [id: 'genbank'], it ] }
-        .set{ ch_efetch_genbank }
-
-    SEQRET_FASTA(ch_efetch_genbank, 'fasta')
-    SEQRET_GFF(ch_efetch_genbank, 'gff')
+    SEQRET_FASTA(EDIRECT_EFETCH.out.txt, 'fasta')
+    SEQRET_GFF(EDIRECT_EFETCH.out.txt, 'gff')
 
     /*
         So...
         A convoluted way to concatenate genome sequences into a single-sequence
         fasta file. How it works:
-            1. Start with the fasta file from efetch
-            2. Split it into individual records
-            3. Sort the records into the same order they were passed into the
-                --genome parameter, and concatenate into a multi-sequence fasta
-            4. Remove all identifiers and whitespace from the new fasta file
-            5. Add the new identifier to the beginning of the new fasta string
-            6. Write the results into a new fasta format
+            1. Start with the fasta files from efetch
+            2. Extract their contents
+            3. Combine and sort the sequence contents based on strand order
+            4. Remove all identifiers and whitespace from the new fasta record
+            5. Write the results into a new fasta format
+            6. Remap to an nf-core meta channel
     */
     SEQRET_FASTA.out.outseq // [ meta, fasta ]
-        .map{ it[1] }
-        .splitFasta(record: [text: true])
-        .collectFile(
-            name: 'references-sorted.fasta',
-            sort: { fa ->
-                return SubworkflowsDownload.sortSequence(fa, accession_list.toList())
+        .map{
+            def meta_new = it[0].clone()
+            meta_new['text'] = it[1].text
+            return [
+                it[0].id,
+                meta_new
+            ]
+        }
+        .groupTuple(by: 0, sort: {it['strand_num']}, size: num_strains)
+        .map{
+            def id = it[0]
+            def records = it[1]
+            def accession_nums = []
+            def seq_text = ""
+
+            records.each{
+                accession_nums << it['accession_num']
+                seq_text += it['text'].replaceAll(/>.*\R/, '').replaceAll(/\R/, '')
             }
-        ) { it.text }
-        .map{ it.text.replaceAll(/>.*\R/, '').replaceAll(/\R/, '') }
-        .map{ ">${accession_id}\n${it}" }
-        .collectFile(name: 'references-concat.fasta')
+
+            def combo_accession_num = accession_nums.join('|')
+
+            def fasta_text =
+                """\
+                +>${combo_accession_num} ${id}
+                +${seq_text}
+                +""".stripMargin('+')
+
+            return [[id: id, accession_num: combo_accession_num], fasta_text]
+        }
+        .collectFile(name: 'reference.fasta'){ it[1] }
+        .map{
+            def accession = (it.text =~ />\S+/).findAll()[0].replace('>', '')
+            def id = (it.text =~ / .+/).findAll()[0].trim()
+            def file = it
+
+            return [
+                [id: id, accession_num: accession],
+                file
+            ]
+        }
         .set{ fasta }
     fasta.dump(tag: 'reference')
 
-    SAMTOOLS_FAIDX(
-        fasta.map{ [
-            ['id': 'reference'],
-            it
-        ] }
-    )
+    fasta
+        .map{ it[1] }
+        .collectFile(
+            name: "reference.fasta",
+            storeDir: "${params.outdir}/reference"
+        )
+
+    fasta
+        .map{ it[1] }
+        .collectFile(
+            name: "reference.fasta",
+            storeDir: "${params.outdir}/report"
+        )
+
+    SAMTOOLS_FAIDX(fasta)
     SAMTOOLS_FAIDX.out.fai.set{ fai }
 
-    versions = versions.mix(EDIRECT_ESEARCH.out.versions)
-    versions = versions.mix(EDIRECT_EFETCH.out.versions)
+    versions = versions.mix(EDIRECT_ESEARCH.out.versions.first())
+    versions = versions.mix(EDIRECT_EFETCH.out.versions.first())
     versions = versions.mix(SAMTOOLS_FAIDX.out.versions)
+    versions = versions.mix(SEQRET_FASTA.out.versions.first())
+    versions = versions.mix(SEQRET_GFF.out.versions.first())
 
     emit:
     fasta = fasta.first()
