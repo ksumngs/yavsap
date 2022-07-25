@@ -17,12 +17,22 @@ d = Dict(
             ),
             "tracks" => [
                 Dict(
-                    "type" => "alignment",
-                    "format" => "bam",
-                    "url" => "$samplename.bam",
-                    "indexURL" => "$samplename.bam.bai",
-                    "name" => samplename,
-                ) for samplename in readlines(sample_list)
+                    "type" => "annotation",
+                    "format" => "gff3",
+                    "url" => "reference.gff",
+                    "colorBy" => "ID",
+                    "name" => "Features",
+                    "displayMode" => "EXPANDED",
+                ),
+                [
+                    Dict(
+                        "type" => "alignment",
+                        "format" => "bam",
+                        "url" => "$samplename.bam",
+                        "indexURL" => "$samplename.bam.bai",
+                        "name" => samplename,
+                    ) for samplename in readlines(sample_list)
+                ]...,
             ],
         ),
     ),
