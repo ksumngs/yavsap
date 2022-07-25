@@ -1,5 +1,5 @@
 process EDIRECT_EFETCH {
-    tag "$search"
+    tag "${meta.id}"
     label 'process_low'
     label 'run_local'
     label 'error_backoff'
@@ -9,13 +9,17 @@ process EDIRECT_EFETCH {
         'https://depot.galaxyproject.org/singularity/entrez-direct:16.2--he881be0_1' :
         'quay.io/biocontainers/entrez-direct:16.2--he881be0_1' }"
 
+    // Prevent NCBI database timeouts by preventing this process from being run in
+    // parallel. Trust me: this is actually faster than erroring out
+    maxForks 1
+
     input:
-    path(search)
+    tuple val(meta), path(search, stageAs: '_search')
     val(format)
     val(mode)
 
     output:
-    path "*.${mode ?: format ?: 'txt'}", emit: txt
+    tuple val(meta), path("*.${mode ?: format ?: 'txt'}"), emit: txt
     path "versions.yml"                , emit: versions
 
     when:
@@ -23,6 +27,7 @@ process EDIRECT_EFETCH {
 
     script:
     def args = task.ext.args ?: ''
+    def prefix = task.ext.prefix ?: "${meta.id}"
     def ext = mode ?: format ?: 'txt'
     def format_flag = format ? "-format ${format}" : ''
     def mode_flag = mode ? "-mode ${mode}" : ''
@@ -32,7 +37,7 @@ process EDIRECT_EFETCH {
             ${format_flag} \\
             ${mode_flag} \\
             ${args} \\
-        > result.${ext}
+        > ${prefix}.${ext}
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

@@ -11,6 +11,11 @@ tools:
       licence: ["PUBLIC DOMAIN"]
 
 input:
+  - meta:
+      type: map
+      description: |
+        Groovy Map containing sample information
+        e.g. [ id:'test', single_end:false ]
   - search:
       type: file
       description: Previous result from esearch in XML format
@@ -23,6 +28,11 @@ input:
       description: When the format supports it, what flavor of the format (e.g. GenBank flat file vs. GenBank XML)
 
 output:
+  - meta:
+      type: map
+      description: |
+        Groovy Map containing sample information
+        e.g. [ id:'test', single_end:false ]
   - versions:
       type: file
       description: File containing software versions
