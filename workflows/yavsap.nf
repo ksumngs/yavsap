@@ -254,8 +254,7 @@ workflow YAVSAP {
         PHYLOGENETIC_TREE(
             ch_haplotype_fasta,
             ch_consensus_fasta,
-            ch_genome_fasta,
-            ch_genome_strain
+            ch_genome_fasta
         )
         PHYLOGENETIC_TREE.out.tree.set{ ch_tree }
         ch_versions = ch_versions.mix(PHYLOGENETIC_TREE.out.versions)

@@ -29,7 +29,6 @@ workflow PHYLOGENETIC_TREE {
     haplotype_fasta
     consensus_fasta
     genome_fasta
-    genome_strain
 
     main:
     versions = Channel.empty()
@@ -77,13 +76,14 @@ workflow PHYLOGENETIC_TREE {
         .map{ ">${it[0].id}_consensus\n${it[1].sequence}" }
         .set{ ch_renamed_consensus }
 
-    genome_strain           // [accession, strain]
-        .join(genome_fasta) // [accession, strain, fasta]
-        .map{ it.drop(1) }  // [strain, fasta]
-        .map{ [it[0].contains('ROOT') ? 'ROOT' : it[0], it[1]] }
-        .splitFasta(record: [sequence: true], elem: 1) // [strain, [sequence]]
-        .map{ ">${it[0]}\n${it[1].sequence}" }
+    genome_fasta
+        .map{
+            def id = it[0].id.contains('ROOT') ? 'ROOT' : it[0].id
+            def seq = it[1].readLines()[1]
+            return ">${id}\n${seq}\n"
+        }
         .set{ ch_renamed_genome }
+    ch_renamed_genome.dump(tag: 'renamed_genome')
 
     ch_renamed_haplotype
         .mix(ch_renamed_consensus)
