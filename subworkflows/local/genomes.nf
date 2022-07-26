@@ -1,5 +1,6 @@
 include { EDIRECT_EFETCH } from '../../modules/ksumngs/nf-modules/edirect/efetch/main.nf'
 include { EDIRECT_ESEARCH } from '../../modules/ksumngs/nf-modules/edirect/esearch/main.nf'
+include { EMBOSS_SEQRET as SEQRET_FASTA } from '../../modules/ksumngs/nf-modules/emboss/seqret/main'
 
 workflow GENOME_DOWNLOAD {
     take:
@@ -18,8 +19,7 @@ workflow GENOME_DOWNLOAD {
         )
     }
 
-    // Create a list of [strain, [accessions...]]. This has to be a list, and
-    // not a channel so that it can be iterated
+    def num_strains = 0
     def genome_list = []
     genomeFile
         .readLines()
@@ -28,88 +28,91 @@ workflow GENOME_DOWNLOAD {
                 def cells = ln.split('\t')
                 def strain = cells[0]
                 def accessions = cells.drop(1)
-                genome_list << [strain, accessions]
-        }
-
-    // Create a list of [accessions...]. This also has to be a list, and is used
-    // to sort the sequences within fastas.
-    def all_accessions = []
-    genome_list
-        .each{
-            a ->
-                a[1].each{
-                    b ->
-                        all_accessions << b
+                num_strains = accessions.length
+                accessions.eachWithIndex {
+                    accession, index ->
+                        genome_list << [
+                            [id: strain, strand_num: index, accession_num: accession],
+                            accession
+                        ]
                 }
         }
-
-    // Transform the genome list into a channel
-    Channel
-        .fromList(genome_list)
-        .set{ ch_genome_list }
-
-    // Set the strains output channel
-    ch_genome_list
-        .map{ [SubworkflowsDownload.accessionTransform(it[1]), it[0]] }
-        .set{ strain }
-    strain.dump(tag: 'genome_download_strain')
-
-    // Transform the TSV genome list into an edirect query
-    ch_genome_list
-        .flatMap{ it[1] }
-        .toList()
-        .map{ it.join(' OR ') }
-        .set{ ch_genome_query }
-    ch_genome_query.dump(tag: 'genome_download_genome_query')
+    Channel.fromList(genome_list).set{ ch_genome_query }
+    ch_genome_query.dump(tag: 'genome_query')
 
     // Search NCBI for the accession numbers
     EDIRECT_ESEARCH(ch_genome_query, 'nucleotide')
     versions = versions.mix(EDIRECT_ESEARCH.out.versions)
 
-    // Download the matching genomes in fasta format
-    EDIRECT_EFETCH(EDIRECT_ESEARCH.out.xml, 'fasta', '')
+    EDIRECT_EFETCH(EDIRECT_ESEARCH.out.xml, 'gb', '')
     versions = versions.mix(EDIRECT_EFETCH.out.versions)
+
+    SEQRET_FASTA(EDIRECT_EFETCH.out.txt, 'fasta')
+    versions = versions.mix(SEQRET_FASTA.out.versions)
 
     /*
         So...
         Another convoluted way to concatenate genome sequences. This is even
         more complicated b/c we have to separate into multiple records. How it
         works:
-            1. Start with the fasta file from efetch
-            2. Split it into individual records
-            3. Sort the records into the same order they were listed in the
-                genomes file. Concatenate them into per-strain multi-sequence
-                fasta files based on the combined accession numbers
-            4. Parse the accession numbers out of the file names
-            5. Reformat sequence into accession identifier fasta while removing
-                all identifiers and whitespace
-            6. Write the results to new files
-            7. Extract the accession number out of the file names again
+            1. Start with each fasta file from seqret
+            2. Extract their contents
+            3. Group and sort sequence contents based on strand order
+            4. Recreate identifiers and sequence and create a fasta text string
+            5. Put them in files
+            6. Re-extract the metadata from the files
     */
-    EDIRECT_EFETCH.out.txt
-        .splitFasta(record: [id: true, text: true])
-        .collectFile(
-            sort: { SubworkflowsDownload.sortSequence(it, all_accessions) }
-        ) {
-            [
-                "${SubworkflowsDownload.accessionKey(it.id, genome_list).replace('|', '-')}.fasta",
-                it.text
-            ]
-        }
-        .map{ [it.getBaseName().replaceAll('-', '|'), it] }
+    SEQRET_FASTA.out.outseq // [meta, fasta]
         .map{
-            [
-                it[0],
-                ">${it[0]}\n${it[1].text.replaceAll(/>.*\R/, '').replaceAll(/\R/, '')}"
+            def meta_new = it[0].clone()
+            meta_new['text'] = it[1].text
+            return [
+                it[0].id,
+                meta_new
             ]
         }
-        .collectFile(){ ["${it[0].replace('|', '-')}.fasta", it[1] ] }
-        .map{ [it.getBaseName().replaceAll('-', '|'), it] }
+        .groupTuple(by: 0, sort: { it['strand_num'] }, size: num_strains)
+        .map{
+            def id = it[0]
+            def records = it[1]
+            def accession_nums = []
+            def seq_text = ""
+
+            records.each{
+                accession_nums << it['accession_num']
+                seq_text += it['text'].replaceAll(/>.*\R/, '').replaceAll(/\R/, '')
+            }
+
+            def combo_accession_num = accession_nums.join('|')
+
+            def fasta_text =
+                """\
+                +>${combo_accession_num} ${id}
+                +${seq_text}
+                +""".stripMargin('+')
+
+            return [
+                [id: id, accession_num: combo_accession_num],
+                fasta_text
+            ]
+        }
+        .collectFile(){
+            ["${it[0]['accession_num'].replace('|', '-')}.fasta", it[1]]
+        }
+        .map{
+            def accession = (it.text =~ />\S+/).findAll()[0].replace('>', '')
+            def id = (it.text =~ / .+/).findAll()[0].trim()
+            def file = it
+
+            return [
+                [id: id, accession_num: accession],
+                file
+            ]
+        }
         .set{ fasta }
     fasta.dump(tag: 'genome_fasta')
 
     emit:
-    strain // [accession, strain]
-    fasta // [accession, fasta]
+    fasta // [[id: name, accession-num: accession], fasta]
     versions
 }

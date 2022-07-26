@@ -140,7 +140,7 @@ workflow YAVSAP {
     //
     // MODULE: Align reads into BAM format using minimap2
     //
-    MINIMAP2_ALIGN(ch_filtered, ch_reference_fasta, true, false, false)
+    MINIMAP2_ALIGN(ch_filtered, ch_reference_fasta.map{ it[1] }, true, false, false)
     MINIMAP2_ALIGN.out.bam.set{ ch_bam }
     ch_versions = ch_versions.mix(MINIMAP2_ALIGN.out.versions.first())
 
