@@ -68,7 +68,7 @@ include { VARIANTS } from '../subworkflows/local/variants'
 //
 include { CUSTOM_DUMPSOFTWAREVERSIONS } from '../modules/nf-core/modules/custom/dumpsoftwareversions/main.nf'
 include { KRAKEN2_DBPREPARATION } from '../modules/local/kraken2/dbpreparation.nf'
-include { MINIMAP2_ALIGN as MINIMAP2_REALIGN } from '../modules/ksumngs/nf-modules/minimap2/align/main'
+include { MINIMAP2_ALIGN as MINIMAP2_REALIGN } from '../modules/nf-core/modules/minimap2/align/main'
 include { MINIMAP2_ALIGN } from '../modules/nf-core/modules/minimap2/align/main'
 include { MULTIQC } from '../modules/nf-core/modules/multiqc/main.nf'
 include { SAMTOOLS_INDEX as SAMTOOLS_REINDEX } from '../modules/nf-core/modules/samtools/index/main'
@@ -197,7 +197,26 @@ workflow YAVSAP {
     //
     // MODULE: Realign reads into BAM format using minimap2
     //
-    MINIMAP2_REALIGN(ch_filtered.join(ch_closest_reference), true, false, false)
+    ch_filtered
+        .map{ [it[0].id, it] }
+        .join(
+            ch_closest_reference
+                .map{ [it[0].id, it] }
+        )
+        .multiMap{
+            reads: [it[2][0], it[1][1]]
+            reference: it[2][1]
+        }
+        .set{ ch_realign_input }
+    ch_realign_input.reads.dump(tag: 'realign_reads')
+    ch_realign_input.reference.dump(tag: 'realign_reference')
+    MINIMAP2_REALIGN(
+        ch_realign_input.reads,
+        ch_realign_input.reference,
+        true,
+        false,
+        false
+    )
     MINIMAP2_REALIGN.out.bam.set{ ch_realigned_bam }
     ch_versions = ch_versions.mix(MINIMAP2_REALIGN.out.versions.first())
 
