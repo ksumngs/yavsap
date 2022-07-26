@@ -4,7 +4,6 @@ include { BLAST_MAKEBLASTDB } from '../../modules/nf-core/modules/blast/makeblas
 workflow CLOSEST_REFERENCE {
     take:
     consensus_fasta
-    genome_strain
     genome_fasta
 
     main:
@@ -20,26 +19,32 @@ workflow CLOSEST_REFERENCE {
 
     // BLAST the consensus sequence against all of the reference genomes
     BLAST_BLASTN(consensus_fasta, BLAST_MAKEBLASTDB.out.db.first())
-    BLAST_BLASTN.out.txt.map{ [it[0], it[1].readLines()[0]] }.set{ accession }
+    BLAST_BLASTN.out.txt
+        .map{
+            def accession_num = it[1].readLines()[0]
+            def meta = it[0]
+            return [meta, accession_num]
+        }
+        .combine(
+            genome_fasta.map{
+                def accession_num = it[0]['accession_num']
+                def meta = it[0]
+                def fasta = it[1]
+                return [meta, accession_num, fasta]
+            },
+            by: 1
+        )
+        .map{
+            def new_meta = it[1].clone()
+            new_meta['strain'] = it[2]['id']
+            new_meta['blast_accession'] = it[2]['accession_num']
+            return [new_meta, it[3]]
+        }
+        .set{ fasta }
+    fasta.dump(tag: 'blast_accession')
     versions = versions.mix(BLAST_BLASTN.out.versions)
 
-    // Get the strain name of each sample's closest BLAST hit
-    // [meta, strain name]
-    accession
-        .map{ [it[1], it[0]] }
-        .combine(genome_strain, by: 0)
-        .map{ [it[1], it[2]] }
-        .set{ strain }
-
-    // Get the genome of each sample's closest BLAST hit in fasta format
-    accession
-        .combine(genome_fasta.map{ [it[1], it[0]] }, by: 1)
-        .map{ [it[1], it[2]] }
-        .set{ fasta }
-
     emit:
-    accession
-    strain
     fasta
     versions
 }

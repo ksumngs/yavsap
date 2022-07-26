@@ -168,7 +168,6 @@ workflow YAVSAP {
     // SUBWORKFLOW: Download and reformat the strain reference genomes
     //
     GENOME_DOWNLOAD("${params.genome_list}")
-    GENOME_DOWNLOAD.out.strain.set{ ch_genome_strain }
     GENOME_DOWNLOAD.out.fasta.set{ ch_genome_fasta }
     ch_versions = ch_versions.mix(GENOME_DOWNLOAD.out.versions)
 
@@ -177,25 +176,22 @@ workflow YAVSAP {
     //   back to the reference genome and an 'UNDEFINED' strain designation in
     //   case of failure
     //
-    CLOSEST_REFERENCE(ch_consensus_fasta, ch_genome_strain, ch_genome_fasta)
-    CLOSEST_REFERENCE
-        .out
-        .accession
-        .concat(ch_consensus_fasta.map{ it[0] }.combine(Channel.of(params.genome)))
-        .unique{ it[0].id }
-        .set{ ch_closest_accession }
-    CLOSEST_REFERENCE
-        .out
-        .strain
-        .concat(ch_consensus_fasta.map{ it[0] }.combine(Channel.of('UNDEFINED')))
-        .unique{ it[0].id }
-        .set{ ch_closest_strain }
-    CLOSEST_REFERENCE
-        .out
-        .fasta
-        .concat(ch_consensus_fasta.map{ it[0] }.combine(ch_reference_fasta))
+    CLOSEST_REFERENCE(ch_consensus_fasta, ch_genome_fasta)
+    CLOSEST_REFERENCE.out.fasta
+        .concat(
+            ch_consensus_fasta
+                .map{ it[0] }
+                .combine(ch_reference_fasta)
+                .map{
+                    def new_meta = it[0].clone()
+                    new_meta['strain'] = it[1]['id']
+                    new_meta['blast_accession'] = it[1]['accession_num']
+                    return [new_meta, it[2]]
+                }
+        )
         .unique{ it[0].id }
         .set{ ch_closest_reference }
+    ch_closest_reference.dump(tag: 'closest_reference')
     ch_versions = ch_versions.mix(CLOSEST_REFERENCE.out.versions)
 
     //
