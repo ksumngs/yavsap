@@ -36,9 +36,6 @@
             "krona/importtext": {
                 "git_sha": "c1a3e48e237a64766199d83b391bdd07c5344f86"
             },
-            "minimap2/align": {
-                "git_sha": "dbfcbf9c170606766bb4e59d43816064151c2cf5"
-            },
             "nanofilt": {
                 "git_sha": "c1a3e48e237a64766199d83b391bdd07c5344f86"
             },
