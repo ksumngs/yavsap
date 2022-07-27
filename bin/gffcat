@@ -1,0 +1,86 @@
+#!/usr/bin/env julia
+using GFF3
+using HTTP
+
+accession_name = popfirst!(ARGS)
+
+seq_index = 0
+segment_num = 1
+
+gff_writer = GFF3.Writer(stdout)
+gff_header = GFF3.Record("##gff-version 3")
+write(gff_writer, gff_header)
+
+for gff_file in ARGS
+    gff_reader = GFF3.Reader(
+        open(gff_file, "r"); skip_directives=false, save_directives=true
+    )
+
+    seq_len = 1
+
+    for old_gff_record in gff_reader
+
+        # This is a sequence-region directive
+        if GFF3.isdirective(old_gff_record)
+            if contains(GFF3.content(old_gff_record), "sequence-region")
+                recs = split(GFF3.content(old_gff_record), ' ')
+                startpos = parse(Int, recs[3])
+                endpos = parse(Int, recs[4])
+                seq_len = endpos - startpos
+
+                region_record = GFF3.Record(
+                    join(
+                        [
+                            accession_name,
+                            "YAVSAP",
+                            "region",
+                            startpos + seq_index,
+                            endpos + seq_index,
+                            '.',
+                            '+',
+                            '.',
+                            "ID=SEGMENT$segment_num;gbkey=region",
+                        ],
+                        '\t',
+                    ),
+                )
+
+                write(gff_writer, region_record)
+            end #if
+
+            continue
+        end #if
+
+        old_record_content = Any[]
+        old_record_content = split(GFF3.content(old_gff_record), '\t')
+        old_attibutes = GFF3.attributes(old_gff_record)
+        new_attributes = String[]
+        for (key, vals) in old_attibutes
+            new_vals = String[]
+            for old_val in vals
+                push!(new_vals, HTTP.escapeuri(old_val))
+            end #for
+
+            new_val_string = join(new_vals, ',')
+            push!(new_attributes, "$key=$new_val_string")
+        end #for
+        push!(new_attributes, "gbkey=$(GFF3.featuretype(old_gff_record))")
+
+        @debug old_record_content
+        old_record_content[1] = accession_name
+        old_record_content[2] = "GenBank"
+        old_record_content[4] = string(parse(Int, old_record_content[4]) + seq_index)
+        old_record_content[5] = string(parse(Int, old_record_content[5]) + seq_index)
+        old_record_content[9] = string(join(new_attributes, ';'))
+        @debug old_record_content
+
+        new_gff_record = GFF3.Record(join(old_record_content, '\t'))
+        write(gff_writer, new_gff_record)
+
+
+    end #for record
+    global seq_index += (seq_len + 1)
+    global segment_num += 1
+end #for file
+
+close(gff_writer)

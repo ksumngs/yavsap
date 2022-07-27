@@ -1,8 +1,10 @@
 {
     "files.associations": {
         "*.config": "nextflow",
+        "bin/gffcat": "julia",
         "bin/igvgen": "julia",
         "bin/phylotreegen": "julia",
         "bin/sequencetable": "julia"
-    }
+    },
+    "julia.environmentPath": "/home/tchristensen/src/github/ksumngs/yavsap/results/report"
 }
