@@ -5,6 +5,7 @@ include { EDIRECT_EFETCH } from '../../modules/ksumngs/nf-modules/edirect/efetch
 include { EDIRECT_ESEARCH } from '../../modules/ksumngs/nf-modules/edirect/esearch/main.nf'
 include { EMBOSS_SEQRET as SEQRET_FASTA } from '../../modules/ksumngs/nf-modules/emboss/seqret/main'
 include { EMBOSS_SEQRET as SEQRET_GFF } from '../../modules/ksumngs/nf-modules/emboss/seqret/main'
+include { GFFCAT } from '../../modules/local/gffcat'
 include { SAMTOOLS_FAIDX } from '../../modules/nf-core/modules/samtools/faidx/main.nf'
 
 workflow REFERENCE_DOWNLOAD {
@@ -106,6 +107,39 @@ workflow REFERENCE_DOWNLOAD {
 
     SAMTOOLS_FAIDX(fasta)
     SAMTOOLS_FAIDX.out.fai.set{ fai }
+
+    SEQRET_GFF.out.outseq
+        .map{
+            def meta_new = it[0].clone()
+            return [
+                it[0].id,
+                [meta_new, it[1]]
+            ]
+        }
+        .groupTuple(
+            by: 0,
+            sort: { it[0]['strand_num'] },
+            size: num_strains
+        )
+        .map{
+            def id = it[0]
+            def records = it[1]
+            def accession_nums = []
+            def gff_files = []
+
+            records.each{
+                accession_nums << it[0]['accession_num']
+                gff_files << it[1]
+            }
+
+            def combo_accession_num = accession_nums.join('|')
+
+            return [[id: id, accession_num: combo_accession_num], gff_files]
+        }
+        .set{ ch_sorted_gff }
+    ch_sorted_gff.dump(tag: 'sorted_gff')
+
+    GFFCAT(ch_sorted_gff)
 
     versions = versions.mix(EDIRECT_ESEARCH.out.versions.first())
     versions = versions.mix(EDIRECT_EFETCH.out.versions.first())
