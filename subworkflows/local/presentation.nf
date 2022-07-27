@@ -8,7 +8,6 @@ workflow PRESENTATION {
     bam
     reference
     strain
-    accession
     consensus
     haplotype_fasta
     haplotype_yaml
@@ -17,16 +16,20 @@ workflow PRESENTATION {
     main:
     versions = Channel.empty()
 
-    HAPLOTYPECONVERT(
-        strain
-            .join(accession)
-            .join(consensus)
-            .join(haplotype_fasta, remainder: true)
-            .join(haplotype_yaml, remainder: true)
-            .map{ it[4] ? it : [it[0], it[1], it[2], it[3], [], it[5]] }
-            .map{ it[5] ? it : [it[0], it[1], it[2], it[3], it[4], []] },
-        reference
-    )
+    strain
+        .map{ [it[0].id, it] }
+        .join(
+            consensus.map{ [it[0].id, it] }
+        )
+        .map{ [it[1][0], it[2][1]] }
+        .join(haplotype_fasta)
+        .join(haplotype_yaml)
+        .map{ it[2] ? it : [it[0], it[1], [], it[3]] }
+        .map{ it[3] ? it : [it[0], it[1], it[2], it[3]] }
+        .set{ ch_haplotype_meta }
+    ch_haplotype_meta.dump(tag: 'haplotype_meta')
+
+    HAPLOTYPECONVERT(ch_haplotype_meta, reference.map{ it[1] })
     HAPLOTYPECONVERT
         .out
         .yaml
@@ -52,7 +55,7 @@ workflow PRESENTATION {
     }
     SEQUENCETABLE(
         ch_collected_haplotypes,
-        reference,
+        reference.map{ it[1] },
         sequencetable_template,
         tool_meta,
         freezetable_js

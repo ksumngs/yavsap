@@ -5,7 +5,7 @@ process HAPLOTYPECONVERT {
     container 'quay.io/millironx/biojulia:1.6.6-2.0.5-9877308'
 
     input:
-    tuple val(meta), val(strain), val(ncbi), path(consensus), path(haplotype_fasta), path(haplotype_yaml)
+    tuple val(meta), path(consensus), path(haplotype_fasta), path(haplotype_yaml)
     path(reference)
 
     output:
@@ -23,8 +23,8 @@ process HAPLOTYPECONVERT {
     haplotypestandardizer \\
         ${meta.id} \\
         ${reference} \\
-        '${strain}' \\
-        '${ncbi}' \\
+        '${meta.strain}' \\
+        '${meta.blast_accession}' \\
         ${consensus} \\
         ${yaml} \\
         ${fasta} \\
