@@ -267,6 +267,7 @@ workflow YAVSAP {
     PRESENTATION(
         ch_bam,
         ch_reference_fasta,
+        ch_reference_gff,
         ch_closest_reference,
         ch_consensus_fasta,
         ch_haplotype_fasta,

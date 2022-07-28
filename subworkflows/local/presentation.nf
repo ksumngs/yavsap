@@ -7,6 +7,7 @@ workflow PRESENTATION {
     take:
     bam
     reference
+    gff
     strain
     consensus
     haplotype_fasta
@@ -56,6 +57,7 @@ workflow PRESENTATION {
     SEQUENCETABLE(
         ch_collected_haplotypes,
         reference.map{ it[1] },
+        gff.map{ it[1] },
         sequencetable_template,
         tool_meta,
         freezetable_js
