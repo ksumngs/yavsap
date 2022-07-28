@@ -19,13 +19,13 @@ workflow CONSENSUS {
     else if (params.platform == 'nanopore') {
         BamPlusReference = bam
             .join(bai)
-            .combine(reference)
+            .combine(reference.map{ it[1] })
 
         HAPLINK_VARIANTS(BamPlusReference)
         HAPLINK_VARIANTS.out.vcf.set{ vcf }
         versions = versions.mix(HAPLINK_VARIANTS.out.versions)
 
-        HAPLINK_CONSENSUS(vcf.combine(reference))
+        HAPLINK_CONSENSUS(vcf.combine(reference.map{ it[1] }))
         HAPLINK_CONSENSUS.out.fasta.set{ fasta }
         versions = versions.mix(HAPLINK_CONSENSUS.out.versions)
     }
