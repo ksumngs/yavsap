@@ -322,10 +322,12 @@ Briefly, the reference genome is listed in the top, left corner. Display options
 the gray bar the genome annotations are shown along the length of the reference
 genome. These are colored based on the type of annotation.
 
-- <span style="background-color: limegreen;">Gene</span>
-- <span style="background-color: gold;">CDS</span>
-- <span style="background-color: forestgreen;">Mature Protein</span>
-- <span style="background-color: blue;">Everything else</span>
+- <span style="background-color: rgb(0,0,255);">Genome segment</span>
+- <span style="background-color: rgb(0,178,0);">Gene</span>
+- <span style="background-color: rgb(255,255,0);">CDS</span>
+- <span style="background-color: rgb(0,90,40);">Mature peptide</span>
+- <span style="background-color: rgb(170,170,170);">Miscellaneous feature</span>
+- <span style="background-color: rgb(255,180,0);">Everything else</span>
 
 A coverage graph is displayed in a histogram labelled with each sample name.
 Along those coverage graphs, IGV will attempt to call variants using colored
