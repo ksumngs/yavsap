@@ -1,12 +1,14 @@
 #!/usr/bin/env julia
 using EzXML
 using FASTX
+using GFF3
 using Kelpie
 using Mustache
 using YAML
 
 haplotype_yaml = popfirst!(ARGS)
 reference_fasta = popfirst!(ARGS)
+reference_annotations = popfirst!(ARGS)
 template_file = popfirst!(ARGS)
 tool_meta_yaml = popfirst!(ARGS)
 freeze_script = popfirst!(ARGS)
@@ -92,6 +94,43 @@ close(reference_reader)
 reference_name = FASTA.identifier(reference_record)
 reference_sequence = string(FASTA.sequence(reference_record))
 
+# Read in the records from the annotation file
+annotation_reader = GFF3.Reader(open(reference_annotations, "r"))
+segment_locs = UnitRange[]
+for gff_record in annotation_reader
+    if GFF3.source(gff_record) == "YAVSAP"
+        push!(segment_locs, UnitRange(GFF3.seqstart(gff_record), GFF3.seqend(gff_record)))
+    end #if
+end #for
+close(annotation_reader)
+
+bs_bg = Dict(
+    1 => "success",
+    2 => "info",
+    3 => "danger",
+    4 => "warning",
+    5 => "active",
+)
+
+segment_td = []
+start_pos = 5
+segment_num = 1
+for location in segment_locs
+    segment_length = last(location) - first(location)
+    bg_index = segment_num
+    while bg_index > 5
+        bg_index -= 5
+    end #while
+    bg_class = bs_bg[bg_index]
+    push!(segment_td, td("Segment $segment_num"; colspan=10, class=bg_class))
+    for i in 1:(segment_length-9)
+        push!(segment_td, td(""; class=bg_class))
+    end #for
+
+    global segment_num += 1
+end #for
+annotations_row = tr(td(""; colspan=5), segment_td...)
+
 # Get the header
 header_row = tr(
     th("Sample"; colspan=3),
@@ -114,7 +153,9 @@ for sample in YAML.load_file(haplotype_yaml)
 end #for
 
 # Plug it all into one big table
-genome_table = table(thead(header_row), tbody(reference_row, other_rows...); class="table")
+genome_table = table(
+    thead(header_row), tbody(annotations_row, reference_row, other_rows...); class="table"
+)
 
 # Get the table as xml
 io = IOBuffer()

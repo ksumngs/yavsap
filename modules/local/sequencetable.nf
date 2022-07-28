@@ -3,11 +3,12 @@ process SEQUENCETABLE {
     label 'process_low'
     cache false
 
-    container 'quay.io/millironx/biojulia:1.6.6-2.0.5-9877308'
+    container 'quay.io/millironx/biojulia:1.6.7-2.0.5-387d929'
 
     input:
     path(haplotypes, stageAs: 'haplotypes.yml')
     path(reference, stageAs: 'reference.fasta')
+    path(annotation, stageAs: 'reference.gff')
     path(template, stageAs: 'template.html')
     path(toolmeta, stageAs: 'tool.yml')
     path(freezetable_js, stageAs: 'freezetable.jquery.js')
@@ -24,6 +25,7 @@ process SEQUENCETABLE {
     sequencetable \\
             ${haplotypes} \\
             ${reference} \\
+            ${annotation} \\
             ${template} \\
             ${toolmeta} \\
             ${freezetable_js} \\
