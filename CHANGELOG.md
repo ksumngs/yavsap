@@ -12,6 +12,7 @@ and this project adheres to
 
 - Multi-strand reference genome support ([#46](https://github.com/ksumngs/yavsap/pull/46)
   fixes [#25](https://github.com/ksumngs/yavsap/issues/25))
+- Genome annotations downloading ([#50](https://github.com/ksumngs/yavsap/pull/50))
 
 ## Changed
 
