@@ -140,6 +140,7 @@ workflow REFERENCE_DOWNLOAD {
     ch_sorted_gff.dump(tag: 'sorted_gff')
 
     GFFCAT(ch_sorted_gff)
+    GFFCAT.out.gff.set{ gff }
 
     versions = versions.mix(EDIRECT_ESEARCH.out.versions.first())
     versions = versions.mix(EDIRECT_EFETCH.out.versions.first())
@@ -150,5 +151,6 @@ workflow REFERENCE_DOWNLOAD {
     emit:
     fasta = fasta.first()
     fai = fai.first()
+    gff = gff.first()
     versions
 }
