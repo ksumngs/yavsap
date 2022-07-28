@@ -135,6 +135,7 @@ workflow YAVSAP {
     //
     REFERENCE_DOWNLOAD("${params.genome}")
     REFERENCE_DOWNLOAD.out.fasta.set{ ch_reference_fasta }
+    REFERENCE_DOWNLOAD.out.gff.set{ ch_reference_gff }
     ch_versions = ch_versions.mix(REFERENCE_DOWNLOAD.out.versions)
 
     //
