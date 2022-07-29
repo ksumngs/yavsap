@@ -8,6 +8,8 @@ and this project adheres to
 
 ## [Unreleased]
 
+## [0.9.0] - 2022-07-29
+
 ## Added
 
 - Multi-strand reference genome support ([#46](https://github.com/ksumngs/yavsap/pull/46)
@@ -260,7 +262,8 @@ This is a major overhaul of YAVSAP to make it use nf-core's DSL2 modules.
 - Krona graphs of Kraken2 output
 - BLAST of assemblies and unclassified reads
 
-[unreleased]: https://github.com/ksumngs/yavsap/compare/v0.8.0...HEAD
+[unreleased]: https://github.com/ksumngs/yavsap/compare/v0.9.0...HEAD
+[0.9.0]: https://github.com/ksumngs/yavsap/compare/v0.8.0...v0.9.0
 [0.8.0]: https://github.com/ksumngs/yavsap/compare/v0.7.1...v0.8.0
 [0.7.1]: https://github.com/ksumngs/yavsap/compare/v0.7.0...v0.7.1
 [0.7.0]: https://github.com/ksumngs/yavsap/compare/v0.6.5-alpha...v0.7.0
