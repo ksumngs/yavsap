@@ -2,7 +2,7 @@ process HAPLINK_CONSENSUS {
     tag "$meta.id"
     label 'process_low'
 
-    container 'quay.io/millironx/haplink:0.7.0'
+    container 'quay.io/millironx/haplink:0.7.1'
 
     input:
     tuple val(meta), path(variantcalls), path(reference)
