@@ -30,6 +30,12 @@
   > through efficient noise reduction. Nucleic Acids Res. 2021 Sep
   > 27;49(17):e102. doi: 10.1093/nar/gkab576. PMID: 34214168; PMCID: PMC8464054.
 
+- [EMBOSS](http://emboss.sourceforge.net/)
+
+  > Rice P, Longden I, Bleasby A. EMBOSS: The European Molecular Biology Open
+  > Software Suite. Trends in Genetics. 2000 June 1;16(6):276-7. doi:
+  > 10.1016/S0168-9525(00)02024-2. PMID: 10827456.
+
 - [Entrez Direct](https://www.ncbi.nlm.nih.gov/books/NBK179288/)
 
 - [FastQC](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/)

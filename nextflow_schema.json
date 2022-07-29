@@ -491,7 +491,9 @@
                 },
                 "breed": {
                     "type": "string",
-                    "hidden": true
+                    "default": "plain",
+                    "hidden": true,
+                    "enum": ["plain", "charolais", "angus", "baldy", "hereford", "holstein", "aryshire", "random"]
                 },
                 "tracedir": {
                     "type": "string",

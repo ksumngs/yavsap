@@ -2,14 +2,16 @@ include { HAPLOTYPECONVERT } from '../../modules/local/haplotypeconvert'
 include { IGV } from '../../modules/local/igv'
 include { PHYLOTREEJS } from '../../modules/local/phylotreejs'
 include { SEQUENCETABLE } from '../../modules/local/sequencetable'
+include { VARTABLE } from '../../modules/local/vartable'
 
 workflow PRESENTATION {
     take:
     bam
     reference
+    gff
     strain
-    accession
     consensus
+    variants
     haplotype_fasta
     haplotype_yaml
     tree
@@ -17,16 +19,39 @@ workflow PRESENTATION {
     main:
     versions = Channel.empty()
 
-    HAPLOTYPECONVERT(
-        strain
-            .join(accession)
-            .join(consensus)
-            .join(haplotype_fasta, remainder: true)
-            .join(haplotype_yaml, remainder: true)
-            .map{ it[4] ? it : [it[0], it[1], it[2], it[3], [], it[5]] }
-            .map{ it[5] ? it : [it[0], it[1], it[2], it[3], it[4], []] },
-        reference
+    tool_meta = []
+    if (params.platform == 'illumina') {
+        tool_meta = file(
+            "${workflow.projectDir}/assets/cliquesnv_info.yml", checkIfExists: true
+        )
+    }
+    else if (params.platform == 'nanopore') {
+        tool_meta = file(
+            "${workflow.projectDir}/assets/haplink_info.yml", checkIfExists: true
+        )
+    }
+    vartable_template = file(
+        "${workflow.projectDir}/assets/variants_mqc.html", checkIfExists: true
     )
+
+    VARTABLE(variants.collect{ it[1] }, tool_meta, vartable_template)
+    VARTABLE.out.mqc_html.set{ vartable }
+    versions = versions.mix(VARTABLE.out.versions)
+
+    strain
+        .map{ [it[0].id, it] }
+        .join(
+            consensus.map{ [it[0].id, it] }
+        )
+        .map{ [it[1][0], it[2][1]] }
+        .join(haplotype_fasta)
+        .join(haplotype_yaml)
+        .map{ it[2] ? it : [it[0], it[1], [], it[3]] }
+        .map{ it[3] ? it : [it[0], it[1], it[2], it[3]] }
+        .set{ ch_haplotype_meta }
+    ch_haplotype_meta.dump(tag: 'haplotype_meta')
+
+    HAPLOTYPECONVERT(ch_haplotype_meta, reference.map{ it[1] })
     HAPLOTYPECONVERT
         .out
         .yaml
@@ -39,20 +64,11 @@ workflow PRESENTATION {
     sequencetable_template = file(
         "${workflow.projectDir}/assets/kelpie_mqc.html", checkIfExists: true
     )
-    tool_meta = []
-    if (params.platform == 'illumina') {
-        tool_meta = file(
-            "${workflow.projectDir}/assets/cliquesnv_info.yml", checkIfExists: true
-        )
-    }
-    else if (params.platform == 'nanopore') {
-        tool_meta = file(
-            "${workflow.projectDir}/assets/haplink_info.yml", checkIfExists: true
-        )
-    }
+
     SEQUENCETABLE(
         ch_collected_haplotypes,
-        reference,
+        reference.map{ it[1] },
+        gff.map{ it[1] },
         sequencetable_template,
         tool_meta,
         freezetable_js
@@ -86,6 +102,7 @@ workflow PRESENTATION {
     versions = versions.mix(PHYLOTREEJS.out.versions)
 
     emit:
+    vartable
     seqtable
     igv
     phylotree

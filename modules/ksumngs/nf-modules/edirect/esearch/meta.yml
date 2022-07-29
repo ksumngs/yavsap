@@ -11,6 +11,11 @@ tools:
       licence: ["PUBLIC DOMAIN"]
 
 input:
+  - meta:
+      type: map
+      description: |
+        Groovy Map containing sample information
+        e.g. [ id:'test', single_end:false ]
   - query:
       type: string
       description: The search to be performed against the NCBI databases
@@ -19,6 +24,11 @@ input:
       description: Which database to search
 
 output:
+  - meta:
+      type: map
+      description: |
+        Groovy Map containing sample information
+        e.g. [ id:'test', single_end:false ]
   - versions:
       type: file
       description: File containing software versions

@@ -229,10 +229,21 @@ class NfcoreTemplate {
         return colorcodes
     }
 
+    public static Map cowColors(Boolean monochrome_logs) {
+        Map colorcodes = [:]
+
+        colorcodes['reset'] = monochrome_logs ? '' : "\033[0m"
+        colorcodes['white'] = monochrome_logs ? '' : "\033[0;38;5;231m"
+        colorcodes['black'] = monochrome_logs ? '' : "\033[0;38;5;16m"
+        colorcodes['red']   = monochrome_logs ? '' : "\033[0;38;5;160m"
+
+        return colorcodes
+    }
+
     //
     // Cattle breeds converted into ASCII colors
     public static Map breedColors(Boolean monochrome_logs) {
-        Map colors = logColours(monochrome_logs)
+        Map colors = cowColors(monochrome_logs)
 
         Map breedcolors = [
             plain:
@@ -294,11 +305,11 @@ class NfcoreTemplate {
                     poll:   colors.white,
                     face:   colors.white,
                     nose:   colors.white,
-                    body1:  colors.bred,
-                    body2:  colors.bred,
+                    body1:  colors.red,
+                    body2:  colors.red,
                     tail:   colors.white,
                     udder:  colors.white,
-                    hooves: colors.bred
+                    hooves: colors.red
                 ],
             holstein:
                 [
@@ -315,12 +326,12 @@ class NfcoreTemplate {
                 ],
             aryshire:
                 [
-                    ears:   colors.bred,
+                    ears:   colors.red,
                     eyes:   colors.white,
-                    poll:   colors.bred,
-                    face:   colors.bred,
-                    nose:   colors.bred,
-                    body1:  colors.bred,
+                    poll:   colors.red,
+                    face:   colors.red,
+                    nose:   colors.red,
+                    body1:  colors.red,
                     body2:  colors.white,
                     tail:   colors.white,
                     udder:  colors.white,

@@ -21,12 +21,16 @@ module_order:
 report_section_order:
   minimap2:
     order: -1000
-  cliquesnv:
+  cliquesnv_variants:
     order: -1001
-  haplink_jl:
+  haplink_jl_variants:
     order: -1001
-  "raxml-ng":
+  cliquesnv_haplotype:
     order: -1002
+  haplink_jl_haplotype:
+    order: -1002
+  "raxml-ng":
+    order: -1003
   software_versions:
     order: -1100
   "yavsap-summary":

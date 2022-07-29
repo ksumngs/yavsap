@@ -68,7 +68,7 @@ include { VARIANTS } from '../subworkflows/local/variants'
 //
 include { CUSTOM_DUMPSOFTWAREVERSIONS } from '../modules/nf-core/modules/custom/dumpsoftwareversions/main.nf'
 include { KRAKEN2_DBPREPARATION } from '../modules/local/kraken2/dbpreparation.nf'
-include { MINIMAP2_ALIGN as MINIMAP2_REALIGN } from '../modules/ksumngs/nf-modules/minimap2/align/main'
+include { MINIMAP2_ALIGN as MINIMAP2_REALIGN } from '../modules/nf-core/modules/minimap2/align/main'
 include { MINIMAP2_ALIGN } from '../modules/nf-core/modules/minimap2/align/main'
 include { MULTIQC } from '../modules/nf-core/modules/multiqc/main.nf'
 include { SAMTOOLS_INDEX as SAMTOOLS_REINDEX } from '../modules/nf-core/modules/samtools/index/main'
@@ -133,14 +133,15 @@ workflow YAVSAP {
     //
     // SUBWORKFLOW: Download reference genome from NCBI
     //
-    REFERENCE_DOWNLOAD()
+    REFERENCE_DOWNLOAD("${params.genome}")
     REFERENCE_DOWNLOAD.out.fasta.set{ ch_reference_fasta }
+    REFERENCE_DOWNLOAD.out.gff.set{ ch_reference_gff }
     ch_versions = ch_versions.mix(REFERENCE_DOWNLOAD.out.versions)
 
     //
     // MODULE: Align reads into BAM format using minimap2
     //
-    MINIMAP2_ALIGN(ch_filtered, ch_reference_fasta, true, false, false)
+    MINIMAP2_ALIGN(ch_filtered, ch_reference_fasta.map{ it[1] }, true, false, false)
     MINIMAP2_ALIGN.out.bam.set{ ch_bam }
     ch_versions = ch_versions.mix(MINIMAP2_ALIGN.out.versions.first())
 
@@ -168,7 +169,6 @@ workflow YAVSAP {
     // SUBWORKFLOW: Download and reformat the strain reference genomes
     //
     GENOME_DOWNLOAD("${params.genome_list}")
-    GENOME_DOWNLOAD.out.strain.set{ ch_genome_strain }
     GENOME_DOWNLOAD.out.fasta.set{ ch_genome_fasta }
     ch_versions = ch_versions.mix(GENOME_DOWNLOAD.out.versions)
 
@@ -177,31 +177,47 @@ workflow YAVSAP {
     //   back to the reference genome and an 'UNDEFINED' strain designation in
     //   case of failure
     //
-    CLOSEST_REFERENCE(ch_consensus_fasta, ch_genome_strain, ch_genome_fasta)
-    CLOSEST_REFERENCE
-        .out
-        .accession
-        .concat(ch_consensus_fasta.map{ it[0] }.combine(Channel.of(params.genome)))
-        .unique{ it[0].id }
-        .set{ ch_closest_accession }
-    CLOSEST_REFERENCE
-        .out
-        .strain
-        .concat(ch_consensus_fasta.map{ it[0] }.combine(Channel.of('UNDEFINED')))
-        .unique{ it[0].id }
-        .set{ ch_closest_strain }
-    CLOSEST_REFERENCE
-        .out
-        .fasta
-        .concat(ch_consensus_fasta.map{ it[0] }.combine(ch_reference_fasta))
+    CLOSEST_REFERENCE(ch_consensus_fasta, ch_genome_fasta)
+    CLOSEST_REFERENCE.out.fasta
+        .concat(
+            ch_consensus_fasta
+                .map{ it[0] }
+                .combine(ch_reference_fasta)
+                .map{
+                    def new_meta = it[0].clone()
+                    new_meta['strain'] = it[1]['id']
+                    new_meta['blast_accession'] = it[1]['accession_num']
+                    return [new_meta, it[2]]
+                }
+        )
         .unique{ it[0].id }
         .set{ ch_closest_reference }
+    ch_closest_reference.dump(tag: 'closest_reference')
     ch_versions = ch_versions.mix(CLOSEST_REFERENCE.out.versions)
 
     //
     // MODULE: Realign reads into BAM format using minimap2
     //
-    MINIMAP2_REALIGN(ch_filtered.join(ch_closest_reference), true, false, false)
+    ch_filtered
+        .map{ [it[0].id, it] }
+        .join(
+            ch_closest_reference
+                .map{ [it[0].id, it] }
+        )
+        .multiMap{
+            reads: [it[2][0], it[1][1]]
+            reference: it[2][1]
+        }
+        .set{ ch_realign_input }
+    ch_realign_input.reads.dump(tag: 'realign_reads')
+    ch_realign_input.reference.dump(tag: 'realign_reference')
+    MINIMAP2_REALIGN(
+        ch_realign_input.reads,
+        ch_realign_input.reference,
+        true,
+        false,
+        false
+    )
     MINIMAP2_REALIGN.out.bam.set{ ch_realigned_bam }
     ch_versions = ch_versions.mix(MINIMAP2_REALIGN.out.versions.first())
 
@@ -222,8 +238,8 @@ workflow YAVSAP {
     //
     // SUBWORKFLOW: Haplotype calling
     //
-    ch_closest_strain.map{ [it[0], []] }.set{ ch_haplotype_fasta }
-    ch_closest_strain.map{ [it[0], []] }.set{ ch_haplotype_yaml }
+    ch_closest_reference.map{ [it[0], []] }.set{ ch_haplotype_fasta }
+    ch_closest_reference.map{ [it[0], []] }.set{ ch_haplotype_yaml }
     if (!params.skip_haplotype) {
         HAPLOTYPING(ch_realigned_bam, ch_vcf, ch_closest_reference)
         HAPLOTYPING.out.fasta.set{ ch_haplotype_fasta }
@@ -239,8 +255,7 @@ workflow YAVSAP {
         PHYLOGENETIC_TREE(
             ch_haplotype_fasta,
             ch_consensus_fasta,
-            ch_genome_fasta,
-            ch_genome_strain
+            ch_genome_fasta
         )
         PHYLOGENETIC_TREE.out.tree.set{ ch_tree }
         ch_versions = ch_versions.mix(PHYLOGENETIC_TREE.out.versions)
@@ -252,13 +267,15 @@ workflow YAVSAP {
     PRESENTATION(
         ch_bam,
         ch_reference_fasta,
-        ch_closest_strain,
-        ch_closest_accession,
+        ch_reference_gff,
+        ch_closest_reference,
         ch_consensus_fasta,
+        ch_vcf,
         ch_haplotype_fasta,
         ch_haplotype_yaml,
         ch_tree
     )
+    PRESENTATION.out.vartable.set{ ch_vartable_mqc }
     PRESENTATION.out.seqtable.set{ ch_seqtable_mqc }
     PRESENTATION.out.igv.set{ ch_igv_mqc }
     PRESENTATION.out.phylotree.set{ ch_phylotree_mqc }
@@ -285,6 +302,7 @@ workflow YAVSAP {
     ch_multiqc_files = ch_multiqc_files.mix(ch_qc.collect{it[1]}.ifEmpty([]))
     ch_multiqc_files = ch_multiqc_files.mix(ch_trimlog.collect{it[1]}.ifEmpty([]))
     ch_multiqc_files = ch_multiqc_files.mix(ch_kreport.collect{it[1]}.ifEmpty([]))
+    ch_multiqc_files = ch_multiqc_files.mix(ch_vartable_mqc.ifEmpty([]))
     ch_multiqc_files = ch_multiqc_files.mix(ch_seqtable_mqc.ifEmpty([]))
     ch_multiqc_files = ch_multiqc_files.mix(ch_igv_mqc.ifEmpty([]))
     ch_multiqc_files = ch_multiqc_files.mix(ch_phylotree_mqc.ifEmpty([]))

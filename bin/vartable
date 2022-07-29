@@ -1,0 +1,95 @@
+#!/usr/bin/env julia
+using EzXML
+using Kelpie
+using Mustache
+using OrderedCollections
+using VariantCallFormat
+using YAML
+
+info_fields = OrderedDict(
+    "pos" => "Position",
+    "ref" => "Reference Base",
+    "alt" => "Alternate Base",
+    "qual" => "Quality",
+)
+samples = OrderedDict()
+
+# Read in the metadata
+meta_file = popfirst!(ARGS)
+tool_metadata = YAML.load_file(meta_file)
+mustache_table = Dict(
+    "toolname" => tool_metadata["name"],
+    "toolnamelower" => lowercase(tool_metadata["name"]),
+    "tooldescription" => tool_metadata["description"],
+    "toollink" => tool_metadata["url"],
+    "doi" => tool_metadata["doi"],
+)
+
+# Start writing an output file
+template_file = popfirst!(ARGS)
+write(stdout, render_from_file(template_file, mustache_table))
+
+for vcf_file in ARGS
+    # Open the file
+    vcf_reader = VCF.Reader(open(vcf_file, "r"))
+
+    # Add all info fields to the fields dictionary
+    for meta in findall(VariantCallFormat.header(vcf_reader), "INFO")
+        info_fields[meta["ID"]] = meta["Description"]
+    end #for
+
+    variants = Dict[]
+
+    for vcf_record in vcf_reader
+        first(VCF.filter(vcf_record)) == "PASS" || continue
+
+        variant = Dict()
+
+        variant_info = Dict(VCF.info(vcf_record))
+        for key in keys(info_fields)
+            variant[key] = get(variant_info, key, "")
+        end #for
+
+        variant["pos"] = VCF.pos(vcf_record)
+        variant["ref"] = VCF.ref(vcf_record)
+        variant["alt"] = first(VCF.alt(vcf_record))
+        variant["qual"] = VCF.qual(vcf_record)
+
+        push!(variants, variant)
+    end #for
+
+    close(vcf_reader)
+    samplename = first(splitext(basename(vcf_file)))
+    samples["$samplename"] = variants
+end #for
+
+header_fields = vcat(
+    ["Sample ID", "Position", "Reference Base", "Alternate Base", "Quality"],
+    values(info_fields)...,
+)
+
+header_row = tr(th("Sample Name"), [th(val; class=key) for (key, val) in info_fields]...)
+
+table_rows = []
+
+for (samplename, variants) in samples
+    num_variants = length(variants)
+
+    is_first = true
+    for variant in variants
+        var_row = []
+
+        if is_first
+            push!(var_row, th(samplename; rowspan=num_variants))
+        end #if
+
+        for (key, _) in info_fields
+            variant_val = get(variant, key, "")
+            push!(var_row, td(variant_val; class=key))
+        end #for
+        is_first = false
+        push!(table_rows, tr(var_row...))
+    end #for
+end #for
+
+EzXML.prettyprint(stdout, table(header_row, table_rows...; class="table table-striped"))

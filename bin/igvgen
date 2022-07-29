@@ -17,12 +17,41 @@ d = Dict(
             ),
             "tracks" => [
                 Dict(
-                    "type" => "alignment",
-                    "format" => "bam",
-                    "url" => "$samplename.bam",
-                    "indexURL" => "$samplename.bam.bai",
-                    "name" => samplename,
-                ) for samplename in readlines(sample_list)
+                    "type" => "annotation",
+                    "format" => "gff3",
+                    "url" => "reference.gff",
+                    "colorBy" => "gbkey",
+                    "name" => "Features",
+                    "displayMode" => "EXPANDED",
+                    "filterTypes" => [
+                        "chromosome",
+                        "3'UTR",
+                        "5'UTR",
+                        "exon",
+                        "intron",
+                        "mRNA",
+                        "databank_entry",
+                        "ORF",
+                        "primer_binding_site",
+                    ],
+                    "colorTable" => Dict(
+                        "CDS" => "rgb(255,255,0)",
+                        "gene" => "rgb(0,178,0)",
+                        "mat_peptide" => "rgb(0,90,40)",
+                        "misc_feature" => "rgb(170,170,170)",
+                        "region" => "rgb(0,0,255)",
+                        "*" => "rgb(255,180,0)",
+                    )
+                ),
+                [
+                    Dict(
+                        "type" => "alignment",
+                        "format" => "bam",
+                        "url" => "$samplename.bam",
+                        "indexURL" => "$samplename.bam.bai",
+                        "name" => samplename,
+                    ) for samplename in readlines(sample_list)
+                ]...,
             ],
         ),
     ),

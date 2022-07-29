@@ -12,12 +12,12 @@
 #
 import os
 import sys
-
+sys.path.insert(0, os.path.abspath('.'))
 
 # -- Project information -----------------------------------------------------
 
 project = "Yet Another Viral Subspecies Analysis Pipeline"
-copyright = "2021, Thomas A. Christensen II"
+copyright = "2022, Thomas A. Christensen II"
 author = "Thomas A. Christensen II"
 
 
@@ -27,9 +27,12 @@ author = "Thomas A. Christensen II"
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    "sphinx.ext.intersphinx",
-    "sphinx.ext.autosectionlabel",
-    "myst_parser",
+    'myst_parser',
+    'paramparse',
+    'sphinx.ext.autosectionlabel',
+    'sphinx.ext.githubpages',
+    'sphinx.ext.intersphinx',
+    'sphinx_multiversion',
 ]
 
 myst_enable_extensions = [
@@ -53,11 +56,29 @@ exclude_patterns = ["_build", "_ext", "Thumbs.db", ".DS_Store"]
 #
 html_theme = "sphinx_rtd_theme"
 html_logo = "images/yavsap_logo.png"
+html_theme_options = {
+    'style_external_links': True,
+}
+
+html_context = {
+    'display_github': True,
+    'github_repo': 'ksumngs/yavsap',
+}
+
+github_url = 'https://github.com/ksumngs/v-met/yavsap'
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 # html_static_path = ["_static"]
+
+html_sidebars = {
+    '**': [
+        'versions.html',
+    ],
+}
+
+smv_branch_whitelist = r'.*(develop|master)'
 
 intersphinx_mapping = {
     "nextflow": ("https://nextflow.io/docs/latest/", None),

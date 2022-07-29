@@ -2,7 +2,7 @@ process HAPLINK_HAPLOTYPES {
     tag "$meta.id"
     label 'process_high'
 
-    container 'quay.io/millironx/haplink:0.7.0'
+    container 'quay.io/millironx/haplink:0.7.1'
 
     input:
     tuple val(meta), path(bam), path(vcf), path(reference)

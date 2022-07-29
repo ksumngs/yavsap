@@ -110,7 +110,7 @@ nextflow run ksumngs/yavsap \
 The typical command for running the pipeline is as follows:
 
 ```console
-nextflow run ksumngs/yavsap -profile docker --input . --outdir <OUTDIR> --platform illumina --kraken2_db https://genome-idx.s3.amazonaws.com/kraken/k2_viral_20210517.tar.gz --keep_taxid classified
+nextflow run ksumngs/yavsap -profile docker --input . --outdir illumina --kraken2_db https://genome-idx.s3.amazonaws.com/kraken/k2_viral_20210517.tar.gz --keep_taxid classified < OUTDIR > --platform
 ```
 
 This will launch the pipeline with the `docker` configuration profile. See below for more information about profiles.
@@ -218,11 +218,12 @@ to provide it with
 2. Genome examples of different strains or relatives of the virus of interest
 
 YAVSAP needs these in the form of NCBI GenBank Accession Numbers. To pick a new
-reference genome, simply pass the accession number to the {ref}`--genome <Reference Genome Options>` parameter, e.g. `nextflow run ksumngs/yavsap --genome 'NC_001437.1'`.
+reference genome, simply pass the accession number to the {ref}`--genome <Reference Genome Options>` parameter, e.g. `nextflow run ksumngs/yavsap --genome 'NC_001437.1'`. If the reference genome is multi-segmented, then
+separate the segments by commas, e.g. `nextflow run ksumngs/yavsap --genome 'NC_014395.1,NC_014396.1,NC_014397.1'`.
 
 Close relative examples must be provided as a tab-delimited document with the
-name in the first column, and the NCBI accession number in the second column. No
-header is allowed in the comparison genomes file.
+name in the first column, and the NCBI accession numbers of each virus segment
+in the following columns. No header is allowed in the comparison genomes file.
 
 Nodes will be grouped in the output phylogenetic tree based on the name before
 any underscore, to allow for easy visualization of known related groups. In
@@ -240,10 +241,11 @@ Once a comparison genomes file is prepared, the path to it can be passed to the
 YAVSAP comes with some example comparison genomes files. These can be referred
 to by name, rather than by path(e.g. `nextflow run ksumngs/yavsap --genome_list jev`). They are
 
-| Virus                                                                                                                        | Name  | Recommended Reference                                           |
-| ---------------------------------------------------------------------------------------------------------------------------- | ----- | --------------------------------------------------------------- |
-| [Japanese Encephalitis Virus (JEV)](https://www.ncbi.nlm.nih.gov/data-hub/taxonomy/11072/)                                   | `jev` | [NC_001437.1](https://www.ncbi.nlm.nih.gov/nuccore/NC_001437.1) |
-| [Severe acute respiratory syndrome coronavirus 2 (SARS-CoV-2)](https://www.ncbi.nlm.nih.gov/labs/data-hub/taxonomy/2697049/) | `sc2` | [NC_045512.2](https://www.ncbi.nlm.nih.gov/nuccore/NC_045512.2) |
+| Virus                                                                                                                        | Name   | Recommended Reference                                                                                                                                                                           |
+| ---------------------------------------------------------------------------------------------------------------------------- | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [Japanese Encephalitis Virus (JEV)](https://www.ncbi.nlm.nih.gov/data-hub/taxonomy/11072/)                                   | `jev`  | [NC_001437.1](https://www.ncbi.nlm.nih.gov/nuccore/NC_001437.1)                                                                                                                                 |
+| [Severe acute respiratory syndrome coronavirus 2 (SARS-CoV-2)](https://www.ncbi.nlm.nih.gov/labs/data-hub/taxonomy/2697049/) | `sc2`  | [NC_045512.2](https://www.ncbi.nlm.nih.gov/nuccore/NC_045512.2)                                                                                                                                 |
+| [Rift Valley Fever Virus (RVFV)](https://www.ncbi.nlm.nih.gov/data-hub/taxonomy/11588/)                                      | `rvfv` | [NC_014395.1](https://www.ncbi.nlm.nih.gov/nuccore/NC_014395.1),[NC_014396.1](https://www.ncbi.nlm.nih.gov/nuccore/NC_014396.1),[NC_014397.1](https://www.ncbi.nlm.nih.gov/nuccore/NC_014397.1) |
 
 ## Running in the background
 
