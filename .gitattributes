@@ -6,3 +6,4 @@ bin/haplotypestandardizer linguist-language=julia
 bin/igvgen linguist-language=julia
 bin/phylotreegen linguist-language=julia
 bin/sequencetable linguist-language=julia
+bin/vartable linguist-language=julia
