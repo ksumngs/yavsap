@@ -360,6 +360,13 @@ tool.
       &#10502;&#10503;
    </span>: Duplication or translocation
 
+(Variants-report)=
+
+### Variants (CliqueSNV for Illumina, HapLink.jl for Nanopore)
+
+A table of every called variant in each sample. For a more visual
+representation, see {ref}`Haplotypes <Haplotypes-report>`.
+
 (Haplotypes-report)=
 
 ### Haplotypes (CliqueSNV for Illumina, HapLink.jl for Nanopore)
