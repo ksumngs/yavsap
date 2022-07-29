@@ -2,6 +2,7 @@ include { HAPLOTYPECONVERT } from '../../modules/local/haplotypeconvert'
 include { IGV } from '../../modules/local/igv'
 include { PHYLOTREEJS } from '../../modules/local/phylotreejs'
 include { SEQUENCETABLE } from '../../modules/local/sequencetable'
+include { VARTABLE } from '../../modules/local/vartable'
 
 workflow PRESENTATION {
     take:
@@ -10,12 +11,32 @@ workflow PRESENTATION {
     gff
     strain
     consensus
+    variants
     haplotype_fasta
     haplotype_yaml
     tree
 
     main:
     versions = Channel.empty()
+
+    tool_meta = []
+    if (params.platform == 'illumina') {
+        tool_meta = file(
+            "${workflow.projectDir}/assets/cliquesnv_info.yml", checkIfExists: true
+        )
+    }
+    else if (params.platform == 'nanopore') {
+        tool_meta = file(
+            "${workflow.projectDir}/assets/haplink_info.yml", checkIfExists: true
+        )
+    }
+    vartable_template = file(
+        "${workflow.projectDir}/assets/variants_mqc.html", checkIfExists: true
+    )
+
+    VARTABLE(variants.collect{ it[1] }, tool_meta, vartable_template)
+    VARTABLE.out.mqc_html.set{ vartable }
+    versions = versions.mix(VARTABLE.out.versions)
 
     strain
         .map{ [it[0].id, it] }
@@ -43,17 +64,7 @@ workflow PRESENTATION {
     sequencetable_template = file(
         "${workflow.projectDir}/assets/kelpie_mqc.html", checkIfExists: true
     )
-    tool_meta = []
-    if (params.platform == 'illumina') {
-        tool_meta = file(
-            "${workflow.projectDir}/assets/cliquesnv_info.yml", checkIfExists: true
-        )
-    }
-    else if (params.platform == 'nanopore') {
-        tool_meta = file(
-            "${workflow.projectDir}/assets/haplink_info.yml", checkIfExists: true
-        )
-    }
+
     SEQUENCETABLE(
         ch_collected_haplotypes,
         reference.map{ it[1] },
@@ -91,6 +102,7 @@ workflow PRESENTATION {
     versions = versions.mix(PHYLOTREEJS.out.versions)
 
     emit:
+    vartable
     seqtable
     igv
     phylotree

@@ -270,10 +270,12 @@ workflow YAVSAP {
         ch_reference_gff,
         ch_closest_reference,
         ch_consensus_fasta,
+        ch_vcf,
         ch_haplotype_fasta,
         ch_haplotype_yaml,
         ch_tree
     )
+    PRESENTATION.out.vartable.set{ ch_vartable_mqc }
     PRESENTATION.out.seqtable.set{ ch_seqtable_mqc }
     PRESENTATION.out.igv.set{ ch_igv_mqc }
     PRESENTATION.out.phylotree.set{ ch_phylotree_mqc }
@@ -300,6 +302,7 @@ workflow YAVSAP {
     ch_multiqc_files = ch_multiqc_files.mix(ch_qc.collect{it[1]}.ifEmpty([]))
     ch_multiqc_files = ch_multiqc_files.mix(ch_trimlog.collect{it[1]}.ifEmpty([]))
     ch_multiqc_files = ch_multiqc_files.mix(ch_kreport.collect{it[1]}.ifEmpty([]))
+    ch_multiqc_files = ch_multiqc_files.mix(ch_vartable_mqc.ifEmpty([]))
     ch_multiqc_files = ch_multiqc_files.mix(ch_seqtable_mqc.ifEmpty([]))
     ch_multiqc_files = ch_multiqc_files.mix(ch_igv_mqc.ifEmpty([]))
     ch_multiqc_files = ch_multiqc_files.mix(ch_phylotree_mqc.ifEmpty([]))
