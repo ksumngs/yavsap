@@ -2,7 +2,7 @@ process PHYLOTREEJS {
     tag "${newick}"
     label 'process_low'
 
-    container 'quay.io/millironx/juliapro:1.6.6-2ed3693'
+    container 'quay.io/millironx/biojulia:1.6.7-2.0.5-bb3c4be'
 
     input:
     path(newick, stageAs: 'tree.nwk')

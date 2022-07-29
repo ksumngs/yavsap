@@ -3,7 +3,7 @@ process SEQUENCETABLE {
     label 'process_low'
     cache false
 
-    container 'quay.io/millironx/biojulia:1.6.7-2.0.5-387d929'
+    container 'quay.io/millironx/biojulia:1.6.7-2.0.5-bb3c4be'
 
     input:
     path(haplotypes, stageAs: 'haplotypes.yml')
