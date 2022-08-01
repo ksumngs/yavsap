@@ -41,7 +41,12 @@ for vcf_file in ARGS
     variants = Dict[]
 
     for vcf_record in vcf_reader
-        first(VCF.filter(vcf_record)) == "PASS" || continue
+        try
+            first(VCF.filter(vcf_record)) == "PASS" || continue
+        catch
+            # This is fine: someone forgot to read the spec and created
+            # an empty FILTER instead of marking it as PASS, unless it isn't
+        end #try
 
         variant = Dict()
 
@@ -53,7 +58,11 @@ for vcf_file in ARGS
         variant["pos"] = VCF.pos(vcf_record)
         variant["ref"] = VCF.ref(vcf_record)
         variant["alt"] = first(VCF.alt(vcf_record))
-        variant["qual"] = VCF.qual(vcf_record)
+        variant["qual"] = try
+            VCF.qual(vcf_record)
+        catch
+            nothing
+        end
 
         push!(variants, variant)
     end #for
