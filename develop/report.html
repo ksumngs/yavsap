@@ -69,6 +69,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#minimap2">minimap2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#variants-cliquesnv-for-illumina-haplink-jl-for-nanopore">Variants (CliqueSNV for Illumina, HapLink.jl for Nanopore)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#haplotypes-cliquesnv-for-illumina-haplink-jl-for-nanopore">Haplotypes (CliqueSNV for Illumina, HapLink.jl for Nanopore)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#raxml-ng">RAxML-NG</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#software-versions">Software Versions</a></li>
@@ -391,10 +392,12 @@ interface is described in detail at
 the gray bar the genome annotations are shown along the length of the reference
 genome. These are colored based on the type of annotation.</p>
 <ul class="simple">
-<li><p><span style="background-color: limegreen;">Gene</span></p></li>
-<li><p><span style="background-color: gold;">CDS</span></p></li>
-<li><p><span style="background-color: forestgreen;">Mature Protein</span></p></li>
-<li><p><span style="background-color: blue;">Everything else</span></p></li>
+<li><p><span style="background-color: rgb(0,0,255);">Genome segment</span></p></li>
+<li><p><span style="background-color: rgb(0,178,0);">Gene</span></p></li>
+<li><p><span style="background-color: rgb(255,255,0);">CDS</span></p></li>
+<li><p><span style="background-color: rgb(0,90,40);">Mature peptide</span></p></li>
+<li><p><span style="background-color: rgb(170,170,170);">Miscellaneous feature</span></p></li>
+<li><p><span style="background-color: rgb(255,180,0);">Everything else</span></p></li>
 </ul>
 <p>A coverage graph is displayed in a histogram labelled with each sample name.
 Along those coverage graphs, IGV will attempt to call variants using colored
@@ -431,6 +434,11 @@ tool.</p>
  </span>: Duplication or translocation
 </li>
 </ul>
+</section>
+<section id="variants-cliquesnv-for-illumina-haplink-jl-for-nanopore">
+<span id="variants-report"></span><h3>Variants (CliqueSNV for Illumina, HapLink.jl for Nanopore)<a class="headerlink" href="#variants-cliquesnv-for-illumina-haplink-jl-for-nanopore" title="Permalink to this headline"></a></h3>
+<p>A table of every called variant in each sample. For a more visual
+representation, see <a class="reference internal" href="#haplotypes-report"><span class="std std-ref">Haplotypes</span></a>.</p>
 </section>
 <section id="haplotypes-cliquesnv-for-illumina-haplink-jl-for-nanopore">
 <span id="haplotypes-report"></span><h3>Haplotypes (CliqueSNV for Illumina, HapLink.jl for Nanopore)<a class="headerlink" href="#haplotypes-cliquesnv-for-illumina-haplink-jl-for-nanopore" title="Permalink to this headline"></a></h3>
@@ -542,6 +550,7 @@ particular analysis and report. Sort of a light version of the
       <dd><a href="../v0.7.0/index.html">v0.7.0</a></dd>
       <dd><a href="../v0.7.1/index.html">v0.7.1</a></dd>
       <dd><a href="../v0.8.0/index.html">v0.8.0</a></dd>
+      <dd><a href="../v0.9.0/index.html">v0.9.0</a></dd>
     </dl>
     <dl>
       <dt>Branches</dt>

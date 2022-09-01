@@ -258,10 +258,10 @@ odd-number columns (<code class="docutils literal notranslate"><span class="pre"
 </div>
 <p>This will launch the pipeline with the <code class="docutils literal notranslate"><span class="pre">docker</span></code> configuration profile. See below for more information about profiles.</p>
 <p>Note that the pipeline will create the following files in your working directory:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">work                # Directory containing the nextflow working files</span>
-<span class="go">&lt;OUTIDR&gt;            # Finished results in specified location (defined with --outdir)</span>
-<span class="go">.nextflow_log       # Log file from Nextflow</span>
-<span class="gp"># </span>Other nextflow hidden files, eg. <span class="nb">history</span> of pipeline runs and old logs.
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>work                <span class="c1"># Directory containing the nextflow working files</span>
+&lt;OUTDIR&gt;            <span class="c1"># Finished results in specified location (defined with --outdir)</span>
+.nextflow_log       <span class="c1"># Log file from Nextflow</span>
+<span class="c1"># Other nextflow hidden files, eg. history of pipeline runs and old logs.</span>
 </pre></div>
 </div>
 <section id="updating-the-pipeline">
@@ -424,7 +424,7 @@ Some HPC setups also allow you to run nextflow within a cluster job submitted yo
 <h2>Nextflow memory requirements<a class="headerlink" href="#nextflow-memory-requirements" title="Permalink to this headline"></a></h2>
 <p>In some cases, the Nextflow Java virtual machines can start to request a large amount of memory.
 We recommend adding the following line to your environment to limit this (typically in <code class="docutils literal notranslate"><span class="pre">~/.bashrc</span></code> or <code class="docutils literal notranslate"><span class="pre">~./bash_profile</span></code>):</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">NXF_OPTS=&#39;-Xms1g -Xmx4g&#39;</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">NXF_OPTS</span><span class="o">=</span><span class="s1">&#39;-Xms1g -Xmx4g&#39;</span>
 </pre></div>
 </div>
 </section>
@@ -554,6 +554,7 @@ settings will be applied every time we run the pipeline.</p>
       <dd><a href="../v0.7.0/index.html">v0.7.0</a></dd>
       <dd><a href="../v0.7.1/index.html">v0.7.1</a></dd>
       <dd><a href="../v0.8.0/index.html">v0.8.0</a></dd>
+      <dd><a href="../v0.9.0/index.html">v0.9.0</a></dd>
     </dl>
     <dl>
       <dt>Branches</dt>
