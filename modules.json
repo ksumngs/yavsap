@@ -3,94 +3,129 @@
     "homePage": "https://ksumngs.github.io/yavsap",
     "repos": {
         "ksumngs/nf-modules": {
-            "cat/fastq": {
-                "git_sha": "9bd90a7333479b2ba7f835d1ddfc3f869e992c56"
-            },
-            "cliquesnv/consensusillumina": {
-                "git_sha": "2362072d4e1659d9096e047990e2959f56134820"
-            },
-            "cliquesnv/illumina": {
-                "git_sha": "c1a3e48e237a64766199d83b391bdd07c5344f86"
-            },
-            "cliquesnv/illuminavc": {
-                "git_sha": "c1a3e48e237a64766199d83b391bdd07c5344f86"
-            },
-            "edirect/efetch": {
-                "git_sha": "7803d79f18ebb4a78f5874fa776397cbdbdc24e3"
-            },
-            "edirect/esearch": {
-                "git_sha": "7803d79f18ebb4a78f5874fa776397cbdbdc24e3"
-            },
-            "emboss/seqret": {
-                "git_sha": "1a1431b6cefd3c3aca4ea3c70188b0d8f69ae360"
-            },
-            "kraken2": {
-                "git_sha": "e0b2138159eab5b54a4618f320895a308fcf53fa"
-            },
-            "krakentools/extract": {
-                "git_sha": "c1a3e48e237a64766199d83b391bdd07c5344f86"
-            },
-            "krakentools/kreport2krona": {
-                "git_sha": "deed98820b459fffdf8f218e5dccaab20ae1c04c"
-            },
-            "krona/importtext": {
-                "git_sha": "c1a3e48e237a64766199d83b391bdd07c5344f86"
-            },
-            "nanofilt": {
-                "git_sha": "c1a3e48e237a64766199d83b391bdd07c5344f86"
-            },
-            "nanostat": {
-                "git_sha": "c1a3e48e237a64766199d83b391bdd07c5344f86"
-            },
-            "raxmlng/bootstrap": {
-                "git_sha": "c1a3e48e237a64766199d83b391bdd07c5344f86"
-            },
-            "raxmlng/parse": {
-                "git_sha": "c1a3e48e237a64766199d83b391bdd07c5344f86"
-            },
-            "raxmlng/search": {
-                "git_sha": "c1a3e48e237a64766199d83b391bdd07c5344f86"
-            },
-            "raxmlng/support": {
-                "git_sha": "c1a3e48e237a64766199d83b391bdd07c5344f86"
-            },
-            "trimmomatic": {
-                "git_sha": "c1a3e48e237a64766199d83b391bdd07c5344f86"
+            "git_url": "https://github.com/ksumngs/nf-modules.git",
+            "modules": {
+                "cat/fastq": {
+                    "branch": "master",
+                    "git_sha": "9bd90a7333479b2ba7f835d1ddfc3f869e992c56"
+                },
+                "cliquesnv/consensusillumina": {
+                    "branch": "master",
+                    "git_sha": "2362072d4e1659d9096e047990e2959f56134820"
+                },
+                "cliquesnv/illumina": {
+                    "branch": "master",
+                    "git_sha": "c1a3e48e237a64766199d83b391bdd07c5344f86"
+                },
+                "cliquesnv/illuminavc": {
+                    "branch": "master",
+                    "git_sha": "c1a3e48e237a64766199d83b391bdd07c5344f86"
+                },
+                "edirect/efetch": {
+                    "branch": "master",
+                    "git_sha": "7803d79f18ebb4a78f5874fa776397cbdbdc24e3"
+                },
+                "edirect/esearch": {
+                    "branch": "master",
+                    "git_sha": "7803d79f18ebb4a78f5874fa776397cbdbdc24e3"
+                },
+                "emboss/seqret": {
+                    "branch": "master",
+                    "git_sha": "1a1431b6cefd3c3aca4ea3c70188b0d8f69ae360"
+                },
+                "kraken2": {
+                    "branch": "master",
+                    "git_sha": "e0b2138159eab5b54a4618f320895a308fcf53fa"
+                },
+                "krakentools/extract": {
+                    "branch": "master",
+                    "git_sha": "c1a3e48e237a64766199d83b391bdd07c5344f86"
+                },
+                "krakentools/kreport2krona": {
+                    "branch": "master",
+                    "git_sha": "deed98820b459fffdf8f218e5dccaab20ae1c04c"
+                },
+                "krona/importtext": {
+                    "branch": "master",
+                    "git_sha": "c1a3e48e237a64766199d83b391bdd07c5344f86"
+                },
+                "nanofilt": {
+                    "branch": "master",
+                    "git_sha": "c1a3e48e237a64766199d83b391bdd07c5344f86"
+                },
+                "nanostat": {
+                    "branch": "master",
+                    "git_sha": "c1a3e48e237a64766199d83b391bdd07c5344f86"
+                },
+                "raxmlng/bootstrap": {
+                    "branch": "master",
+                    "git_sha": "c1a3e48e237a64766199d83b391bdd07c5344f86"
+                },
+                "raxmlng/parse": {
+                    "branch": "master",
+                    "git_sha": "c1a3e48e237a64766199d83b391bdd07c5344f86"
+                },
+                "raxmlng/search": {
+                    "branch": "master",
+                    "git_sha": "c1a3e48e237a64766199d83b391bdd07c5344f86"
+                },
+                "raxmlng/support": {
+                    "branch": "master",
+                    "git_sha": "c1a3e48e237a64766199d83b391bdd07c5344f86"
+                },
+                "trimmomatic": {
+                    "branch": "master",
+                    "git_sha": "c1a3e48e237a64766199d83b391bdd07c5344f86"
+                }
             }
         },
         "nf-core/modules": {
-            "blast/blastn": {
-                "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
-            },
-            "blast/makeblastdb": {
-                "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
-            },
-            "custom/dumpsoftwareversions": {
-                "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
-            },
-            "fastqc": {
-                "git_sha": "49b18b1639f4f7104187058866a8fab33332bdfe"
-            },
-            "mafft": {
-                "git_sha": "f0800157544a82ae222931764483331a81812012"
-            },
-            "minimap2/align": {
-                "git_sha": "1a5a9e7b4009dcf34e6867dd1a5a1d9a718b027b"
-            },
-            "multiqc": {
-                "git_sha": "49b18b1639f4f7104187058866a8fab33332bdfe"
-            },
-            "samtools/faidx": {
-                "git_sha": "897c33d5da084b61109500ee44c01da2d3e4e773"
-            },
-            "samtools/index": {
-                "git_sha": "897c33d5da084b61109500ee44c01da2d3e4e773"
-            },
-            "seqkit/split2": {
-                "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
-            },
-            "seqtk/mergepe": {
-                "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
+            "git_url": "https://github.com/nf-core/modules.git",
+            "modules": {
+                "blast/blastn": {
+                    "branch": "master",
+                    "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
+                },
+                "blast/makeblastdb": {
+                    "branch": "master",
+                    "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
+                },
+                "custom/dumpsoftwareversions": {
+                    "branch": "master",
+                    "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
+                },
+                "fastqc": {
+                    "branch": "master",
+                    "git_sha": "49b18b1639f4f7104187058866a8fab33332bdfe"
+                },
+                "mafft": {
+                    "branch": "master",
+                    "git_sha": "f0800157544a82ae222931764483331a81812012"
+                },
+                "minimap2/align": {
+                    "branch": "master",
+                    "git_sha": "1a5a9e7b4009dcf34e6867dd1a5a1d9a718b027b"
+                },
+                "multiqc": {
+                    "branch": "master",
+                    "git_sha": "49b18b1639f4f7104187058866a8fab33332bdfe"
+                },
+                "samtools/faidx": {
+                    "branch": "master",
+                    "git_sha": "897c33d5da084b61109500ee44c01da2d3e4e773"
+                },
+                "samtools/index": {
+                    "branch": "master",
+                    "git_sha": "897c33d5da084b61109500ee44c01da2d3e4e773"
+                },
+                "seqkit/split2": {
+                    "branch": "master",
+                    "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
+                },
+                "seqtk/mergepe": {
+                    "branch": "master",
+                    "git_sha": "e745e167c1020928ef20ea1397b6b4d230681b4d"
+                }
             }
         }
     }

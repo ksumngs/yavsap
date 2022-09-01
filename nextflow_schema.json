@@ -1,6 +1,6 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
-    "$id": "https://raw.githubusercontent.com/yavsap/master/nextflow_schema.json",
+    "$id": "https://raw.githubusercontent.com/ksumngs/yavsap/master/nextflow_schema.json",
     "title": "yavsap pipeline parameters",
     "description": "Identification and analysis of viral haplotypes in metagenomic NGS reads",
     "type": "object",

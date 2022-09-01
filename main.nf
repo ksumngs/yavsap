@@ -4,7 +4,7 @@
     nf-core/yavsap
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     Github : https://github.com/nf-core/yavsap
-    Website: https://nf-co.re/yavsap
+Website: https://nf-co.re/yavsap
     Slack  : https://nfcore.slack.com/channels/yavsap
 ----------------------------------------------------------------------------------------
 */

@@ -8,6 +8,8 @@ and this project adheres to
 
 ## [Unreleased]
 
+- nf-core template updated to v1.5.1
+
 ## [0.9.1] - 2022-08-01
 
 ## Fixed
