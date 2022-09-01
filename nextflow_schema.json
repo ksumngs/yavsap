@@ -2,7 +2,7 @@
     "$schema": "http://json-schema.org/draft-07/schema",
     "$id": "https://raw.githubusercontent.com/nf-core/yavsap/master/nextflow_schema.json",
     "title": "nf-core/yavsap pipeline parameters",
-    "description": "Intra-sample viral population analysis",
+    "description": "Identification and analysis of viral haplotypes in metagenomic NGS reads",
     "type": "object",
     "definitions": {
         "input_output_options": {
