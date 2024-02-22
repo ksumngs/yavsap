@@ -10,3 +10,6 @@ testing*
 
 ### Sphinx gitignore ###
 docs/_build
+
+### direnv gitignore ###
+.direnv/
